@@ -636,6 +636,149 @@ $result = curl_exec($ch);
 	function base64($data) {
     return rtrim(strtr(base64_encode(json_encode($data)), '+/', '-_'), '=');
   }
-	
+
+function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional = array(), $sound = 'default', $user_type)
+{
+	if ($user_type == 2) {
+		$options = [
+			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
+			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
+			'app_bundle_id' => 'app.com.Veldoo', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
+			'private_key_secret' => null // Private key secret
+		];
+	} else if ($user_type == 1) {
+		$options = [
+			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
+			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
+			'app_bundle_id' => 'app.com.VeldooUser', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
+			'private_key_secret' => null // Private key secret
+		];
+	} else {
+		$options = [
+			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
+			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
+			'app_bundle_id' => 'app.com.Veldoo', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
+			'private_key_secret' => null // Private key secret
+		];
+	}
+
+	$authProvider = AuthProvider\Token::create($options);
+
+	$alert = Alert::create()->setTitle($title);
+	$alert = $alert->setBody($body);
+
+	$payload = Payload::create()->setAlert($alert);
+
+	//set notification sound to default
+	$payload->setSound('example.caf');
+	$additional['content_available'] = 'yes';
+	$additional['mutable_content'] = 'yes';
+	//add custom value to your notification, needs to be customized
+	foreach ($additional as $key => $value) {
+		$payload->setCustomValue($key, $value);
+	}
+
+	$notifications = [];
+	foreach ($deviceTokens as $deviceToken) {
+		$notifications[] = new Notification($payload, $deviceToken);
+	}
+	$settings = \App\Setting::first();
+	$settingValue = json_decode($settings['value']);
+	$appurl_notification = $settingValue->notification;
+	if ($appurl_notification == 1) {
+		$client = new Client($authProvider, $production = true);
+	} else if ($appurl_notification == 0) {
+		$client = new Client($authProvider, $production = false);
+	} else {
+		$client = new Client($authProvider, $production = true);
+	}
+	$client->addNotifications($notifications);
+
+	$responses = $client->push();
+	return $responses;
+}
+
+function bulk_firebase_android_notification($title = '', $msg = '', $token, $additionalPushData = [])
+{
+	$ride_data = $additionalPushData['ride_data'];
+	unset($ride_data['accept_time']);
+	unset($ride_data['cancel_amount']);
+	unset($ride_data['commission']);
+	unset($ride_data['created_at']);
+	unset($ride_data['cus_token']);
+	unset($ride_data['driver_earning']);
+	unset($ride_data['notification_send']);
+	unset($ride_data['payment_id']);
+	unset($ride_data['payment_by']);
+	unset($ride_data['reach_time']);
+	unset($ride_data['token']);
+	unset($ride_data['updated_at']);
+	unset($ride_data['all_drivers']);
+	unset($ride_data['driver_id']);
+	if (empty($ride_data['dest_address'])) {
+		$ride_data['dest_address'] = "";
+	}
+	if (empty($ride_data['ride_cost'])) {
+		$ride_data['ride_cost'] = "";
+	}
+	if (empty($ride_data['additional_notes'])) {
+		$ride_data['additional_notes'] = "";
+	}
+	if (empty($ride_data['alert_time'])) {
+		$ride_data['alert_time'] = "";
+	}
+	// prep the bundle
+	if ($additionalPushData['type'] == 1) {
+		$message = array(
+			'message' 	=> (!empty($msg))?$msg:"",
+			'not_type' => $additionalPushData['type'],
+			'ride_id' => $additionalPushData['ride_id'],
+			'ride_data' => json_encode($ride_data),
+			'vibrate'	    => 1,
+			'title'	    => $title,
+			'sound'		    => 'default'
+		);
+	} else {
+		$message = array(
+			'message' 	=> (!empty($msg))?$msg:"",
+			'not_type' => $additionalPushData['type'],
+			'ride_id' => $additionalPushData['ride_id'],
+			'ride_data' => json_encode($ride_data),
+			'vibrate'	    => 1,
+			'title'	    => $title,
+			'sound'		    => 'default'
+		);
+	}
+
+	$fields = array(
+		'registration_ids' => $token,
+		'data' => $message,
+		'priority' => 'high'
+	);
+
+	$headers = array(
+		'Authorization: key=AAAAgHr7nhw:APA91bFIwYf7g3bGWuiPjAGK4UW52FMXP329mfx3S0097RglyBZiVbXWhVhNkt0pqF1SDHEXf4ce0P364gi2RmtuFBjwGpnT2aRLBFDfBSNE0MuNUIBcXPFBvhGhagFDSJsbiaaG91XT',
+		'Content-Type: application/json'
+	);
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+	curl_setopt($ch, CURLOPT_POST, true);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+	$result = curl_exec($ch);
+	curl_close($ch);
+	if ($result === FALSE) {
+		die('Curl failed: ' . curl_error($ch));
+	} else {
+		$data = array('message' => 'success');
+	}
+	return true;
+}
 
 ?>

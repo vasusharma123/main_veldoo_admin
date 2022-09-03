@@ -10,7 +10,7 @@ use App\User;
 class Ride extends Model
 {
 
-	protected $fillable = ['id','additional_notes', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'price', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance'];
+	protected $fillable = ['id','additional_notes', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'price', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance', 'alert_notification_date_time'];
 
 	protected $appends = [
 		'stop_over',
@@ -79,7 +79,7 @@ if(!empty($car_data)){
  	    if($users->user_type==1){
              $query= self::where('user_id',$users->id);
 	        if($inputArr['type']==1){
-	           $query->whereIn('status',[1,2,4,-4]);
+	           $query->whereIn('status',[0,1,2,4,-4]);
 	 	    }
 	 	    if($inputArr['type']==2){
 	           $query->whereIn('status',[3]);
@@ -90,7 +90,7 @@ if(!empty($car_data)){
  	   }else if($users->user_type==2){
             if($users->is_master==1 ){
             	if($inputArr['type']==1){
-	           	   $query=self::whereIn('status',[1,2,4,-4]);
+	           	   $query=self::whereIn('status',[0,1,2,4,-4]);
 	 	        }
 		 	    if($inputArr['type']==2){
 		          $query= self::whereIn('status',[3]);
@@ -121,10 +121,13 @@ if(!empty($car_data)){
 
     public function getRideList(){
 
-    	$driver=User::find($this->driver_id)->first();
+    	if(!empty($this->driver_id) && !is_null($this->driver)){
+        $driver=User::where('id',$this->driver_id)->first();
         $driver['car_data']=self::getCarData($this->driver_id);
         $driver['avg_rating']=self::getAvgRating($this->driver_id); 
-       
+       }else{
+         $driver=null;
+       }
     	$returnArr = [
                 'id'=> $this->id,
                 'user_id'=>$this->user_id,

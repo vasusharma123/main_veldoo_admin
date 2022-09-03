@@ -15,7 +15,8 @@ class RideHistory extends Model
         'ride_id',
         'driver_id',
         'status',
-       
+        'created_at',
+        'updated_at'
     ];
 	
 	protected $table='ride_history';
