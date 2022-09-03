@@ -1,0 +1,75 @@
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script> 
+	<script>
+		var socket = io.connect('https://dev.appmantechnologies.com:3004/');
+		
+		socket.on('connect', function() {
+		
+			//alert(socket.id);
+			//return false;
+			
+			var getsocketid = socket.id;
+		  
+			var data = JSON.stringify({'socket_id':getsocketid,"user_id":"<?php echo $_GET['user_id']; ?>","group_id":2});
+			socket.emit('update_group_user', data);
+			
+			//console.log(data);
+			
+			socket.on('add-message-response-error', function(data) {
+				console.log('data');
+			});
+			
+			console.log(socket.id+123444);
+			
+			/*var data = JSON.stringify({'chat_id':1,"sender_id":79,"reciever_id":88,"message":"test","file":"","read_status":0});
+			
+			console.log(data);
+			
+			
+			socket.emit('sendmessage', data); 
+			*/
+			
+			 /* var data = JSON.stringify({'chat_id':1});		
+				console.log(data);
+				socket.emit('list-messages', data);
+			*/
+			
+			/*socket.on('list-messages-response', function () {
+			  alert('response');
+			});
+
+			socket.on('update-group-user-response', function () {
+			  alert('response sdfsdf');
+			});*/
+		});
+
+
+		/*socket.on('connect', function () {
+          alert('sdfsfsdf');
+		});
+		
+		message = "test";
+		
+		// var eee = socket.on('add-message', message);
+		 message = {'sdfsf':1}
+		 socket.emit('test-message-old', message);
+		 
+		 data = {''}
+		socket.emit('update_group_user', message);
+		*/
+		
+		socket.on('add-message-response-error', function () {
+          alert('error');
+		});	
+		
+		socket.on('add-message-response', function () {
+          alert('success');
+		});	
+		 
+	</script>	
+</head>
+<body>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+ Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+    Artisan::call('storage:link');
+    return "Cache is cleared";
+});
+
+
+/****	GLOBAL VARIABLE	***/
+Config::set('limit', 10);
+
+########		PUBLIC URL START		#########
+/* Route::get('/', function () {
+   return 'No Home Yet';
+}); */
+Route::get('/',  ['as'=>'about','uses'=>'PageController@home']);
+Route::get('/phpinfo',  ['as'=>'about','uses'=>'PageController@phpinfo']);
+Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
+Route::get('/terms',  ['as'=>'terms','uses'=>'PageController@terms_front']);
+Route::get('/policy',  ['as'=>'policy','uses'=>'PageController@policy_front']);
+Route::get('/cron/scheduleRide',  ['uses'=>'PageController@scheduleRide']);
+Route::get('/cron/rideAboutToStart',  ['uses'=>'CronController@rideAboutToStart']);
+Route::get('/cron/driverForScheduleRide',  ['uses'=>'CronController@driverForScheduleRide']);
+Route::get('/cron/autoCancel',  ['uses'=>'CronController@autoCancel']);
+Route::get('/cron/testing',  ['uses'=>'CronController@testing']);
+Route::get('/cron/notification',  ['uses'=>'CronController@notification']);
+Route::get('/cron/shareRideExecute',  ['uses'=>'CronController@shareRideExecute']);
+// Route::get('note/{slug}', 'TopicController@note');
+########		PUBLIC URL END			#########
+
+Route::group(['middleware' => 'guest'], function(){
+	// Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
+    Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
+    Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
+    Route::get('/register',  ['as'=>'companyRegister','uses'=>'UserController@register']);
+    Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
+     Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
+	 Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
+	Route::get('/password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+	Route::post('/password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+	Route::get('/password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+	Route::post('/password/reset/{token}', 'Auth\ResetPasswordController@reset');
+	Route::get('/password/success', ['as'=>'password.success','uses'=>'UserController@guest_message']);
+}); 
+Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
+
+	Route::get('dashboard',  ['as'=>'users.dashboard','uses'=>'UserController@dashboard']);
+	Route::get('logout',  ['uses'=>'UserController@logout']);
+	
+	Route::get('/users/import',  ['as'=>'users.import','uses'=>'UserController@userImport']);
+	Route::get('/users/profile',  ['as'=>'users.profile','uses'=>'UserController@profile']);
+	Route::get('/users/settings',  ['as'=>'users.settings','uses'=>'UserController@settings']);
+	Route::get('/users/vouchers',  ['as'=>'users.voucher','uses'=>'UserController@vouchers']);
+	Route::match(['put', 'patch'], '/users/vouchersUpdate',['as'=>'users.vouchersUpdate','uses'=>'UserController@vouchersUpdate']);
+		Route::match(['put', 'patch'], '/users/{user}/profileUpdate',['as'=>'users.profileUpdate','uses'=>'UserController@profileUpdate']);
+	Route::match(['put', 'patch'], '/users/settingsUpdate',['as'=>'users.settingsUpdate','uses'=>'UserController@settingsUpdate']);
+	Route::match(['put', 'patch'], '/users/{user}/changePassword',['as'=>'users.changePassword','uses'=>'UserController@changePassword']);
+    Route::resources(['bookings'=>'BookingController']);
+	Route::get('/update-lat-long','UserController@updateLatLong');
+});  
+	Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
+		Route::get('/booking/{id}/user','BookingController@userDetail');
+	//driver driver/edit
+	Route::get('/drivers',  ['as'=>'users.drivers','uses'=>'UserController@driver']);
+	Route::get('driver/edit/{id}','UserController@editDriver');
+	Route::match(['put', 'patch'],'driver/update/{id}','UserController@updateDriver');
+	Route::get('driver/create','UserController@createDriver');
+	
+	Route::get('driver/{id}','UserController@showDriver');
+	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
+	
+
+	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','daily-report'=>'DailyReportController','contact-support'=>'ContactSupportController','notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
+
+	
+	
+	Route::post('vehicle-type/change_status','VehicleTypeController@change_status');
+	Route::post('vehicle-type/delete','VehicleTypeController@destroy');
+    Route::post('company/delete','CompanyController@destroy');
+	Route::post('company/change_status','CompanyController@change_status');
+	Route::post('driver/driver_master_status','UserController@driver_change_status');
+	Route::post('users/invoice_status','UserController@invoice_change_status');
+	Route::post('vehicle/delete','VehicleController@destroy');
+	Route::post('vehicle/carFree','VehicleController@carFree');
+	
+	Route::get('scheduled-rides','BookingController@scheduledRide');
+	Route::get('scheduled-ride/{id}','BookingController@scheduledRideShow');
+	Route::get('get_users','ContactSupportController@getUsers');
+	Route::get('complaints','ContactSupportController@index');
+	Route::post('reply-to-user','ContactSupportController@replyToUser');
+	Route::get('booking/{type}','BookingController@booking');
+	Route::get('promotional-offer','NotificationController@promotionalOffer');
+	Route::post('store-promotional-offer','NotificationController@storePromotionalOffer');
+	Route::get('payment-setting','SettingController@paymentSetting');
+	Route::post('payment-setting-store','SettingController@paymentSettingStore');
+	
+	Route::get('/page/about',  ['as'=>'page.about','uses'=>'PageController@about']);
+	Route::get('/page/terms',  ['as'=>'page.terms','uses'=>'PageController@terms']);
+	Route::get('/page/policy',  ['as'=>'page.policy','uses'=>'PageController@policy']);
+	Route::match(['put', 'patch'], '/page/store',['as'=>'page.store','uses'=>'PageController@store']);
+	Route::get('user/{id}/bookings/','UserController@userBooking');
+	Route::get('driver/{id}/bookings/','UserController@driverBooking');
+	Route::get('/exportExcel/{type}','UserController@exportExcel');
+	Route::get('/export-booking/{id?}','BookingController@exportExcel');
+	
+	
+	});
+	Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){	
+	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
+	Route::get('past-bookings','BookingController@pastBooking');
+	Route::get('upcoming-bookings','BookingController@upcomingBooking');
+	Route::get('current-bookings','BookingController@currentBooking');
+	Route::get('/notifications','NotificationController@companyNotifications');
+	Route::get('/task-management','BookingController@home');
+	Route::post('ride-create','BookingController@rideCreate');
+	Route::get('/past-bookings-detail/{id}','BookingController@pastBookingDetail');
+	Route::get('/upcoming-bookings-detail/{id}','BookingController@upcomingBookingDetail');
+	Route::get('/admin-contact','ContactSupportController@adminContact');
+	Route::post('/send-to-admin','ContactSupportController@sendToAdmin');
+	Route::get('/book-ride','RideManagementController@bookRide');
+	
+});
+Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
+		Route::resources(['users'=>'UserController']);
+		//Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
+	});
+
+
+Route::get('/book-ride','RideManagementController@bookRide');
+Route::group([ 'middleware' => 'auth'], function(){
+	// Route::post('/userCreate',  ['as'=>'userCreate','uses'=>'UserController@userCreate']);
+});
