@@ -2052,7 +2052,6 @@ class UserController extends Controller
 
 			$ride = new Ride();
 
-			$ride->driver_id = $userId;
 			$ride->user_id = $request->user_id;
 			$ride->pickup_address = $request->pickup_location;
 			$ride->dest_address = $request->drop_off_location;
@@ -2061,7 +2060,7 @@ class UserController extends Controller
 			$ride->ride_type = 1;
 			$ride->car_type = $request->car_type;
 			if(!empty($request->alert_time)){
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s',strtotime('-'.$request->alert_time.' minutes',strtotime($ride->request_time)));
+				$ride->alert_notification_date_time = date('Y-m-d H:i:s',strtotime('-'.$request->alert_time.' minutes',strtotime($request->ride_time)));
 			}
 			$ride->alert_time = $request->alert_time;
 			if (!empty($request->pick_lat)) {
@@ -2087,8 +2086,8 @@ class UserController extends Controller
 			if (!empty($request->distance)) {
 				$ride->distance = $request->distance;
 			}
-			$ride->created_by = 2;
-			$ride->status = 5;
+			$ride->created_by = Auth::user()->id;
+			$ride->status = 0;
 			//print_r($input); die;
 			$ride->save();
 			//	$ride= \App\Ride::create($input);
@@ -5280,7 +5279,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->ride_type = 3;
-		$ride->created_by = 2;
+		$ride->created_by = Auth::user()->id;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -5325,7 +5324,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($drivers)) {
 			foreach ($drivers as $driver) {
 				$driverids[] = $driver['id'];
-				$socket_id = $driver['socket_id'];
 			}
 		} else {
 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
@@ -5370,6 +5368,21 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			Notification::insert($notification_data);
 			RideHistory::insert($ridehistory_data);
 		}
+		$overallDriversCount = User::select(
+			"users.*",
+			DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
+				* cos(radians(users.current_lat))
+				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
+				+ sin(radians(" . $ride->pick_lat . "))
+				* sin(radians(users.current_lat))) AS distance")
+		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+		$rideData = Ride::find($ride->id);
+		$rideData->notification_sent = 1;
+		if (count($overallDriversCount) <= count($drivers)) {
+			$rideData->alert_send = 1;
+		}
+		$rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
+		$rideData->save();
 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
 	}
 

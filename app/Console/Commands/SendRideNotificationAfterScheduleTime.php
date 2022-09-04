@@ -11,21 +11,21 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class SendRideNotificationOnScheduleTime extends Command
+class SendRideNotificationAfterScheduleTime extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'SendRideNotification:OnScheduleTime';
+    protected $signature = 'SendRideNotification:AfterScheduleTime';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send ride notification on schedule time';
+    protected $description = 'Send ride notification after schedule time';
 
     /**
      * Create a new command instance.
@@ -45,16 +45,16 @@ class SendRideNotificationOnScheduleTime extends Command
     public function handle()
     {
         $currentTime = Carbon::now()->format('Y-m-d H:i:s');
-        $rides = Ride::where('alert_notification_date_time', '<=', $currentTime)->where(['status' => 0, 'notification_sent' => 0, 'alert_send' => 0])->where(function($query){
+        $rides = Ride::where('alert_notification_date_time', '<=', $currentTime)->where(['status' => 0, 'notification_sent' => 1, 'alert_send' => 0])->where(function($query){
             $query->where(['ride_type' => 1])
             ->orWhere(['ride_type' => 3]);
         })->whereNotNull('alert_notification_date_time')->get();
         if (!empty($rides) && count($rides) > 0) {
             $settings = Setting::first();
             $settingValue = json_decode($settings['value']);
-            $driverlimit = $settingValue->driver_requests;
             $driver_radius = $settingValue->radius;
             foreach ($rides as $ride) {
+                $alreadySend = RideHistory::getRideHistoryData($ride->id);
                 $query = User::select(
                     "users.*",
                     DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
@@ -63,8 +63,14 @@ class SendRideNotificationOnScheduleTime extends Command
                         + sin(radians(" . $ride->pick_lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
-                $drivers = $query->get()->toArray();
+                $query->whereNotIn('id', $alreadySend)
+                    ->whereNotNull('device_token')
+                    ->whereNotNull('device_type')
+                    ->where('user_type', 2)
+                    ->where('availability', 1)
+                    ->having('distance', '<', $driver_radius)
+                    ->orderBy('distance', 'asc');
+                $drivers = $query->get();
 
                 $driverids = array();
 
@@ -97,22 +103,15 @@ class SendRideNotificationOnScheduleTime extends Command
                     }
                     Notification::insert($notification_data);
                     RideHistory::insert($ridehistory_data);
-                }
-                $overallDriversCount = User::select(
-                    "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
-                        * cos(radians(users.current_lat))
-                        * cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
-                        + sin(radians(" . $ride->pick_lat . "))
-                        * sin(radians(users.current_lat))) AS distance")
-                )->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
-                $rideData = Ride::find($ride->id);
-                $rideData->notification_sent = 1;
-                if (count($overallDriversCount) <= count($drivers)) {
+                    $rideData = Ride::find($ride->id);
                     $rideData->alert_send = 1;
+                    $rideData->alert_notification_date_time = date('Y-m-d H:i:s',strtotime('+'.$settingValue->waiting_time.' seconds ',strtotime($rideData->alert_notification_date_time)));
+                    $rideData->save();
+                } else {
+                    $ride->alert_send = 1;
+                    $ride->alert_notification_date_time = date('Y-m-d H:i:s',strtotime('+'.$settingValue->waiting_time.' seconds ',strtotime($ride->alert_notification_date_time)));
+                    $ride->save();
                 }
-                $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->alert_notification_date_time)));
-                $rideData->save();
             }
         }
     }
