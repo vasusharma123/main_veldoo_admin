@@ -64,8 +64,7 @@ class SendRideNotificationAfterScheduleTime extends Command
                         * sin(radians(users.current_lat))) AS distance")
                 );
                 $query->whereNotIn('id', $alreadySend)
-                    ->whereNotNull('device_token')
-                    ->whereNotNull('device_type')
+                    ->whereNotNull('device_token')->where('device_token', '!=', '')
                     ->where('user_type', 2)
                     ->where('availability', 1)
                     ->having('distance', '<', $driver_radius)

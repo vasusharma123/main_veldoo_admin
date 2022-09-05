@@ -44,7 +44,7 @@ use App\AdminContact;
 use Illuminate\Support\Facades\Auth;
 use App\Rules\MatchOldPassword;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Edujugon\PushNotification\PushNotification;
 use Helper;
@@ -6104,42 +6104,59 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 	}
 
-	public function acceptRejectRide(Request $request,RideHistory $rideHistory)
+	public function acceptRejectRide(Request $request, RideHistory $rideHistory)
 	{
 		try {
 			$rules = [
 				'status' => 'required',
 				'ride_id' => 'required',
 			];
-
 			$validator = Validator::make($request->all(), $rules);
 			if ($validator->fails()) {
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$ride = \App\Ride::where('id', $request->ride_id)->first();
+			$ride = Ride::find($request->ride_id);
 			if (!empty($ride)) {
-				if ($ride->status == 1 && $request->status == 1) {
-					return response()->json(['message' => "Ride already Accepted"], $this->warningCode);
-				} else if ($request->status == 1) {
-					 if(empty($request->car_id)){
-                         return $this->validationErrorResponse('The car id is required !');
-                      }
-					\App\Ride::where('id', $request->ride_id)->update(['status' => $request->status,'vehicle_id'=>$request->car_id,'waiting'=>$request->waiting,'driver_id'=>Auth::user()->id]);
-
+				if ($request->status == 1) {
+					if ($ride->status == 1) {
+						return response()->json(['message' => "Ride already Accepted"], $this->warningCode);
+					}
+					if (empty($request->car_id)) {
+						return $this->validationErrorResponse('The car id is required !');
+					}
+					Ride::where('id', $request->ride_id)->update(['status' => $request->status, 'vehicle_id' => $request->car_id, 'waiting' => $request->waiting, 'driver_id' => Auth::user()->id]);
+					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
+					$rideHistoryDetail->status = "1";
+					$rideHistoryDetail->save();
 					return $this->successResponse($ride, 'Ride Accepted Successfully.');
-
-				} else if ($ride->status == 2 && $request->status == 2) {
-					return response()->json(['message' => "Ride already Rejected"], $this->warningCode);
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
+					// $rideHistory->saveData(['ride_id'=>$request->ride_id,'driver_id'=>Auth::user()->id]);
+					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
+					if ($rideHistoryDetail->status == "0") {
+						return response()->json(['message' => "Ride already Rejected"], $this->warningCode);
+					}
+					$rideHistoryDetail->status = "0";
+					$rideHistoryDetail->save();
+					if ($ride->status == 0) {
+						$lastSendNotificationDrivers = explode(',', $ride->all_drivers);
+						if (!empty($lastSendNotificationDrivers)) {
+							$sendNotificationDriverCount = RideHistory::where(['ride_id' => $request->ride_id, 'status' => "0"])->whereIn('driver_id', $lastSendNotificationDrivers)->count();
+							if (count($lastSendNotificationDrivers) == $sendNotificationDriverCount) {
+								if ($ride->notification_sent == 1 && $ride->alert_send == 1) {
+									Notifications::sendRideNotificationToMasters($request->ride_id);
+								} else if ($ride->notification_sent == 1 && $ride->alert_send == 0) {
+									Notifications::sendRideNotificationToRemainingDrivers($request->ride_id);
+								}
+							}
+						}
+					}
 
-					$rideHistory->saveData(['ride_id'=>$request->ride_id,'driver_id'=>Auth::user()->id]);
-
-					Notifications::checkAllDriverCancelRide($request->ride_id);
+					// Notifications::checkAllDriverCancelRide($request->ride_id);
 
 					// return response()->json(['success' => true, 'message' => ''], $this->successCode);
-					 return $this->successResponse($ride, 'Ride Rejected Successfully.');
+					return $this->successResponse($ride, 'Ride Rejected Successfully.');
 				}
 			} else {
 				return response()->json(['message' => 'Record not found'], $this->errorCode);
@@ -6151,7 +6168,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
-
 
 
 	public function paymentReceived(Request $request)

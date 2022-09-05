@@ -63,7 +63,7 @@ class SendRideNotificationOnScheduleTime extends Command
                         + sin(radians(" . $ride->pick_lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where(['user_type' => 2 , 'availability' => 1])->whereNotNull('device_token')->where('device_token', '!=', '')->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
                 $drivers = $query->get()->toArray();
 
                 $driverids = array();
