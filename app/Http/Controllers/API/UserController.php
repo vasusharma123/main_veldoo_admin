@@ -6117,6 +6117,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$ride = Ride::find($request->ride_id);
+			if($ride->status == -2 && $request->status == 1){
+				return response()->json(['message' => "Ride already cancelled"], $this->warningCode);
+			}
 			if (!empty($ride)) {
 				if ($request->status == 1) {
 					if ($ride->status == 1) {
@@ -6676,15 +6679,14 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						if ($user->is_master == 1) {
 							//$rides=Ride::whereDate('rides.ride_time','>=',Carbon::today())->orderBy('id', 'desc')->with('user')->paginate($this->limit);
 							//echo Carbon::today();
-							$ownrides = Ride::where('driver_id', $userId)->where('ride_type', 3)->where('waiting', 0)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+							$ownRidesWithWaiting = Ride::where('driver_id', $userId)->where('ride_type', 3)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
 								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
 
-							$ownrideswaiting = Ride::where('driver_id', $userId)->where('ride_type', 3)->where('waiting', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							$globalrides = Ride::where('driver_id', '!=', $userId)->where('ride_type', 3)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+							$globalrides = Ride::where(function ($query) use ($userId) {
+								$query->where('driver_id', '!=', $userId)
+									->orWhereNull('driver_id');
+							})->where('ride_type', 3)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
 								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
 
@@ -6692,27 +6694,24 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
 
-							$globalridesplanned = Ride::where('driver_id', '!=', $userId)->where('ride_type', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+							$globalridesplanned = Ride::where(function ($query) use ($userId) {
+								$query->where('driver_id', '!=', $userId)
+									->orWhereNull('driver_id');
+							})->where('ride_type', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
 								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
 
-							$globalridespending = Ride::whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+							$globalridespending = Ride::where(function ($query) {
 								$query->where([['status', '=', -4]]);
 							})->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
-
-
-
 
 							$ownsharerides = Ride::where([['driver_id', '=', $userId], ['actual_share_ride', '=', 1], ['ride_type', '=', 4], ['ride_time', '>=', $userlogintime]])->where(function ($query) {
 								$query->orWhere([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
 
-
-
 							$globalsharerides = Ride::where([['actual_share_ride', '=', 1], ['ride_type', '=', 4], ['ride_time', '>=', $userlogintime]])->where(function ($query) {
 								$query->orWhere([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
 
 
 							$x = 0;
@@ -6721,26 +6720,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							//for ($x = 0; $x <= 2; $x++) {
 
 							if ($request->master_driver == 1) {
-
-								$rides[1] = $ownrides;
-								$rides[2] = $ownrideswaiting;
-
-
-								$rides[3] = $ownsharerides;
-								$rides[4] = $ownridesplanned;
+								$rides[0] = $ownRidesWithWaiting;
+								$rides[1] = $ownsharerides;
+								$rides[2] = $ownridesplanned;
 							} else {
 								$rides[0] = $globalridespending;
-								$rides[1] = $ownrides;
-								$rides[2] = $ownrideswaiting;
-
-								$rides[3] = $globalrides;
-
-								$rides[4] = $ownsharerides;
-								$rides[5] = $globalsharerides;
-
-
-								$rides[6] = $ownridesplanned;
-								$rides[7] = $globalridesplanned;
+								$rides[1] = $ownRidesWithWaiting;
+								$rides[2] = $globalrides;
+								$rides[3] = $ownsharerides;
+								$rides[4] = $globalsharerides;
+								$rides[5] = $ownridesplanned;
+								$rides[6] = $globalridesplanned;
 							}
 							//print_r($rides);
 							foreach ($rides as $ridedata) {
@@ -6785,15 +6775,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						if ($user->is_master == 1) {
 							if ($request->master_driver == 1) {
 								$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-									$query->whereIn('status',[-2]);
+									$query->whereIn('status', [-2]);
 								})->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
 							} else {
-								$rides = Ride::whereDate('rides.ride_time', '>=', $userlogintime)->WhereIn('status',[-2])->with('user', 'driver')->paginate($this->limit);
+								$rides = Ride::whereDate('rides.ride_time', '>=', $userlogintime)->WhereIn('status', [-2])->with('user', 'driver')->paginate($this->limit);
 							}
 						} else {
 							//$rides=Ride::where('driver_id',$userId)->orWhere([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]])->orderBy('id', 'desc')->with('user')->paginate($this->limit);
 							$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-								$query->whereIn('status',[-2]);
+								$query->whereIn('status', [-2]);
 							})->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
 						}
 					}
@@ -6801,11 +6791,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if ($user->user_type == 1) {
 						return response()->json(['message' => 'Record Not found'], $this->warningCode);
 					} elseif ($user->user_type == 2) {
-
-
-						/* $rides = Ride::where('driver_id',$userId)->where(function($query) {
-			$query->where([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]]);
-})->orderBy('id', 'desc')->with('user','driver')->paginate($this->limit); */
 						if ($user->is_master == 1) {
 							if ($request->master_driver == 1) {
 								$rides = Ride::query()->whereDate('rides.ride_time', '>=', $userlogintime)->where([['status', '=', 0], ['ride_type', '>', 1]])->whereRaw('FIND_IN_SET(?,driver_id)', [$userId])->orderBy('ride_time', 'desc')->with('user', 'driver')->limit(1)->paginate(1);
@@ -6821,13 +6806,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($datarides)) {
 					$a = 0;
 					foreach ($datarides as $ridRow) {
-						if($ridRow['driver']){
-
-						
-						$neRide = new \App\Ride;
-						$datarides[$a]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
-						$datarides[$a]['driver']->avg_rating = $neRide->getAvgRating($ridRow['driver']->id);
-						}else{
+						if ($ridRow['driver']) {
+							$neRide = new \App\Ride;
+							$datarides[$a]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
+							$datarides[$a]['driver']->avg_rating = $neRide->getAvgRating($ridRow['driver']->id);
+						} else {
 							// $datarides[$a]['driver']->car_data = null;
 							// $datarides[$a]['driver']->avg_rating =null;
 						}
@@ -6837,16 +6820,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($rides)) {
 					$b = 0;
 					foreach ($rides as $ridRow) {
-						if($ridRow['driver']){
+						if ($ridRow['driver']) {
 
-							
-						$neRide = new \App\Ride;
-						$rides[$b]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
-						$rides[$b]['driver']->avg_rating = $neRide->getAvgRating($ridRow['driver']->id);
-					}else{
-						// $rides[$a]['driver']->car_data = null;
-						// $rides[$a]['driver']->avg_rating =null;
-					}
+
+							$neRide = new \App\Ride;
+							$rides[$b]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
+							$rides[$b]['driver']->avg_rating = $neRide->getAvgRating($ridRow['driver']->id);
+						} else {
+							// $rides[$a]['driver']->car_data = null;
+							// $rides[$a]['driver']->avg_rating =null;
+						}
 						$b++;
 					}
 				}
@@ -6877,6 +6860,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+	
 	public function scheduleRideList(Request $request)
 	{
 		try {

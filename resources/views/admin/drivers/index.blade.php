@@ -234,12 +234,12 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
          //   'order': [1, 'desc'],
 		  
             columns: [
-                // {
-                    // data: 'id',
-                    // name: 'id'
-                // },
+                {
+                    data: 'id',
+                    name: 'id'
+                },
 
-                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
 				{
                     data: 'first_name',
                     name: 'first_name',
