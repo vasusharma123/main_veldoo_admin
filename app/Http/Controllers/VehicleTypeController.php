@@ -170,10 +170,7 @@ class VehicleTypeController extends Controller
         $result=\App\Price::create($input);
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
             
-            $imageName = 'profile-image.'.$request->car_image->extension();
-            if(!empty($haveUser->car_image)){
-                Storage::disk('public')->delete($vehicle->car_image);
-            }
+            $imageName = 'image-'.time().'.'.$request->car_image->extension();
             $input['car_image'] = Storage::disk('public')->putFileAs(
                 'car_type/'.$result->id, $request->car_image, $imageName
             );
@@ -256,8 +253,8 @@ class VehicleTypeController extends Controller
         
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
             
-            $imageName = 'profile-image.'.$request->car_image->extension();
-            if(!empty($haveUser->car_image)){
+            $imageName = 'image-'.time().'.'.$request->car_image->extension();
+            if(!empty($vehicle->car_image)){
                 Storage::disk('public')->delete($vehicle->car_image);
             }
             $input['car_image'] = Storage::disk('public')->putFileAs(
