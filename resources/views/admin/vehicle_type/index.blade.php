@@ -237,88 +237,94 @@ $(function() {
                     data: 'action',
                     name: 'action'
                 },
-                
             ]
         });
     });
 
-$(document).on('click','.change_status',function(e){
-	    e.preventDefault();
-	    Swal.fire({
-	        title: 'Are you sure?',
-	        text: "Are you sure it's marked as default ?",
-	        icon: 'warning',
-	        showCancelButton: true,
-	        confirmButtonColor: '#3085d6',
-	        cancelButtonColor: '#d33',
-	        confirmButtonText: 'Yes, delete it!'
-	    }).then((result) => {
-	        if (result.value) {
-	            Swal.fire({
+	$(document).on('click', '.change_status', function(e) {
+		e.preventDefault();
+		if ($(this).data('status') == 0) {
+			var textMessage = "You want to make it default!";
+			var confirmButton = "Make it default";
+		} else {
+			var textMessage = "You want to remove it from default!";
+			var confirmButton = "Remove from default";
+		}
+		Swal.fire({
+			title: 'Are you sure?',
+			text: textMessage,
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: confirmButton
+		}).then((result) => {
+			if (result.value) {
+				Swal.fire({
 					title: 'Success',
 					text: "Default has been Success.",
 					icon: 'success',
 					showCancelButton: false,
-				    showConfirmButton: false}	                
-	            );
-	            var vtype_id = $(this).attr('data-id');
-	            var status = $(this).attr('data-status');
-    		    $.ajax({
-    		        type: "post",
-    		        url: "{{ url('admin/vehicle-type/change_status') }}",
-    		        data: {
-    		            "_token": "{{ csrf_token() }}","vtype_id":vtype_id,"status":status
-    		        },
-    		        success: function(data){
-    		           
-    		            if(data){
-    		                location.reload(true);
-    		            }
-    		        }
-    		    });
-	        }
-        });
+					showConfirmButton: false
+				});
+				var vtype_id = $(this).attr('data-id');
+				var status = $(this).attr('data-status');
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/vehicle-type/change_status') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"vtype_id": vtype_id,
+						"status": status
+					},
+					success: function(data) {
+
+						if (data) {
+							location.reload(true);
+						}
+					}
+				});
+			}
+		});
 	});
 
-$(document).on('click','.delete_record',function(){
-	   
-	    Swal.fire({
-	        title: 'Are you sure?',
-	        text: "You won't be able to revert this!",
-	        icon: 'warning',
-	        showCancelButton: true,
-	        confirmButtonColor: '#3085d6',
-	        cancelButtonColor: '#d33',
-	        confirmButtonText: 'Yes, delete it!'
-	    }).then((result) => {
-	        if (result.value) {
-	            Swal.fire({
+	$(document).on('click', '.delete_record', function() {
+
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+			if (result.value) {
+				Swal.fire({
 					title: 'Deleted',
 					text: "Vehicle type has been deleted.",
 					icon: 'success',
 					showCancelButton: false,
-				    showConfirmButton: false}	                
-	            );
-	            var type_id = $(this).attr('data-id');
-               
-    		    $.ajax({
-    		        type: "post",
-    		        url: "{{ url('admin/vehicle-type/delete') }}",
-    		        data: {
-    		            "_token": "{{ csrf_token() }}","type_id":type_id
-    		        },
-    		        success: function(data){
-    		           
-    		            if(data){
-    		                location.reload(true);
-    		            }
-    		        }
-    		    });
-	        }
-        });
+					showConfirmButton: false
+				});
+				var type_id = $(this).attr('data-id');
+
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/vehicle-type/delete') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"type_id": type_id
+					},
+					success: function(data) {
+
+						if (data) {
+							location.reload(true);
+						}
+					}
+				});
+			}
+		});
 	});
-
-
-
 </script>
 @stop

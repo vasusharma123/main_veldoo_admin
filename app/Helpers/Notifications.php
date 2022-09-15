@@ -135,7 +135,6 @@ class Notifications
             }
             $ride->all_drivers = implode(",", $driverids);
             $ride->save();
-            $ride['price'] = $ride['ride_cost'];
             $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
@@ -176,7 +175,6 @@ class Notifications
         $settingValue = json_decode($settings['value']);
         $masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
         if (!empty($masterDriverIds)) {
-            $ride['price'] = $ride['ride_cost'];
             $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
             $title = 'No Driver Found';
             $message = 'Sorry No driver found at this time for your booking';
@@ -207,6 +205,85 @@ class Notifications
             $ride->status = -4;
             $ride->save();
         }
+    }
+
+    public static function SendRideNotificationToDriverOnScheduleTime($ride_id){
+        $ride = Ride::find($ride_id);
+        $settings = \App\Setting::first();
+		$settingValue = json_decode($settings['value']);
+		$driverlimit = $settingValue->driver_requests;
+		$driver_radius = $settingValue->radius;
+		$query = User::select(
+			"users.*",
+			DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . ")) 
+					* cos(radians(users.current_lat)) 
+					* cos(radians(users.current_lng) - radians(" . $ride->pick_lat . ")) 
+					+ sin(radians(" . $ride->pick_lat . ")) 
+					* sin(radians(users.current_lat))) AS distance")
+		);
+		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+		$drivers = $query->get()->toArray();
+
+		$driverids = array();
+
+		if (!empty($drivers)) {
+			foreach ($drivers as $driver) {
+				$driverids[] = $driver['id'];
+			}
+		} else {
+			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+		}
+		if (!empty($driverids)) {
+			$driverids = implode(",", $driverids);
+		} else {
+			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+		}
+		$ride->driver_id = null;
+		$ride->all_drivers = $driverids;
+		$ride->save();
+
+		$ride_data = Ride::find($ride->id);
+
+		$driverids = explode(",", $driverids);
+		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
+		$title = 'New Booking';
+		$message = 'You Received new booking';
+		$ride_data['user_data'] = $user_data;
+		$ride_data['waiting_time'] = $settingValue->waiting_time;
+		$additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
+		if(!empty($driverids)){
+			$ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token','!=','')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
+			if(!empty($ios_driver_tokens)){
+				bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
+			}
+			$android_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token','!=','')->where(['device_type' => 'android'])->pluck('device_token')->toArray();
+			if(!empty($android_driver_tokens)){
+				bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
+			}
+			$notification_data = [];
+			$ridehistory_data = [];
+			foreach ($driverids as $driverid) {	
+				$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]; 		
+				$ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status'=>'2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+			}
+			Notification_Model::insert($notification_data);
+			RideHistory::insert($ridehistory_data);
+		}
+		$overallDriversCount = User::select(
+			"users.*",
+			DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
+				* cos(radians(users.current_lat))
+				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
+				+ sin(radians(" . $ride->pick_lat . "))
+				* sin(radians(users.current_lat))) AS distance")
+		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+		$rideData = Ride::find($ride->id);
+		$rideData->notification_sent = 1;
+		if (count($overallDriversCount) <= count($drivers)) {
+			$rideData->alert_send = 1;
+		}
+		$rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
+		$rideData->save();
     }
 
 }

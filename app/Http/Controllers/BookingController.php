@@ -43,7 +43,7 @@ class BookingController extends Controller
 			\App\Topic::find($request->input('id'))->delete();
 		}
 		if(!empty($request->input('text'))){
-			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('price', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
+			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('ride_cost', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
 		}
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
@@ -192,7 +192,7 @@ class BookingController extends Controller
 		
 		$data['array'] = $records->where('schedule_ride',1)->where('schedule_time','>=',Carbon::now()->format("Y-m-d"))->paginate($this->limit);
 		if(!empty($request->input('text'))){
-			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('price', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
+			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('ride_cost', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
 		}
 		
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
@@ -240,7 +240,7 @@ class BookingController extends Controller
 			\App\Topic::find($request->input('id'))->delete();
 		}
 		if(!empty($request->input('text'))){
-			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('price', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
+			$records->where('users.first_name', 'like', '%'.$request->input('text').'%')->orWhere('pickup_address', 'like', '%'.$request->input('text').'%')->orWhere('dest_address', 'like', '%'.$request->input('text').'%')->orWhere('ride_cost', 'like', '%'.$request->input('text').'%')->orWhere('categories.name', 'like', '%'.$request->input('text').'%');
 		}
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));

@@ -567,11 +567,7 @@ class UserController extends Controller
 			);
 		}
 
-		if($request->notification==0 && $request->notification!=null){
-			$input['notification']=1;
-		}else{
-			$input['notification']=0;
-		}
+		$input['notification'] = $request->notification ?? 0;
 		
 		foreach($input as $key=>$value){
 			$setting["value->$key"] = $value;

@@ -231,9 +231,9 @@ function tokenget()
 		{
 			$ride_data['ride_cost'] = "";
 		}
-		if(empty($ride_data['additional_notes']))
+		if(empty($ride_data['note']))
 		{
-			$ride_data['additional_notes'] = "";
+			$ride_data['note'] = "";
 		}
 		if(empty($ride_data['alert_time']))
 		{
@@ -404,9 +404,9 @@ function tokenget()
 		{
 			$ride_data['ride_cost'] = "";
 		}
-		if(empty($ride_data['additional_notes']))
+		if(empty($ride_data['note']))
 		{
-			$ride_data['additional_notes'] = "";
+			$ride_data['note'] = "";
 		}
 		if(empty($ride_data['alert_time']))
 		{
@@ -724,8 +724,8 @@ function bulk_firebase_android_notification($title = '', $msg = '', $token, $add
 	if (empty($ride_data['ride_cost'])) {
 		$ride_data['ride_cost'] = "";
 	}
-	if (empty($ride_data['additional_notes'])) {
-		$ride_data['additional_notes'] = "";
+	if (empty($ride_data['note'])) {
+		$ride_data['note'] = "";
 	}
 	if (empty($ride_data['alert_time'])) {
 		$ride_data['alert_time'] = "";

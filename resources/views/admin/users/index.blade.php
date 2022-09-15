@@ -272,117 +272,133 @@ $('body').on('click', '.change_invoice_status', function(){
         });
     });
 
-$(document).on('click','.change_status',function(e){
-	    e.preventDefault();
-	    Swal.fire({
-	        title: 'Are you sure?',
-	        text: "Are you sure it's change status ?",
-	        icon: 'warning',
-	        showCancelButton: true,
-	        confirmButtonColor: '#3085d6',
-	        cancelButtonColor: '#d33',
-	        confirmButtonText: 'Yes, delete it!'
-	    }).then((result) => {
-	        if (result.value) {
-	            Swal.fire({
-					title: 'Success',
-					text: "Status has been changed Success.",
-					icon: 'success',
-					showCancelButton: false,
-				    showConfirmButton: false}	                
-	            );
-	            var user_id = $(this).attr('data-id');
-	            var status = $(this).attr('data-status');
-    		    $.ajax({
-    		        type: "post",
-    		        url: "{{ url('admin/company/change_status') }}",
-    		        data: {
-    		            "_token": "{{ csrf_token() }}","user_id":user_id,"status":status
-    		        },
-    		        success: function(data){
-    		           
-    		            if(data){
-    		                location.reload(true);
-    		            }
-    		        }
-    		    });
-	        }
-        });
+	$(document).on('click', '.change_status', function(e) {
+		e.preventDefault();
+		if ($(this).data('status') == 0) {
+			var textMessage = "You want to make it active!";
+		} else {
+			var textMessage = "You want to make it unactive!";
+		}
+		Swal.fire({
+			title: 'Are you sure?',
+			text: textMessage,
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Sure'
+		}).then((result) => {
+			if (result.value) {
+				var user_id = $(this).attr('data-id');
+				var status = $(this).attr('data-status');
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/company/change_status') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"user_id": user_id,
+						"status": status
+					},
+					success: function(data) {
+						if (data) {
+							Swal.fire({
+								title: 'Success',
+								text: "Status has been updated",
+								icon: 'success',
+								showConfirmButton: false
+							});
+							setTimeout(function() {
+								location.reload(true);
+							}, 2000);
+						}
+					}
+				});
+			}
+		});
 	});
-$(document).on('click','.invoice_status',function(e){
-	    e.preventDefault();
-	    Swal.fire({
-	        title: 'Are you sure?',
-	        text: "Are you sure it's change status ?",
-	        icon: 'warning',
-	        showCancelButton: true,
-	        confirmButtonColor: '#3085d6',
-	        cancelButtonColor: '#d33',
-	        confirmButtonText: 'Yes, delete it!'
-	    }).then((result) => {
-	        if (result.value) {
-	            Swal.fire({
-					title: 'Success',
-					text: "Invoice status has been update Success.",
-					icon: 'success',
-					showCancelButton: false,
-				    showConfirmButton: false}	                
-	            );
-	            var user_id = $(this).attr('data-id');
-	            var status = $(this).attr('data-status');
-    		    $.ajax({
-    		        type: "post",
-    		        url: "{{ url('admin/users/invoice_status') }}",
-    		        data: {
-    		            "_token": "{{ csrf_token() }}","user_id":user_id,"status":status
-    		        },
-    		        success: function(data){
-    		           
-    		            if(data){
-    		                location.reload(true);
-    		            }
-    		        }
-    		    });
-	        }
-        });
+	$(document).on('click', '.invoice_status', function(e) {
+		e.preventDefault();
+		if ($(this).data('status') == 0) {
+			var textMessage = "You want to make it active!";
+			var confirmMessage = "Yes, activate it!";
+		} else {
+			var textMessage = "You want to make it unactive!";
+			var confirmMessage = "Yes, deactivate it!";
+		}
+		Swal.fire({
+			title: 'Are you sure?',
+			text: textMessage,
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: confirmMessage
+		}).then((result) => {
+			if (result.value) {
+
+				var user_id = $(this).attr('data-id');
+				var status = $(this).attr('data-status');
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/users/invoice_status') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"user_id": user_id,
+						"status": status
+					},
+					success: function(data) {
+						if (data) {
+							Swal.fire({
+								title: 'Success',
+								text: "Invoice status has been updated",
+								icon: 'success',
+								showConfirmButton: false
+							});
+							setTimeout(function() {
+								location.reload(true);
+							}, 2000);
+						}
+					}
+				});
+			}
+		});
 	});
 
-$(document).on('click','.delete_record',function(){
-	   
-	    Swal.fire({
-	        title: 'Are you sure?',
-	        text: "You won't be able to revert this!",
-	        icon: 'warning',
-	        showCancelButton: true,
-	        confirmButtonColor: '#3085d6',
-	        cancelButtonColor: '#d33',
-	        confirmButtonText: 'Yes, delete it!'
-	    }).then((result) => {
-	        if (result.value) {
-	            Swal.fire({
-					title: 'Deleted',
-					text: "User has been deleted.",
-					icon: 'success',
-					showCancelButton: false,
-				    showConfirmButton: false}	                
-	            );
-	            var user_id = $(this).attr('data-id');
-               
-    		    $.ajax({
-    		        type: "post",
-    		        url: "{{ url('admin/company/delete') }}",
-    		        data: {
-    		            "_token": "{{ csrf_token() }}","user_id":user_id
-    		        },
-    		        success: function(data){
-    		           
-    		            if(data){
-    		                location.reload(true);
-    		            }
-    		        }
-    		    });
-	        }
-        });
+	$(document).on('click', '.delete_record', function() {
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!'
+		}).then((result) => {
+			if (result.value) {
+				var user_id = $(this).attr('data-id');
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/company/delete') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"user_id": user_id
+					},
+					success: function(data) {
+						if (data) {
+							Swal.fire({
+								title: 'Deleted',
+								text: "User has been deleted.",
+								icon: 'success',
+								showConfirmButton: false
+							});
+							setTimeout(function() {
+								location.reload(true);
+							}, 2000);
+						}
+					}
+				});
+			}
+		});
 	});
 
 </script>

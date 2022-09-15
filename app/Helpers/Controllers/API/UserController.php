@@ -960,11 +960,6 @@ class UserController extends Controller
 		}
 		$ride['user_data'] = $user_data;
 
-		if (!empty($ride['ride_cost'])) {
-			$ride['price'] = $ride['ride_cost'];
-		}
-
-
 		return $ride;
 	}
 	public function getUser($id)
@@ -2056,7 +2051,7 @@ class UserController extends Controller
 			$ride->pickup_address = $request->pickup_location;
 			$ride->dest_address = $request->drop_off_location;
 			$ride->passanger = $request->passanger;
-			$ride->additional_notes = $request->additional_notes;
+			$ride->note = $request->note;
 			$ride->ride_type = 1;
 			$ride->car_type = $request->car_type;
 			$ride->alert_time = $request->alert_time;
@@ -2777,8 +2772,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (isset($request->company_id)) {
 				$ride['company_id'] = $request->company_id;
 			}
-			if (!empty($request->additional_notes)) {
-				$ride->additional_notes = $request->additional_notes;
+			if (!empty($request->note)) {
+				$ride->note = $request->note;
 			}
 			$joinridecheck = Ride::query()->where([['join_id', '=', $_REQUEST['ride_id']], ['user_id', '=', $request->user_id]])->first();
 			if (!empty($request->user_id) && !empty($joinridecheck)) {
@@ -2901,8 +2896,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 3;
 					$message = "Ride Completed Successfully";
 				}
-				if (!empty($request->additional_notes)) {
-					$ride->additional_notes = $request->additional_notes;
+				if (!empty($request->note)) {
+					$ride->note = $request->note;
 				}
 				$ride->save();
 
@@ -4926,7 +4921,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->ride_time = date('Y-m-d H:i:s');
 		}
 		if (!empty($request->note)) {
-			$ride->additional_notes = $request->note;
+			$ride->note = $request->note;
 		}
 		if (!empty($request->car_type)) {
 			$ride->car_type = $request->car_type;
@@ -5103,7 +5098,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->user_id = $request->user_id;
 		}
 		if (!empty($request->note)) {
-			$ride->additional_notes = $request->note;
+			$ride->note = $request->note;
 		}
 		if (!empty($request->car_type)) {
 			$ride->car_type = $request->car_type;
@@ -5597,7 +5592,7 @@ echo 'HTTP code: ' . $httpcode; */
 			$ride->ride_time = date('Y-m-d H:i:s');
 		}
 		if (!empty($request->note)) {
-			$ride->additional_notes = $request->note;
+			$ride->note = $request->note;
 		}
 		if (!empty($request->car_type)) {
 			$ride->car_type = $request->car_type;
@@ -5670,7 +5665,7 @@ echo 'HTTP code: ' . $httpcode; */
 		}
 
 		if (!empty($request->note)) {
-			$ride->additional_notes = $request->note;
+			$ride->note = $request->note;
 		}
 		unset($input['note']);
 		//dd($input);

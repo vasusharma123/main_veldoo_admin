@@ -79,7 +79,6 @@ class SendRideNotificationAfterScheduleTime extends Command
                     }
                     $ride->all_drivers = implode(",", $driverids);
                     $ride->save();
-                    $ride['price'] = $ride['ride_cost'];
                     $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                     $title = 'New Booking';
                     $message = 'You Received new booking';

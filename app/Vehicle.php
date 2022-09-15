@@ -9,29 +9,29 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vehicle extends Model
 {
-     use SoftDeletes;
- protected $fillable = [
-        'year','model','color','vehicle_number_plate','vehicle_image','category_id'
+    use SoftDeletes;
+    protected $fillable = [
+        'year', 'model', 'color', 'vehicle_number_plate', 'vehicle_image', 'category_id'
     ];
-	
 
-public function carType()
+    public function carType()
     {
-       return $this->hasOne(Price::class,'id','category_id');
+        return $this->belongsTo(Price::class, 'category_id', 'id');
     }
 
     /**
-    * Created By Anil Dogra
+     * Created By Anil Dogra
      * Created At 09-08-2022
-     * @param null
-     * @return array of formated save product
      */
-	public function uploadImage($image)
+    public function uploadImage($image)
     {
-		
-            
-        $fileName   = time().'.'.$image->getClientOriginalExtension();            
-        Storage::disk('vehicle')->putFileAs('/', $image,$fileName);
+        $fileName   = time() . '.' . $image->getClientOriginalExtension();
+        Storage::disk('vehicle')->putFileAs('/', $image, $fileName);
         return $fileName;
+    }
+
+    public function last_driver_choosen()
+    {
+        return $this->hasOne(DriverChooseCar::class, 'car_id', 'id')->orderBy('id', 'Desc');
     }
 }

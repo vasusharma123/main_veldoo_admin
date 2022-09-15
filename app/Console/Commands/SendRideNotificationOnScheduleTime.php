@@ -45,7 +45,7 @@ class SendRideNotificationOnScheduleTime extends Command
     public function handle()
     {
         $currentTime = Carbon::now()->format('Y-m-d H:i:s');
-        $rides = Ride::where('alert_notification_date_time', '<=', $currentTime)->where(['status' => 0, 'notification_sent' => 0, 'alert_send' => 0])->where(function($query){
+        $rides = Ride::whereNull('driver_id')->where('alert_notification_date_time', '<=', $currentTime)->where(['status' => 0, 'notification_sent' => 0, 'alert_send' => 0])->where(function($query){
             $query->where(['ride_type' => 1])
             ->orWhere(['ride_type' => 3]);
         })->whereNotNull('alert_notification_date_time')->get();
@@ -74,7 +74,6 @@ class SendRideNotificationOnScheduleTime extends Command
                     }
                     $ride->all_drivers = implode(",", $driverids);
                     $ride->save();
-                    $ride['price'] = $ride['ride_cost'];
                     $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                     $title = 'New Booking';
                     $message = 'You Received new booking';

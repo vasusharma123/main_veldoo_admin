@@ -55,7 +55,6 @@ class SendRideNotificationToMasterAfterScheduleTime extends Command
             foreach ($rides as $ride) {
                 $masterDriverIds=User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
                 if(!empty($masterDriverIds)){
-                    $ride['price'] = $ride['ride_cost'];
                     $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                     $title = 'No Driver Found';
                     $message = 'Sorry No driver found at this time for your booking';

@@ -85,7 +85,7 @@ class UserController extends Controller
 		$data['companies_registered']=\App\User::where('user_type',4)->count();
 		$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->count();
 		$data['upcoming_booking_count']=Ride::whereDate('ride_time','>',Carbon::today())->count();
-		$data['revenue']=Ride::where('status',3)->sum('price');
+		$data['revenue']=Ride::where('status',3)->sum('ride_cost');
 		$data['company_users']=User::where('user_type',1)->where('created_by','>',0)->count();
 		$data = array_merge($breadcrumb,$data);
 		return view('admin.dashboard')->with($data);

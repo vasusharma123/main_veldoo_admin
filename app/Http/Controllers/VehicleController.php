@@ -35,54 +35,41 @@ class VehicleController extends Controller
      */
     public function index(Request $request)
     {
-         $data =array();
-         $data = array('title'=>'Vehicle','action'=>'List Vehicles');
-        
-      
+        $data = array();
+        $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
         if ($request->ajax()) {
-            
-            $data = Vehicle::select(['vehicles.id', 'vehicles.category_id', 'vehicles.year','vehicles.model','vehicles.color','vehicles.vehicle_image', 'vehicles.vehicle_number_plate','prices.car_type'])
-            ->Join('prices', function($join) {
-               $join->on('vehicles.category_id', '=', 'prices.id')->where('prices.deleted_at',null);
-            })
-             
-            ->orderBy('id','DESC')->get();
-            
+            $data = Vehicle::with(['last_driver_choosen', 'carType'])
+            ->orderBy('id', 'DESC')->get();
             return Datatables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('action', function ($row) {
-                            $dataCar=DriverChooseCar::where('car_id',$row->id)->where('logout',0)->first();
-                                $btn = '<div class="btn-group dropright">
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $dataCar = DriverChooseCar::where('car_id', $row->id)->where('logout', 0)->first();
+                    $btn = '<div class="btn-group dropright">
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Action
                             </button>
                             <div class="dropdown-menu">
-                              
-                                <a class="dropdown-item" href="'.route('vehicle.show',$row->id) .'">'.trans("admin.View").'</a>
-                                <a class="dropdown-item" href="'. route('vehicle.edit',$row->id).'">'. trans("admin.Edit").'</a>
-                                <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>';
-                                if(!empty($dataCar) ){
-                                  $btn .='<a class="dropdown-item car_free" data-id="'. $row->id .'">Free Now</a>';
-                                }
-                              $btn .='</div></div>';
-                                
-                                  
-                                
-                                return $btn;
-                        
-                            })
-                           ->addColumn('car_type', function ($row) {
-                                
-                                return ucfirst($row->car_type);
-                            })->addColumn('vehicle_image', function ($row) {
-                                return ($row->vehicle_image)?'<img src="'.$row->vehicle_image.'" height="50px" width="80px">':'<img src="'.url('public/no-images.png').'" height="50px" width="80px">';
-                            })
-                           
-                            ->rawColumns(['action','car_type','vehicle_image'])
-                            ->make(true);
+                                <a class="dropdown-item" href="' . route('vehicle.show', $row->id) . '">' . trans("admin.View") . '</a>
+                                <a class="dropdown-item" href="' . route('vehicle.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+                                <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>';
+                    if (!empty($dataCar)) {
+                        $btn .= '<a class="dropdown-item car_free" data-id="' . $row->id . '">Free Now</a>';
+                    }
+                    $btn .= '</div></div>';
+                    return $btn;
+                })
+                ->addColumn('car_type', function ($row) {
+                    return (!empty($row->carType))?ucfirst($row->carType->car_type):"";
+                })->addColumn('vehicle_image', function ($row) {
+                    return ($row->vehicle_image) ? '<img src="' . $row->vehicle_image . '" height="50px" width="80px">' : '<img src="' . url('public/no-images.png') . '" height="50px" width="80px">';
+                })
+                ->addColumn('mileage', function ($row) {
+                    return (!empty($row->last_driver_choosen))?ucfirst($row->last_driver_choosen->logout_mileage):"";
+                })
+                ->rawColumns(['action', 'car_type', 'vehicle_image'])
+                ->make(true);
         }
-
         return view('admin.vehicle.index')->with($data);
     }
 

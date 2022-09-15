@@ -38,6 +38,7 @@ class Kernel extends ConsoleKernel
          //    ->everyMinute();
          // $schedule->command('masterDriver:Notification')
          //    ->everyMinute()->withoutOverlapping();
+         $schedule->command('SendRideNotificationToDriver:OnScheduleTime')->everyMinute();
          $schedule->command('SendRideNotification:OnScheduleTime')->everyMinute();
          $schedule->command('SendRideNotification:AfterScheduleTime')->everyMinute();
          $schedule->command('SendRideNotification:ToMasterAfterScheduleTime')->everyMinute();

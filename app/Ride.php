@@ -10,7 +10,7 @@ use App\User;
 class Ride extends Model
 {
 
-	protected $fillable = ['id','additional_notes', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'price', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance', 'alert_notification_date_time'];
+	protected $fillable = ['id', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance', 'alert_notification_date_time'];
 
 	protected $appends = [
 		'stop_over',
@@ -161,7 +161,6 @@ if(!empty($car_data)){
                 'pool_number'=>$this->pool_number,
                 'commission'=>$this->commission,
                 'driver_earning'=>$this->driver_earning,
-                'additional_notes'=>$this->additional_notes,
                 'ride_type'=>$this->ride_type,
                 'payment_by'=>$this->payment_by,
                 'passanger'=>$this->passanger,

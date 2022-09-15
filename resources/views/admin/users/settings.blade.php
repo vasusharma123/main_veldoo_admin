@@ -189,23 +189,12 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('interval_time', 'Interval Time',['class'=>'control-label']);
-												echo Form::number('interval_time',null,['class'=>'form-control','required'=>true,'min'=>1]);
-												?>
-												<span class="subtitle">Not using for now (In seconds)</span>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<?php
 												echo Form::label('driver_requests', 'Driver Requests',['class'=>'control-label']);
 												echo Form::number('driver_requests',null,['class'=>'form-control','required'=>true,'min'=>1]);
 												?>
 											<span class="subtitle">(we will send request to X drivers)</span>
 											</div>
 										</div>
-									</div>
-										<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
@@ -215,6 +204,9 @@
 											<span class="subtitle">Driver will have time to accept Request(In seconds)</span>
 											</div>
 										</div>
+									</div>
+										<div class="row">
+
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
@@ -233,17 +225,6 @@
 												echo Form::number('join_radius',null,['class'=>'form-control','required'=>true,'min'=>1]);
 												?>
 												<span class="subtitle">User will see join rides in this radius(In Miles)</span>
-												
-												
-											</div>
-										</div>
-										
-										<div class="col-md-6">
-											<div class="form-group">
-												<?php
-												 echo Form::label('first_request_send', 'Send request to driver for the first time',['class'=>'control-label']);
-												echo Form::number('first_request_send',null,['class'=>'form-control','required'=>true,'min'=>1]); 
-												?>
 											</div>
 										</div>
 									</div>
@@ -255,7 +236,7 @@
 												?>
 												<div class="switch">
 												<label>
-													<input type="checkbox" name="notification" class="change_status" value="{{ $record->notification }}" {{ $record->notification === 1 ? "checked" : "" }}><span class="lever"></span>
+													<input type="checkbox" name="notification" class="change_status" value="1" {{ $record->notification == 1 ? "checked" : "" }}><span class="lever"></span>
 												</label>
 												</div>
 											</div>

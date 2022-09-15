@@ -25,91 +25,50 @@ class VehicleTypeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
-         $data = array();
-        $data = array('title'=>'Vehicle','action'=>'List Vehicles');
-       
-       /*
-
-        if($request->has('status') && !empty($request->input('id')) ){
-            $vehicleType=\App\Price::where('status',1)->first();
-            if(!empty($vehicleType)){
-            \App\Price::where('id',$vehicleType->id)->update(['status'=>0]);
-        }
-            $status = ($request->input('status')?0:1);
-            DB::table('prices')->where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
-        }
-        if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-            DB::table($this->table)->where([['id', $request->input('id')]])->delete();
-        }
-        $vehicles =\App\Price::query();
-        if(!empty($request->input('text'))){
-            $vehicles->where('price_per_km', 'like', '%'.$request->input('text').'%')->orWhere('seating_capacity', 'like', '%'.$request->input('text').'%');
-        }
-        if(!empty($request->input('orderby')) && !empty($request->input('order'))){
-            $vehicles->orderBy($request->input('orderby'), $request->input('order'));
-        } else {
-            $vehicles->orderBy('id', 'desc');
-        }
-        
-        $data['vehicleTypes'] = $vehicles->paginate($this->limit);
-        $data['i'] =(($request->input('page', 1) - 1) * $this->limit);
-        $data['orderby'] =$request->input('orderby');
-        $data['order'] = $request->input('order');
-        $data = array_merge($breadcrumb,$data);
-        if ($request->ajax()) {
-            return view('admin.vehicle_type.index_element')->with($data);
-        } */
+        $data = array();
+        $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
         if ($request->ajax()) {
-            
-            $data = Price::select(['id', 'car_type', 'car_image','price_per_km', 'basic_fee','seating_capacity','alert_time','status'])
-                ->orderBy('id','DESC')->get();
+
+            $data = Price::select(['id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status'])
+            ->orderBy('id', 'DESC')->get();
             // print_r($data);die;
             return Datatables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('action', function ($row) {
-                                $btn = '<div class="btn-group dropright">
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = '<div class="btn-group dropright">
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Action
                             </button>
                             <div class="dropdown-menu">
                               
-                                <a class="dropdown-item" href="'.route('vehicle-type.show',$row->id) .'">'.trans("admin.View").'</a>
-                                <a class="dropdown-item" href="'. route('vehicle-type.edit',$row->id).'">'. trans("admin.Edit").'</a>
-                                <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
+                                <a class="dropdown-item" href="' . route('vehicle-type.show', $row->id) . '">' . trans("admin.View") . '</a>
+                                <a class="dropdown-item" href="' . route('vehicle-type.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+                                <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
                             </div>
                         </div>';
-                                
-                                  
-                                
-                                return $btn;
-                        
-                            })
-                            ->addColumn('status', function ($row) {
-                                $status=($row->status === 1)?'checked':'';
-                                $btn = '<div class="switch">
+                    return $btn;
+                })
+                ->addColumn('status', function ($row) {
+                    $status = ($row->status === 1) ? 'checked' : '';
+                    $btn = '<div class="switch">
                             <label>
-                                <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+                                <input type="checkbox" class="change_status" data-status="' . $row->status . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
                             </label>
                         </div>';
-                                
-                                  
-                                
-                                return $btn;
-                        
-                            })->addColumn('car_type', function ($row) {
-                                
-                                
-                                return ucfirst($row->car_type);
-                        
-                            })
-                            ->rawColumns(['action','status','car_type'])
-                            ->make(true);
+                    return $btn;
+                })->addColumn('car_type', function ($row) {
+                    return ucfirst($row->car_type);
+                })
+                ->rawColumns(['action', 'status', 'car_type'])
+                ->make(true);
         }
-       return view('admin.vehicle_type.index')->with($data);
+        return view('admin.vehicle_type.index')->with($data);
     }
+
     /**
      * Created By Anil Dogra
      * Created At 09-08-2022
