@@ -6500,85 +6500,31 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function userSearchList(Request $request)
 	{
 		try {
-			$rules = [
-				// 'text' => 'required',
-			];
-
-			// $validator = Validator::make($request->all(), $rules);
-			// if ($validator->fails()) {
-			// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-			// }
-			// $userId = Auth::user()->id;
 			$text = $request->text;
-			//echo $request->input('text'); die;
-			//$rides = Ride::where('user_id',$userId)->whereDate('rides.ride_time','>=',Carbon::today())->where(function($query) {
-			/* 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-})->orderBy('id', 'desc')->with('driver')->paginate($this->limit); */
 			if (isset($request->text) && $request->text != '') {
 				$users = DB::table('users')->select('*')->where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->orderBy('first_name', 'ASC')->paginate(100);
 				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->count();
 			} else {
-
-
 				$users = DB::table('users')->select('*')->where([['user_type', '=', 1]])->orderBy('first_name', 'ASC')->paginate(100);
-				// $userData = \App\UserData::where('phone_number', 'like', '%' . $text . '%')->orderBy('id', 'desc')->paginate($this->limit);
 				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->count();
-			} // $userdatacount = \App\User::where('phone', 'like', '%' . $text . '%')->count();
-			/* echo "usercount: $usercount";
-			echo $userdatacount = \App\UserData::whereJsonContains('phone_number', [$text])->count();
-			echo "userdatacount: $userdatacount"; */
-			// 	if (!empty($usercount)) {
-
-			// 		// echo $usercount;
-			// 		//echo "true"; die;
-			// /* $usernewarray = array();
-			// $usernewarray = array();
-			// $i = 0;
-
-			// foreach($users as $userDat)
-			// {
-			// $usernewarray[$i] = $userDat;	
-
-			// 	$userdata=\App\UserData::where('user_id',$userDat['id'])->first();
-			// 	$usernewarray[$i]['phone'] = $userdata['phone_number'];
-			// $i++;
-			// 	} */
-
-
-			// 		return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $users], $this->successCode);
-			// }
-
-			// 	$usernewarray = array();
-			$i = 0;
+			}
 			if (!empty($usercount)) {
-				// 		//echo "true2"; die;
-
-				foreach ($users as $userDat) {
-					// print_r($userDat->first_name); die;
-					$users[$i]->full_name = $userDat->first_name . ' ' . $userDat->last_name;
+				foreach ($users as $user_key => $userDat) {
+					$users[$user_key]->full_name = $userDat->first_name . ' ' . $userDat->last_name;
 					$avgrating = DB::table('ratings')->where('to_id', $userDat->id)->avg('rating');
-					$avgrating = round($avgrating, 2);
-					$users[$i]->avg_rating = $avgrating;
-					$i++;
+					$users[$user_key]->avg_rating = round($avgrating, 2);
 				}
 			} else {
-				echo ("hjdsbfkjsd");
-				die;
+				return response()->json(['success' => true, 'message' => 'No records found', 'data' => $users], $this->successCode);
 			}
-			//$users = User::select('id','first_name','last_name','image','current_lat','current_lng','country_code','phone','user_type')->where('first_name', 'like', '%'.$request->input('text').'%')->orWhere('last_name', 'like', '%'.$request->input('text').'%')->orWhere('phone', 'like', '%'.$request->input('text').'%');
-			//echo "true3";
-
-			return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $users], $this->successCode);
-			/* if(empty($usercount) && empty($userdatacount)){
-			return response()->json(['success'=>false,'message'=>'Record Not found'], $this->successCode);
-		} */
+			return response()->json(['success' => true, 'message' => 'List of users', 'data' => $users], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function getUserByPhone(Request $request)
 	{
 		try {
@@ -6989,20 +6935,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function updateUserData(Request $request)
 	{
-
 		if (isset($request['id'])) {
-			// echo "yes";
 			$user = User::where([['id', '=', $request['id']]])->first();
 		} else {
 			$user = Auth::user();
 		}
-		// print_r($user->id); die;
 		try {
 			$rules = [
 				'first_name' => 'required',
-				//'image'=>'required',
 				'country_code' => 'required',
 				'phone_number' => 'required',
 			];
@@ -7012,10 +6955,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 			$input = $request->all();
-			if (isset($input['id'])) {
-				$id = $input['id'];
-			} else {
-				$id = $user->id;
+			$user_id = $user->id;
+
+			if (!empty($input['email'])) {
+				$alreadyExist = User::where(['email' => $input['email']])->where('id', '!=', $user_id)->first();
+				if($alreadyExist){
+					return response()->json(['success' => false, 'message' => "An email address has already been assigned to another user"], $this->warningCode);
+				} else {
+					$user['email'] = $input['email'];
+				}
 			}
 
 			if (!empty($_FILES['image'])) {
@@ -7032,90 +6980,48 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							$input['image'] = url($path . $filename);
 						}
 					} else {
-						return back()->with('error', __('Upload Valid Image'));
+						return response()->json(['success' => false, 'message' => "Please upload a valid Image"], $this->warningCode);
 					}
 				}
 				$user['image'] = $input['image'];
 			}
-
-
 			if (isset($input['first_name'])) {
-				$first_name = $input['first_name'];
-			} else {
-				$first_name = $user->first_name;
+				$user['first_name'] = $input['first_name'];
 			}
 			if (isset($input['last_name'])) {
-				$last_name = $input['last_name'];
-			} else {
-				$last_name = $user->last_name;
-			}
+				$user['last_name'] = $input['last_name'];
+			} 
 			if (isset($input['city'])) {
-				$city = $input['city'];
-			} else {
-				$city = $user->city;
+				$user['city'] = $input['city'];
 			}
-
 			if (isset($input['state'])) {
-				$state = $input['state'];
-			} else {
-				$state = $user->state;
+				$user['state'] = $input['state'];
 			}
-
-
 			if (isset($input['zip'])) {
-				$zip = $input['zip'];
-			} else {
-				$zip = $user->zip;
+				$user['zip'] = $input['zip'];
 			}
 			if (isset($input['location'])) {
-				$location = $input['location'];
-			} else {
-				$location = $user->location;
+				$user['location'] = $input['location'];
 			}
 			if (isset($input['country'])) {
-				$country = $input['country'];
-			} else {
-				$country = $user->country;
+				$user['country'] = $input['country'];
 			}
 			if (isset($input['addresses'])) {
-				$addresses = $input['addresses'];
-			} else {
-				$addresses = $user->addresses;
+				$user['addresses'] = $input['addresses'];
 			}
 			if (isset($input['name'])) {
-				$name = $input['name'];
-			} else {
-				$name = $user->name;
+				$user['name'] = $input['name'];
 			}
-			// echo($city'$zip,$country); die;
-			$user['first_name'] = $first_name;
-			$user['last_name'] = $last_name;
-			$user['name'] = $name;
-			$user['city'] = $city;
-			$user['zip'] = $zip;
-			$user['location'] = $location;
-			$user['country'] = $country;
-			$user['state'] = $state;
-			$user['addresses'] = $addresses;
-			// $user['email'] = $input['last_name'];
-
 			$user->save();
-			// $laQuery = DB::getQueryLog();
-			// print_r($laQuery);die;
-			$userData = $this->getRafrenceUser($id);
-			// print_r($userData->id); die;
+			$userData = $this->getRafrenceUser($user_id);
 			return response()->json(['success' => true, 'message' => 'User data saved successfully', 'user' => $userData], $this->successCode);
-			//return response()->json(['success'=>true,'message'=>'user data saved successfully','data'=>$record],$this->successCode);
-			// } else {
-			// 	return response()->json(['message' => 'Something went wrong'], $this->warningCode);
-			// }
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function addStopover(Request $request)
 	{
 		$user = Auth::user();
@@ -7383,7 +7289,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			//$drivers = User::query()->where([['user_type', '=', 2],['is_master', '=', 0]])->get()->toArray();
 			if (!empty($drivers)) {
-
+				$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+				foreach($drivers as $driver_key => $driver_value){
+					$count_of_assign_rides = Ride::where(['driver_id' => $driver_value['id']])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+						$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+					})->count();
+					$drivers[$driver_key]['already_have_ride'] = $count_of_assign_rides?1:0;
+				}
 				return response()->json(['message' => 'Driver Listed successfully', 'data' => $drivers], $this->successCode);
 			} else {
 				return response()->json(['message' => 'No Driver Found'], $this->warningCode);
@@ -7668,32 +7580,35 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function onlineDrivers(Request $request)
 	{
-		$resultArr=array();
-		 $userObj = Auth::user();
-         
-        if (!$userObj) {
-            return $this->notAuthorizedResponse('User is not authorized');
-        }
+		$resultArr = array();
+		$userObj = Auth::user();
 
-       $resultArr['count'] = User::where('user_type',2)->where('availability',1)->get()->count();
-       
-      $resultArr['data']= User::select(['users.*','vehicles.model','vehicles.vehicle_number_plate','vehicles.vehicle_image'])
-         ->leftJoin('driver_choose_cars', function($join) {
-                    $join->on('users.id','=','driver_choose_cars.user_id')->where('driver_choose_cars.logout','=','0');
-                        
-                })
-         ->leftJoin('vehicles', function($join)  {
-                    $join->on('driver_choose_cars.car_id','=','vehicles.id');
-                        
-                })
-        ->where('users.availability',1)
-        ->orderBy('users.id','DESC')->get();
-       
-	   
+		if (!$userObj) {
+			return $this->notAuthorizedResponse('User is not authorized');
+		}
 
-       return $this->successResponse($resultArr, 'Get online drivers successfully');
+		$resultArr['count'] = User::where('user_type', 2)->where('availability', 1)->get()->count();
+
+		$resultArr['data'] = User::select(['users.*', 'vehicles.model', 'vehicles.vehicle_number_plate', 'vehicles.vehicle_image'])
+		->leftJoin('driver_choose_cars', function ($join) {
+			$join->on('users.id', '=', 'driver_choose_cars.user_id')->where('driver_choose_cars.logout', '=', '0');
+		})
+			->leftJoin('vehicles', function ($join) {
+				$join->on('driver_choose_cars.car_id', '=', 'vehicles.id');
+			})
+			->where('users.availability', 1)
+			->orderBy('users.id', 'DESC')->get();
+		$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+		foreach ($resultArr['data'] as $driver_key => $driver_value) {
+			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+			})->count();
+			$resultArr['data'][$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
+		}
+		return $this->successResponse($resultArr, 'Get online drivers successfully');
 	}
 
 

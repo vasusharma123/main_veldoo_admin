@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Ride;
 use DataTables;
 use App\User;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class RideController extends Controller
 {
@@ -87,6 +89,7 @@ class RideController extends Controller
                         </button>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="' . route('bookings.show', $row->id) . '">' . trans("admin.View") . '</a>
+                            <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
                         </div>
                     </div>';
                     return $btn;
@@ -96,4 +99,18 @@ class RideController extends Controller
         }
         return view('admin.rides.index')->with($data);
     }
+
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+            Ride::where(['id' => $id])->delete();
+            DB::commit();
+            return response()->json(['status' => 1, 'message'=> "Ride has been deleted."], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 0, 'message'=> $e->getMessage()], 400);
+        }
+    }
+
 }

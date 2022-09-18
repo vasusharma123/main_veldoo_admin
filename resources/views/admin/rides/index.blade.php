@@ -39,7 +39,7 @@
                                             <th>Distance</th>
                                             <th>Ride Cost</th>
                                             <th>Status</th>
-                                            <th>Payment</th>
+                                            <th>Payment Type</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -192,6 +192,48 @@
                     return false;
                 }
             );
+        });
+
+        $(document).on('click', '.delete_record', function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    var ride_id = $(this).attr('data-id');
+                    $.ajax({
+                        type: "delete",
+                        url: "{{ url('admin/rides') }}/" + ride_id,
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: function(data) {
+                            if (data.status) {
+                                Swal.fire({
+                                    title: 'Deleted',
+                                    text: data.message,
+                                    icon: 'success',
+                                    showConfirmButton: false
+                                });
+                                setTimeout(function() {
+                                    location.reload(true);
+                                }, 2000);
+                            } else {
+                                Swal.fire(
+                                    'Error',
+                                    data.message,
+                                    'error'
+                                )
+                            }
+                        }
+                    });
+                }
+            });
         });
     </script>
 @stop

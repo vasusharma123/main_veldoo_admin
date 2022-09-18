@@ -44,7 +44,7 @@ class PaymentManagementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function indexs(Request $request)
+    public function index(Request $request)
     {
 	    $breadcrumb = array('title'=>'Payment Fees','action'=>'List Payment Fees');
 		$data = [];
