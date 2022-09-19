@@ -641,25 +641,25 @@ function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional 
 {
 	if ($user_type == 2) {
 		$options = [
-			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
-			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
-			'app_bundle_id' => 'app.com.Veldoo', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'key_id' => env('IOS_KEY_ID'), // The Key ID obtained from Apple developer account
+			'team_id' => env('IOS_TEAM_ID'), // The Team ID obtained from Apple developer account
+			'app_bundle_id' => env('IOS_APP_BUNDLE_ID_DRIVER'), // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
 			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
 			'private_key_secret' => null // Private key secret
 		];
 	} else if ($user_type == 1) {
 		$options = [
-			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
-			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
-			'app_bundle_id' => 'app.com.VeldooUser', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'key_id' => env('IOS_KEY_ID'), // The Key ID obtained from Apple developer account
+			'team_id' => env('IOS_TEAM_ID'), // The Team ID obtained from Apple developer account
+			'app_bundle_id' => env('IOS_APP_BUNDLE_ID_USER'), // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
 			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
 			'private_key_secret' => null // Private key secret
 		];
 	} else {
 		$options = [
-			'key_id' => 'T5U8YFRV99', // The Key ID obtained from Apple developer account
-			'team_id' => '3J97M57G62', // The Team ID obtained from Apple developer account
-			'app_bundle_id' => 'app.com.Veldoo', // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'key_id' => env('IOS_KEY_ID'), // The Key ID obtained from Apple developer account
+			'team_id' => env('IOS_TEAM_ID'), // The Team ID obtained from Apple developer account
+			'app_bundle_id' => env('IOS_APP_BUNDLE_ID_DRIVER'), // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
 			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
 			'private_key_secret' => null // Private key secret
 		];

@@ -108,25 +108,26 @@ $(function () {
 		var orderby = $('input[name="orderBy"]').val();
 		var order = $('input[name="order"]').val();
 		var page = $('input[name="page"]').val();
-        swal({
+        Swal.fire({
             title: "Are you sure?",
             text: "You want to delete this Record !",
             type: "warning",
-            timer: 3000,
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
             confirmButtonText: "Yes, delete it!",
             cancelButtonText: "No, cancel !",
             closeOnConfirm: true,
             closeOnCancel: true,
-            closeOnConfirm: true,
             showLoaderOnConfirm: true,
-        }, function (isConfirm) {
-            if (isConfirm) {
+        }).then((isConfirm) => {
+            if (isConfirm.value) {
                 $("#loading").fadeIn("slow");
 				ajaxCall(id, text, orderby, order, page, '','delete');
-            } else {
-                swal();
+				Swal.fire(
+					"Success",
+					"Record deleted successfully",
+					"success"
+				)
             }
         });
     });
