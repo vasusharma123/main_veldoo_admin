@@ -15,20 +15,7 @@
 							@endif
 						</div>
 						<div class="card-body">
-						 @if(Session::has('error'))
-							  <div  class="alert {{ Session::get('alert-class', 'alert-danger') }}">{{ Session::get('error') }}
-								 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-								   <span aria-hidden="true">&times;</span>
-								 </button>
-							   </div>
-							@endif 
-							@if(Session::has('success'))
-							  <div   class="alert {{ Session::get('alert-class', 'alert-success') }}">{!! session('success') !!}
-								 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-								   <span aria-hidden="true">&times;</span>
-								 </button>
-							   </div>
-				        @endif
+							@include('admin.layouts.flash-message')
 							
 							{{ Form::open(array('url' =>  route('users.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
 								<div class="form-body">

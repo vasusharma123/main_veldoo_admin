@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Ride;
 use Carbon\Carbon;
@@ -20,22 +20,15 @@ class RideController extends Controller
      * @return object after send reset password token
      * This function use to list of latest ride detail
      */
- 
-    public function latest_ride_detail(Request $request){
-      
+
+    public function latest_ride_detail(Request $request)
+    {
         $userObj = Auth::user();
-         
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-
-       $ride = Ride::where('driver_id',$userObj->id)->whereDate('created_at', Carbon::today())->orderBy('id', 'DESC')->first();
-       
-       
-
-       return $this->successResponse((object)$ride, 'Get latest ride successfully');
-
-
+        $ride = Ride::with(['user', 'driver'])->where('driver_id', $userObj->id)->whereDate('created_at', Carbon::today())->orderBy('id', 'DESC')->first();
+        return $this->successResponse((object)$ride, 'Get latest ride successfully');
     }
     /**
      * Created By Anil Dogra

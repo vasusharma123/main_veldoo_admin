@@ -223,10 +223,10 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-		 $this->validate($request, [
-            // 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+	public function store(Request $request)
+	{
+		$this->validate($request, [
+			// 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
 			//'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
 			'first_name' => 'required',
 			'last_name' => 'required',
@@ -234,71 +234,77 @@ class UserController extends Controller
 			'password' => 'required|min:6',
 			'status' => 'required',
 			'phone' => 'required',
-            'country_code'=>'required'
-        ]);
+			'country_code' => 'required'
+		]);
 
-         $userData = User::where('country_code',str_replace('+', '', $request->country_code))->where('phone',$request->phone)->where('user_type',2)->get()->count();
-        if($userData>0){
-           $this->validate($request, ['phone'=> 'unique:users,phone']);
-        }
+		$userData = User::where('country_code', str_replace('+', '', $request->country_code))->where('phone', $request->phone)->where('user_type', 2)->get()->count();
+		if ($userData > 0) {
+			$this->validate($request, ['phone' => 'unique:users,phone']);
+		}
 
 		try {
-	  
-		
-		
-		$input=$request->all();
-		
-		if(Auth::user()->hasRole('Company')==true){
-			//rider
-			$userData=\App\User::where('phone',$request->phone)->first();
-			if(!empty($userData)){
-			return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.This phone number already exists!'));
-		}
-			$user_type=1;
-			$createdBy=Auth::user()->id;
-		}else{
-			$userData=\App\User::where('user_type',2)->where('phone',$request->phone)->first();
-			//driver
-			if(!empty($userData)){
-			return redirect()->route("users.drivers")->with('warning', trans('admin.This phone number already exists!'));
-		}
-			$user_type=2;
-			$createdBy=0;
-		}
-		//$input->request->add([ 'password' => Hash::make($request->input('password')),'user_type' => $user_type,'created_by'=>$createdBy]);
-		$input['password']=Hash::make($request->input('password'));
-		$input['user_type']=$user_type;
-		$input['created_by']=$createdBy;
-		$user  = \App\User::create($input);
-		//dd($user);
-		//SAVE IMAGE
-		if($request->image){
-			$path = 'users/'.$user->id.'/profile/';
-			$imageName = 'profile-image.'.$request->image->extension();
-			
-	           $image=Storage::disk('public')->putFileAs(
-					'user/'.$user->id, $request->image, $imageName);
-	      \App\User::where('id',$user->id)->update(['image'=>$image]);
+			$input = $request->all();
+			if (Auth::user()->hasRole('Company') == true) {
+				//rider
+				$userData = \App\User::where('phone', $request->phone)->first();
+				if (!empty($userData)) {
+					return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.This phone number already exists!'));
+				}
+				$user_type = 1;
+				$createdBy = Auth::user()->id;
+			} else {
+				$userData = \App\User::where('user_type', 2)->where('phone', $request->phone)->first();
+				//driver
+				if (!empty($userData)) {
+					return redirect()->route("users.drivers")->with('warning', trans('admin.This phone number already exists!'));
+				}
+				$email_already_exist = User::where(['email' => $request->email])->withTrashed()->first();
+				if(!empty($email_already_exist)){
+					return back()->with('warning', "This email address is already used by another user.");
+				}
+				$user_type = 2;
+				$createdBy = 0;
+				if(!empty($request->phone)){
+					if(substr($request->phone, 0, 1) == 0){
+						$input['phone'] = substr_replace($request->phone,"",0,1);
+					}
+				}
+			}
+			//$input->request->add([ 'password' => Hash::make($request->input('password')),'user_type' => $user_type,'created_by'=>$createdBy]);
+			$input['password'] = Hash::make($request->input('password'));
+			$input['user_type'] = $user_type;
+			$input['created_by'] = $createdBy;
+			$user  = \App\User::create($input);
+			//SAVE IMAGE
+			if ($request->image) {
+				$path = 'users/' . $user->id . '/profile/';
+				$imageName = 'profile-image.' . $request->image->extension();
 
-         }
-		if(Auth::user()->hasRole('Company')==true){
-			$data=['phone_number'=>$user->phone,'password'=>$request->input('password')];
-			$res=Mail::send('admin.users.email', $data, function($message) use ($user) {
-				$message->to($user->email)->subject('New Updates');
+				$image = Storage::disk('public')->putFileAs(
+					'user/' . $user->id,
+					$request->image,
+					$imageName
+				);
+				\App\User::where('id', $user->id)->update(['image' => $image]);
+			}
+			if (Auth::user()->hasRole('Company') == true) {
+				$data = ['phone_number' => $user->phone, 'password' => $request->input('password')];
+				$res = Mail::send('admin.users.email', $data, function ($message) use ($user) {
+					$message->to($user->email)->subject('New Updates');
 				});
-		   //DB::commit();
-		   return back()->with('success', 'User created!');
-		}else{
-			return back()->with('success', 'Driver created!');
-		}
-		} catch (\Illuminate\Database\QueryException $exception){
+				//DB::commit();
+				return back()->with('success', 'User created!');
+			} else {
+				return back()->with('success', 'Driver created!');
+			}
+		} catch (\Illuminate\Database\QueryException $exception) {
 			//DB::rollBack();
-			return back()->with('error',$exception->getMessage());
-		}catch(\Exception $exception){
-		//	DB::rollBack();
-			return back()->with('error',$exception->getMessage());
+			return back()->with('error', $exception->getMessage());
+		} catch (\Exception $exception) {
+			//	DB::rollBack();
+			return back()->with('error', $exception->getMessage());
 		}
-    }
+	}
 
     /**
      * Display the specified resource.
@@ -745,11 +751,18 @@ class UserController extends Controller
 		$request->validate($rules);
 		$user=\App\User::where('user_type',2)->where('id','!=',$id)->where('phone',$request->phone)->first();
 		if(!empty($user)){
-			return redirect()->route("users.drivers")->with('warning', trans('admin.This phone number already exists!'));
-
+			return redirect()->route("users.drivers")->with('warning', trans('This phone number already exists!'));
+		}
+		$email_already_exist = User::where('id','!=',$id)->where(['email' => $request->email])->withTrashed()->first();
+		if(!empty($email_already_exist)){
+			return back()->with('warning', "This email address is already used by another user.");
 		}
 		$input = $request->all();
-		
+		if(!empty($request->phone)){
+			if(substr($request->phone, 0, 1) == 0){
+				$input['phone'] = substr_replace($request->phone,"",0,1);
+			}
+		}
 		unset($input['_method'],$input['_token'],$input['image_tmp']);
 		
 		$path = 'users/'.$haveUser->id.'/profile/';

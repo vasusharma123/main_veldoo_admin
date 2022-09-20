@@ -6096,6 +6096,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
 					$rideHistoryDetail->status = "1";
 					$rideHistoryDetail->save();
+					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
 					return $this->successResponse($ride, 'Ride Accepted Successfully.');
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
@@ -6142,6 +6143,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// Notifications::checkAllDriverCancelRide($request->ride_id);
 
 					// return response()->json(['success' => true, 'message' => ''], $this->successCode);
+					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
 					return $this->successResponse($ride, 'Ride Rejected Successfully.');
 				}
 			} else {
@@ -6611,11 +6613,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							$globalridespending = Ride::where(['status' => -4])->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
 
 							$myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
-								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 							})->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
 
 							$overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
-								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 							})->orderBy('ride_time', 'desc')->with('user', 'driver')->paginate($this->limit);
 							
 							$ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
@@ -7310,13 +7312,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function assigndrivertoRide(Request $request)
 	{
-		$user = Auth::user();
-		$user_id = $user['id'];
 		$rules = [
-
 			'ride_id' => 'required',
 			'driver_id' => 'required',
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -7325,35 +7323,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
-			$ride_data = Ride::query()->where([['id', '=', $request->ride_id]])->first();
+			$ride_data = Ride::find($request->ride_id);
 			$ride_data->driver_id = $request->driver_id;
 			$ride_data->status = 0;
 
-
 			if ($ride_data->save()) {
-				$ride = Ride::query()->where([['id', '=', $request->ride_id]])->first();
-
-				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride['user_id'])->first();
-
-
-				//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
-				$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->where('id', $request->driver_id)->first();
+				$ride = Ride::find($request->ride_id);
+				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride['user_id']);
+				$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->find($request->driver_id);
 
 				$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->orderBy('id', 'desc')->first();
-				//print_r($driver_car);
 				$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
 				$driver_data['car_data'] = $car_data;
-				//print_r($car_data); 
 				$ride['user_data'] = $user_data;
 				$ride['driver_data'] = $driver_data;
 				$settings = \App\Setting::first();
 				$settingValue = json_decode($settings['value']);
 				$ride['waiting_time'] = $settingValue->waiting_time;
-
 				$title = 'New Ride';
 				$message = 'Master Driver have assigned new Ride';
-
-				$driverdata = User::query()->where([['id', '=', $request->driver_id]])->first();
+				$driverdata = User::find($request->driver_id);
 				$deviceToken = $driverdata['device_token'];
 				$ride_id = $request->ride_id;
 				if ($ride['ride_type'] == 1) {
@@ -7362,84 +7351,58 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 10;
 				}
 
-
-
 				$deviceType = $driverdata['device_type'];
-
 				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				//echo $deviceType; 
-				if ($deviceType == 'android') {
-					send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $driverdata['id'];
-					$notification->save();
+				if(!empty($deviceToken)){
+					if ($deviceType == 'android') {
+						bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+					}
+					if ($deviceType == 'ios') {
+						bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverdata['user_type']);
+					}
 				}
-				if ($deviceType == 'ios') {
-					//$deviceToken = $driverdata['device_token'];
-					//send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-					$user_type = $driverdata['user_type'];
-					ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $driverdata['id'];
-					$notification->save();
-				}
-
-
+				$notification = new Notification();
+				$notification->title = $title;
+				$notification->description = $message;
+				$notification->type = $type;
+				$notification->user_id = $driverdata['id'];
+				$notification->save();
 
 				$title = 'Ride Accepted';
 				$message = 'Your booking accepted by the driver please check the driver detail';
-
-				$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
+				$userdata = User::find($ride['user_id']);
 				$deviceToken = $userdata['device_token'];
 				$ride_id = $request->ride_id;
 				$type = 2;
 
-
-
 				$deviceType = $userdata['device_type'];
-
 				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				//echo $deviceType; 
-				if ($deviceType == 'android') {
-					send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $userdata['id'];
-					$notification->save();
+				if (!empty($deviceToken)) {
+					if ($deviceType == 'android') {
+						bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+					}
+					if ($deviceType == 'ios') {
+						bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+					}
 				}
-				if ($deviceType == 'ios') {
-					//$deviceToken = $userdata['device_token'];
-					//send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-					$user_type = $userdata['user_type'];
-					ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $userdata['id'];
-					$notification->save();
-				}
-
+				$notification = new Notification();
+				$notification->title = $title;
+				$notification->description = $message;
+				$notification->type = $type;
+				$notification->user_id = $userdata['id'];
+				$notification->save();
 
 				return response()->json(['message' => 'Driver Assigned Successfully'], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Something went wrong'], $this->warningCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function unassigndrivertoRide(Request $request)
 	{
 		$user = Auth::user();
