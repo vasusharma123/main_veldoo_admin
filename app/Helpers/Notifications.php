@@ -123,7 +123,6 @@ class Notifications
             ->whereNotNull('device_type')
             ->where('user_type', 2)
             ->where('availability', 1)
-            ->having('distance', '<', $driver_radius)
             ->orderBy('distance', 'asc');
         $drivers = $query->get();
 
@@ -221,7 +220,7 @@ class Notifications
 					+ sin(radians(" . $ride->pick_lat . ")) 
 					* sin(radians(users.current_lat))) AS distance")
 		);
-		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
 		$drivers = $query->get()->toArray();
 
 		$driverids = array();
@@ -231,12 +230,12 @@ class Notifications
 				$driverids[] = $driver['id'];
 			}
 		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+			return response()->json(['message' => "No Driver Found"]);
 		}
 		if (!empty($driverids)) {
 			$driverids = implode(",", $driverids);
 		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+			return response()->json(['message' => "No Driver Found"]);
 		}
 		$ride->driver_id = null;
 		$ride->all_drivers = $driverids;
@@ -276,7 +275,7 @@ class Notifications
 				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
 				+ sin(radians(" . $ride->pick_lat . "))
 				* sin(radians(users.current_lat))) AS distance")
-		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->get()->toArray();
 		$rideData = Ride::find($ride->id);
 		$rideData->notification_sent = 1;
 		if (count($overallDriversCount) <= count($drivers)) {

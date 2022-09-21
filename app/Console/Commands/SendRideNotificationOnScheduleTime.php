@@ -63,7 +63,7 @@ class SendRideNotificationOnScheduleTime extends Command
                         + sin(radians(" . $ride->pick_lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where(['user_type' => 2 , 'availability' => 1])->whereNotNull('device_token')->where('device_token', '!=', '')->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where(['user_type' => 2 , 'availability' => 1])->whereNotNull('device_token')->where('device_token', '!=', '')->orderBy('distance', 'asc')->limit($driverlimit);
                 $drivers = $query->get()->toArray();
 
                 $driverids = array();
@@ -104,7 +104,7 @@ class SendRideNotificationOnScheduleTime extends Command
                         * cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
                         + sin(radians(" . $ride->pick_lat . "))
                         * sin(radians(users.current_lat))) AS distance")
-                )->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+                )->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->get()->toArray();
                 $rideData = Ride::find($ride->id);
                 $rideData->notification_sent = 1;
                 if (count($overallDriversCount) <= count($drivers)) {

@@ -67,7 +67,6 @@ class SendRideNotificationAfterScheduleTime extends Command
                     ->whereNotNull('device_token')->where('device_token', '!=', '')
                     ->where('user_type', 2)
                     ->where('availability', 1)
-                    ->having('distance', '<', $driver_radius)
                     ->orderBy('distance', 'asc');
                 $drivers = $query->get();
 

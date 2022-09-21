@@ -104,7 +104,6 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => 'auth:api'
 	Route::post('userRideList', 'UserController@userRideList');
 	Route::post('invoice', 'UserController@invoice');
 	Route::post('updateBankdetail', 'UserController@updateBankdetail');
-	Route::post('driver_list', 'UserController@driver_list');
 	
 	Route::get('drivercompletedRide', 'UserController@drivercompleted_ride');
 	Route::get('drivercancelledRide', 'UserController@drivercancelled_ride');
@@ -170,7 +169,7 @@ Route::group(['prefix' => 'driver','namespace' => 'API','middleware' => 'auth:ap
 	Route::post('usermilecheck', 'UserController@usermilecheck');
 	Route::post('user_invoice_status', 'UserController@getInvoiceUserStatus');
 	Route::post('driverUpdateLocation','RideController@driverUpdateLocation');
-
+	Route::get('all_drivers', 'UserController@all_drivers');
 
 });
 #COMPANY GROUP

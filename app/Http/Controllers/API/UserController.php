@@ -2507,10 +2507,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function earning_detail(Request $request)
 	{
 		$user = Auth::user();
-		$user_id = $user['id'];
 		$rules = [
 			'type' => 'required',
 		];
+		$user_id = $user['id'];
+		if(!empty($request->driver_id)){
+			$user_id = $request->driver_id;
+		}
 
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
@@ -2554,7 +2557,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			return response()->json(['message' => __('Successfully.'), 'data' => $newresultarray, 'total_earning' => $total_earning, 'cash_earning' => $cash_earning], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -5283,7 +5285,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					+ sin(radians(" . $lat . ")) 
 					* sin(radians(users.current_lat))) AS distance")
 		);
-		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
 		$drivers = $query->get()->toArray();
 
 		$driverids = array();
@@ -5339,7 +5341,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
 				+ sin(radians(" . $ride->pick_lat . "))
 				* sin(radians(users.current_lat))) AS distance")
-		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+		)->where(['user_type' => 2 ,'availability' => 1])->whereNotNull('device_token')->get()->toArray();
 		$rideData = Ride::find($ride->id);
 		$rideData->notification_sent = 1;
 		if (count($overallDriversCount) <= count($drivers)) {
@@ -5723,27 +5725,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
 		return response()->json(['success' => true, 'message' => 'Trip created successfully.', 'data' => $ride_data], $this->successCode);
 	}
+
 	public function rideEdit(Request $request)
 	{
 		$rules = [
 			'ride_id' => 'required',
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$input = $request->all();
-		$ride = Ride::query()->where([['id', '=', $_REQUEST['ride_id']]])->first();
-		if (!empty($request->pickup_address)) {
-			$ride->pickup_address = $request->pickup_address;
+		$ride = Ride::find($request->ride_id);
+		if (!empty($request->start_location)) {
+			$ride->pickup_address = $request->start_location;
 		}
 		if (!empty($request->user_id)) {
 			$ride->user_id = $request->user_id;
 		}
-		if (!empty($request->dest_address)) {
-			$ride->dest_address = $request->dest_address;
+		if (!empty($request->drop_location)) {
+			$ride->dest_address = $request->drop_location;
 		}
 		if (!empty($request->dest_lat)) {
 			$ride->dest_lat = $request->dest_lat;
@@ -5757,9 +5758,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->pick_lng)) {
 			$ride->pick_lng = $request->pick_lng;
 		}
-		if (!empty($request->dest_address)) {
-			$ride->dest_address = $request->dest_address;
-		}
 		if (!empty($request->passanger)) {
 			$ride->passanger = $request->passanger;
 		}
@@ -5769,12 +5767,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->alert_time)) {
 			$ride->alert_time = $request->alert_time;
 		}
-
 		if (!empty($request->note)) {
 			$ride->note = $request->note;
 		}
-		unset($input['note']);
-		//dd($input);
 		$user_type = Auth::user()->user_type;
 		if ($user_type == 2) {
 			if (!empty($request->payment_type)) {
@@ -5795,25 +5790,19 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->distance)) {
 			$ride->distance = $request->distance;
 		}
-		//$ride->pickup_address=$request->start_location;
-		//$input['dest_address']=$request->drop_location;
 		if (!empty($request->ride_type)) {
 			$ride->ride_type = 1;
 		}
-
-
-
 		$ride->save();
-		$rideid = $ride->id;
-		$ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
-		if(isset($request->user_id)){
-			$ride_data['user_data']=User::select('*')->where([['id','=',$request->user_id]])->first();
-		}else{
-			$ride_data['user_data']=null;
+		$ride_data = Ride::find($request->ride_id);
+		if (isset($request->user_id)) {
+			$ride_data['user_data'] = User::find($request->user_id);
+		} else {
+			$ride_data['user_data'] = null;
 		}
-		$ride_data->user_data=User::select('*')->where([['id','=',$request->user_id]]);
 		return response()->json(['success' => true, 'message' => 'Ride Updated successfully.', 'data' => $ride_data], $this->successCode);
 	}
+
 	public function waitingstatuschange(Request $request)
 	{
 		$rules = [
@@ -7368,29 +7357,31 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$notification->user_id = $driverdata['id'];
 				$notification->save();
 
-				$title = 'Ride Accepted';
-				$message = 'Your booking accepted by the driver please check the driver detail';
-				$userdata = User::find($ride['user_id']);
-				$deviceToken = $userdata['device_token'];
-				$ride_id = $request->ride_id;
-				$type = 2;
+				RideHistory::create(['ride_id' => $request->ride_id, 'driver_id' => $request->driver_id, 'status' => '2']);
 
-				$deviceType = $userdata['device_type'];
-				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				if (!empty($deviceToken)) {
-					if ($deviceType == 'android') {
-						bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
-					}
-					if ($deviceType == 'ios') {
-						bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
-					}
-				}
-				$notification = new Notification();
-				$notification->title = $title;
-				$notification->description = $message;
-				$notification->type = $type;
-				$notification->user_id = $userdata['id'];
-				$notification->save();
+				// $title = 'Ride Accepted';
+				// $message = 'Your booking accepted by the driver please check the driver detail';
+				// $userdata = User::find($ride['user_id']);
+				// $deviceToken = $userdata['device_token'];
+				// $ride_id = $request->ride_id;
+				// $type = 2;
+
+				// $deviceType = $userdata['device_type'];
+				// $additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
+				// if (!empty($deviceToken)) {
+				// 	if ($deviceType == 'android') {
+				// 		bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+				// 	}
+				// 	if ($deviceType == 'ios') {
+				// 		bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+				// 	}
+				// }
+				// $notification = new Notification();
+				// $notification->title = $title;
+				// $notification->description = $message;
+				// $notification->type = $type;
+				// $notification->user_id = $userdata['id'];
+				// $notification->save();
 
 				return response()->json(['message' => 'Driver Assigned Successfully'], $this->successCode);
 			} else {
@@ -7617,6 +7608,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => "User not found"], $this->warningCode);
 		
 		}
+	}
+
+	public function all_drivers()
+	{
+		$user = Auth::user();
+		$all_drivers = User::where(['user_type' => 2])->get();
+		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
 	
 }

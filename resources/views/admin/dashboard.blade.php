@@ -14,7 +14,7 @@
                                 <div class="col-12">
                                     <h2 class="m-b-0"><i class="mdi mdi-car text-success"></i></h2>
                                     <h3 class="">{{$rider_count}}</h3>
-                                    <h6 class="card-subtitle">Total Riders</h6></div>
+                                    <h6 class="card-subtitle">Total Users</h6></div>
                                 <div class="col-12">
                                     <div class="progress">
                                         <div class="progress-bar bg-success" role="progressbar" style="width: 40%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
@@ -159,7 +159,7 @@
                                 <div class="col-12">
                                     <h2 class="m-b-0"><i class="mdi mdi-car text-success"></i></h2>
                                     <h3 class="">{{$company_users}}</h3>
-                                    <h6 class="card-subtitle">Total Riders</h6></div>
+                                    <h6 class="card-subtitle">Total Users</h6></div>
                                 <div class="col-12">
                                     <div class="progress">
                                         <div class="progress-bar bg-success" role="progressbar" style="width: 40%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
