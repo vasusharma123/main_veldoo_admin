@@ -166,13 +166,16 @@ class User extends Authenticatable implements HasMedia
 				//$driver_data->avg_rating = "$avgrating";
 		//return $this->first_name.' '.$this->last_name;
 	}
-	public static function logoutUserByIdAllDevices($id) {
-	    $updateUser = self::where('id',$id)->first();
-	    // print_r($id);die;
-         $updateUser->tokens()->delete();
 
-    return true;
-   }
+	public static function logoutUserByIdAllDevices($id)
+	{
+		$updateUser = self::where('id', $id)->first();
+		// print_r($id);die;
+		$updateUser->tokens()->delete();
+		self::where(['id' => $id])->update(['availability' => 0]);
+		return true;
+	}
+	
    /**
      * Created By Anil Dogra
      * Created At 12-03-2021

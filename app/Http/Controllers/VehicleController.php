@@ -212,7 +212,7 @@ class VehicleController extends Controller
                     $file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
                     $filename = time().'-'.$file;
                     $ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
-                    $arr_ext = array('jpg', 'jpeg', 'gif','pqueryng'); //set allowed extensions
+                    $arr_ext = array('jpg', 'jpeg', 'gif','png'); //set allowed extensions
                     
                     if(in_array($ext, $arr_ext))
                     {

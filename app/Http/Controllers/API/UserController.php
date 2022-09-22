@@ -2524,10 +2524,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if ($request->type == 1) {
 				$month = $request->month;
 				$year = $request->year;
-				$resnewarray = Ride::with(['user', 'driver'])->whereMonth('ride_time', date("$month"))->whereYear('ride_time', date("$year"))->where([['status', '=', 3]])->whereRaw('driver_id', [$user_id])->orderBy('id', 'desc')->get()->toArray();
+				$resnewarray = Ride::with(['user', 'driver'])->whereMonth('ride_time', date("$month"))->whereYear('ride_time', date("$year"))->where([['status', '=', 3]])->where(['driver_id' => $user_id])->orderBy('id', 'desc')->get()->toArray();
 			} else if ($request->type == 2) {
 				$date = $request->date;
-				$resnewarray = Ride::with(['user', 'driver'])->whereDate('ride_time', date("$date"))->where([['status', '=', 3]])->whereRaw('driver_id', [$user_id])->orderBy('id', 'desc')->get()->toArray();
+				$resnewarray = Ride::with(['user', 'driver'])->whereDate('ride_time', date("$date"))->where([['status', '=', 3]])->where(['driver_id' => $user_id])->orderBy('id', 'desc')->get()->toArray();
 			} else if ($request->type == 3) {
 				$start_date = Carbon::parse($request->start_date)
 					->toDateTimeString();
@@ -2535,9 +2535,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$end_date = Carbon::parse($request->end_date)
 					->toDateTimeString();
 
-				$resnewarray = Ride::with(['user', 'driver'])->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59'])->where([['status', '=', 3]])->whereRaw('driver_id', [$user_id])->orderBy('id', 'desc')->get()->toArray();
+				$resnewarray = Ride::with(['user', 'driver'])->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59'])->where([['status', '=', 3]])->where(['driver_id' => $user_id])->orderBy('id', 'desc')->get()->toArray();
 			} else {
-				$resnewarray = Ride::with(['user', 'driver'])->where([['status', '=', 3]])->whereRaw('driver_id', [$user_id])->orderBy('id', 'desc')->get()->toArray();
+				$resnewarray = Ride::with(['user', 'driver'])->where([['status', '=', 3]])->where(['driver_id' => $user_id])->orderBy('id', 'desc')->get()->toArray();
 			}
 			$newresultarray = array();
 			$total_earning = 0;
@@ -7318,46 +7318,54 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			if ($ride_data->save()) {
 				$ride = Ride::find($request->ride_id);
-				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride['user_id']);
-				$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->find($request->driver_id);
-
-				$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->orderBy('id', 'desc')->first();
-				$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
-				$driver_data['car_data'] = $car_data;
-				$ride['user_data'] = $user_data;
-				$ride['driver_data'] = $driver_data;
-				$settings = \App\Setting::first();
-				$settingValue = json_decode($settings['value']);
-				$ride['waiting_time'] = $settingValue->waiting_time;
-				$title = 'New Ride';
-				$message = 'Master Driver have assigned new Ride';
-				$driverdata = User::find($request->driver_id);
-				$deviceToken = $driverdata['device_token'];
-				$ride_id = $request->ride_id;
-				if ($ride['ride_type'] == 1) {
-					$type = 11;
+				$currentTime = Carbon::now()->format('Y-m-d H:i:s');
+				$rideAlertTime = date('Y-m-d H:i:s', strtotime('-' . $ride->alert_time . ' minutes', strtotime($ride->ride_time)));
+				if ($rideAlertTime > $currentTime) {
+					$rideDetail = Ride::find($request->ride_id);
+					$rideDetail->alert_notification_date_time = $rideAlertTime;
+					$rideDetail->save();
 				} else {
-					$type = 10;
-				}
+					$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride['user_id']);
+					$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->find($request->driver_id);
 
-				$deviceType = $driverdata['device_type'];
-				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				if(!empty($deviceToken)){
-					if ($deviceType == 'android') {
-						bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+					$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->orderBy('id', 'desc')->first();
+					$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
+					$driver_data['car_data'] = $car_data;
+					$ride['user_data'] = $user_data;
+					$ride['driver_data'] = $driver_data;
+					$settings = \App\Setting::first();
+					$settingValue = json_decode($settings['value']);
+					$ride['waiting_time'] = $settingValue->waiting_time;
+					$title = 'New Ride';
+					$message = 'Master Driver have assigned new Ride';
+					$driverdata = User::find($request->driver_id);
+					$deviceToken = $driverdata['device_token'];
+					$ride_id = $request->ride_id;
+					if ($ride['ride_type'] == 1) {
+						$type = 11;
+					} else {
+						$type = 10;
 					}
-					if ($deviceType == 'ios') {
-						bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverdata['user_type']);
-					}
-				}
-				$notification = new Notification();
-				$notification->title = $title;
-				$notification->description = $message;
-				$notification->type = $type;
-				$notification->user_id = $driverdata['id'];
-				$notification->save();
 
-				RideHistory::create(['ride_id' => $request->ride_id, 'driver_id' => $request->driver_id, 'status' => '2']);
+					$deviceType = $driverdata['device_type'];
+					$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
+					if (!empty($deviceToken)) {
+						if ($deviceType == 'android') {
+							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						}
+						if ($deviceType == 'ios') {
+							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverdata['user_type']);
+						}
+					}
+					$notification = new Notification();
+					$notification->title = $title;
+					$notification->description = $message;
+					$notification->type = $type;
+					$notification->user_id = $driverdata['id'];
+					$notification->save();
+
+					RideHistory::create(['ride_id' => $request->ride_id, 'driver_id' => $request->driver_id, 'status' => '2']);
+				}
 
 				// $title = 'Ride Accepted';
 				// $message = 'Your booking accepted by the driver please check the driver detail';
