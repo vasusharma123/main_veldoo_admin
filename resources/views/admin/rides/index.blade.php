@@ -29,6 +29,9 @@
                                 <table class="table table-bordered data-table">
                                     <thead class="thead-light">
                                         <tr>
+                                            <th><button type="button" id='delete_record'
+                                                    class="btn btn-outline-secondary btn-sm"
+                                                    title="Delete Selected Rides">Delete</button></th>
                                             <th>ID</th>
                                             <th>Date</th>
                                             <th>Driver</th>
@@ -87,22 +90,33 @@
             $(function() {
                 var table = $('.data-table').DataTable({
                     order: [
-                        [0, 'desc']
+                        [1, 'desc']
                     ],
                     processing: true,
                     serverSide: false,
                     ajax: "{{ url('admin/rides') }}",
                     'columnDefs': [{
-                        'targets': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                        'searchable': true,
-                        'orderable': true,
-                        'className': 'dt-body-center text-center new-class filterhead',
+                            'targets': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                            'searchable': true,
+                            'orderable': true,
+                            'className': 'dt-body-center text-center new-class filterhead',
 
-                    }],
+                        },
+                        {
+                            'targets': [0],
+                            'searchable': false,
+                            'orderable': false
+
+                        }
+                    ],
 
                     //   'order': [1, 'desc'],
 
                     columns: [{
+                            data: 'checkboxes',
+                            name: 'checkboxes'
+                        },
+                        {
                             data: 'id',
                             name: 'id'
                         },
@@ -153,8 +167,13 @@
                         }
                     ],
                     dom: 'Bfrtip',
-                    buttons: [
-                        'csv', 'excel', 'pdf', 'print', 'pageLength'
+                    buttons: [{
+                            "extend": 'excel',
+                            "text": 'Excel',
+                            "titleAttr": 'Excel Export',
+                            "action": excelexportaction
+                        },
+                        'pageLength'
                     ],
                 });
                 // Refilter the table
@@ -162,6 +181,10 @@
                     table.draw();
                 });
             });
+
+            function excelexportaction() {
+                window.location.href = "{{ route('ride/export') }}";
+            }
 
             // Extend dataTables search
             $.fn.dataTableExt.afnFiltering.push(
@@ -235,5 +258,60 @@
                 }
             });
         });
+
+        $(document).on('click', '#delete_record', function(e) {
+            e.preventDefault();
+            var selected_checkbox = [];
+            $("input.editor-active:checked").each(function() {
+                selected_checkbox.push($(this).data("id"));
+            });
+            if (selected_checkbox.length) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to delete these rides!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "delete",
+                            url: "{{ route('ride/delete_multiple') }}",
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "selected_ids": selected_checkbox
+                            },
+                            success: function(data) {
+                                if (data.status) {
+                                    Swal.fire({
+                                        title: 'Deleted',
+                                        text: data.message,
+                                        icon: 'success',
+                                        showConfirmButton: false
+                                    });
+                                    setTimeout(function() {
+                                        location.reload(true);
+                                    }, 2000);
+                                } else {
+                                    Swal.fire(
+                                        'Error',
+                                        data.message,
+                                        'error'
+                                    )
+                                }
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire(
+                    'Error',
+                    "Select atleast one ride",
+                    'error'
+                )
+            }
+        })
     </script>
 @stop

@@ -25,6 +25,9 @@ use App\Ride;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\UsersExport;
 use DataTables;
+use App\DriverStayActiveNotification;
+use App\DriverChooseCar;
+use Exception;
 
 class UserController extends Controller
 {
@@ -618,11 +621,11 @@ class UserController extends Controller
 		return back()->with('success', __('Record updated!'));
 	}
 
-	  public function driver(Request $request)
-    {
-	   $data=array();
-	    $data = array('title'=>'Drivers','action'=>'List Drivers');
-	/*
+	public function driver(Request $request)
+	{
+		$data = array();
+		$data = array('title' => 'Drivers', 'action' => 'List Drivers');
+		/*
 
 		if($request->has('status') && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -659,64 +662,53 @@ class UserController extends Controller
         }
         */
 
-        if ($request->ajax()) {
-         $data = User::select(['id', 'first_name', 'is_master','last_name','email', 'phone','status','name','country_code'])->where('user_type',2)->orderBy('id','DESC')->get();
-            
-            return Datatables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('action', function ($row) {
-                                $btn = '<div class="btn-group dropright">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Action
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="'.url('admin/driver',$row->id) .'">'.trans("admin.View").'</a>
-                                <a class="dropdown-item" href="'. url('admin/driver/edit',$row->id).'">'. trans("admin.Edit").'</a>
-                                <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
+		if ($request->ajax()) {
+			$data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->orderBy('id', 'DESC')->get();
+
+			return Datatables::of($data)
+				->addIndexColumn()
+				->addColumn('action', function ($row) {
+					$btn = '<div class="btn-group dropright">
+								<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Action
+								</button>
+								<div class="dropdown-menu">
+									<a class="dropdown-item" href="' . url('admin/driver', $row->id) . '">' . trans("admin.View") . '</a>
+									<a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+									<a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
+									<a class="dropdown-item logout_driver" data-id="' . $row->id . '">Logout</a>
                                 </div>
-                                  </div>';
-                                     return $btn;
-                        
-                            }) ->addColumn('master_driver', function ($row) {
-                                $status=($row->is_master === 1)?'checked':'';
-                                $btn = '<div class="switch">
+                            </div>';
+					return $btn;
+				})->addColumn('master_driver', function ($row) {
+					$status = ($row->is_master === 1) ? 'checked' : '';
+					$btn = '<div class="switch">
                             <label>
-                                <input type="checkbox" class="master_status" data-status="'.$row->is_master.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+                                <input type="checkbox" class="master_status" data-status="' . $row->is_master . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
                             </label>
                         </div>';
-                                return $btn;
-                        
-                            })
-                            
-                             ->addColumn('status', function ($row) {
-                                $status=($row->status === 1)?'checked':'';
-                                $btn = '<div class="switch">
+					return $btn;
+				})
+
+				->addColumn('status', function ($row) {
+					$status = ($row->status === 1) ? 'checked' : '';
+					$btn = '<div class="switch">
                             <label>
-                                <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+                                <input type="checkbox" class="change_status" data-status="' . $row->status . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
                             </label>
                         </div>';
-                                
-                                  
-                                
-                                return $btn;
-                        
-                            })->addColumn('first_name', function ($row) {
-                                
-                                
-                                return ucfirst($row->first_name);
-                        
-                            })
-                            ->addColumn('last_name', function ($row) {
-                                
-                                
-                                return ucfirst($row->last_name);
-                        
-                            })
-                            ->rawColumns(['action','status','master_driver','first_name','last_name'])
-                            ->make(true);
-        }
-	    return view('admin.drivers.index')->with($data);
-    }
+					return $btn;
+				})->addColumn('first_name', function ($row) {
+					return ucfirst($row->first_name);
+				})
+				->addColumn('last_name', function ($row) {
+					return ucfirst($row->last_name);
+				})
+				->rawColumns(['action', 'status', 'master_driver', 'first_name', 'last_name'])
+				->make(true);
+		}
+		return view('admin.drivers.index')->with($data);
+	}
 	
 	 public function editDriver($id)
     {
@@ -1025,4 +1017,23 @@ public function register(){
         }
         exit;
     }
+
+	public function make_driver_logout(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			User::where(['id' => $request->driver_id])->update(['availability' => 0]);
+			DB::table('oauth_access_tokens')
+			->where(['user_id' => $request->driver_id])
+			->delete();
+			DriverStayActiveNotification::where(['driver_id' => $request->driver_id])->delete();
+			DriverChooseCar::where(['user_id' => $request->driver_id])->where(['logout' => 0])->update(['logout' => 1]);
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => "Driver has successfully logged out."], 200);
+		} catch (Exception $e) {
+			DB::rollBack();
+			return response()->json(['status' => 0, 'message' => $e->getMessage()]);
+		}
+	}
+
 }

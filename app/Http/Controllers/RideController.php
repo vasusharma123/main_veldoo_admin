@@ -4,10 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Ride;
+use App\RideHistory;
 use DataTables;
 use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Exports\RideExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Validator;
 
 class RideController extends Controller
 {
@@ -24,7 +28,7 @@ class RideController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'users.first_name', 'users.last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name'])
+            $data = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'rides.payment_type', 'users.first_name', 'users.last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name'])
                 ->leftJoin('users', 'users.id', 'rides.driver_id')
                 ->leftJoin('vehicles', 'vehicles.id', 'rides.vehicle_id')
                 ->leftJoin('prices', function ($join) {
@@ -78,9 +82,16 @@ class RideController extends Controller
                     // })->addColumn('comment', function ($row) {
                     //     return ucfirst($row->note);
                 })->addColumn('payment', function ($row) {
-                    return ucfirst($row->payment_name);
+                    return ucfirst($row->payment_type);
                 })->addColumn('ride_cost', function ($row) {
                     return number_format($row->ride_cost, 2);
+                })
+                ->addColumn('checkboxes', function ($row) {
+                    $btn = '<label class="custom-control custom-checkbox">
+                                <input type="checkbox" data-id="' . $row->id . '" class="custom-control-input editor-active">
+                                <span class="custom-control-label"></span>
+                            </label>';
+                    return $btn;
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="btn-group dropright">
@@ -89,12 +100,12 @@ class RideController extends Controller
                         </button>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="' . route('bookings.show', $row->id) . '">' . trans("admin.View") . '</a>
-                            <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
+                            <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
                         </div>
                     </div>';
                     return $btn;
                 })
-                ->rawColumns(['action', 'status', 'driver', 'date', 'car', 'seat_capacity', 'pick_up', 'drop_off', 'distance', 'cash', 'guest', 'payment', 'ride_cost'])
+                ->rawColumns(['action', 'status', 'driver', 'date', 'car', 'seat_capacity', 'pick_up', 'drop_off', 'distance', 'cash', 'guest', 'payment', 'ride_cost', 'checkboxes'])
                 ->make(true);
         }
         return view('admin.rides.index')->with($data);
@@ -105,12 +116,41 @@ class RideController extends Controller
         try {
             DB::beginTransaction();
             Ride::where(['id' => $id])->delete();
+            RideHistory::where(['ride_id' => $id])->delete();
             DB::commit();
-            return response()->json(['status' => 1, 'message'=> "Ride has been deleted."], 200);
+            return response()->json(['status' => 1, 'message' => "Ride has been deleted."], 200);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['status' => 0, 'message'=> $e->getMessage()], 400);
+            return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);
         }
     }
 
+    public function rideExport()
+    {
+        return Excel::download(new RideExport([]), 'Rides List Veldoo.xlsx');
+    }
+
+    public function delete_multiple(Request $request)
+    {
+        $rules = [
+            'selected_ids' => 'required|array'
+        ];
+        $messages = [
+            'selected_ids.required' => "Select atleast one checkbox"
+        ];
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()]);
+        }
+        try {
+            DB::beginTransaction();
+            Ride::whereIn('id', $request->selected_ids)->delete();
+            RideHistory::whereIn('ride_id', $request->selected_ids)->delete();
+            DB::commit();
+            return response()->json(['status' => 1, 'message' => "Selected rides are deleted."], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);
+        }
+    }
 }

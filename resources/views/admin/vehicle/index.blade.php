@@ -121,10 +121,20 @@
                 ],
                 dom: 'Bfrtip',
                 buttons: [
-                    'pageLength'
-                ],
+                        {
+                            "extend": 'excel',
+                            "text": 'Excel',
+                            "titleAttr": 'Excel Export',
+                            "action": excelexportaction
+                        },
+                        'pageLength'
+                    ],
             });
         });
+
+        function excelexportaction() {
+            window.location.href = "{{ route('vehicle_export') }}";
+        }
 
 
         $(document).on('click', '.delete_record', function() {

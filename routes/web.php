@@ -77,6 +77,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 		Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
 	Route::get('/drivers',  ['as'=>'users.drivers','uses'=>'UserController@driver']);
+	Route::post('/driver/make_driver_logout',  ['as'=>'driver.make_driver_logout','uses'=>'UserController@make_driver_logout']);
 	Route::get('driver/edit/{id}','UserController@editDriver');
 	Route::match(['put', 'patch'],'driver/update/{id}','UserController@updateDriver');
 	Route::get('driver/create','UserController@createDriver');
@@ -117,6 +118,9 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 	Route::get('driver/{id}/bookings/','UserController@driverBooking');
 	Route::get('/exportExcel/{type}','UserController@exportExcel');
 	Route::get('/export-booking/{id?}','BookingController@exportExcel');
+	Route::get('ride/export','RideController@rideExport')->name('ride/export');
+	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
+	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	
 	
 	});

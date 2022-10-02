@@ -36,21 +36,19 @@ class Socket{
 
 				var getRideData = await helper.getlatestRide();
 			 
-                console.log('test'+getRideData[0]['id']);
-
                 var arrDriverId=[];
                 var arr=[];
                 var remainingDrivr=[];
 				
-				 if(getRideData){
-			 		
+				if(getRideData && getRideData[0]){
+					console.log('test'+getRideData[0]['id']);
 			 			var rideHistoryDriver=await helper.getRideHistoryData(getRideData[0]['id']);
 			 			rideHistoryDriver.forEach(async(driverid,index) => {
 			 		        arrDriverId.push(driverid['driver_id']);
 			 			});
                     console.log('drivers'+arrDriverId)
 			 			remainingDrivr=await helper.getRemainingDrivers(arrDriverId,getRideData[0]['pick_lat'],getRideData[0]['pick_lng']);
-                       console.log('driverData'+remainingDrivr[0])
+                    //   console.log('driverData'+remainingDrivr[0])
                        
                     if(remainingDrivr){
 			 		   remainingDrivr.forEach(async(driver_id,index) => {
@@ -778,14 +776,12 @@ class Socket{
 			socket.on('get-remaining-driver-notification', async (datas) => {
 				var getRideData = await helper.getlatestRide();
 			 
-                console.log('test'+getRideData[0]['id']);
-
                 var arrDriverId=[];
                 var arr=[];
                 var remainingDrivr=[];
 				
-				 if(getRideData){
-			 		
+				if(getRideData && getRideData[0]){
+					console.log('test'+getRideData[0]['id']);
 			 			var rideHistoryDriver=await helper.getRideHistoryData(getRideData[0]['id']);
 			 			rideHistoryDriver.forEach(async(driverid,index) => {
 			 		        arrDriverId.push(driverid['driver_id']);

@@ -12,6 +12,8 @@ use App\Price;
 use DataTables;
 use App\DriverChooseCar;
 use App\User;
+use App\Exports\VehicleExport;
+use Maatwebsite\Excel\Facades\Excel;
 class VehicleController extends Controller
 {
   
@@ -65,7 +67,7 @@ class VehicleController extends Controller
                     return ($row->vehicle_image) ? '<img src="' . $row->vehicle_image . '" height="50px" width="80px">' : '<img src="' . url('public/no-images.png') . '" height="50px" width="80px">';
                 })
                 ->addColumn('mileage', function ($row) {
-                    return (!empty($row->last_driver_choosen))?ucfirst($row->last_driver_choosen->logout_mileage):"";
+                    return (!empty($row->last_driver_choosen))?$row->last_driver_choosen->logout_mileage:"";
                 })
                 ->rawColumns(['action', 'car_type', 'vehicle_image'])
                 ->make(true);
@@ -162,7 +164,7 @@ class VehicleController extends Controller
          $breadcrumb = array('title'=>'Vehicle','action'=>'Edit Vehicle');
         $data = [];
         $where = array('id' => $id);
-        $record = \App\Vehicle::where($where)->first();
+        $record = \App\Vehicle::with(['last_driver_choosen'])->where($where)->first();
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
         }
@@ -189,47 +191,48 @@ class VehicleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $vehicle = \App\Vehicle::where(['id'=>$id])->first();;
-        
+        $vehicle = \App\Vehicle::where(['id' => $id])->first();;
+
         $rules = [
-           // 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
+            // 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
             'vehicle_image' => 'image|mimes:jpeg,png,jpg|max:2048',
             //'gender' => 'required|integer|between:1,2',
             //'dob' => 'required',
         ];
-        if(!empty($request->reset_password)){
+        if (!empty($request->reset_password)) {
             $rules['password'] = 'required|min:6';
         }
         $request->validate($rules);
         $input = $request->all();
-        $input['category_id']=$input['car_type'];
-        unset($input['_method'],$input['_token'],$input['image_tmp'],$input['car_type']);
-       // dd($_FILES['vehicle_image']);
-          if(!empty($_FILES['vehicle_image'])){
+        $input['category_id'] = $input['car_type'];
+        unset($input['_method'], $input['_token'], $input['image_tmp'], $input['car_type'], $input['mileage']);
+        // dd($_FILES['vehicle_image']);
+        if (!empty($_FILES['vehicle_image'])) {
 
-                if(isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['name'] !== '' && !empty($_FILES['vehicle_image']['name'])){
-                    $file = $_FILES['vehicle_image'];
-                    $file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
-                    $filename = time().'-'.$file;
-                    $ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
-                    $arr_ext = array('jpg', 'jpeg', 'gif','png'); //set allowed extensions
-                    
-                    if(in_array($ext, $arr_ext))
-                    {
-                    $path="public/images/user_image/";
-                    if(move_uploaded_file($_FILES['vehicle_image']['tmp_name'],$path.$filename)){
+            if (isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['name'] !== '' && !empty($_FILES['vehicle_image']['name'])) {
+                $file = $_FILES['vehicle_image'];
+                $file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
+                $filename = time() . '-' . $file;
+                $ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
+                $arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
+
+                if (in_array($ext, $arr_ext)) {
+                    $path = "public/images/user_image/";
+                    if (move_uploaded_file($_FILES['vehicle_image']['tmp_name'], $path . $filename)) {
                         $url = URL::to('/');
-                        $input['vehicle_image'] = $url."/".$path.$filename;
+                        $input['vehicle_image'] = $url . "/" . $path . $filename;
                     }
-                    }else{
-                         return response()->json(['message'=>'Upload valid image'], $this->warningCode);
-                    }
+                } else {
+                    return response()->json(['message' => 'Upload valid image'], $this->warningCode);
                 }
             }
-
-              
-        
+        }
         \App\Vehicle::where('id', $id)->update($input);
+        if(isset($request->mileage)){
+            $choosenVehicle = DriverChooseCar::where(['car_id' => $id])->latest()->first();
+            $choosenVehicle->logout_mileage = $request->mileage;
+            $choosenVehicle->save();
+        }
         
         return back()->with('success', __('Record updated!'));
     }
@@ -268,5 +271,10 @@ class VehicleController extends Controller
             echo json_encode(false);
         }
         exit; 
+    }
+
+    public function vehicleExport()
+    {
+        return Excel::download(new VehicleExport([]), 'Vehilce List Veldoo.xlsx');
     }
 }

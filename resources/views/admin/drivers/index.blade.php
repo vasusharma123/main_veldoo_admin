@@ -405,5 +405,47 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 			}
 		});
 	});
+
+	$(document).on('click', '.logout_driver', function() {
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You want to logout this driver!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Logout Now'
+		}).then((result) => {
+			if (result.value) {
+				var driver_id = $(this).data('id');
+				$.ajax({
+					type: "post",
+					url: "{{ url('admin/driver/make_driver_logout') }}",
+					data: {
+						"_token": "{{ csrf_token() }}",
+						"driver_id": driver_id,
+					},
+					success: function(data) {
+						if (data.status) {
+							Swal.fire(
+								'Success!',
+								data.message,
+								'success'
+							);
+							setTimeout(function() {
+								location.reload(true);
+							}, 2000);
+						} else {
+							Swal.fire(
+								'Error',
+								data.message,
+								'error'
+							)
+						}
+					}
+				});
+			}
+		});
+	});
 </script>
 @stop
