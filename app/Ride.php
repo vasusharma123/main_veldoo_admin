@@ -200,4 +200,9 @@ class Ride extends Model
 	{
 		return $this->belongsTo(User::class, 'company_id', 'id');
 	}
+
+	public function company_data()
+	{
+		return $this->belongsTo(User::class, 'company_id', 'id');
+	}
 }

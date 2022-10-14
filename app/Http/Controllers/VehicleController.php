@@ -275,6 +275,6 @@ class VehicleController extends Controller
 
     public function vehicleExport()
     {
-        return Excel::download(new VehicleExport([]), 'Vehilce List Veldoo.xlsx');
+        return Excel::download(new VehicleExport([]), 'Vehicle List Veldoo.xlsx');
     }
 }

@@ -85,8 +85,8 @@
 					</ul>
 				</li>
 				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="{{url('admin/rides')}}" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
+					<a class="waves-effect waves-dark" href="{{url('admin/rides')}}" aria-expanded="false">
+						<i class="mdi mdi-car-connected"></i>
 						<span class="hide-menu">{{ trans("Rides") }}</span>
 					</a>
 					
@@ -113,8 +113,8 @@
 					</ul>
 				</li>
 				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="{{url('admin/users/settings')}}" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
+					<a class="waves-effect waves-dark" href="{{url('admin/users/settings')}}" aria-expanded="false">
+						<i class="mdi mdi-settings"></i>
 						<span class="hide-menu">{{ trans("admin.Settings") }}</span>
 					</a>
 					
@@ -141,6 +141,8 @@
 					</a>
 					<ul aria-expanded="false" class="collapse">
 						<li><a href="{{ route('daily-report.index') }}">{{ trans("admin.Daily Report") }}</a></li>
+						<li><a href="{{ route('daily-report.vehicles') }}">Vehicle Reports</a></li>
+						<li><a href="{{ route('daily-report.vehicle_mileage') }}">Vehicles Mileage Report</a></li>
 					</ul>
 				</li>
 				<li> 
@@ -202,6 +204,17 @@
 						<li><a href="{{ route('promotion.create') }}">{{ trans("admin.Add") }}</a></li>
 						<li><a href="{{ route('promotion.index') }}">{{ trans("admin.List") }}</a></li>
 						
+					</ul>
+				</li>
+
+				<li> 
+					<a class="has-arrow waves-effect waves-dark" href="javascript::void(0);" aria-expanded="false">
+						<i class="mdi mdi-arrange-send-backward"></i>
+						<span class="hide-menu">Expenses</span>
+					</a>
+					<ul aria-expanded="false" class="collapse">
+						<li><a href="{{ route('expenses.type_list') }}">Types</a></li>
+						{{-- <li><a href="{{ route('expenses.list') }}">List</a></li> --}}
 					</ul>
 				</li>
 				

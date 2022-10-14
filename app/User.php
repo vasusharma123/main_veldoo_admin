@@ -28,9 +28,9 @@ class User extends Authenticatable implements HasMedia
      *
      * @var array
      */
-    protected $fillable = [
-        'name','first_name','last_name','email','image','location','lat','lng','user_type','status','zip','addresses','password','verify','device_type','device_token','fcm_token','state','country_code','phone','city','availability','country','step','earned_points','spent_points','created_by'
-    ];
+	protected $fillable = [
+		'name', 'first_name', 'last_name', 'email', 'image', 'location', 'lat', 'lng', 'user_type', 'status', 'zip', 'addresses', 'password', 'verify', 'device_type', 'device_token', 'fcm_token', 'state', 'country_code', 'phone', 'city', 'availability', 'country', 'step', 'earned_points', 'spent_points', 'created_by', 'street', 'second_country_code', 'second_phone_number'
+	];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -226,7 +226,7 @@ if(!empty($car_data)){
             'email' => $this->email,
             'country_code' =>(int)$this->country_code,
             'phone' => $this->phone,
-            'image' => ($this->image) ? (url('storage/user/'.$this->id.'/'.$this->image)) : ('null'),
+            'image' => ($this->image) ? url('storage/app/public/'.$this->image) : ('null'),
             'latitude' => $this->current_lat,
             'longitude' => $this->current_lng,
             'country' => $this->country,
@@ -350,4 +350,9 @@ if(!empty($car_data)){
 	// public function user_data(){
 	// 	return $this->hasOne(UserData::class,'user_id','id');
 	// 	}
+
+	function ride()
+	{
+		return $this->hasOne(Ride::class, 'driver_id', 'id');
+	}
 }

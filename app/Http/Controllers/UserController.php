@@ -751,8 +751,9 @@ class UserController extends Controller
 		}
 		$input = $request->all();
 		if(!empty($request->phone)){
-			if(substr($request->phone, 0, 1) == 0){
-				$input['phone'] = substr_replace($request->phone,"",0,1);
+			$input['phone'] = str_replace(' ', '', $request->phone);
+			if(substr($input['phone'], 0, 1) == 0){
+				$input['phone'] = substr_replace($input['phone'],"",0,1);
 			}
 		}
 		unset($input['_method'],$input['_token'],$input['image_tmp']);

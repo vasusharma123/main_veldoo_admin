@@ -48,18 +48,18 @@
 													?>
 												</div>
 											</div>
-											
+
 											<div class="form-group">
 												<?php
-												echo Form::label('first_name', 'First Name',['class'=>'control-label']);
-												echo Form::text('first_name',null,['class'=>'form-control','required'=>true]);
+												echo Form::label('name', 'Company Name', ['class' => 'control-label']);
+												echo Form::text('name', null, ['class' => 'form-control', 'required' => true]);
 												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('last_name', 'Last Name',['class'=>'control-label']);
-												echo Form::text('last_name',null,['class'=>'form-control','required'=>true]);
-												?>
+		
+												@error('name')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror
 											</div>
 										
 											<div class="form-group">
@@ -88,6 +88,56 @@
 												echo Form::label('password', 'Password',['class'=>'control-label']);
 												echo Form::password('password',['class'=>'form-control','required'=>false]);
 												?>
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('country', 'Country',['class'=>'control-label']);
+												echo Form::text('country',null,['class'=>'form-control','required'=>true]);
+												?>
+												@error('country')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('state', 'State',['class'=>'control-label']);
+												echo Form::text('state',null,['class'=>'form-control']);
+												?>
+												@error('state')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('city', 'City',['class'=>'control-label']);
+												echo Form::text('city',null,['class'=>'form-control','required'=>true]);
+												?>
+												@error('city')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('street', 'Street',['class'=>'control-label']);
+												echo Form::text('street',null,['class'=>'form-control']);
+												?>
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('zip', 'Zip Code',['class'=>'control-label']);
+												echo Form::text('zip',null,['class'=>'form-control','required'=>true]);
+												?>
+												@error('zip')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
 											</div>
 											<div class="form-group">
 												<?php

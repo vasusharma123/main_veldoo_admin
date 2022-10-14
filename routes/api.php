@@ -39,6 +39,7 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('check_user_by_phone', 'UserController@checkRegisteredUser');
 	Route::get('settings', 'UserController@settings');
 	Route::get('rideAssignstoNext', 'UserController@rideAssignstoNext');
+	Route::get('expense/types', 'ExpenseController@types');
 });
 
 #CATEGORY GROUP
@@ -193,6 +194,11 @@ Route::post('forgot/password', 'API\ForgotPasswordController')->name('forgot.pas
 Route::group(['namespace' => 'API', 'prefix' => 'user_web'], function () {
 	Route::post('book_ride', 'UserWebController@book_ride');
 	Route::post('create_ride_driver', 'UserWebController@create_ride_driver');
+});
+Route::group(['namespace' => 'API','middleware' => ['auth:api','driver_still_active']], function () {
+	Route::post('expense/add', 'ExpenseController@add');
+	Route::get('expense/list', 'ExpenseController@list');
+	Route::get('expense/my_rides', 'ExpenseController@my_rides');
 });
 
 //TOPIC GROUP

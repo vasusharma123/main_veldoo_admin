@@ -33,8 +33,7 @@ class UserWebController extends Controller
             'pick_lng' => 'required',
             'pickup_address' => 'required',
             'car_type' => 'required',
-            'ride_time' => 'required',
-            'dest_address' => 'required'
+            'ride_time' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -53,7 +52,7 @@ class UserWebController extends Controller
 
             $ride->user_id = $user->id;
             $ride->pickup_address = $request->pickup_address;
-            $ride->dest_address = $request->dest_address;
+            $ride->dest_address = $request->dest_address??"";
             $ride->passanger = $request->passanger;
             $ride->note = $request->note;
             $ride->ride_type = 1;

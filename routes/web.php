@@ -57,24 +57,29 @@ Route::group(['middleware' => 'guest'], function(){
 	Route::post('/password/reset/{token}', 'Auth\ResetPasswordController@reset');
 	Route::get('/password/success', ['as'=>'password.success','uses'=>'UserController@guest_message']);
 }); 
-Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 
-	Route::get('dashboard',  ['as'=>'users.dashboard','uses'=>'UserController@dashboard']);
-	Route::get('logout',  ['uses'=>'UserController@logout']);
-	
-	Route::get('/users/import',  ['as'=>'users.import','uses'=>'UserController@userImport']);
-	Route::get('/users/profile',  ['as'=>'users.profile','uses'=>'UserController@profile']);
-	Route::get('/users/settings',  ['as'=>'users.settings','uses'=>'UserController@settings']);
-	Route::get('/users/vouchers',  ['as'=>'users.voucher','uses'=>'UserController@vouchers']);
-	Route::match(['put', 'patch'], '/users/vouchersUpdate',['as'=>'users.vouchersUpdate','uses'=>'UserController@vouchersUpdate']);
-		Route::match(['put', 'patch'], '/users/{user}/profileUpdate',['as'=>'users.profileUpdate','uses'=>'UserController@profileUpdate']);
-	Route::match(['put', 'patch'], '/users/settingsUpdate',['as'=>'users.settingsUpdate','uses'=>'UserController@settingsUpdate']);
-	Route::match(['put', 'patch'], '/users/{user}/changePassword',['as'=>'users.changePassword','uses'=>'UserController@changePassword']);
-    Route::resources(['bookings'=>'BookingController']);
-	Route::get('/update-lat-long','UserController@updateLatLong');
-});  
-	Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
-		Route::get('/booking/{id}/user','BookingController@userDetail');
+Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
+	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
+	Route::get('logout',  ['uses' => 'UserController@logout']);
+	Route::get('/users/import',  ['as' => 'users.import', 'uses' => 'UserController@userImport']);
+	Route::get('/users/profile',  ['as' => 'users.profile', 'uses' => 'UserController@profile']);
+	Route::get('/users/settings',  ['as' => 'users.settings', 'uses' => 'UserController@settings']);
+	Route::get('/users/vouchers',  ['as' => 'users.voucher', 'uses' => 'UserController@vouchers']);
+	Route::match(['put', 'patch'], '/users/vouchersUpdate', ['as' => 'users.vouchersUpdate', 'uses' => 'UserController@vouchersUpdate']);
+	Route::match(['put', 'patch'], '/users/{user}/profileUpdate', ['as' => 'users.profileUpdate', 'uses' => 'UserController@profileUpdate']);
+	Route::match(['put', 'patch'], '/users/settingsUpdate', ['as' => 'users.settingsUpdate', 'uses' => 'UserController@settingsUpdate']);
+	Route::match(['put', 'patch'], '/users/{user}/changePassword', ['as' => 'users.changePassword', 'uses' => 'UserController@changePassword']);
+	Route::resources(['bookings' => 'BookingController']);
+	Route::get('/update-lat-long', 'UserController@updateLatLong');
+	Route::get('expenses/type_list', 'ExpensesController@type_list')->name('expenses.type_list');
+	Route::post('expenses/type_add', 'ExpensesController@type_add')->name('expenses.type_add');
+	Route::post('expenses/type_edit', 'ExpensesController@type_edit')->name('expenses.type_edit');
+	Route::post('expenses/type_delete', 'ExpensesController@type_delete')->name('expenses.type_delete');
+	// Route::get('expenses/list', 'ExpensesController@list')->name('expenses.list');
+});
+
+Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
+	Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
 	Route::get('/drivers',  ['as'=>'users.drivers','uses'=>'UserController@driver']);
 	Route::post('/driver/make_driver_logout',  ['as'=>'driver.make_driver_logout','uses'=>'UserController@make_driver_logout']);
@@ -86,10 +91,15 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
 	
 
-	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','daily-report'=>'DailyReportController','contact-support'=>'ContactSupportController','notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
+	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController','notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
 
 	
-	
+	Route::get('daily-report','DailyReportController@index')->name('daily-report.index');
+	Route::get('report/vehicles','DailyReportController@vehicles')->name('daily-report.vehicles');
+	Route::post('report/vehicle_export','DailyReportController@vehicle_export')->name('daily-report.vehicle_export');
+	Route::get('report/vehicle_mileage','DailyReportController@vehicle_mileage')->name('daily-report.vehicle_mileage');
+	Route::post('report/vehicle_mileage_export','DailyReportController@vehicle_mileage_export')->name('daily-report.vehicle_mileage_export');
+
 	Route::post('vehicle-type/change_status','VehicleTypeController@change_status');
 	Route::post('vehicle-type/delete','VehicleTypeController@destroy');
     Route::post('company/delete','CompanyController@destroy');
@@ -123,8 +133,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	
 	
-	});
-	Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){	
+});
+Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){	
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
 	Route::get('past-bookings','BookingController@pastBooking');
 	Route::get('upcoming-bookings','BookingController@upcomingBooking');
@@ -142,7 +152,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function(){
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);
 		//Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
-	});
+});
 
 
 Route::get('/book-ride','RideManagementController@bookRide');
