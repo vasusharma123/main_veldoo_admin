@@ -38,7 +38,7 @@ class UserWebController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return response()->json(['status' => 0, 'message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $validator->errors()->first(), 'error' => $validator->errors()]);
         }
 
         DB::beginTransaction();
@@ -90,10 +90,10 @@ class UserWebController extends Controller
             return response()->json(['status' => 1, 'message' => 'Ride Booked successfully'], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
-            return response()->json(['status' => 0, 'message' => $exception->getMessage()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         } catch (\Exception $exception) {
             DB::rollback();
-            return response()->json(['status' => 0, 'message' => $exception->getMessage()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
     }
 
@@ -113,7 +113,7 @@ class UserWebController extends Controller
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return response()->json(['status' => 0, 'message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $validator->errors()->first(), 'error' => $validator->errors()]);
         }
 
         DB::beginTransaction();
@@ -190,12 +190,12 @@ class UserWebController extends Controller
                     $driverids[] = $driver['id'];
                 }
             } else {
-                return response()->json(['message' => "No Driver Found"], $this->warningCode);
+                return response()->json(['status' => 0, 'message' => "No Driver Found"]);
             }
             if (!empty($driverids)) {
                 $driverids = implode(",", $driverids);
             } else {
-                return response()->json(['message' => "No Driver Found"], $this->warningCode);
+                return response()->json(['status' => 0, 'message' => "No Driver Found"]);
             }
 
             $ride->driver_id = null;
@@ -245,13 +245,13 @@ class UserWebController extends Controller
             $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
             $rideData->save();
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
+            return response()->json(['status' => 1, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
-            return response()->json(['status' => 0, 'message' => $exception->getMessage()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         } catch (\Exception $exception) {
             DB::rollback();
-            return response()->json(['status' => 0, 'message' => $exception->getMessage()], $this->warningCode);
+            return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
     }
 }

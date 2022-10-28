@@ -63,7 +63,7 @@
 											</div>
 											<div class="form-group">
 												<?php
-												echo Form::label('user_name', 'Username',['class'=>'control-label']);
+												echo Form::label('user_name', 'Company Name',['class'=>'control-label']);
 												echo Form::text('user_name',null,['class'=>'form-control','required'=>true]);
 												?>
 

@@ -50,7 +50,7 @@ class ExpenseController extends Controller
                     $fileName = Storage::disk('public')->putFileAs(
                         'expenses',
                         $request->file('attachments')[$file_key],
-                        'expense' . rand(0, 10) . time() . rand(0, 10) . $file->extension()
+                        'expense' . rand(0, 10) . time() . rand(0, 10) .'.'. $file->extension()
                     );
 
                     $attachmentObj = new ExpenseAttachment;
@@ -74,7 +74,8 @@ class ExpenseController extends Controller
     {
         $userDetail = Auth::user();
         $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status'])->where(['driver_id' => $userDetail->id])->orderBy('id', 'desc')->paginate(20);
-        return response()->json(['status' => 1, 'message' => 'List of my expenses', 'data' => $expense_list], $this->successCode);
+        $total_expense = Expense::where(['driver_id' => $userDetail->id])->sum('amount');
+        return response()->json(['status' => 1, 'message' => 'List of my expenses', 'data' => $expense_list, 'total_expense' => $total_expense], $this->successCode);
     }
 
     public function my_rides()

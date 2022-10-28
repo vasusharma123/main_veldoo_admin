@@ -6,9 +6,12 @@ use Config;
 use App\Page;
 use App\Ride;
 use App\User;
+use App\Price;
+use App\OtpVerification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\API\UserWebController;
 
 class PageController extends Controller
 {
@@ -297,6 +300,53 @@ if($_REQUEST['cm'] == 2)
 	}
 	public function cancelpayment() {
 		echo "<h1>Sorry Your Payment is Canceled</h1>"; die;
+	}
+
+	public function booking() {
+		$vehicle_types = Price::orderBy('sort')->get();
+		return view('booking')->with(['vehicle_types' => $vehicle_types]);
+	}
+
+	public function booking_form(Request $request) {
+		if(empty($request->carType)){
+			return redirect()->route("booking");
+		}
+		$vehicle_type = Price::find($request->carType);
+		$input = $request->all();
+		return view('booking_form')->with(['vehicle_type' => $vehicle_type, 'input' => $input]);
+	}
+
+	public function send_otp_before_ride_booking(Request $request){
+		$expiryMin = config('app.otp_expiry_minutes');
+		$otp = '8765';
+		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+		OtpVerification::updateOrCreate(
+			['country_code' => $request->country_code, 'phone' => $request->phone],
+			['otp' => $otp, 'expiry' => $endTime]
+		);
+		return response()->json(['status' => 1,'message' => 'OTP is sent to Your Mobile Number']);
+	}
+
+	public function verify_otp_and_ride_booking(Request $request)
+	{
+		$expiryMin = config('app.otp_expiry_minutes');
+		$now = Carbon::now();
+		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp])->first();
+		if (empty($haveOtp)) {
+			return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+		}
+
+		if ($now->diffInMinutes($haveOtp->updated_at) > $expiryMin) {
+			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+		}
+		$haveOtp->delete();
+
+		$webbj = new UserWebController;
+		if ($now->diffInMinutes($request->ride_time) <= 15) {
+			return $webbj->create_ride_driver($request);
+		} else {
+			return $webbj->book_ride($request);
+		}
 	}
 
 }

@@ -429,7 +429,7 @@ class UserController extends Controller
 			$token =  $user->createToken('auth')->accessToken;
 			$user = $this->getRafrenceUser($user->id);
 
-			$driverhoosecar = DriverChooseCar::where(['user_id' => $user->id])->orderBy('id', 'desc')->first();
+			$driverhoosecar = DriverChooseCar::where(['user_id' => $user->id, 'logout' => 0])->orderBy('id', 'desc')->first();
 			if (!empty($driverhoosecar)) {
 				$driverhoosecar->logout = 1;
 				$driverhoosecar->save();
@@ -472,7 +472,7 @@ class UserController extends Controller
 		//$userData = User::where('phone', $request->phone)->first();
 		Auth::login($userData);
 		Auth::user()->AauthAcessToken()->delete();
-		$driverchoosecar = DriverChooseCar::where(['user_id' => $userData->id])->orderBy('id', 'desc')->first();
+		$driverchoosecar = DriverChooseCar::where(['user_id' => $userData->id, 'logout' => 0])->orderBy('id', 'desc')->first();
 		if (!empty($driverchoosecar)) {
 			$driverchoosecar->logout = 1;
 			$driverchoosecar->save();
@@ -1291,7 +1291,7 @@ class UserController extends Controller
 		}
 
 		try {
-			DriverChooseCar::where('user_id', '=', $user_id)->update(array('logout' => 1));
+			DriverChooseCar::where(['user_id' => $user_id, 'logout' => 0])->update(array('logout' => 1));
 
 			$driverhoosencar = new DriverChooseCar();
 			$driverhoosencar->car_id = $request->car_id;
@@ -1415,7 +1415,7 @@ class UserController extends Controller
 			DriverStayActiveNotification::where(['driver_id' => $user_id])->delete();
 		}
 		if (!empty($request->car_id)) {
-			$driverhoosecar = DriverChooseCar::where(['user_id' => $user_id, 'car_id' => $request->car_id])->orderBy('id', 'desc')->first();
+			$driverhoosecar = DriverChooseCar::where(['user_id' => $user_id, 'car_id' => $request->car_id, 'logout' => 0])->orderBy('id', 'desc')->first();
 			if (!empty($driverhoosecar)) {
 				if (!empty($request->mileage)) {
 					$driverhoosecar->logout_mileage = $request->mileage;
@@ -6690,17 +6690,18 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						}
 					}
 				} elseif ($request->type == 2) {
+					$todayDate = Carbon::today()->format('Y-m-d H:i:s');
 					if ($user->user_type == 1) {
-						$rides = Ride::where('user_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where('status', 3)->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
+						$rides = Ride::where('user_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 					} elseif ($user->user_type == 2) {
 						if ($user->is_master == 1) {
 							if ($request->master_driver == 1) {
-								$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+								$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 							} else {
-								$rides = Ride::where('status', 3)->whereDate('rides.ride_time', '>=', $userlogintime)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+								$rides = Ride::where('status', 3)->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 							}
 						} else {
-							$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+							$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 						}
 					}
 				} elseif ($request->type == 3) {

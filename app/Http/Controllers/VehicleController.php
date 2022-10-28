@@ -230,8 +230,10 @@ class VehicleController extends Controller
         \App\Vehicle::where('id', $id)->update($input);
         if(isset($request->mileage)){
             $choosenVehicle = DriverChooseCar::where(['car_id' => $id])->latest()->first();
-            $choosenVehicle->logout_mileage = $request->mileage;
-            $choosenVehicle->save();
+            if($choosenVehicle->logout_mileage != $request->mileage){
+                $choosenVehicle->logout_mileage = $request->mileage;
+                $choosenVehicle->save();
+            }
         }
         
         return back()->with('success', __('Record updated!'));

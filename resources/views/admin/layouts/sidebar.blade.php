@@ -140,8 +140,8 @@
 						<span class="hide-menu">{{ trans("admin.Reports And Insights") }}</span>
 					</a>
 					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('daily-report.index') }}">{{ trans("admin.Daily Report") }}</a></li>
-						<li><a href="{{ route('daily-report.vehicles') }}">Vehicle Reports</a></li>
+						{{-- <li><a href="{{ route('daily-report.index') }}">{{ trans("admin.Daily Report") }}</a></li>
+						<li><a href="{{ route('daily-report.vehicles') }}">Vehicle Reports</a></li> --}}
 						<li><a href="{{ route('daily-report.vehicle_mileage') }}">Vehicles Mileage Report</a></li>
 					</ul>
 				</li>

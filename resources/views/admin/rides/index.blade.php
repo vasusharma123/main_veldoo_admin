@@ -191,7 +191,7 @@
                 function(settings, data, dataIndex) {
                     var min = $('#min').val()
                     var max = $('#max').val()
-                    var createdAt = data[1]; // Our date column in the table
+                    var createdAt = data[2]; // Our date column in the table
                     //createdAt=createdAt.split(" ");
                     if (min != '' && max != '') {
                         var startDate = moment(min, 'DD-MM-YYYY');
