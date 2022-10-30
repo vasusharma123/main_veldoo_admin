@@ -2514,29 +2514,35 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		try {
 			$resnewarray = Ride::with(['user', 'driver']);
+			$rideWithPayment = Ride::select(DB::raw("sum(ride_cost) as ride_cost, payment_type"));
 			if ($request->type == 1) {
 				$month = $request->month;
 				$year = $request->year;
 				$resnewarray = $resnewarray->whereMonth('ride_time', date("$month"))->whereYear('ride_time', date("$year"));
+				$rideWithPayment = $rideWithPayment->whereMonth('ride_time', date("$month"))->whereYear('ride_time', date("$year"));
 			} else if ($request->type == 2) {
 				$date = $request->date;
 				$resnewarray = $resnewarray->whereDate('ride_time', date("$date"));
+				$rideWithPayment = $rideWithPayment->whereDate('ride_time', date("$date"));
 			} else if ($request->type == 3) {
 				$start_date = Carbon::parse($request->start_date)
 					->toDateTimeString();
 				$end_date = Carbon::parse($request->end_date)
 					->toDateTimeString();
 				$resnewarray = $resnewarray->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
+				$rideWithPayment = $rideWithPayment->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 			}
 			if (!empty($user_id)) {
 				$resnewarray = $resnewarray->where(['driver_id' => $user_id]);
+				$rideWithPayment = $rideWithPayment->where(['driver_id' => $user_id]);
 			}
 			$resnewarray = $resnewarray->where(['status' => 3]);
 			$paginated_rides = $resnewarray->orderBy('id', 'desc')->paginate(20);
+			$rideWithPayment = $rideWithPayment->where(['status' => 3])->groupBy('payment_type')->get();
 
 			$total_earning = (float)$resnewarray->sum('ride_cost');
 			$cash_earning = (float)$resnewarray->where(['payment_type' => 'Cash'])->sum('ride_cost');
-			return response()->json(['message' => __('Successfully.'), 'data' => $paginated_rides, 'total_earning' => $total_earning, 'cash_earning' => $cash_earning], $this->successCode);
+			return response()->json(['message' => __('Successfully.'), 'data' => $paginated_rides, 'total_earning' => $total_earning, 'cash_earning' => $cash_earning, 'overall_earnings' => $rideWithPayment], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {

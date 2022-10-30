@@ -197,7 +197,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'user_web'], function () {
 });
 Route::group(['namespace' => 'API','middleware' => ['auth:api','driver_still_active']], function () {
 	Route::post('expense/add', 'ExpenseController@add');
-	Route::get('expense/list', 'ExpenseController@list');
+	Route::post('expense/list', 'ExpenseController@list');
 	Route::get('expense/my_rides', 'ExpenseController@my_rides');
 });
 

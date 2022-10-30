@@ -70,11 +70,30 @@ class ExpenseController extends Controller
         }
     }
 
-    public function list()
+    public function list(Request $request)
     {
         $userDetail = Auth::user();
-        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status'])->where(['driver_id' => $userDetail->id])->orderBy('id', 'desc')->paginate(20);
-        $total_expense = Expense::where(['driver_id' => $userDetail->id])->sum('amount');
+        $user_id = $userDetail->id;
+		if (!empty($request->user_id)) {
+			$user_id = $request->user_id;
+		}
+        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status']);
+        if ($request->type == 1) {
+            $month = $request->month;
+            $year = $request->year;
+            $expense_list = $expense_list->whereMonth('created_at', date("$month"))->whereYear('created_at', date("$year"));
+        } else if ($request->type == 2) {
+            $date = $request->date;
+            $expense_list = $expense_list->whereDate('created_at', date("$date"));
+        } else if ($request->type == 3) {
+            $start_date = Carbon::parse($request->start_date)
+                ->toDateTimeString();
+            $end_date = Carbon::parse($request->end_date)
+                ->toDateTimeString();
+            $expense_list = $expense_list->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
+        }
+        $expense_list = $expense_list->where(['driver_id' => $user_id])->orderBy('id', 'desc')->paginate(20);
+        $total_expense = Expense::where(['driver_id' => $user_id])->sum('amount');
         return response()->json(['status' => 1, 'message' => 'List of my expenses', 'data' => $expense_list, 'total_expense' => $total_expense], $this->successCode);
     }
 
