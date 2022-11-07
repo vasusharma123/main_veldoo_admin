@@ -32,7 +32,7 @@
 	<!--SELECT 2-->
     <link href="{{ URL::asset('resources') }}/assets/plugins/select2/dist/css/select2.css" rel="stylesheet">
 	<!--bootstrap3-->
-	
+	@yield ('css')
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

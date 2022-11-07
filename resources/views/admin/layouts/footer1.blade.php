@@ -74,7 +74,7 @@
 		}
 		$(function() {
 			$('.date').bootstrapMaterialDatePicker({ date: true,time: false, format: 'YYYY-MM-DD' });
-			$('body').on('click', '.pagination a', function(e) {
+			$('body').on('click', '.pagination:not(.laravel_pagination) a', function(e) {
 				e.preventDefault();
 				$("#loading").fadeIn("slow");
 				var url = $(this).attr('href');  
@@ -141,7 +141,6 @@ $(document).ready(function(){
 	  
     });  
 </script>
-		</script>
 		 @yield ('footer_scripts')
 	</body>
 </html>

@@ -214,7 +214,7 @@
 					</a>
 					<ul aria-expanded="false" class="collapse">
 						<li><a href="{{ route('expenses.type_list') }}">Types</a></li>
-						{{-- <li><a href="{{ route('expenses.list') }}">List</a></li> --}}
+						<li><a href="{{ route('expenses.list') }}">List</a></li>
 					</ul>
 				</li>
 				

@@ -80,7 +80,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::post('expenses/type_add', 'ExpensesController@type_add')->name('expenses.type_add');
 	Route::post('expenses/type_edit', 'ExpensesController@type_edit')->name('expenses.type_edit');
 	Route::post('expenses/type_delete', 'ExpensesController@type_delete')->name('expenses.type_delete');
-	// Route::get('expenses/list', 'ExpensesController@list')->name('expenses.list');
+	Route::get('expenses/list', 'ExpensesController@list')->name('expenses.list');
+	Route::get('expenses/show/{id}', 'ExpensesController@show')->name('expenses.show');
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
@@ -92,7 +93,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::match(['put', 'patch'],'driver/update/{id}','UserController@updateDriver');
 	Route::get('driver/create','UserController@createDriver');
 	
-	Route::get('driver/{id}','UserController@showDriver');
+	Route::get('driver/{id}','UserController@showDriver')->name('showDriver');
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
 	
 

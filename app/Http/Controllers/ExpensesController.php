@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Expense;
 use App\ExpenseAttachment;
 use App\ExpenseType;
+use App\User;
 
 class ExpensesController extends Controller
 {
@@ -45,10 +46,28 @@ class ExpensesController extends Controller
         return response()->json(['status' => 1, 'message' => 'Expense type deleted successfully']);
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $expenses = Expense::paginate(20);
-        return view('admin.expenses.list')->with(['title' => 'Expenses', 'action' => '', 'expenses' => $expenses]);
+        $expenses = new Expense;
+        $selected_driver = "";
+        $selected_expense_type = "";
+        if(!empty($request->driver)){
+            $selected_driver = $request->driver;
+            $expenses = $expenses->where(['driver_id' => $request->driver]);
+        }
+        if(!empty($request->expense_type)){
+            $selected_expense_type = $request->expense_type;
+            $expenses = $expenses->where(['type' => $request->expense_type]);
+        }
+        $expenses = $expenses->paginate(20);
+        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2])->get();
+        $expense_types = Expense::select('type')->groupBy('type')->orderBy('type')->get();
+        return view('admin.expenses.list')->with(['title' => 'Expenses', 'action' => '', 'expenses' => $expenses, 'drivers' => $drivers, 'expense_types' => $expense_types, 'selected_driver' => $selected_driver, 'selected_expense_type' => $selected_expense_type]);
+    }
+
+    public function show(Request $request, $id){
+        $expense_detail = Expense::find($id);
+        return view('admin.expenses.show')->with(['title' => 'Expense Detail', 'action' => '', 'expense_detail' => $expense_detail]);
     }
 
 }
