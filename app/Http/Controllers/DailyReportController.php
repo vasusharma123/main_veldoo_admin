@@ -11,7 +11,7 @@ use Carbon\Carbon;
 use App\Exports\VehicleReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Vehicle;
-use App\Exports\VehicleMileageReportExport;
+use App\Exports\ExpensesReportExport;
 
 
 class DailyReportController extends Controller
@@ -80,4 +80,25 @@ class DailyReportController extends Controller
         }
         return Excel::download(new VehicleMileageReportExport($input), 'Vehicle Mileage Veldoo.xlsx');
     }
+
+    public function expenses(Request $request)
+    {
+        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2])->get();
+        return view("admin.daily_report.expenses")->with(['title' => 'Expenses Report', 'action' => '', 'drivers' => $drivers]);
+    }
+
+    public function expenses_export(Request $request)
+    {
+        $rules = [
+            'start_date' => 'required',
+            'end_date' => 'required'
+        ];
+        $request->validate($rules);
+        $input = $request->all();
+        if (strtotime($request->start_date) > strtotime($request->end_date)) {
+            return back()->with("warning", "End Date must be greater than start date");
+        }
+        return Excel::download(new ExpensesReportExport($input), 'Expenses Veldoo.xlsx');
+    }
+
 }

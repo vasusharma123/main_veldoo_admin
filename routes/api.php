@@ -199,6 +199,7 @@ Route::group(['namespace' => 'API','middleware' => ['auth:api','driver_still_act
 	Route::post('expense/add', 'ExpenseController@add');
 	Route::post('expense/list', 'ExpenseController@list');
 	Route::get('expense/my_rides', 'ExpenseController@my_rides');
+	Route::get('notification/last_unseen', 'NotificationController@last_unseen');
 });
 
 //TOPIC GROUP

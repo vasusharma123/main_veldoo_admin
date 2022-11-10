@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Stopover;
 use App\User;
 use App\Vehicle;
+use Exception;
+use Twilio\Rest\Client;
 
 class Ride extends Model
 {
@@ -204,5 +206,45 @@ class Ride extends Model
 	public function company_data()
 	{
 		return $this->belongsTo(User::class, 'company_id', 'id');
+	}
+
+	public function accept_ride_sms_notify($user, $choosed_vehicle)
+	{
+		try {
+			$sid = env("TWILIO_ACCOUNT_SID");
+			$token = env("TWILIO_AUTH_TOKEN");
+			$twilio = new Client($sid, $token);
+
+			$twilio->messages
+			->create(
+				"+$user->country_code.$user->phone", // to
+				[
+					"body" => "Your driver is on the way to pick you up on - ".$choosed_vehicle->vehicle->model.", ".$choosed_vehicle->vehicle->vehicle_number_plate,
+					"from" => env("TWILIO_FROM_SEND")
+				]
+			);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+	public function driver_reach_sms_notify($user)
+	{
+		try {
+			$sid = env("TWILIO_ACCOUNT_SID");
+			$token = env("TWILIO_AUTH_TOKEN");
+			$twilio = new Client($sid, $token);
+
+			$twilio->messages
+			->create(
+				"+$user->country_code.$user->phone", // to
+				[
+					"body" => "Your driver is here to pick you up",
+					"from" => env("TWILIO_FROM_SEND")
+				]
+			);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
 	}
 }

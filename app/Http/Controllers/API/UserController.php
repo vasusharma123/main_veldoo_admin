@@ -64,6 +64,8 @@ use App\Helpers\Notifications;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 use App\DriverStayActiveNotification;
+use Twilio\Rest\Client;
+use Exception;
 
 class UserController extends Controller
 {
@@ -862,6 +864,19 @@ class UserController extends Controller
 
 		$otp = rand(1000, 9999);
 		$data = array('name' => $otp);
+
+		$sid = env("TWILIO_ACCOUNT_SID");
+		$token = env("TWILIO_AUTH_TOKEN");
+		$twilio = new Client($sid, $token);
+
+		$twilio->messages
+			->create(
+				"+" . $request->country_code . ltrim($request->phone, "0"), // to
+				[
+					"body" => "Dear User, your Veldoo verification code is $otp. Use this to reset your password",
+					"from" => env("TWILIO_FROM_SEND")
+				]
+			);
 		/* 	$m = Mail::send('mail', $data, function($message) use ($request, $isUser) {
 			$message->to($isUser->email, 'OTP')->subject('OTP Verification Code');
 			
@@ -2067,6 +2082,7 @@ class UserController extends Controller
 			}
 			$ride->created_by = Auth::user()->id;
 			$ride->status = 0;
+			$ride->platform = Auth::user()->device_type;
 			//print_r($input); die;
 			$ride->save();
 			//	$ride= \App\Ride::create($input);
@@ -2932,28 +2948,25 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$title = 'Ride Accepted';
 					$message = 'Your booking accepted by the driver please check the driver detail';
 
-					$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
+					$userdata = User::find($ride['user_id']);
 					$deviceToken = $userdata['device_token'];
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 2;
 
-
+					$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
+					if ($ride->platform == 'web') {
+						$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
+					}
 
 					$deviceType = $userdata['device_type'];
 
-					$checkride = Ride::query()->where([['driver_id', '=', $user_id], ['status', '=', 0], ['car_type', '=', 4]])->first();
-					//print_r($checkride);
+					$checkride = Ride::where(['driver_id' => $user_id, 'status' => 0, 'car_type' => 4])->first();
 					if (!empty($checkride)) {
-
 						$ride->pool_number = $checkride['pool_number'];
 					}
 					$ride->status = 1;
-					if ($request->waiting == 0) {
-						$ride->waiting = 0;
-					}
-					if ($request->waiting == 1) {
-						$ride->waiting = 1;
-					}
+					$ride->vehicle_id = $choosed_vehicle->car_id;
+					$ride->waiting = $request->waiting??0;
 					$ride->driver_id = $user_id;
 					$message = "Ride Accepted Successfully";
 
@@ -3219,24 +3232,23 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 4) {
 
 					if ($ride['status'] == 4) {
-						return response()->json(['message' => "Ride already Reached"], $this->successCode);
+						return response()->json(['message' => "Driver already Reached"], $this->successCode);
 					}
 					$title = 'Driver Reached';
 					$message = 'Driver Reached at Pickup Location';
 
-					$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
+					$userdata = User::find($ride['user_id']);
 					$deviceToken = $userdata['device_token'];
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 7;
 
-
-
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					$ride->status = 4;
 					$message = "Driver Reached Successfully";
+					if ($ride->platform == 'web') {
+						$ride->driver_reach_sms_notify($userdata);
+					}
 				}
 				if ($request->status == 3) {
 
@@ -3826,26 +3838,21 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function notificationRead(Request $request)
 	{
 		$user = Auth::user();
 		$user_id = $user['id'];
-
-
 		try {
-
-
-			$values = Notification::where('user_id', $user_id)->update(['status' => 1]);
-
-
+			Notification::where('user_id', $user_id)->update(['status' => 1]);
 			return response()->json(['message' => 'Notification Updated successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function updateVehicle(Request $request)
 	{
 		$user = Auth::user();
@@ -5298,7 +5305,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		$ride->driver_id = null;
 		$ride->all_drivers = $driverids;
-
+		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = Ride::query()->find($ride->id);
 
@@ -5321,7 +5328,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$notification_data = [];
 			$ridehistory_data = [];
 			foreach ($driverids as $driverid) {
-				$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+				$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
 				$ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
 			}
 			Notification::insert($notification_data);
@@ -6227,6 +6234,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($request->distance)) {
 				$ride->distance = $request->distance;
 			}
+			$ride->platform = Auth::user()->device_type;
 			$ride->save();
 			$rideid = $ride->id;
 			$ride = Ride::query()->where([['id', '=', $rideid]])->first();
@@ -6584,103 +6592,24 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($user)) {
 				if ($request->type == 1) {
 					if ($user->user_type == 1) {
-						//$rides=Ride::where('user_id',$userId)->whereDate('rides.ride_time','>=',Carbon::today())->orderBy('id', 'desc')->with('driver')->paginate($this->limit);
-
 						$rides = Ride::where('user_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
 							$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 						})->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
 					} elseif ($user->user_type == 2) {
 						if ($user->is_master == 1) {
-							//$rides=Ride::whereDate('rides.ride_time','>=',Carbon::today())->orderBy('id', 'desc')->with('user')->paginate($this->limit);
-							//echo Carbon::today();
 							$globalridespending = Ride::where(['status' => -4])->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
-
-							$myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
-								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
-
-							$overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
-								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
-
-							$ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
-								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
-
-							$globalRideswaiting = Ride::whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query) {
-								$query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
 							$overallPendingRides = Ride::where(['status' => 0])->whereNull('driver_id')->whereDate('rides.ride_time', '>=', $userlogintime)->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
-
-							// $ownrides = Ride::where('driver_id', $userId)->where('ride_type', 3)->where('waiting', 0)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-							// 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $ownrideswaiting = Ride::where('driver_id', $userId)->where('ride_type', 3)->where('waiting', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-							// 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $globalrides = Ride::where(function ($query) use ($userId) {
-							// 	$query->where('driver_id', '!=', $userId)
-							// 		->orWhereNull('driver_id');
-							// })->where('ride_type', 3)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-							// 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $ownridesplanned = Ride::where('driver_id', $userId)->where('ride_type', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-							// 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $globalridesplanned = Ride::where(function ($query) use ($userId) {
-							// 	$query->where('driver_id', '!=', $userId)
-							// 		->orWhereNull('driver_id');
-							// })->where('ride_type', 1)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-							// 	$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $ownsharerides = Ride::where([['driver_id', '=', $userId], ['actual_share_ride', '=', 1], ['ride_type', '=', 4], ['ride_time', '>=', $userlogintime]])->where(function ($query) {
-							// 	$query->orWhere([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-							// $globalsharerides = Ride::where([['actual_share_ride', '=', 1], ['ride_type', '=', 4], ['ride_time', '>=', $userlogintime]])->where(function ($query) {
-							// 	$query->orWhere([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-							// })->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver')->paginate($this->limit);
-
-
-							$x = 0;
 							$rides = array();
 							$newarray = array();
-							//for ($x = 0; $x <= 2; $x++) {
-
 							if ($request->master_driver == 1) {
-								$rides[0] = $myOngoingRides;
-								$rides[1] = $ownrideswaiting;
 
-
-								// $rides[2] = $ownrides;
-								// $rides[3] = $ownsharerides;
-								// $rides[4] = $ownridesplanned;
 							} else {
 								$rides[0] = $globalridespending;
-								$rides[1] = $overallOngoingRides;
-								$rides[2] = $globalRideswaiting;
-								$rides[3] = $overallPendingRides;
-
-
-								// $rides[4] = $ownrides;
-								// $rides[5] = $ownrideswaiting;
-								// $rides[6] = $globalrides;
-								// $rides[7] = $ownsharerides;
-								// $rides[8] = $globalsharerides;
-								// $rides[9] = $ownridesplanned;
-								// $rides[10] = $globalridesplanned;
+								$rides[1] = $overallPendingRides;
 							}
-							//print_r($rides);
 							foreach ($rides as $ridedata) {
-								//  echo $ridedata->total;
-								//var_dump($ridedata); die;
 								if (!empty($ridedata)) {
 									foreach ($ridedata as $datanew) {
 										$newarray[] = $datanew;
@@ -6689,9 +6618,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							}
 							$rides = $newarray;
 						} else {
-							//	$rides=Ride::where('driver_id',$userId)->whereDate('rides.ride_time','>=',Carbon::today())->orderBy('id', 'desc')->with('user')->paginate($this->limit);
 							$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
-								$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+								$query->where([['status', '=', 0]]);
 							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 						}
 					}
@@ -6733,7 +6661,53 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 						}
 					}
-				} elseif ($request->type == 4) {
+				} else if ($request->type == 4) {
+					if ($user->user_type == 1) {
+						$rides = Ride::where('user_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+							$query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+						})->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
+					} elseif ($user->user_type == 2) {
+						if ($user->is_master == 1) {
+							$myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
+								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+
+							$overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+
+							$ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
+								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+
+							$globalRideswaiting = Ride::whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query) {
+								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+
+							$rides = array();
+							$newarray = array();
+							if ($request->master_driver == 1) {
+								$rides[0] = $myOngoingRides;
+								$rides[1] = $ownrideswaiting;
+							} else {
+								$rides[0] = $overallOngoingRides;
+								$rides[1] = $globalRideswaiting;
+							}
+							foreach ($rides as $ridedata) {
+								if (!empty($ridedata)) {
+									foreach ($ridedata as $datanew) {
+										$newarray[] = $datanew;
+									}
+								}
+							}
+							$rides = $newarray;
+						} else {
+							$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+								$query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+						}
+					}
+				} elseif ($request->type == 5) {
 					if ($user->user_type == 1) {
 						return response()->json(['message' => 'Record Not found'], $this->warningCode);
 					} elseif ($user->user_type == 2) {
@@ -6779,7 +6753,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$b++;
 					}
 				}
-				if ($request->type == 1) {
+				if ($request->type == 1 || $request->type == 4) {
 					if ($user->user_type == 2 && $user->is_master == 1) {
 						//echo "true"; die;
 						$datarides['current_page'] = 1;

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     protected $fillable = [
-        'title','description','type','user_id','status','created_at','updated_at'
+        'title', 'description', 'type', 'user_id', 'status', 'additional_data', 'created_at', 'updated_at'
     ];
 
     public static function saveData($inputArr){
@@ -34,4 +34,10 @@ class Notification extends Model
 	{
 		return (int)$value;
 	} */
+
+    public function getAdditionalDataAttribute($additional_data){
+        if(!empty($additional_data)){
+            return json_decode($additional_data);
+        }
+    }
 }

@@ -50,7 +50,6 @@
         }
 
         .input_field:focus,
-        .input_field:valid,
         .select_field:focus {
             border-color: #000;
             box-shadow: none;
@@ -100,13 +99,13 @@
             padding: 0px;
         }
 
-        .value {
+        /* .value {
             color: black;
             font-size: 20px;
             font-weight: 600;
             padding: 15px;
             border-radius: 5px;
-        }
+        } */
 
         .btn {
             border-radius: 200px !important;
@@ -185,20 +184,20 @@
             color: #cc4452;
         }
 
-        form .form-group {
+        form .field_icons {
             display: flex;
             flex-flow: initial;
             align-items: self-end;
         }
 
-        form .form-group label {
+        /* form .form-group label {
             font-size: 13px;
             font-style: italic !important;
             font-weight: 600;
             margin-right: 10px;
             min-width: 10px;
             white-space: nowrap;
-        }
+        } */
 
         img.icon_img.car_walk.img-repsonsive {
             max-width: 41px;
@@ -281,11 +280,11 @@
                 padding: 0;
             }
 
-            .value {
+            /* .value {
                 color: black;
                 font-size: 15px;
                 font-weight: 600;
-            }
+            } */
 
             form .form-group label {
                 min-width: 8px;
@@ -335,14 +334,14 @@
                 padding-left: 0px;
             }
 
-            .value {
+            /* .value {
                 color: black;
                 font-size: 14px;
                 font-weight: 600;
                 white-space: nowrap;
                 width: 100%;
                 padding: 0px;
-            }
+            } */
         }
 
         @media (min-width: 550px) and (max-width:992px) {
@@ -350,14 +349,14 @@
                 height: 100%;
             }
 
-            .value {
+            /* .value {
                 color: black;
                 font-size: 14px;
                 font-weight: 600;
                 white-space: nowrap;
                 width: 100%;
                 padding: 0px;
-            }
+            } */
 
             .value_point {
                 margin-bottom: 0px;
@@ -375,13 +374,13 @@
         }
 
         @media (min-width: 1020px) {
-            .value {
+            /* .value {
                 color: black;
                 font-size: 13px;
                 font-weight: 600;
                 padding: 0 3px 0px 0px;
                 border-radius: 5px;
-            }
+            } */
         }
 
         @media (min-width: 768px) {
@@ -421,8 +420,8 @@
                                 </div>
                                 <div class="row w-100 m-0 filter_booking_section_row">
                                     <div class="col-lg-4 col-md-4 col-sm-5 col-5">
-                                        <div class="form-group">
-                                            <i class="fas fa-taxi fa-2x"></i>
+                                        <div class="form-group field_icons">
+                                            <i class="fas fa-taxi fa-2x mr-1"></i>
                                             <select class="form-control select_field p-0" id="carType" name="carType">
                                                 @if (!empty($vehicle_types))
                                                     @foreach ($vehicle_types as $vehicle_type)
@@ -437,8 +436,8 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                        <div class="form-group">
-                                            <i class="fas fa-male fa-2x ml-2"></i>
+                                        <div class="form-group field_icons">
+                                            <i class="fas fa-male fa-2x ml-2 mr-1"></i>
                                             <select class="form-control select_field" id="numberOfPassenger"
                                                 name="numberOfPassenger">
                                             </select>
@@ -463,28 +462,34 @@
                                 @csrf
                                 <div class="row row_fileterBooking show_case">
 
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-4 align-self-center">
-                                        <p class="value_point"><span class="value price_calculated">CHF ---</span></p>
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                                        <div class="form-group">
+                                            <p class="form-control"><span class="price_calculated">CHF ---</span></p>
+                                        </div>
                                     </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-4 col-4 align-self-center lst_col">
-                                        <p class="value_point"><span class="value distance_calculated">KM ---</span></p>
+                                    <div class="col-lg-3 col-md-3 col-sm-4 col-4 text-center lst_col">
+                                        <div class="form-group">
+                                            <p class="form-control"><span class="distance_calculated">KM ---</span></p>
+                                        </div>
                                     </div>
                                     <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center">
-                                        <input type="hidden" id="booking_pickup_address" name="pickup_address">
-                                        <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
-                                        <input type="hidden" id="booking_pickup_longitude" name="pickup_longitude">
-                                        <input type="hidden" id="booking_dropoff_address" name="dropoff_address">
-                                        <input type="hidden" id="booking_dropoff_latitude" name="dropoff_latitude">
-                                        <input type="hidden" id="booking_dropoff_longitude"
-                                            name="dropoff_longitude">
-                                        <input type="hidden" name="distance_calculated"
-                                            class="distance_calculated_input">
-                                        <input type="hidden" name="price_calculated" class="price_calculated_input">
-                                        <input type="hidden" id="booking_carType" name="carType">
-                                        <input type="hidden" id="booking_numberOfPassenger"
-                                            name="numberOfPassenger">
-                                        <button type="button" class="btn custom_btn book_online_now"
-                                            style="padding: 7px;">BOOK</a>
+                                        <div class="form-group">
+                                            <input type="hidden" id="booking_pickup_address" name="pickup_address">
+                                            <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
+                                            <input type="hidden" id="booking_pickup_longitude" name="pickup_longitude">
+                                            <input type="hidden" id="booking_dropoff_address" name="dropoff_address">
+                                            <input type="hidden" id="booking_dropoff_latitude" name="dropoff_latitude">
+                                            <input type="hidden" id="booking_dropoff_longitude"
+                                                name="dropoff_longitude">
+                                            <input type="hidden" name="distance_calculated"
+                                                class="distance_calculated_input">
+                                            <input type="hidden" name="price_calculated" class="price_calculated_input">
+                                            <input type="hidden" id="booking_carType" name="carType">
+                                            <input type="hidden" id="booking_numberOfPassenger"
+                                                name="numberOfPassenger">
+                                            <button type="button" class="btn custom_btn book_online_now"
+                                                style="padding: 7px;">NEXT</a>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

@@ -43,9 +43,9 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => $request->phone])->first();
+            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
             if (!$user) {
-                $user = User::create(['country_code' => $request->country_code, 'phone' => $request->phone, 'first_name' => $request->first_name]);
+                $user = User::create(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
 
             $ride = new Ride();
@@ -57,9 +57,10 @@ class UserWebController extends Controller
             $ride->note = $request->note;
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
-            if (!empty($request->alert_time)) {
-                $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
-            }
+            // if (!empty($request->alert_time)) {
+                // $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+            // }
+            $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
             $ride->alert_time = $request->alert_time;
             if (!empty($request->pick_lat)) {
                 $ride->pick_lat = $request->pick_lat;
@@ -85,6 +86,7 @@ class UserWebController extends Controller
                 $ride->distance = $request->distance;
             }
             $ride->status = 0;
+            $ride->platform = "web";
             $ride->save();
             DB::commit();
             return response()->json(['status' => 1, 'message' => 'Ride Booked successfully'], $this->successCode);
@@ -118,9 +120,9 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => $request->phone])->first();
+            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
             if (!$user) {
-                $user = User::create(['country_code' => $request->country_code, 'phone' => $request->phone, 'first_name' => $request->first_name]);
+                $user = User::create(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
             $ride = new Ride();
             $ride->user_id = $user->id;
@@ -148,6 +150,7 @@ class UserWebController extends Controller
             }
             $ride->ride_type = 3;
             $ride->created_by = $user->id;
+            $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
             } else {
@@ -223,7 +226,7 @@ class UserWebController extends Controller
                 $notification_data = [];
                 $ridehistory_data = [];
                 foreach ($driverids as $driverid) {
-                    $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                    $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                     $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                 }
                 Notification::insert($notification_data);

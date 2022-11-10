@@ -45,7 +45,6 @@
             box-shadow: none;
         }
         .input_field:focus,
-        .input_field:valid,
         .select_field:focus {
             border-color: #000;
             box-shadow: none;
@@ -82,14 +81,14 @@
         .form-control {
             font-weight: 400;
             color: #000;
-            font-size: 17px;
+            font-size: 15px;
         }
         .value {
-            color: black;
+            /* color: black;
             font-size: 13px;
             font-weight: 600;
             padding: 15px 0px;
-            border-radius: 5px;
+            border-radius: 5px; */
             white-space: nowrap;
         }
         .row.w-100.m-0.filter_booking_section_row .col-7 {
@@ -253,11 +252,11 @@
             .row.row_fileterBooking .col-4:nth-child(2) {
                 padding: 0;
             }
-            .value {
+            /* .value {
                 color: black;
                 font-size: 15px;
                 font-weight: 600;
-            }
+            } */
 
             form .form-group label {
                 min-width: 8px;
@@ -295,27 +294,27 @@
             .filter_booking_section_row .col-5 {
                 padding-right: 0px;
             }
-            .value {
+            /* .value {
                 color: black;
                 font-size: 15px;
                 font-weight: 600;
                 white-space: nowrap;
                 width: 100%;
                 padding: 0px;
-            }
+            } */
         }
         @media (min-width: 550px) and (max-width:992px){
             .map-booking{
                 height: 100%;
             }
-            .value {
+            /* .value {
                 color: black;
                 font-size: 15px;
                 font-weight: 600;
                 white-space: nowrap;
                 width: 100%;
                 padding: 0px;
-            }
+            } */
             .value_point{
                 margin-bottom: 15px;
             }
@@ -376,15 +375,14 @@
                                                 <input class="form-control" name="country_code" type="hidden"
                                                     id="country_code" value="41">
                                                 <input type="tel" id="txtPhone"
-                                                    class="txtbox form-control input_field" name="phone"
-                                                    id="phoneNumber" placeholder="Enter Phone Number" minlength="8" required />
+                                                    class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
                                                     <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="Now" required />
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
                                                         <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                                     </div>
                                                 </div>
@@ -395,9 +393,9 @@
                                     <div class="row w-100 m-0 filter_booking_section_row">
                                         <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
                                             <div class="form-group field_icons">
-                                                <i class="fas fa-taxi fa-2x"></i>
+                                                <i class="fas fa-taxi fa-2x mr-1"></i>
                                                 <select class="form-control select_field p-0" id="carType" name="car_type">
-                                                    <option value="{{ $vehicle_type->id }}"
+                                                    <option value="{{ $vehicle_type->car_type }}"
                                                         data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                                         data-price_per_km="{{ $vehicle_type->price_per_km }}">
                                                         {{ $vehicle_type->car_type }}</option>
@@ -406,7 +404,7 @@
                                         </div>
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
                                             <div class="form-group field_icons">
-                                                <i class="fas fa-male fa-2x ml-2"></i>
+                                                <i class="fas fa-male fa-2x ml-2 mr-1"></i>
                                                 <select class="form-control select_field" id="numberOfPassenger" name="passanger">
                                                     <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
                                                 </select>
@@ -417,16 +415,20 @@
                                         </div>
                                     </div>
                                     <div class="row show_case">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 align-self-center">
-                                            <p class="value_point chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
-                                            <input type="hidden" name="ride_cost" class="price_calculated_input"
-                                            value="{{ $input['price_calculated'] }}">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                                            <div class="form-group">
+                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
+                                                <input type="hidden" name="ride_cost" class="price_calculated_input"
+                                                value="{{ $input['price_calculated'] }}">
+                                            </div>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 align-self-center lst_col">
-                                            <p class="value_point km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
-                                            <input type="hidden" name="distance"
-                                                class="distance_calculated_input"
-                                                value="{{ $input['distance_calculated'] }}">
+                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
+                                            <div class="form-group">
+                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
+                                                <input type="hidden" name="distance"
+                                                    class="distance_calculated_input"
+                                                    value="{{ $input['distance_calculated'] }}">
+                                            </div>
                                         </div>
                                         <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                             <div class="form-group">
@@ -434,7 +436,6 @@
                                                     <option value="">Payment Method</option>
                                                     <option value="Cash" selected>Cash</option>
                                                     <option value="Card">Card</option>
-                                                    <option value="Bar">Bar</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -474,7 +475,7 @@
                                                 <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
                                                 <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
                                                 <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                                <button type="submit" id="submit_request" class="btn submit_btn custom_btn">Submit Request</button>
+                                                <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -508,11 +509,11 @@
     <!-- Confirm Modal -->
     <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
         aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <form class="otp_form">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">OTP :</h5>
+                        <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
                         <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -522,12 +523,12 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group my-4">
-                                    <label for="otp_entered">Please enter the OTP number
+                                    {{-- <label for="otp_entered">Please enter the OTP number
                                         you received on your applied mobile number
-                                        :</label>
+                                        :</label> --}}
                                     <input type="text" class="form-control input_field"
                                         name="otp_entered" id="otp_entered"
-                                        placeholder="Enter OTP eg: 1234" required />
+                                        placeholder="Please enter OTP" required />
                                 </div>
                             </div>
                         </div>
@@ -555,6 +556,11 @@
             var code = "+41";
             $('#txtPhone').intlTelInput({
                 initialCountry: "ch",
+            });
+            $("#txtPhone").on("countrychange", function() {
+                var countryCode = $('.iti__selected-flag').attr('title');
+                var countryCode = countryCode.replace(/[^0-9]/g, '')
+                $('#country_code').val(countryCode);
             });
         });
 
@@ -631,14 +637,6 @@
         }];
         initializeMapReport(MapPoints);
 
-        $(document).ready(function() {
-            $('.iti__flag-container').click(function() {
-                var countryCode = $('.iti__selected-flag').attr('title');
-                var countryCode = countryCode.replace(/[^0-9]/g, '')
-                $('#country_code').val(countryCode);
-            });
-        });
-
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
             $.ajax({
@@ -649,7 +647,14 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
+                    } else if(response.status == 0){
+                        swal("Error",response.message,"error");
+                        $(document).find(".verify_otp").removeAttr('disabled');
                     }
+                },
+                error(response) {
+                    swal("Error",response.message,"error");
+                    $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
         })

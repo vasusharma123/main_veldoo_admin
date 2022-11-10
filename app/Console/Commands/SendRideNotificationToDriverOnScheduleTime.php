@@ -68,7 +68,7 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
                         bulk_firebase_android_notification($title, $message, [$ride->driver->device_token], $additional);
                     }
                 }
-                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $ride->driver_id]);
+                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $ride->driver_id, 'additional_data' => json_encode($additional)]);
                 RideHistory::insert(['ride_id' => $ride->id, 'driver_id' => $ride->driver_id, 'status' => '2']);
                 $rideData = Ride::find($ride->id);
                 $rideData->driver_id = null;

@@ -95,7 +95,7 @@ class SendRideNotificationAfterScheduleTime extends Command
                     $notification_data = [];
                     $ridehistory_data = [];
                     foreach ($driverids as $driverid) {
-                        $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                        $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                         $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                     }
                     Notification::insert($notification_data);

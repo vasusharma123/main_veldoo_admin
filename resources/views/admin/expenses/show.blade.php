@@ -32,7 +32,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h3 class="form-control-label">Driver</h3>
-                                    <p><a href="{{ route('showDriver',$expense_detail->driver_id) }}">{{ $expense_detail->driver->first_name . '' . $expense_detail->driver->last_name }}</a></p>
+                                    <p><a href="{{ route('showDriver',$expense_detail->driver_id) }}">{{ $expense_detail->driver->first_name . ' ' . $expense_detail->driver->last_name }}</a></p>
                                 </div>
                             </div>
                             <div class="col-md-6">

@@ -45,6 +45,7 @@ Route::get('/booking',  ['uses'=>'PageController@booking'])->name('booking');
 Route::post('/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form');
 Route::post('/send_otp_before_ride_booking',  ['uses'=>'PageController@send_otp_before_ride_booking'])->name('send_otp_before_ride_booking');
 Route::post('/verify_otp_and_ride_booking',  ['uses'=>'PageController@verify_otp_and_ride_booking'])->name('verify_otp_and_ride_booking');
+Route::get('/test',  ['uses'=>'PageController@test']);
 // Route::get('note/{slug}', 'TopicController@note');
 ########		PUBLIC URL END			#########
 
@@ -105,6 +106,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::post('report/vehicle_export','DailyReportController@vehicle_export')->name('daily-report.vehicle_export');
 	Route::get('report/vehicle_mileage','DailyReportController@vehicle_mileage')->name('daily-report.vehicle_mileage');
 	Route::post('report/vehicle_mileage_export','DailyReportController@vehicle_mileage_export')->name('daily-report.vehicle_mileage_export');
+	Route::get('report/expenses','DailyReportController@expenses')->name('daily-report.expenses');
+	Route::post('report/expenses_export','DailyReportController@expenses_export')->name('daily-report.expenses_export');
 
 	Route::post('vehicle-type/change_status','VehicleTypeController@change_status');
 	Route::post('vehicle-type/delete','VehicleTypeController@destroy');
