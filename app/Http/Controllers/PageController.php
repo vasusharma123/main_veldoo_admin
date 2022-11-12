@@ -358,7 +358,7 @@ if($_REQUEST['cm'] == 2)
 			return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
 		}
 
-		if ($now->diffInMinutes($haveOtp->updated_at) > $expiryMin) {
+		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
 			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
 		}
 		$haveOtp->delete();

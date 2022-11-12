@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Exports\VehicleReportExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Vehicle;
+use App\Exports\VehicleMileageReportExport;
 use App\Exports\ExpensesReportExport;
 
 

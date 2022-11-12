@@ -609,7 +609,11 @@
             var carType = $('#carType').val();
             var vehicle_basic_fee = $('#carType > option:selected').data('basic_fee');
             var vehicle_price_per_km = $('#carType > option:selected').data('price_per_km');
-            var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km))* 100) / 100;
+            if(distance_calculated == 0){
+                var price_calculation = 0;
+            } else {
+                var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km))* 100) / 100;
+            }            
             $(".price_calculated").text(price_calculation +
                 " CHF");
             $(".price_calculated_input").val(price_calculation);

@@ -217,7 +217,7 @@ class Ride extends Model
 
 			$twilio->messages
 			->create(
-				"+$user->country_code.$user->phone", // to
+				"+".$user->country_code.$user->phone, // to
 				[
 					"body" => "Your driver is on the way to pick you up on - ".$choosed_vehicle->vehicle->model.", ".$choosed_vehicle->vehicle->vehicle_number_plate,
 					"from" => env("TWILIO_FROM_SEND")

@@ -2529,7 +2529,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
-			$resnewarray = Ride::with(['user', 'driver']);
+			$resnewarray = Ride::with(['user', 'driver', 'company_data']);
 			$rideWithPayment = Ride::select(DB::raw("sum(ride_cost) as ride_cost, payment_type"));
 			if ($request->type == 1) {
 				$month = $request->month;
@@ -6087,6 +6087,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$rideHistoryDetail->status = "1";
 					$rideHistoryDetail->save();
 					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
+					$userdata = User::find($ride['user_id']);
+					$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
+					if ($ride->platform == 'web') {
+						$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
+					}
 					return $this->successResponse($ride, 'Ride Accepted Successfully.');
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
@@ -6141,9 +6146,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
 		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
 		}
 	}
 
