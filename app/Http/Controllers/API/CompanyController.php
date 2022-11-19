@@ -3,22 +3,19 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-    public function index(User $users){
-        $userArr=$users->getDriverList();
-
-// print_r($userArr);die;
-            $currentData = array();
-        foreach ($userArr as $value) {
-            $data = $value->getCompanyResponseArr();
-            array_push($currentData,(object)$data);
+    public function index(Request $request)
+    {
+        $companies = User::where(['user_type' => 4])->orderBy('name')->get();
+        $currentData = array();
+        foreach ($companies as $value) {
+            $currentData[] = $value->getCompanyResponseArr();
         }
 
-        return $this->successResponse($currentData, 'Get company list successfully');  
-
+        return $this->successResponse($currentData, 'List of Company');
     }
 }

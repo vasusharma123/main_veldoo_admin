@@ -1205,13 +1205,13 @@ class UserController extends Controller
 			if (isset($_REQUEST['availability']) && $_REQUEST['availability'] == 0) {
 				$user->availability = 0;
 				if ($user->user_type == 2) {
-					DriverStayActiveNotification::where(['driver_id' => $user->id])->update(['is_availability_alert_sent' => 1, 'is_availability_changed' => 1]);
+					DriverStayActiveNotification::where(['driver_id' => $user->id])->update(['is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0]);
 				}
 			}
 			if (isset($_REQUEST['availability']) && $_REQUEST['availability'] == 1) {
 				$user->availability = 1;
 				if ($user->user_type == 2) {
-					DriverStayActiveNotification::where(['driver_id' => $user->id])->update(['is_availability_alert_sent' => 0, 'is_availability_changed' => 0]);
+					DriverStayActiveNotification::where(['driver_id' => $user->id])->update(['is_availability_alert_sent' => 0, 'is_availability_changed' => 0, 'is_logout_alert_sent' => 0]);
 				}
 			}
 
@@ -7600,7 +7600,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function all_drivers()
 	{
 		$user = Auth::user();
-		$all_drivers = User::where(['user_type' => 2])->get();
+		$all_drivers = User::where(['user_type' => 2])->orderBy('first_name')->get();
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
 }
