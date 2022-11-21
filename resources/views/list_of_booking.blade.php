@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,14 +9,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
     <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css"
+        integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .btn {
             border-radius: 50px;
         }
+
         #sendButton {
             box-shadow: 0px 4px 10px rgb(0 0 0 / 30%);
         }
+
         .map-booking {
             background: url('https://images.unsplash.com/photo-1565429504749-436a49cd9f45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
             width: 100%;
@@ -28,12 +33,15 @@
             align-items: center;
             min-height: 100vh;
         }
+
         .map_section {
             height: 100%;
         }
+
         .booking_list_form label {
             font-family: 'Poppins', sans-serif;
         }
+
         /* label {
             font-size: 13px;
             font-style: italic !important;
@@ -44,45 +52,55 @@
             border-color: #ededed;
             box-shadow: none;
         }
+
         .input_field:focus,
         .select_field:focus {
             border-color: #000;
             box-shadow: none;
             outline: none;
         }
+
         .filter_booking_list {
             margin: 0px auto 0px;
             border-radius: 5px;
         }
+
         .custom_btn {
             width: 100%;
             background: #cc4452;
             height: 100%;
-            padding: 13px;
+            padding: 13px !important;
             text-transform: capitalize;
             color: white;
             font-weight: 600;
+            opacity: 1 !important;
+            font-size: 16px !important;
         }
+
         .custom_btn:hover,
         .custom_btn:focus {
             background: #000;
             color: white;
             box-shadow: none;
         }
+
         .filter_result {
             margin: 20px auto;
             padding-bottom: 20px !important;
         }
+
         #captchaOperation {
             font-size: 30px;
             font-family: emoji;
             color: #cc4452;
         }
+
         .form-control {
             font-weight: 400;
             color: #000;
             font-size: 15px;
         }
+
         .value {
             /* color: black;
             font-size: 13px;
@@ -91,9 +109,11 @@
             border-radius: 5px; */
             white-space: nowrap;
         }
+
         .row.w-100.m-0.filter_booking_section_row .col-7 {
             padding: 0px;
         }
+
         .value_point {
             margin: 0 0 20px;
             background: white;
@@ -101,9 +121,11 @@
             padding: 9px;
             border-radius: 5px;
         }
+
         .iti.iti--allow-dropdown {
             width: 100%;
         }
+
         .title_form {
             padding: 15px;
             text-align: center;
@@ -113,6 +135,7 @@
             border-radius: 5px;
             background-color: #9d9d9d;
         }
+
         .map-booking:after {
             content: '';
             position: absolute;
@@ -121,18 +144,23 @@
             left: 0;
             top: 0;
         }
-        .filter_booking_list , .filter_result{
+
+        .filter_booking_list,
+        .filter_result {
             background: #f2f2f2ad;
             padding: 20px 20px 10px;
         }
+
         .form_container {
             position: relative;
             z-index: 1;
         }
+
         .modal-backdrop.fade.show {
             display: none;
         }
-        #confirmOTPModal:before {
+
+        #cancelBookingModal:before {
             content: '';
             background: #160607ab;
             width: 100%;
@@ -141,16 +169,27 @@
             left: 0;
             top: 0;
         }
+
         .back_btn.custom_btn {
             background: transparent;
             border: 1px solid #cc4452;
             color: #cc4452;
         }
+
         form .field_icons {
             display: flex;
             flex-flow: initial;
             align-items: self-end;
         }
+
+        .modal_title_cs {
+            font-weight: 700;
+            font-size: 25px;
+            line-height: 29px;
+            color: #000;
+            font-family: 'Heebo', sans-serif;
+        }
+
         /* form .form-group label {
             font-size: 13px;
             font-style: italic !important;
@@ -164,21 +203,27 @@
             position: relative;
             right: 7px;
         }
+
         form .col-xs-12 {
             align-self: center;
         }
+
         .form-check-label a {
             white-space: break-spaces;
         }
+
         .icon_img.img-repsonsive {
             max-width: 13px;
         }
+
         #timeRide {
             overflow: hidden;
         }
+
         .icon_label.car_label {
             margin-bottom: 0px;
         }
+
         #googleMap {
             background: #dfdfdf;
             max-height: 100%;
@@ -186,12 +231,15 @@
             height: 100%;
             min-height: 700px;
         }
+
         .row.w-100.m-0.filter_booking_section_row .col-5:first-child {
             padding-left: 0px;
         }
+
         .show_value {
             position: relative;
         }
+
         img.img-clock.w-100.img-responsive {
             position: absolute;
             left: 3px;
@@ -199,12 +247,14 @@
             max-width: 25px;
             transform: translateY(-50%);
         }
+
         #timerValue {
             padding-left: 30px;
             width: 100%;
         }
-        .show_case .lst_col{
-            padding: 0px ;
+
+        .show_case .lst_col {
+            padding: 0px;
         }
 
         .logo_img_top_1 {
@@ -213,56 +263,114 @@
             padding: 15px;
             border-radius: 10px;
         }
+
         .logo_img_top_1 .img-responsive.imagelogo_brand {
             max-width: 120px;
         }
 
-        @media (max-width: 300px){
-            .col-4,.col-5,.col-3, .col-7, .col-6, .col-2{
+        .SelectedDateList {
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            min-height: 230px;
+            overflow: auto;
+            max-height: 230px;
+        }
+
+        .SelectedDateList li {
+            border-radius: 0px !important;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            position: relative;
+        }
+
+        .SelectedDateList li:hover {
+            background-color: #dfdfdf;
+        }
+
+        .SelectedDateList .listDate {
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .SelectedListBooking.form-radio {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            cursor: pointer;
+            opacity: 0;
+        }
+
+        .SelectedListBooking.form-radio:checked~.listDate {
+            color: #cc4452;
+        }
+
+        @media (max-width: 300px) {
+
+            .col-4,
+            .col-5,
+            .col-3,
+            .col-7,
+            .col-6,
+            .col-2 {
                 min-width: 100% !important;
             }
         }
-        @media (max-width: 400px){
-            .filter_booking_section_row .col-4{
+
+        @media (max-width: 400px) {
+            .filter_booking_section_row .col-4 {
                 padding: 0px;
                 width: 100%;
                 margin-bottom: 10px;
             }
+
             .value_point.chf {
                 width: 100%;
                 margin-bottom: 10px !important;
                 text-align: right;
             }
-            .value_point, .value_point.km_m{
+
+            .value_point,
+            .value_point.km_m {
                 width: 100% !important;
             }
         }
+
         @media (max-width: 400px) {
             .filter_booking_section_row .col-3 {
                 padding: 0;
             }
         }
+
         @media (max-width: 500px) {
             .filter_booking_section_row .col-12 {
                 padding: 0;
                 margin-bottom: 11px;
             }
-            .filter_booking_section_row .col-4{
+
+            .filter_booking_section_row .col-4 {
                 padding: 0px;
                 width: 100%;
                 margin-bottom: 10px;
             }
-            .value_point{
+
+            .value_point {
                 width: 100% !important;
                 text-align: right;
             }
+
             .value_point.chf {
                 width: 100%;
                 margin-bottom: 10px !important;
             }
+
             .row.row_fileterBooking .col-4:nth-child(2) {
                 padding: 0;
             }
+
             /* .value {
                 color: black;
                 font-size: 15px;
@@ -276,35 +384,43 @@
             .title_form {
                 font-size: 18px;
             }
+
             .map-booking {
                 padding-left: 0px;
                 padding-right: 0px;
                 height: 100%;
             }
+
             form .form-group label {
                 white-space: unset;
                 text-align: revert;
                 font-size: 12px;
             }
-            .filter_booking_list{
+
+            .filter_booking_list {
                 padding: 20px 10px 10px !important;
                 margin-bottom: 40px;
             }
+
             .car_walk.img-repsonsive {
                 max-width: 34px !important;
                 margin-right: 17px !important;
                 position: relative;
                 left: 0px;
             }
+
             .icon_img.img-repsonsive {
                 max-width: 14px;
             }
+
             .filter_booking_section_row .form-group label {
                 min-width: 8px;
             }
+
             .filter_booking_section_row .col-5 {
                 padding-right: 0px;
             }
+
             /* .value {
                 color: black;
                 font-size: 15px;
@@ -314,10 +430,12 @@
                 padding: 0px;
             } */
         }
-        @media (min-width: 550px) and (max-width:992px){
-            .map-booking{
+
+        @media (min-width: 550px) and (max-width:992px) {
+            .map-booking {
                 height: 100%;
             }
+
             /* .value {
                 color: black;
                 font-size: 15px;
@@ -326,30 +444,36 @@
                 width: 100%;
                 padding: 0px;
             } */
-            .value_point{
+            .value_point {
                 margin-bottom: 15px;
             }
-            #googleMap{
+
+            #googleMap {
                 max-height: 100% !important;
             }
-            .filter_booking_list{
+
+            .filter_booking_list {
                 margin-bottom: 40px;
             }
         }
-        @media (max-width: 767px){
+
+        @media (max-width: 767px) {
             #googleMap {
                 height: 630px !important;
             }
         }
-        @media (min-width:768px){
-            .frt_col{
+
+        @media (min-width:768px) {
+            .frt_col {
                 padding-left: 0px;
             }
-            .mdl_col{
+
+            .mdl_col {
                 padding: 0px;
             }
         }
-        @media (min-width: 1200px){
+
+        @media (min-width: 1200px) {
             .container-fluid.form_container {
                 max-width: 1840px;
             }
@@ -364,144 +488,65 @@
                 <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                         <div class="booking_personal_information">
-                            <h2 class="title_form">Booking Details</h2>
                             <div class="logo_img_top_1">
-                                <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                                <img src="{{ asset('public/images/vel_logo.png') }}"
+                                    class="img-responsive imagelogo_brand" alt="img Logo">
                             </div>
-                            <div class="filter_booking_list">
-                                <form class="personal_info_form" id="personal_info_form" method="post">
+                            <h2 class="title_form">My Bookings</h2>
+                            <div class="filter_booking_list otp_verification_div">
+                                <form id="verify_phone_form" method="post">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="first_name"
-                                                    placeholder="First Name" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="last_name"
-                                                    placeholder="Last Name" />
-                                            </div>
-                                        </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
                                                 <input class="form-control" name="country_code" type="hidden"
                                                     id="country_code" value="41">
                                                 <input type="tel" id="txtPhone"
-                                                    class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
+                                                    class="txtbox form-control input_field" name="phone"
+                                                    placeholder="Enter Phone Number" minlength="8" required />
                                             </div>
                                         </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                            <div class="form-group">
+                                                <button type="submt" class="btn submit_btn custom_btn">Send
+                                                    OTP</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="filter_booking_list ride_list_div d-none">
+                                <div class="booking_list">
+                                    <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
                                                     <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
-                                                        <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                        <ul class="list-group SelectedDateList">
+                                                            
+                                                        </ul>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div class="row w-100 m-0 filter_booking_section_row">
-                                        <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-taxi fa-2x mr-1"></i>
-                                                <select class="form-control select_field p-0" id="carType" name="car_type">
-                                                    <option value="{{ $vehicle_type->car_type }}"
-                                                        data-basic_fee="{{ $vehicle_type->basic_fee }}"
-                                                        data-price_per_km="{{ $vehicle_type->price_per_km }}">
-                                                        {{ $vehicle_type->car_type }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                                <select class="form-control select_field" id="numberOfPassenger" name="passanger">
-                                                    <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-4 col-3 align-self-center lst_col">
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="row show_case">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
-                                            <div class="form-group">
-                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
-                                                <input type="hidden" name="ride_cost" class="price_calculated_input"
-                                                value="{{ $input['price_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
-                                            <div class="form-group">
-                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
-                                                <input type="hidden" name="distance"
-                                                    class="distance_calculated_input"
-                                                    value="{{ $input['distance_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5 col-5">
-                                            <div class="form-group">
-                                                <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
-                                                    <option value="">Payment Method</option>
-                                                    <option value="Cash" selected>Cash</option>
-                                                    <option value="Card">Card</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
-                                            </div>
-                                        </div>
-                                        <!-- 
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <label for="captcha" id="captchaOperation"><?php //echo(rand(100,1000)); ?></label>
-                                                <input type="text" class="form-control input_field" name="captcha" id="captcha" placeholder="Enter captcha code.." required/>
-                                            </div>
-                                        </div> -->
-
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <div class="form-check">
-                                                    <label class="form-check-label">
-                                                        <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <input type="hidden" name="pickup_address" value="{{ $input['pickup_address'] }}">
-                                                <input type="hidden" name="pick_lat" value="{{ $input['pickup_latitude'] }}">
-                                                <input type="hidden" name="pick_lng" value="{{ $input['pickup_longitude'] }}">
-                                                <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
-                                                <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
-                                                <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                                <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
+                                                <button type="button" id="submit_request_cancel"
+                                                    class="btn submit_btn custom_btn">CANCEL BOOKING</button>
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
+                                                <button type="button"
+                                                    class="btn back_btn custom_btn edit_booking">EDIT BOOKING</button>
                                             </div>
                                         </div>
-                                        <div class="col-lg-12">
-                                            <p class="msg_display"></p>
-                                        </div>
                                     </div>
-                                </form>
+                                    <div class="col-lg-12">
+                                        <p class="msg_display"></p>
+                                    </div>
+                                </div>
 
                                 <!-- ============================================================== -->
                                 <!-- Personal Information Form Content End -->
@@ -521,15 +566,15 @@
     </section>
 
     <!-- Confirm Modal -->
-    <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
-        aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
+    <div class="modal" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="confirmOTPModalTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-            <form class="otp_form">
-                <div class="modal-content">
+
+            <div class="modal-content">
+                <form class="otp_form">
                     <div class="modal-header">
                         <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
-                        <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -540,18 +585,48 @@
                                     {{-- <label for="otp_entered">Please enter the OTP number
                                         you received on your applied mobile number
                                         :</label> --}}
-                                    <input type="text" class="form-control input_field"
-                                        name="otp_entered" id="otp_entered"
-                                        placeholder="Please enter OTP" required />
+                                    <input type="text" class="form-control input_field" name="otp_entered"
+                                        id="otp_entered" placeholder="Please enter OTP" required />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">Confirm Booking</button>
+                        <button type="button" class="btn custom_btn verify_otp">Verify</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal fade" id="cancelBookingModal" tabindex="-1" role="dialog"
+        aria-labelledby="cancelBookingTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered w-100" role="document">
+            <div class="modal-content p-4">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="cross_icons_img text-center">
+                                <img src="{{ asset('public/images/cross.png') }}"
+                                    class="img-responsive imagelogo_brand" alt="img Logo">
+                            </div>
+                            <div class="form-group mt-4 mb-0 text-center">
+                                <h3 class="modal_title_cs">Cancel Booking</h3>
+                                <p class="modal_desc_cs">Are you sure you want to cancel this booking?</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </form>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn custom_btn mb-4 cancel_booking_confirmed">Yes, cancel it</button>
+                    <button type="button" class="btn back_btn custom_btn close" data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true">Close</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -578,97 +653,22 @@
             });
         });
 
-        var directionsService;
-        var directionsDisplay;
-        var MapPoints = [];
-        var directionsDisplay;
-        var directionsService = new google.maps.DirectionsService();
-
-        function initializeMapReport(MapPoints) {
-            if (jQuery('#googleMap').length > 0) {
-                var locations = MapPoints;
-                directionsService = new google.maps.DirectionsService;
-                directionsDisplay = new google.maps.DirectionsRenderer;
-                window.map = new google.maps.Map(document.getElementById('googleMap'), {
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    scrollwheel: false,
-                });
-
-                var infowindow = new google.maps.InfoWindow();
-                var bounds = new google.maps.LatLngBounds();
-                directionsDisplay = new google.maps.DirectionsRenderer({
-                    map: window.map,
-                    suppressMarkers: true
-                });
-                var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
-                };
-                for (i = 0; i < locations.length; i++) {
-                    marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
-                            .toString()),
-                        //position: new google.maps.LatLng(locations[i].address.lat, locations[i].address.lng),
-                        map: map
-                    });
-                    bounds.extend(marker.position);
-
-                    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                        return function() {
-                            infowindow.setContent(locations[i]['AddressLocation']);
-                            infowindow.open(map, marker);
-                        }
-                    })(marker, i));
-                    // create request from locations array, 1st marker is origin
-                    if (i == 0) request.origin = marker.getPosition();
-                    // last marker is destination
-                    else if (i == locations.length - 1) request.destination = marker.getPosition();
-                    else {
-                        // any other markers are waypoints
-                        if (!request.waypoints) request.waypoints = [];
-                        request.waypoints.push({
-                            location: marker.getPosition(),
-                            stopover: true
-                        });
-                    }
-                }
-                // call directions service
-                directionsService.route(request, function(result, status) {
-                    if (status == google.maps.DirectionsStatus.OK) {
-                        directionsDisplay.setDirections(result);
-                    }
-                });
-                map.fitBounds(bounds);
-            }
-        }
-        MapPoints = [{
-            Latitude: "{{ $input['pickup_latitude'] }}",
-            Longitude: "{{ $input['pickup_longitude'] }}",
-            AddressLocation: "{{ $input['pickup_address'] }}"
-        }, {
-            Latitude: "{{ $input['dropoff_latitude'] }}",
-            Longitude: "{{ $input['dropoff_longitude'] }}",
-            AddressLocation: "{{ $input['dropoff_address'] }}"
-        }];
-        initializeMapReport(MapPoints);
-
-        $("#personal_info_form").submit(function(e) {
+        $("#verify_phone_form").submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
+                url: "{{ route('send_otp_for_my_bookings') }}",
                 type: 'post',
                 dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
+                data: $('form#verify_phone_form').serialize(),
                 success: function(response) {
-                    if(response.status){
+                    if (response.status) {
                         $("#confirmOTPModal").modal('show');
-                    } else if(response.status == 0){
-                        swal("Error",response.message,"error");
-                        $(document).find(".verify_otp").removeAttr('disabled');
+                    } else if (response.status == 0) {
+                        swal("Error", response.message, "error");
                     }
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
-                    $(document).find(".verify_otp").removeAttr('disabled');
+                    swal("Error", response.message, "error");
                 }
             });
         })
@@ -676,24 +676,29 @@
         $(document).on("click", ".verify_otp", function(e) {
             e.preventDefault();
             var otp_entered = $(document).find("#otp_entered").val();
-            var post_data = $('form#personal_info_form').serialize();
+            var post_data = $('form#verify_phone_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
             $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking')}}",
+                url: "{{ route('verify_otp_and_ride_list')}}",
                 type: 'post',
                 dataType: 'json',
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("Success",response.message,"success");
-							setTimeout(function() {
-								window.location.href = "{{ url('booking')}}";
-							}, 2000);
+                        $(document).find('.otp_verification_div').addClass('d-none');
+                        $(".SelectedDateList").html("");
+                        if(response.data != ""){
+                            $( response.data ).each(function( index, element ) {
+                                $(".SelectedDateList").append('<li class="list-group-item list-group-flush"><input type="radio" name="selectListed" class="SelectedListBooking form-radio" data-id="'+element.id+'" value="'+element.id+'"><img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock"><span class="listDate">'+element.ride_time+'</span></li>');
+                            });
+                        }
+                        $(document).find('.ride_list_div').removeClass('d-none');
                     } else if(response.status == 0){
                         swal("Error",response.message,"error");
-                        $(document).find(".verify_otp").removeAttr('disabled');
                     }
+                    $("#confirmOTPModal").modal('hide');
+                    $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {
                     swal("Error",response.message,"error");
@@ -701,7 +706,60 @@
                 }
             });
         })
+
+        $(document).on('click','#submit_request_cancel',function(){
+            var selectedBooking = $('input[name="selectListed"]:checked').val();
+            if(selectedBooking){
+                $("#cancelBookingModal").modal('show');
+            } else {
+                swal("Error","Please select booking","error");
+            }
+        })
+        $(document).on('click','.cancel_booking_confirmed',function(e){
+            e.preventDefault();
+            var selectedBooking = $('input[name="selectListed"]:checked').val();
+            if(selectedBooking){
+                $(document).find(".cancel_booking_confirmed").attr('disabled');
+                $.ajax({
+                    url: "{{ route('web.cancel_booking')}}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        'ride_id' : selectedBooking
+                    },
+                    success: function(response) {
+                        if(response.status){
+                            $(".SelectedDateList").html("");
+                            $(document).find(".SelectedListBooking[data-id='"+selectedBooking+"']").parents('li.list-group-item').remove();
+                            $("#cancelBookingModal").modal('hide');
+                            swal("Success",response.message,"success");
+                        } else if(response.status == 0){
+                            swal("Error",response.message,"error");
+                        }
+                        $(document).find(".cancelBookingModal").removeAttr('disabled');
+                    },
+                    error(response) {
+                        swal("Error",response.message,"error");
+                        $(document).find(".cancelBookingModal").removeAttr('disabled');
+                    }
+                });
+            } else {
+                swal("Error","Please select booking","error");
+            }
+        })
+
+        $(document).on('click','.edit_booking',function(e){
+            e.preventDefault();
+            var selectedBooking = $('input[name="selectListed"]:checked').val();
+            if(selectedBooking){
+                window.location.href= "booking_edit/"+selectedBooking;
+            } else {
+                swal("Error","Please select booking","error");
+            }
+        })
     </script>
+
 </body>
 
 </html>

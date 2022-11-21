@@ -9,9 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
     <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css"
-        integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         .map-booking {
             background: url('https://images.unsplash.com/photo-1565429504749-436a49cd9f45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
@@ -251,7 +249,6 @@
             padding: 15px;
             border-radius: 10px;
         }
-
         .logo_img_top_1 .img-responsive.imagelogo_brand {
             max-width: 120px;
         }
@@ -411,8 +408,7 @@
                 <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                         <div class="logo_img_top_1">
-                            <img src="{{ asset('public/images/vel_logo.png') }}" class="img-responsive imagelogo_brand"
-                                alt="img Logo">
+                            <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                         </div>
                         <div class="filter_booking_list">
                             <form class="booking_list_form">
@@ -420,18 +416,18 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                                         <div class="form-group">
                                             <input type="text" class="form-control input_field" name="pickupPoint"
-                                                id="pickupPoint" placeholder="From" required>
-                                            <input type="hidden" id="pickup_latitude" name="pickup_latitude">
-                                            <input type="hidden" id="pickup_longitude" name="pickup_longitude">
+                                                id="pickupPoint" placeholder="From" value="{{$rideDetail->pickup_address}}" required>
+                                            <input type="hidden" id="pickup_latitude" name="pickup_latitude" value="{{$rideDetail->pick_lat}}">
+                                            <input type="hidden" id="pickup_longitude" name="pickup_longitude" value="{{$rideDetail->pick_lng}}">
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                                         <div class="form-group">
                                             <input type="text" class="form-control input_field" name="dropoffPoint"
-                                                id="dropoffPoint" placeholder="To" required>
-                                            <input type="hidden" id="dropoff_latitude" name="dropoff_latitude">
-                                            <input type="hidden" id="dropoff_longitude" name="dropoff_longitude">
+                                                id="dropoffPoint" placeholder="To" value="{{$rideDetail->dest_address}}" required>
+                                            <input type="hidden" id="dropoff_latitude" name="dropoff_latitude" value="{{$rideDetail->dest_lat}}">
+                                            <input type="hidden" id="dropoff_longitude" name="dropoff_longitude" value="{{$rideDetail->dest_lng}}">
                                         </div>
                                     </div>
                                 </div>
@@ -445,7 +441,7 @@
                                                         <option value="{{ $vehicle_type->id }}"
                                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                                             data-price_per_km="{{ $vehicle_type->price_per_km }}"
-                                                            data-seating_capacity="{{ $vehicle_type->seating_capacity }}">
+                                                            data-seating_capacity="{{ $vehicle_type->seating_capacity }}" {{ ($rideDetail->car_type == $vehicle_type->car_type )?"selected":""}}>
                                                             {{ $vehicle_type->car_type }}</option>
                                                     @endforeach
                                                 @endif
@@ -475,36 +471,31 @@
 
                         </div>
                         <div class="filter_result ">
-                            <form id="booking_list_form" method="POST" action="{{ route('booking_form') }}">
+                            <form id="booking_list_form" method="POST" action="{{ route('booking_form_edit', $rideDetail->id) }}">
                                 @csrf
                                 <div class="row row_fileterBooking show_case">
-
                                     <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
                                         <div class="form-group">
-                                            <p class="form-control"><span class="price_calculated">CHF ---</span></p>
+                                            <p class="form-control pl-0 pr-0"><span class="price_calculated">CHF ---</span></p>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-4 col-4 text-center lst_col">
                                         <div class="form-group">
-                                            <p class="form-control"><span class="distance_calculated">KM ---</span></p>
+                                            <p class="form-control pl-0 pr-0"><span class="distance_calculated">KM ---</span></p>
                                         </div>
                                     </div>
                                     <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center">
                                         <div class="form-group">
                                             <input type="hidden" id="booking_pickup_address" name="pickup_address">
                                             <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
-                                            <input type="hidden" id="booking_pickup_longitude"
-                                                name="pickup_longitude">
-                                            <input type="hidden" id="booking_dropoff_address"
-                                                name="dropoff_address">
-                                            <input type="hidden" id="booking_dropoff_latitude"
-                                                name="dropoff_latitude">
+                                            <input type="hidden" id="booking_pickup_longitude" name="pickup_longitude">
+                                            <input type="hidden" id="booking_dropoff_address" name="dropoff_address">
+                                            <input type="hidden" id="booking_dropoff_latitude" name="dropoff_latitude">
                                             <input type="hidden" id="booking_dropoff_longitude"
                                                 name="dropoff_longitude">
                                             <input type="hidden" name="distance_calculated"
                                                 class="distance_calculated_input">
-                                            <input type="hidden" name="price_calculated"
-                                                class="price_calculated_input">
+                                            <input type="hidden" name="price_calculated" class="price_calculated_input">
                                             <input type="hidden" id="booking_carType" name="carType">
                                             <input type="hidden" id="booking_numberOfPassenger"
                                                 name="numberOfPassenger">
@@ -519,17 +510,6 @@
                         <!-- ============================================================== -->
                         <!-- Filter list Result Content End -->
                         <!-- ============================================================== -->
-
-                        <div class="filter_result ">
-                            <div class="row row_fileterBooking show_case">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">MANAGE
-                                            BOOKINGs</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
                         <div class="map_section">
@@ -562,7 +542,7 @@
             var input = document.getElementById('pickupPoint');
             var autocomplete_pickup = new google.maps.places.Autocomplete(input);
             autocomplete_pickup.setComponentRestrictions({
-                country: ["ch", "de"],
+                country: ["ch","de"],
             });
             google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
                 var place = autocomplete_pickup.getPlace();
@@ -574,7 +554,7 @@
             var dropoff_input = document.getElementById('dropoffPoint');
             var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input);
             autocomplete_dropoff.setComponentRestrictions({
-                country: ["ch", "de"],
+                country: ["ch","de"],
             });
             google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
                 var place = autocomplete_dropoff.getPlace();
@@ -583,10 +563,10 @@
                 document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
             });
             initializeMapReport(MapPoints);
-            //             map = new google.maps.Map(document.getElementById('googleMap'), {
-            //     center: new google.maps.LatLng(48.1293954,12.556663),//Setting Initial Position
-            //     zoom: 10
-            //   });
+//             map = new google.maps.Map(document.getElementById('googleMap'), {
+//     center: new google.maps.LatLng(48.1293954,12.556663),//Setting Initial Position
+//     zoom: 10
+//   });
         }
         google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
@@ -595,7 +575,7 @@
             calculate_route();
         });
 
-        function calculate_route() {
+        function calculate_route(){
             var pickup_latitude = $("#pickup_latitude").val();
             var pickup_longitude = $("#pickup_longitude").val();
             var pickup_address = $("#pickupPoint").val();
@@ -610,8 +590,8 @@
                 dropoff_latitude = pickup_latitude;
                 dropoff_longitude = pickup_longitude;
                 dropoff_address = pickup_address;
-                //     swal("Error", "Please select Drop off address", "error");
-                //     return false;
+            //     swal("Error", "Please select Drop off address", "error");
+            //     return false;
             }
 
             // var distanceService = new google.maps.DistanceMatrixService();
@@ -647,12 +627,11 @@
             var carType = $('#carType').val();
             var vehicle_basic_fee = $('#carType > option:selected').data('basic_fee');
             var vehicle_price_per_km = $('#carType > option:selected').data('price_per_km');
-            if (distance_calculated == 0) {
+            if(distance_calculated == 0){
                 var price_calculation = 0;
             } else {
-                var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km)) *
-                    100) / 100;
-            }
+                var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km))* 100) / 100;
+            }            
             $(".price_calculated").text(price_calculation +
                 " CHF");
             $(".price_calculated_input").val(price_calculation);
@@ -685,10 +664,7 @@
                 window.map = new google.maps.Map(document.getElementById('googleMap'), {
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     scrollwheel: false,
-                    center: {
-                        lat: 46.8182,
-                        lng: 8.2275
-                    }, //Setting Initial Position
+                    center: { lat: 46.8182, lng: 8.2275 },//Setting Initial Position
                     zoom: 8
                 });
 
@@ -730,7 +706,7 @@
                     }
                 }
                 // call directions service
-                if (locations.length) {
+                if(locations.length){
                     directionsService.route(request, function(result, status) {
                         if (status == google.maps.DirectionsStatus.OK) {
                             directionsDisplay.setDirections(result);
@@ -741,9 +717,9 @@
             }
         }
 
-        $(document).on('click', '.book_online_now', function(e) {
+        $(document).on('click','.book_online_now',function(e){
             e.preventDefault();
-            if (calculate_route()) {
+            if(calculate_route()){
                 $("#booking_list_form").submit();
             }
         })
@@ -759,6 +735,11 @@
         $(document).on('change', '#carType', function() {
             measure_seating_capacity();
         })
+
+        $("#numberOfPassenger").val("{{ $rideDetail->passanger }}");
+        @if(!empty($rideDetail->dest_address))
+        calculate_route();
+        @endif
     </script>
 </body>
 

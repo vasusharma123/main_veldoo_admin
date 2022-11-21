@@ -58,10 +58,12 @@
             width: 100%;
             background: #cc4452;
             height: 100%;
-            padding: 13px;
+            padding: 13px !important;
             text-transform: capitalize;
             color: white;
             font-weight: 600;
+            opacity: 1 !important;
+            font-size: 16px !important;
         }
         .custom_btn:hover,
         .custom_btn:focus {
@@ -151,6 +153,13 @@
             flex-flow: initial;
             align-items: self-end;
         }
+        .modal_title_cs {
+            font-weight: 700;
+            font-size: 25px;
+            line-height: 29px;
+            color: #000;
+            font-family: 'Heebo',sans-serif;
+        }
         /* form .form-group label {
             font-size: 13px;
             font-style: italic !important;
@@ -206,7 +215,6 @@
         .show_case .lst_col{
             padding: 0px ;
         }
-
         .logo_img_top_1 {
             background: rgba(236, 236, 241, 0.75);
             margin-bottom: 20px;
@@ -216,7 +224,40 @@
         .logo_img_top_1 .img-responsive.imagelogo_brand {
             max-width: 120px;
         }
-
+        .SelectedDateList{
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            min-height: 230px;
+            overflow: auto;
+            max-height: 230px;
+        }
+        .SelectedDateList li{
+            border-radius: 0px !important;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            position: relative;
+        }
+        .SelectedDateList li:hover{
+            background-color: #dfdfdf;
+        }
+        .SelectedDateList .listDate {
+            margin-left: 20px;
+            font-weight: 500;
+        }
+        .SelectedListBooking.form-radio {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            cursor: pointer;
+            opacity: 0;
+        }
+        .SelectedListBooking.form-radio:checked ~ .listDate{
+            color: #cc4452;
+        }
         @media (max-width: 300px){
             .col-4,.col-5,.col-3, .col-7, .col-6, .col-2{
                 min-width: 100% !important;
@@ -364,21 +405,21 @@
                 <div class="row">
                     <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                         <div class="booking_personal_information">
-                            <h2 class="title_form">Booking Details</h2>
                             <div class="logo_img_top_1">
-                                <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                                <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                             </div>
+                            <h2 class="title_form">My Bookings</h2>
                             <div class="filter_booking_list">
                                 <form class="personal_info_form" id="personal_info_form" method="post">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-6">
                                             <div class="form-group">
                                                 <input type="text" class="form-control input_field" name="first_name"
                                                     placeholder="First Name" required />
                                             </div>
                                         </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 col-6">
                                             <div class="form-group">
                                                 <input type="text" class="form-control input_field" name="last_name"
                                                     placeholder="Last Name" />
@@ -396,105 +437,40 @@
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
                                                     <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
-                                                        <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                        <ul class="list-group SelectedDateList">
+                                                            <li class="list-group-item list-group-flush">
+                                                                <input type="radio" name="selectListed" class="SelectedListBooking form-radio">
+                                                                <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                                <span class="listDate">10.11.2022 17:15</span>
+                                                            </li>
+                                                            <li class="list-group-item list-group-flush">
+                                                                <input type="radio" name="selectListed" class="SelectedListBooking form-radio">
+                                                                <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                                <span class="listDate">10.11.2022 17:15</span>
+                                                            </li>
+                                                            <li class="list-group-item list-group-flush">
+                                                                <input type="radio" name="selectListed" class="SelectedListBooking form-radio">
+                                                                <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                                <span class="listDate">10.11.2022 17:15</span>
+                                                            </li>
+                                                        </ul>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="row w-100 m-0 filter_booking_section_row">
-                                        <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-taxi fa-2x mr-1"></i>
-                                                <select class="form-control select_field p-0" id="carType" name="car_type">
-                                                    <option value="{{ $vehicle_type->car_type }}"
-                                                        data-basic_fee="{{ $vehicle_type->basic_fee }}"
-                                                        data-price_per_km="{{ $vehicle_type->price_per_km }}">
-                                                        {{ $vehicle_type->car_type }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                                <select class="form-control select_field" id="numberOfPassenger" name="passanger">
-                                                    <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-4 col-3 align-self-center lst_col">
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="row show_case">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
-                                            <div class="form-group">
-                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
-                                                <input type="hidden" name="ride_cost" class="price_calculated_input"
-                                                value="{{ $input['price_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
-                                            <div class="form-group">
-                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
-                                                <input type="hidden" name="distance"
-                                                    class="distance_calculated_input"
-                                                    value="{{ $input['distance_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5 col-5">
-                                            <div class="form-group">
-                                                <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
-                                                    <option value="">Payment Method</option>
-                                                    <option value="Cash" selected>Cash</option>
-                                                    <option value="Card">Card</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
-                                            </div>
-                                        </div>
-                                        <!-- 
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <label for="captcha" id="captchaOperation"><?php //echo(rand(100,1000)); ?></label>
-                                                <input type="text" class="form-control input_field" name="captcha" id="captcha" placeholder="Enter captcha code.." required/>
-                                            </div>
-                                        </div> -->
-
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <div class="form-check">
-                                                    <label class="form-check-label">
-                                                        <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <input type="hidden" name="pickup_address" value="{{ $input['pickup_address'] }}">
-                                                <input type="hidden" name="pick_lat" value="{{ $input['pickup_latitude'] }}">
-                                                <input type="hidden" name="pick_lng" value="{{ $input['pickup_longitude'] }}">
-                                                <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
-                                                <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
-                                                <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                                <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
+                                              
+                                                <button type="button" id="submit_request_cancel" class="btn submit_btn custom_btn" data-toggle="modal" data-target="#confirmOTPModal">CANCEL BOOKING</button>
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
+                                                <a href="{{url('/booking_form')}}" class="btn back_btn custom_btn" >EDIT BOOKING</a>
                                             </div>
                                         </div>
                                         <div class="col-lg-12">
@@ -523,35 +499,28 @@
     <!-- Confirm Modal -->
     <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
         aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-            <form class="otp_form">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
-                        <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group my-4">
-                                    {{-- <label for="otp_entered">Please enter the OTP number
-                                        you received on your applied mobile number
-                                        :</label> --}}
-                                    <input type="text" class="form-control input_field"
-                                        name="otp_entered" id="otp_entered"
-                                        placeholder="Please enter OTP" required />
-                                </div>
+        <div class="modal-dialog modal-dialog-centered w-100" role="document">
+            <div class="modal-content p-4">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="cross_icons_img text-center">
+                                <img src="{{asset('images/cross.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                            </div>
+                            <div class="form-group mt-4 mb-0 text-center">
+                               <h3 class="modal_title_cs">Cancel Booking</h3>
+                               <p class="modal_desc_cs">Are you sure you want to delete this booking?</p>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">Confirm Booking</button>
-                    </div>
                 </div>
-            </form>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn custom_btn verify_otp mb-4">Confirm Booking</button>
+                    <button type="button" class="btn back_btn custom_btn close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">EDIT BOOKING</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -565,143 +534,7 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
-    <script>
-        $(function() {
-            var code = "+41";
-            $('#txtPhone').intlTelInput({
-                initialCountry: "ch",
-            });
-            $("#txtPhone").on("countrychange", function() {
-                var countryCode = $('.iti__selected-flag').attr('title');
-                var countryCode = countryCode.replace(/[^0-9]/g, '')
-                $('#country_code').val(countryCode);
-            });
-        });
-
-        var directionsService;
-        var directionsDisplay;
-        var MapPoints = [];
-        var directionsDisplay;
-        var directionsService = new google.maps.DirectionsService();
-
-        function initializeMapReport(MapPoints) {
-            if (jQuery('#googleMap').length > 0) {
-                var locations = MapPoints;
-                directionsService = new google.maps.DirectionsService;
-                directionsDisplay = new google.maps.DirectionsRenderer;
-                window.map = new google.maps.Map(document.getElementById('googleMap'), {
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    scrollwheel: false,
-                });
-
-                var infowindow = new google.maps.InfoWindow();
-                var bounds = new google.maps.LatLngBounds();
-                directionsDisplay = new google.maps.DirectionsRenderer({
-                    map: window.map,
-                    suppressMarkers: true
-                });
-                var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
-                };
-                for (i = 0; i < locations.length; i++) {
-                    marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
-                            .toString()),
-                        //position: new google.maps.LatLng(locations[i].address.lat, locations[i].address.lng),
-                        map: map
-                    });
-                    bounds.extend(marker.position);
-
-                    google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                        return function() {
-                            infowindow.setContent(locations[i]['AddressLocation']);
-                            infowindow.open(map, marker);
-                        }
-                    })(marker, i));
-                    // create request from locations array, 1st marker is origin
-                    if (i == 0) request.origin = marker.getPosition();
-                    // last marker is destination
-                    else if (i == locations.length - 1) request.destination = marker.getPosition();
-                    else {
-                        // any other markers are waypoints
-                        if (!request.waypoints) request.waypoints = [];
-                        request.waypoints.push({
-                            location: marker.getPosition(),
-                            stopover: true
-                        });
-                    }
-                }
-                // call directions service
-                directionsService.route(request, function(result, status) {
-                    if (status == google.maps.DirectionsStatus.OK) {
-                        directionsDisplay.setDirections(result);
-                    }
-                });
-                map.fitBounds(bounds);
-            }
-        }
-        MapPoints = [{
-            Latitude: "{{ $input['pickup_latitude'] }}",
-            Longitude: "{{ $input['pickup_longitude'] }}",
-            AddressLocation: "{{ $input['pickup_address'] }}"
-        }, {
-            Latitude: "{{ $input['dropoff_latitude'] }}",
-            Longitude: "{{ $input['dropoff_longitude'] }}",
-            AddressLocation: "{{ $input['dropoff_address'] }}"
-        }];
-        initializeMapReport(MapPoints);
-
-        $("#personal_info_form").submit(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
-                type: 'post',
-                dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
-                success: function(response) {
-                    if(response.status){
-                        $("#confirmOTPModal").modal('show');
-                    } else if(response.status == 0){
-                        swal("Error",response.message,"error");
-                        $(document).find(".verify_otp").removeAttr('disabled');
-                    }
-                },
-                error(response) {
-                    swal("Error",response.message,"error");
-                    $(document).find(".verify_otp").removeAttr('disabled');
-                }
-            });
-        })
-
-        $(document).on("click", ".verify_otp", function(e) {
-            e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
-            var post_data = $('form#personal_info_form').serialize();
-            post_data += '&otp='+otp_entered;
-            $(document).find(".verify_otp").attr('disabled',true);
-            $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking')}}",
-                type: 'post',
-                dataType: 'json',
-                data: post_data,
-                success: function(response) {
-                    if(response.status){
-                        swal("Success",response.message,"success");
-							setTimeout(function() {
-								window.location.href = "{{ url('booking')}}";
-							}, 2000);
-                    } else if(response.status == 0){
-                        swal("Error",response.message,"error");
-                        $(document).find(".verify_otp").removeAttr('disabled');
-                    }
-                },
-                error(response) {
-                    swal("Error",response.message,"error");
-                    $(document).find(".verify_otp").removeAttr('disabled');
-                }
-            });
-        })
-    </script>
+   
 </body>
 
 </html>

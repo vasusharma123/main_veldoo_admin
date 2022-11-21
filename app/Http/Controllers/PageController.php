@@ -15,6 +15,7 @@ use App\Http\Controllers\API\UserWebController;
 use Exception;
 use Twilio\Rest\Client;
 use App\Notification;
+use App\RideHistory;
 
 class PageController extends Controller
 {
@@ -388,4 +389,179 @@ if($_REQUEST['cm'] == 2)
 		return $jsonResponse;
 	}
 
+	public function myBooking() {
+		return view('my_booking');
+	}
+
+	public function list_of_booking(){
+		return view('list_of_booking');
+	}
+
+	public function send_otp_for_my_bookings(Request $request)
+	{
+		try {
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+			if($user){
+				$expiryMin = config('app.otp_expiry_minutes');
+				$otp = rand(1000, 9999);
+				$sid = env("TWILIO_ACCOUNT_SID");
+				$token = env("TWILIO_AUTH_TOKEN");
+				$twilio = new Client($sid, $token);
+	
+				$message = $twilio->messages
+					->create(
+						"+".$request->country_code.ltrim($request->phone, "0"), // to
+						[
+							"body" => "Dear User, your Veldoo verification code is $otp",
+							"from" => env("TWILIO_FROM_SEND")
+						]
+					);
+				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+				OtpVerification::updateOrCreate(
+					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+					['otp' => $otp, 'expiry' => $endTime]
+				);
+				return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number']);
+			} else {
+				return response()->json(['status' => 0, 'message' => "No such number exists in our record"]);
+			}
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+	public function verify_otp_and_ride_list(Request $request)
+	{
+		try {
+			$now = Carbon::now();
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+			if (empty($haveOtp)) {
+				return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+			}
+
+			if ($now->diffInMinutes($haveOtp->expiry) < 0) {
+				return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+			}
+			$haveOtp->delete();
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+			if($user){
+				$rideList = Ride::where(['user_id' => $user->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
+				if($rideList && count($rideList) > 0){
+					return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number', 'data' => $rideList]);
+				} else {
+					return response()->json(['status' => 0, 'message' => "No rides available"]);
+				}
+			} else {
+				return response()->json(['status' => 0, 'message' => "No such number exists in our record"]);
+			}
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+	public function cancel_booking(Request $request)
+	{
+		try {
+			$ride_id = $request->ride_id;
+			$ride_detail = Ride::find($ride_id);
+			$ride_detail->delete();
+            RideHistory::where(['ride_id' => $ride_id])->delete();
+			return response()->json(['status' => 1, 'message' => 'Ride has been deleted.']);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+	public function send_otp_before_ride_edit(Request $request)
+	{
+		try {
+			$expiryMin = config('app.otp_expiry_minutes');
+			$otp = rand(1000, 9999);
+			$sid = env("TWILIO_ACCOUNT_SID");
+			$token = env("TWILIO_AUTH_TOKEN");
+			$twilio = new Client($sid, $token);
+
+			$message = $twilio->messages
+				->create(
+					$request->phone, // to
+					[
+						"body" => "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking",
+						"from" => env("TWILIO_FROM_SEND")
+					]
+				);
+			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+			$phone_number = explode("-",$request->phone);
+			$request->phone = $phone_number[1];
+			OtpVerification::updateOrCreate(
+				['country_code' => $request->country_code, 'phone' => $request->phone],
+				['otp' => $otp, 'expiry' => $endTime]
+			);
+			return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number']);
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+	public function booking_edit(Request $request, $ride_id) {
+		$rideDetail = Ride::find($ride_id);
+		$vehicle_types = Price::orderBy('sort')->get();
+		return view('booking_edit')->with(['vehicle_types' => $vehicle_types, 'rideDetail' => $rideDetail]);
+	}
+
+	public function booking_form_edit(Request $request, $ride_id) {
+		if(empty($request->carType)){
+			return redirect()->route("booking_edit");
+		}
+		$rideDetail = Ride::with(['user'])->find($ride_id);
+		$vehicle_type = Price::find($request->carType);
+		$input = $request->all();
+		return view('booking_form_edit')->with(['vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
+	}
+
+	public function verify_otp_and_ride_booking_edit(Request $request)
+	{
+		$expiryMin = config('app.otp_expiry_minutes');
+		$now = Carbon::now();
+		$phone_number = explode("-",$request->phone);
+		$request->phone = $phone_number[1];
+		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp])->first();
+		if (empty($haveOtp)) {
+			return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+		}
+
+		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
+			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+		}
+		$haveOtp->delete();
+
+		$webobj = new UserWebController;
+		if ($now->diffInMinutes($request->ride_time) <= 15) {
+			$jsonResponse = $webobj->create_ride_driver_edit($request);
+		} else {
+			$jsonResponse = $webobj->book_ride_edit($request);
+		}
+		$content = $jsonResponse->getContent();
+		$responseObj = json_decode($content, true);
+		if($responseObj['status'] == 1){
+			$sid = env("TWILIO_ACCOUNT_SID");
+			$token = env("TWILIO_AUTH_TOKEN");
+			$twilio = new Client($sid, $token);
+
+			$message = $twilio->messages
+				->create(
+					"+".$request->country_code.ltrim($request->phone, "0"), // to
+					[
+						"body" => "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).".",
+						"from" => env("TWILIO_FROM_SEND")
+					]
+				);
+		}
+		return $jsonResponse;
+	}
+
+	
 }

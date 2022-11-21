@@ -45,7 +45,16 @@ Route::get('/booking',  ['uses'=>'PageController@booking'])->name('booking');
 Route::post('/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form');
 Route::post('/send_otp_before_ride_booking',  ['uses'=>'PageController@send_otp_before_ride_booking'])->name('send_otp_before_ride_booking');
 Route::post('/verify_otp_and_ride_booking',  ['uses'=>'PageController@verify_otp_and_ride_booking'])->name('verify_otp_and_ride_booking');
-Route::get('/test',  ['uses'=>'PageController@test']);
+Route::get('/my-booking',  ['uses' => 'PageController@myBooking']);
+Route::get('/list_of_booking',  ['uses' => 'PageController@list_of_booking'])->name('list_of_booking');
+Route::post('/send_otp_for_my_bookings',  ['uses' => 'PageController@send_otp_for_my_bookings'])->name('send_otp_for_my_bookings');
+Route::post('/verify_otp_and_ride_list',  ['uses' => 'PageController@verify_otp_and_ride_list'])->name('verify_otp_and_ride_list');
+Route::post('/web/cancel_booking',  ['uses' => 'PageController@cancel_booking'])->name('web.cancel_booking');
+Route::get('/booking_edit/{id}',  ['uses' => 'PageController@booking_edit'])->name('booking_edit');
+Route::post('/booking_form_edit/{id}',  ['uses' => 'PageController@booking_form_edit'])->name('booking_form_edit');
+Route::post('/send_otp_before_ride_edit',  ['uses' => 'PageController@send_otp_before_ride_edit'])->name('send_otp_before_ride_edit');
+Route::post('/verify_otp_and_ride_booking_edit',  ['uses' => 'PageController@verify_otp_and_ride_booking_edit'])->name('verify_otp_and_ride_booking_edit');
+
 // Route::get('note/{slug}', 'TopicController@note');
 ########		PUBLIC URL END			#########
 

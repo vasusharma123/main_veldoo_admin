@@ -371,32 +371,33 @@
                             <div class="filter_booking_list">
                                 <form class="personal_info_form" id="personal_info_form" method="post">
                                     @csrf
+                                    <input type="hidden" name="ride_id" value="{{$rideDetail->id}}">
                                     <div class="row">
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                             <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="first_name"
-                                                    placeholder="First Name" required />
+                                                <input type="text" class="form-control input_field" name="first_name" value="{{$rideDetail->user->first_name ?? ''}}"
+                                                    placeholder="First Name" readonly />
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                             <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="last_name"
-                                                    placeholder="Last Name" />
+                                                <input type="text" class="form-control input_field" name="last_name" value="{{$rideDetail->user->last_name ?? ''}}"
+                                                    placeholder="Last Name" readonly />
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
                                                 <input class="form-control" name="country_code" type="hidden"
-                                                    id="country_code" value="41">
+                                                    id="country_code" value="{{$rideDetail->user->country_code}}">
                                                 <input type="tel" id="txtPhone"
-                                                    class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
+                                                    class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" value="+{{$rideDetail->user->country_code}}-{{$rideDetail->user->phone}}" required readonly />
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
                                                     <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}" required />
                                                         <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                                     </div>
                                                 </div>
@@ -431,25 +432,25 @@
                                     <div class="row show_case">
                                         <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
                                             <div class="form-group">
-                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
+                                                <p class="form-control chf pl-0 pr-0"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
                                                 <input type="hidden" name="ride_cost" class="price_calculated_input"
                                                 value="{{ $input['price_calculated'] }}">
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
                                             <div class="form-group">
-                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
+                                                <p class="form-control km_m pl-0 pr-0"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
                                                 <input type="hidden" name="distance"
                                                     class="distance_calculated_input"
                                                     value="{{ $input['distance_calculated'] }}">
                                             </div>
                                         </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5 col-5">
+                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4">
                                             <div class="form-group">
                                                 <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
                                                     <option value="">Payment Method</option>
-                                                    <option value="Cash" selected>Cash</option>
-                                                    <option value="Card">Card</option>
+                                                    <option value="Cash" {{$rideDetail->payment_type == 'Cash'?'selected':''}}>Cash</option>
+                                                    <option value="Card" {{$rideDetail->payment_type == 'Card'?'selected':''}}>Card</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -458,7 +459,7 @@
                                     <div class="row">
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
+                                                <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes...">{{$rideDetail->note}}</textarea>
                                             </div>
                                         </div>
                                         <!-- 
@@ -567,9 +568,8 @@
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script>
         $(function() {
-            var code = "+41";
+            var code = "+{{$rideDetail->user->country_code}}";
             $('#txtPhone').intlTelInput({
-                initialCountry: "ch",
             });
             $("#txtPhone").on("countrychange", function() {
                 var countryCode = $('.iti__selected-flag').attr('title');
@@ -654,7 +654,7 @@
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
+                url: "{{ route('send_otp_before_ride_edit')}}",
                 type: 'post',
                 dataType: 'json',
                 data: $('form#personal_info_form').serialize(),
@@ -680,7 +680,7 @@
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
             $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking')}}",
+                url: "{{ route('verify_otp_and_ride_booking_edit')}}",
                 type: 'post',
                 dataType: 'json',
                 data: post_data,
@@ -688,7 +688,7 @@
                     if(response.status){
                         swal("Success",response.message,"success");
 							setTimeout(function() {
-								window.location.href = "{{ url('booking')}}";
+								window.location.href = "{{ url('list_of_booking')}}";
 							}, 2000);
                     } else if(response.status == 0){
                         swal("Error",response.message,"error");
