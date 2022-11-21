@@ -429,7 +429,7 @@
                                         </div>
                                     </div>
                                     <div class="row show_case">
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                                        <div class="col text-center">
                                             <div class="form-group">
                                                 <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
                                                 <input type="hidden" name="ride_cost" class="price_calculated_input"
