@@ -53,7 +53,7 @@ class MakeUnactiveDriverLogout extends Command
                 ->update([
                     'revoked' => true
                 ]);
-            User::whereIn('id', $unactive_driver_ids)->update(['availability' => 0]);
+            User::whereIn('id', $unactive_driver_ids)->update(['availability' => 0, 'fcm_token' => '', 'device_token' => '']);
             DriverStayActiveNotification::whereIn('driver_id', $unactive_driver_ids)->delete();
             DriverChooseCar::whereIn('user_id', $unactive_driver_ids)->where(['logout' => 0])->update(['logout' => 1]);
         }
