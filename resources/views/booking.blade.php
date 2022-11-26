@@ -479,17 +479,19 @@
                                 @csrf
                                 <div class="row row_fileterBooking show_case">
 
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center">
                                         <div class="form-group">
-                                            <p class="form-control"><span class="price_calculated">CHF ---</span></p>
+                                            <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="price_calculated">CHF ---</span></p>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-4 col-4 text-center lst_col">
+                                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
                                         <div class="form-group">
-                                            <p class="form-control"><span class="distance_calculated">KM ---</span></p>
+                                            <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="distance_calculated">KM ---</span></p>
                                         </div>
                                     </div>
-                                    <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center">
+                                    <div class="col-lg-7 col-md-7 col-sm-8 col-8">
+                                    </div>
+                                    <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center pr-0 ">
                                         <div class="form-group">
                                             <input type="hidden" id="booking_pickup_address" name="pickup_address">
                                             <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
@@ -525,7 +527,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">MANAGE
-                                            BOOKINGs</a>
+                                            BOOKINGS</a>
                                     </div>
                                 </div>
                             </div>
@@ -557,13 +559,67 @@
         var MapPoints = [];
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
+        var onLoadVar = 0;
+        var cur_lat = "";
+        var cur_lng = "";
 
-        function autocomplete_initialize() {
-            var input = document.getElementById('pickupPoint');
-            var autocomplete_pickup = new google.maps.places.Autocomplete(input);
-            autocomplete_pickup.setComponentRestrictions({
-                country: ["ch", "de"],
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition,mapError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function mapError(err) {
+            console.log(err);
+            if (err.code==1) {
+                if (err.message=="User denied Geolocation") 
+                {
+                    alert("Please enable location permission in your browser");
+                }
+            }
+        }
+
+        function showPosition(position) {
+            var lat = cur_lat = position.coords.latitude;
+            var lng = cur_lng = position.coords.longitude;
+            pt = new google.maps.LatLng(lat, lng);
+            map.setCenter(pt);
+            map.setZoom(13);
+            $('#pickup_latitude').val(lat);
+            $('#pickup_longitude').val(lng);
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({'latLng': pt}, function(results, status) {
+                if(status == google.maps.GeocoderStatus.OK) {
+                    $('#pickupPoint').val(results[0]['formatted_address']);//alert(results[0]['formatted_address']);
+                    new google.maps.Marker({
+                        position: pt,
+                        map,
+                        title: results[0]['formatted_address'],
+                    });
+                };
             });
+
+            var center = { lat: cur_lat, lng: cur_lng };
+            var defaultBounds = {
+                                        north: center.lat + 5,
+                                        south: center.lat - 5,
+                                        east: center.lng + 5,
+                                        west: center.lng - 5,
+                                    };
+            var options = {
+                                        bounds: defaultBounds,
+                                        // fields: ["address_components"], // Or whatever fields you need
+                                        strictBounds: true, // Only if you want to restrict, not bias
+                                        types: ["establishment"], // Whatever types you need
+                                    };
+            var input = document.getElementById('pickupPoint');
+            var autocomplete_pickup = new google.maps.places.Autocomplete(input,options);
+            // autocomplete_pickup.setComponentRestrictions({
+            //     country: ["ch", "de"],
+            // });
+            // Create a bounding box with sides ~10km away from the center point
             google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
                 var place = autocomplete_pickup.getPlace();
                 // document.getElementById('city2').value = place.name;
@@ -572,22 +628,26 @@
             });
 
             var dropoff_input = document.getElementById('dropoffPoint');
-            var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input);
-            autocomplete_dropoff.setComponentRestrictions({
-                country: ["ch", "de"],
-            });
+            var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input,options);
+            // autocomplete_dropoff.setComponentRestrictions({
+            //     country: ["ch", "de"],
+            // });
             google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
                 var place = autocomplete_dropoff.getPlace();
                 // document.getElementById('city2').value = place.name;
                 document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
                 document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
             });
+        }
+
+        function autocomplete_initialize() {
             initializeMapReport(MapPoints);
             //             map = new google.maps.Map(document.getElementById('googleMap'), {
             //     center: new google.maps.LatLng(48.1293954,12.556663),//Setting Initial Position
             //     zoom: 10
             //   });
         }
+
         google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
         $(document).on('click', '.calculate_route', function(e) {
@@ -682,7 +742,7 @@
                 var locations = MapPoints;
                 directionsService = new google.maps.DirectionsService;
                 directionsDisplay = new google.maps.DirectionsRenderer;
-                window.map = new google.maps.Map(document.getElementById('googleMap'), {
+                map = new google.maps.Map(document.getElementById('googleMap'), {
                     mapTypeId: google.maps.MapTypeId.ROADMAP,
                     scrollwheel: false,
                     center: {
@@ -738,6 +798,15 @@
                     });
                     map.fitBounds(bounds);
                 }
+                if (onLoadVar==0) {
+                    getLocation()
+                    onLoadVar = 1;   
+                    // alert(onLoadVar);
+                }
+                else
+                {
+                    map.setZoom(8);
+                }
             }
         }
 
@@ -746,7 +815,7 @@
             if (calculate_route()) {
                 $("#booking_list_form").submit();
             }
-        })
+        });
 
         function measure_seating_capacity() {
             var seating_capacity = $('#carType > option:selected').data('seating_capacity');

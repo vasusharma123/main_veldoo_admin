@@ -508,8 +508,7 @@
                                         </div>
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group">
-                                                <button type="submt" class="btn submit_btn custom_btn">Send
-                                                    OTP</button>
+                                                <button type="submt" class="btn submit_btn custom_btn">Confirm</button>
                                             </div>
                                         </div>
                                     </div>

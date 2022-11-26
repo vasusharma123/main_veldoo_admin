@@ -688,7 +688,7 @@
                     if(response.status){
                         swal("Success",response.message,"success");
 							setTimeout(function() {
-								window.location.href = "{{ url('list_of_booking')}}";
+								window.location.href = "{{ route('booking')}}";
 							}, 2000);
                     } else if(response.status == 0){
                         swal("Error",response.message,"error");
