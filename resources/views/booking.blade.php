@@ -554,6 +554,7 @@
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script>
+
         var directionsService;
         var directionsDisplay;
         var MapPoints = [];

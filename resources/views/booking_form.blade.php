@@ -194,14 +194,16 @@
         }
         img.img-clock.w-100.img-responsive {
             position: absolute;
-            left: 3px;
-            top: 50%;
+            left: 18px;
+            top: 35%;
             max-width: 25px;
             transform: translateY(-50%);
         }
         #timerValue {
-            padding-left: 30px;
-            width: 100%;
+            width: 44px;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            border: 0px;
         }
         .show_case .lst_col{
             padding: 0px ;
@@ -395,10 +397,16 @@
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
-                                                    <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
+                                                    <div class="" style="width: 100%;display: flex;">
+                                                        <input type="text" value="{{date('D-m-Y H:i')}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}">
                                                         <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                                     </div>
+                                                    {{-- <div class="" style="width: 100%">
+                                                        <input type="text" name="" style="width: 70%">
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                    </div> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -431,14 +439,14 @@
                                     <div class="row show_case">
                                         <div class="col text-center">
                                             <div class="form-group">
-                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
+                                                <p class="form-control chf" style="font-size: 12px"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
                                                 <input type="hidden" name="ride_cost" class="price_calculated_input"
                                                 value="{{ $input['price_calculated'] }}">
                                             </div>
                                         </div>
                                         <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
                                             <div class="form-group">
-                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
+                                                <p class="form-control km_m" style="font-size: 12px"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
                                                 <input type="hidden" name="distance"
                                                     class="distance_calculated_input"
                                                     value="{{ $input['distance_calculated'] }}">
@@ -446,7 +454,7 @@
                                         </div>
                                         <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                             <div class="form-group">
-                                                <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
+                                                <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
                                                     <option value="">Payment Method</option>
                                                     <option value="Cash" selected>Cash</option>
                                                     <option value="Card">Card</option>
@@ -565,8 +573,13 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script>
         $(function() {
+            $(document).on('change','#timerValue',function(){
+                datetime = $(this).val();
+                $('#timerValueShowInput').val(moment(datetime).format('YYYY-MM-ddd HH:mm'));
+            });
             var code = "+41";
             $('#txtPhone').intlTelInput({
                 initialCountry: "ch",
