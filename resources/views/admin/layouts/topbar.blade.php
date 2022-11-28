@@ -14,7 +14,7 @@
 					@if(!empty($setting['admin_logo']) && file_exists('storage/app/public/'.$setting['admin_logo']))
 						<img src="{{ config('app.url_public').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="40" height="40" /> 
 					@else
-						<img src="{{ URL::asset('resources') }}/assets/images/logo-icon.png" alt="homepage" class="dark-logo" />
+						<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" class="dark-logo" />
 					@endif
 				</b>
 				<!--End Logo icon -->
@@ -24,7 +24,7 @@
 					@if(!empty($setting['admin_sidebar_logo']) && file_exists('public/storage/'.$setting['admin_sidebar_logo']))
 						<img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="128" height="19" /> 
 					@else
-						<img src="{{ URL::asset('resources') }}/assets/images/logo-text.png" alt="homepage" class="dark-logo" />
+						<img src="{{ asset('/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" />
 					@endif
 				</span>
 			</a>
@@ -52,7 +52,7 @@
 						@if(!empty($currentUser['image']) && file_exists('storage/app/public/'.$currentUser['image']))
 							<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" class="profile-pic" /> 
 						@else
-							<img src="{{ URL::asset('resources') }}/assets/images/users/1.jpg" alt="user" class="profile-pic" />
+							<img src="{{ asset('/assets/images/users/1.jpg')}}" alt="user" class="profile-pic" />
 						@endif
 					</a>
 					<div class="dropdown-menu dropdown-menu-right scale-up">
@@ -64,7 +64,7 @@
 										@if(!empty($currentUser['image']) && file_exists('storage/app/public/'.$currentUser['image']))
 											<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" alt="user" /> 
 										@else
-											<img src="{{ URL::asset('resources') }}/assets/images/users/1.jpg" alt="user">
+											<img src="{{ asset('/assets/images/users/1.jpg')}}" alt="user">
 										@endif
 									</div>
 									<div class="u-text">

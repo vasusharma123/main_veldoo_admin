@@ -1,37 +1,37 @@
 		<!-- ============================================================== -->
 		<!-- All Jquery -->
 		<!-- ============================================================== -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/jquery/jquery.min.js"></script>
+		<script src="{{ asset('/assets/plugins/jquery/jquery.min.js')}}"></script>
 		<!-- Bootstrap tether Core JavaScript -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/bootstrap/js/popper.min.js"></script>
-		<script src="{{ URL::asset('resources') }}/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+		<script src="{{ asset('/assets/plugins/bootstrap/js/popper.min.js')}}"></script>
+		<script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.min.js')}}"></script>
 		<!-- slimscrollbar scrollbar JavaScript -->
-		<script src="{{ URL::asset('resources') }}/assets/js/jquery.slimscroll.js"></script>
+		<script src="{{ asset('/assets/js/jquery.slimscroll.js')}}"></script>
 		<!--Wave Effects -->
-		<script src="{{ URL::asset('resources') }}/assets/js/waves.js"></script>
+		<script src="{{ asset('/assets/js/waves.js')}}"></script>
 		<!--BOOTSTRAP DATEPICKER -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/moment/moment.js"></script>
-		<script src="{{ URL::asset('resources') }}/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+		<script src="{{ asset('/assets/plugins/moment/moment.js')}}"></script>
+		<script src="{{ asset('/assets/plugins/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
 		<!--Menu sidebar -->
-		<script src="{{ URL::asset('resources') }}/assets/js/sidebarmenu.js"></script>
+		<script src="{{ asset('/assets/js/sidebarmenu.js')}}"></script>
 		<!--ION RANGE SLIDER -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
+		<script src="{{ asset('/assets/plugins/ion-rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js')}}"></script>
 		<!--stickey kit -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
-		<script src="{{ URL::asset('resources') }}/assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+		<script src="{{ asset('/assets/plugins/sticky-kit-master/dist/sticky-kit.min.js')}}"></script>
+		<script src="{{ asset('/assets/plugins/sparkline/jquery.sparkline.min.js')}}"></script>
 		<!--Custom JavaScript -->
-		<script src="{{ URL::asset('resources') }}/assets/js/custom.min.js"></script>
+		<script src="{{ asset('/assets/js/custom.min.js')}}"></script>
 		<!-- This page plugins -->
 		<!-- ============================================================== -->
-		<script src="{{ URL::asset('resources') }}/assets/js/jasny-bootstrap.js"></script>
-		<script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
-		<script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/jquery.sweet-alert.custom.js"></script>
+		<script src="{{ asset('/assets/js/jasny-bootstrap.js')}}"></script>
+		<script src="{{ asset('/assets/plugins/sweetalert/sweetalert.min.js')}}"></script>
+		<script src="{{ asset('/assets/plugins/sweetalert/jquery.sweet-alert.custom.js')}}"></script>
 		<!-- ============================================================== -->
 		<!-- SELECT 2 -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/select2/dist/js/select2.min.js"></script>
+		<script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js')}}"></script>
 		<!-- Style Switcher -->
 		<!-- ============================================================== -->
-		<script src="{{ URL::asset('resources') }}/assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>
+		<script src="{{ asset('/assets/plugins/styleswitcher/jQuery.style.switcher.js')}}"></script>
 		<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.js"></script>
@@ -59,8 +59,8 @@
 {{Html::script('http://code.jquery.com/ui/1.13.2/jquery-ui.js')}}
 {{Html::script('http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js')}}
 {{Html::style('http://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css')}} 
-{{Html::style('public/assets/css/intlTelInput.css')}} 
-{{Html::script('public/assets/js/intlTelInput.js')}} 
+{{Html::style('assets/css/intlTelInput.css')}} 
+{{Html::script('assets/js/intlTelInput.js')}} 
 
 		<script type="text/javascript">
 		function getParameterByName(name, url) {

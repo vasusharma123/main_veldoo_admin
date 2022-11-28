@@ -10,7 +10,7 @@
 					@if(file_exists('storage/app/public/'.$currentUser['image']))
 						<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" alt="user" /> 
 					@else
-						<img src="{{ URL::asset('resources') }}/assets/images/users/profile.png" alt="user" class="" />
+						<img src="{{ asset('/assets/images/users/profile.png')}}" alt="user" class="" />
 					@endif
 					 <!-- this is blinking heartbit-->
 					<div class="notify setpos"> <span class="heartbit"></span> <span class="point"></span> </div>

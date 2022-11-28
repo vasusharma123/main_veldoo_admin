@@ -12,25 +12,25 @@
 	@if(!empty($setting['admin_favicon']) && file_exists('public/storage/'.$setting['admin_favicon']))
 		<link rel="icon" type="image/png" sizes="16x16" href="{{ config('app.url_public').'/'.$setting['admin_favicon'] }}">
 	@else
-		<link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset('resources') }}/assets/images/favicon.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('/assets/images/favicon.png')}}">
 	@endif
 		<title>{{ (!empty($action) ? $action : '').(!empty($setting['site_name']) ? ' | '.$setting['site_name'] : ' | Admin') }}</title>
     <!-- Bootstrap Core CSS -->
-    <link href="{{ URL::asset('resources') }}/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="{{ URL::asset('resources') }}/assets/css/style.css" rel="stylesheet">
+    <link href="{{ asset('/assets/css/style.css')}}" rel="stylesheet">
     <!-- You can change the theme colors from here -->
-    <link href="{{ URL::asset('resources') }}/assets/css/colors/blue.css" id="theme" rel="stylesheet">
-    <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" id="theme" rel="stylesheet">
+    <link href="{{ asset('/assets/css/colors/blue.css')}}" id="theme" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/sweetalert/sweetalert.css')}}" id="theme" rel="stylesheet">
 	<!--BOOSTRAP DATEPICKER-->
-    <link href="{{ URL::asset('resources') }}/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
 	<!--ION RANGE SLIDER-->
-    <link href="{{ URL::asset('resources') }}/assets/plugins/ion-rangeslider/css/ion.rangeSlider.css" rel="stylesheet">
-    <link href="{{ URL::asset('resources') }}/assets/plugins/ion-rangeslider/css/ion.rangeSlider.skinModern.css" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/ion-rangeslider/css/ion.rangeSlider.css')}}" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/ion-rangeslider/css/ion.rangeSlider.skinModern.css')}}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.css" rel="stylesheet">
 	<!--SELECT 2-->
-    <link href="{{ URL::asset('resources') }}/assets/plugins/select2/dist/css/select2.css" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css')}}" rel="stylesheet">
 	<!--bootstrap3-->
 	@yield ('css')
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->

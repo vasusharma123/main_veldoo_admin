@@ -23,7 +23,7 @@ class Server{
     constructor(){
         this.port =  process.env.PORT || 3000;
 		//this.host = `174.138.27.136`;
-        this.host = `172.31.22.57`;
+        // this.host = `172.31.22.57`;
 		//this.host = `174.138.27.136`;
         
         this.app = express();
@@ -61,8 +61,8 @@ class Server{
         this.appConfig();
         this.includeRoutes();
 
-        this.http.listen(this.port, this.host, () => {
-            console.log(`Listening on http://${this.host}:${this.port}`);
+        this.http.listen(this.port, () => {
+            console.log(`Listening on ${this.port}`);
         });
     }
 
