@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veldoo Booking</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
-    <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css"
-        integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+@extends('layouts.website')
+@section('css')
     <style>
         .map-booking {
             background: url('https://images.unsplash.com/photo-1565429504749-436a49cd9f45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
@@ -402,155 +390,147 @@
             }
         }
     </style>
-</head>
-
-<body>
-    <section class="map-booking">
-        <article class="container-fluid form_container">
-            <div class="form_wrapper">
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                        <div class="logo_img_top_1">
-                            <img src="{{ asset('public/images/vel_logo.png') }}" class="img-responsive imagelogo_brand"
-                                alt="img Logo">
-                        </div>
-                        <div class="filter_booking_list">
-                            <form class="booking_list_form">
-                                <div class="row w-100 m-0">
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control input_field" name="pickupPoint"
-                                                id="pickupPoint" placeholder="From" required>
-                                            <input type="hidden" id="pickup_latitude" name="pickup_latitude">
-                                            <input type="hidden" id="pickup_longitude" name="pickup_longitude">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control input_field" name="dropoffPoint"
-                                                id="dropoffPoint" placeholder="To" required>
-                                            <input type="hidden" id="dropoff_latitude" name="dropoff_latitude">
-                                            <input type="hidden" id="dropoff_longitude" name="dropoff_longitude">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row w-100 m-0 filter_booking_section_row">
-                                    <div class="col-lg-4 col-md-4 col-sm-5 col-5">
-                                        <div class="form-group field_icons">
-                                            <i class="fas fa-taxi fa-2x mr-1"></i>
-                                            <select class="form-control select_field p-0" id="carType" name="carType">
-                                                @if (!empty($vehicle_types))
-                                                    @foreach ($vehicle_types as $vehicle_type)
-                                                        <option value="{{ $vehicle_type->id }}"
-                                                            data-basic_fee="{{ $vehicle_type->basic_fee }}"
-                                                            data-price_per_km="{{ $vehicle_type->price_per_km }}"
-                                                            data-seating_capacity="{{ $vehicle_type->seating_capacity }}">
-                                                            {{ $vehicle_type->car_type }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-3 col-sm-3 col-3">
-                                        <div class="form-group field_icons">
-                                            <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                            <select class="form-control select_field" id="numberOfPassenger"
-                                                name="numberOfPassenger">
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-end">
-                                        <div class="form-group">
-                                            <button type="button" class="btn submit_btn custom_btn calculate_route"
-                                                style="padding: 7px;">CALCULATE</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <!-- ============================================================== -->
-                            <!-- Booking list Form Content End -->
-                            <!-- ============================================================== -->
-
-                        </div>
-                        <div class="filter_result ">
-                            <form id="booking_list_form" method="POST" action="{{ route('booking_form') }}">
-                                @csrf
-                                <div class="row row_fileterBooking show_case">
-
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center">
-                                        <div class="form-group">
-                                            <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="price_calculated">CHF ---</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
-                                        <div class="form-group">
-                                            <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="distance_calculated">KM ---</span></p>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-8 col-8">
-                                    </div>
-                                    <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center pr-0 ">
-                                        <div class="form-group">
-                                            <input type="hidden" id="booking_pickup_address" name="pickup_address">
-                                            <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
-                                            <input type="hidden" id="booking_pickup_longitude"
-                                                name="pickup_longitude">
-                                            <input type="hidden" id="booking_dropoff_address"
-                                                name="dropoff_address">
-                                            <input type="hidden" id="booking_dropoff_latitude"
-                                                name="dropoff_latitude">
-                                            <input type="hidden" id="booking_dropoff_longitude"
-                                                name="dropoff_longitude">
-                                            <input type="hidden" name="distance_calculated"
-                                                class="distance_calculated_input">
-                                            <input type="hidden" name="price_calculated"
-                                                class="price_calculated_input">
-                                            <input type="hidden" id="booking_carType" name="carType">
-                                            <input type="hidden" id="booking_numberOfPassenger"
-                                                name="numberOfPassenger">
-                                            <button type="button" class="btn custom_btn book_online_now"
-                                                style="padding: 7px;">NEXT</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
+@endsection
+@section('content')
+    <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+            <div class="logo_img_top_1">
+                <img src="{{ asset('public/images/vel_logo.png') }}" class="img-responsive imagelogo_brand"
+                    alt="img Logo">
+            </div>
+            <div class="filter_booking_list">
+                <form class="booking_list_form">
+                    <div class="row w-100 m-0">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
+                            <div class="form-group">
+                                <input type="text" class="form-control input_field" name="pickupPoint"
+                                    id="pickupPoint" placeholder="From" required>
+                                <input type="hidden" id="pickup_latitude" name="pickup_latitude">
+                                <input type="hidden" id="pickup_longitude" name="pickup_longitude">
+                            </div>
                         </div>
 
-                        <!-- ============================================================== -->
-                        <!-- Filter list Result Content End -->
-                        <!-- ============================================================== -->
-
-                        <div class="filter_result ">
-                            <div class="row row_fileterBooking show_case">
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">MANAGE
-                                            BOOKINGS</a>
-                                    </div>
-                                </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
+                            <div class="form-group">
+                                <input type="text" class="form-control input_field" name="dropoffPoint"
+                                    id="dropoffPoint" placeholder="To" required>
+                                <input type="hidden" id="dropoff_latitude" name="dropoff_latitude">
+                                <input type="hidden" id="dropoff_longitude" name="dropoff_longitude">
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-                        <div class="map_section">
-                            <div id="googleMap" style="width:100%;"></div>
+                    <div class="row w-100 m-0 filter_booking_section_row">
+                        <div class="col-lg-4 col-md-4 col-sm-5 col-5">
+                            <div class="form-group field_icons">
+                                <i class="fas fa-taxi fa-2x mr-1"></i>
+                                <select class="form-control select_field p-0" id="carType" name="carType">
+                                    @if (!empty($vehicle_types))
+                                        @foreach ($vehicle_types as $vehicle_type)
+                                            <option value="{{ $vehicle_type->id }}"
+                                                data-basic_fee="{{ $vehicle_type->basic_fee }}"
+                                                data-price_per_km="{{ $vehicle_type->price_per_km }}"
+                                                data-seating_capacity="{{ $vehicle_type->seating_capacity }}">
+                                                {{ $vehicle_type->car_type }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                            <div class="form-group field_icons">
+                                <i class="fas fa-male fa-2x ml-2 mr-1"></i>
+                                <select class="form-control select_field" id="numberOfPassenger"
+                                    name="numberOfPassenger">
+                                </select>
+                            </div>
                         </div>
 
+                        <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-end">
+                            <div class="form-group">
+                                <button type="button" class="btn submit_btn custom_btn calculate_route"
+                                    style="padding: 7px;">CALCULATE</button>
+                            </div>
+                        </div>
                     </div>
+                </form>
+                <!-- ============================================================== -->
+                <!-- Booking list Form Content End -->
+                <!-- ============================================================== -->
 
+            </div>
+            <div class="filter_result ">
+                <form id="booking_list_form" method="POST" action="{{ route('booking_form') }}">
+                    @csrf
+                    <div class="row row_fileterBooking show_case">
+
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center">
+                            <div class="form-group">
+                                <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="price_calculated">CHF ---</span></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
+                            <div class="form-group">
+                                <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="distance_calculated">KM ---</span></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-8 col-8">
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-center pr-0 ">
+                            <div class="form-group">
+                                <input type="hidden" id="booking_pickup_address" name="pickup_address">
+                                <input type="hidden" id="booking_pickup_latitude" name="pickup_latitude">
+                                <input type="hidden" id="booking_pickup_longitude"
+                                    name="pickup_longitude">
+                                <input type="hidden" id="booking_dropoff_address"
+                                    name="dropoff_address">
+                                <input type="hidden" id="booking_dropoff_latitude"
+                                    name="dropoff_latitude">
+                                <input type="hidden" id="booking_dropoff_longitude"
+                                    name="dropoff_longitude">
+                                <input type="hidden" name="distance_calculated"
+                                    class="distance_calculated_input">
+                                <input type="hidden" name="price_calculated"
+                                    class="price_calculated_input">
+                                <input type="hidden" id="booking_carType" name="carType">
+                                <input type="hidden" id="booking_numberOfPassenger"
+                                    name="numberOfPassenger">
+                                <button type="button" class="btn custom_btn book_online_now"
+                                    style="padding: 7px;">NEXT</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- Filter list Result Content End -->
+            <!-- ============================================================== -->
+
+            <div class="filter_result ">
+                <div class="row row_fileterBooking show_case">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">MANAGE
+                                BOOKINGS</a>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </article>
-    </section>
+        </div>
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
+            <div class="map_section">
+                <div id="googleMap" style="width:100%;"></div>
+            </div>
 
+        </div>
 
+    </div>
+@endsection
+@section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script>
@@ -830,6 +810,4 @@
             measure_seating_capacity();
         })
     </script>
-</body>
-
-</html>
+@endsection

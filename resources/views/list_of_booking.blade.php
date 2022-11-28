@@ -1,17 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veldoo Booking</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
-    <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css"
-        integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+@extends('layouts.website')
+@section('css')
     <style>
         .btn {
             border-radius: 50px;
@@ -483,157 +471,85 @@
             background: #e6e1e1 !important;
         }
     </style>
-</head>
-
-<body>
-    <section class="map-booking">
-        <article class="container-fluid form_container">
-            <div class="form_wrapper">
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                        <div class="booking_personal_information">
-                            <div class="logo_img_top_1">
-                                <img src="{{ asset('public/images/vel_logo.png') }}"
-                                    class="img-responsive imagelogo_brand" alt="img Logo">
-                            </div>
-                            <h2 class="title_form">My Bookings</h2>
-                            <div class="filter_booking_list otp_verification_div">
-                                <form id="verify_phone_form" method="post">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <input class="form-control" name="country_code" type="hidden"
-                                                    id="country_code" value="41">
-                                                <input type="tel" id="txtPhone"
-                                                    class="txtbox form-control input_field" name="phone"
-                                                    placeholder="Enter Phone Number" minlength="8" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <button type="submt" class="btn submit_btn custom_btn">Confirm</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <div class="filter_booking_list ride_list_div d-none">
-                                <div class="booking_list">
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group" style="display: block;">
-                                                <div class="timer_box">
-                                                    <div class="show_value">
-                                                        <ul class="list-group SelectedDateList">
-                                                            
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <button type="button" id="submit_request_cancel"
-                                                    class="btn submit_btn custom_btn">CANCEL BOOKING</button>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <button type="button"
-                                                    class="btn back_btn custom_btn edit_booking">EDIT BOOKING</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-12">
-                                        <p class="msg_display"></p>
-                                    </div>
-                                </div>
-
-                                <!-- ============================================================== -->
-                                <!-- Personal Information Form Content End -->
-                                <!-- ============================================================== -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-                        <div class="map_section">
-                            <div id="googleMap" style="width:100%;"></div>
-                        </div>
-                    </div>
+@endsection
+@section('content')
+    <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+            <div class="booking_personal_information">
+                <div class="logo_img_top_1">
+                    <img src="{{ asset('public/images/vel_logo.png') }}"
+                        class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
-            </div>
-        </article>
-    </section>
-
-    <!-- Confirm Modal -->
-    <div class="modal" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="confirmOTPModalTitle"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-
-            <div class="modal-content">
-                <form class="otp_form">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
+                <h2 class="title_form">My Bookings</h2>
+                <div class="filter_booking_list otp_verification_div">
+                    <form id="verify_phone_form" method="post">
+                        @csrf
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group my-4">
-                                    {{-- <label for="otp_entered">Please enter the OTP number
-                                        you received on your applied mobile number
-                                        :</label> --}}
-                                    <input type="text" class="form-control input_field" name="otp_entered"
-                                        id="otp_entered" placeholder="Please enter OTP" required />
+                                <div class="form-group">
+                                    <input class="form-control" name="country_code" type="hidden"
+                                        id="country_code" value="41">
+                                    <input type="tel" id="txtPhone"
+                                        class="txtbox form-control input_field" name="phone"
+                                        placeholder="Enter Phone Number" minlength="8" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="submt" class="btn submit_btn custom_btn">Confirm</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">Verify</button>
-                    </div>
-                </form>
-            </div>
+                    </form>
+                </div>
 
-        </div>
-    </div>
-
-    <!-- Confirm Modal -->
-    <div class="modal fade" id="cancelBookingModal" tabindex="-1" role="dialog"
-        aria-labelledby="cancelBookingTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered w-100" role="document">
-            <div class="modal-content p-4">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                            <div class="cross_icons_img text-center">
-                                <img src="{{ asset('public/images/cross.png') }}"
-                                    class="img-responsive imagelogo_brand" alt="img Logo">
+                <div class="filter_booking_list ride_list_div d-none">
+                    <div class="booking_list">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group" style="display: block;">
+                                    <div class="timer_box">
+                                        <div class="show_value">
+                                            <ul class="list-group SelectedDateList">
+                                                
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group mt-4 mb-0 text-center">
-                                <h3 class="modal_title_cs">Cancel Booking</h3>
-                                <p class="modal_desc_cs">Are you sure you want to cancel this booking?</p>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button" id="submit_request_cancel"
+                                        class="btn submit_btn custom_btn">CANCEL BOOKING</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button"
+                                        class="btn back_btn custom_btn edit_booking">EDIT BOOKING</button>
+                                </div>
                             </div>
                         </div>
+                        <div class="col-lg-12">
+                            <p class="msg_display"></p>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn custom_btn mb-4 cancel_booking_confirmed">Yes, cancel it</button>
-                    <button type="button" class="btn back_btn custom_btn close" data-dismiss="modal"
-                        aria-label="Close">
-                        <span aria-hidden="true">Close</span>
-                    </button>
+
+                    <!-- ============================================================== -->
+                    <!-- Personal Information Form Content End -->
+                    <!-- ============================================================== -->
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
+            <div class="map_section">
+                <div id="googleMap" style="width:100%;"></div>
+            </div>
+        </div>
     </div>
-
-
+@endsection
+@section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -785,7 +701,4 @@
             }
         })
     </script>
-
-</body>
-
-</html>
+@endsection
