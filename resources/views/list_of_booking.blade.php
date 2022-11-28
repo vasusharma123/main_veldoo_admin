@@ -478,6 +478,10 @@
                 max-width: 1840px;
             }
         }
+        .active-background
+        {
+            background: #e6e1e1 !important;
+        }
     </style>
 </head>
 
@@ -689,7 +693,26 @@
                         $(".SelectedDateList").html("");
                         if(response.data != ""){
                             $( response.data ).each(function( index, element ) {
-                                $(".SelectedDateList").append('<li class="list-group-item list-group-flush"><input type="radio" name="selectListed" class="SelectedListBooking form-radio" data-id="'+element.id+'" value="'+element.id+'"><img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock"><span class="listDate">'+element.ride_time+'</span></li>');
+                                div = `<li class="list-group-item bookingList" style="cursor:pointer" data-id="`+element.id+`">
+                                            <div class="row">
+                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                    <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                </div>
+                                                <div class="col-10 pl-0 ml-0">
+                                                    <span class="listDate" style="padding: 0px;margin:0px">`+element.ride_time+`</span>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                    <img src="http://localhost/Veldoo_admin/public/images/icons8-vanpool-30.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                </div>
+                                                <div class="col-10 pl-0 ml-0" style="line-height:1;">
+                                                    <span class="" style="font-size:12px">`+element.pickup_address+`</span>
+                                                </div>
+                                            </div>
+                                        </li>`;
+                                // $(".SelectedDateList").append(`<li class="list-group-item list-group-flush"><div><input type="radio" name="selectListed" class="SelectedListBooking form-radio" data-id="`+element.id+`" value="`+element.id+`"><img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" style="top:33%" class="img-clock w-100 img-responsive" alt="img clock"><span class="listDate">`+element.ride_time+`</span></div><span class="listDate" style=" ">`+element.pickup_address+`</span><img src="{{ asset('public/images/icons8-vanpool-30.png') }}" class="img-clock w-100 img-responsive" alt="img clock" style=" top: 50px; left: 4px; "><div></div></li>`);
+                                $(".SelectedDateList").append(div);
                             });
                         }
                         $(document).find('.ride_list_div').removeClass('d-none');
@@ -706,18 +729,23 @@
             });
         })
 
+        var selectedBooking = "";
+        $(document).on('click','.bookingList',function(){
+            selectedBooking = $(this).data('id');
+            $('.bookingList').removeClass('active-background');
+            $(this).addClass('active-background');
+        });
         $(document).on('click','#submit_request_cancel',function(){
-            var selectedBooking = $('input[name="selectListed"]:checked').val();
-            if(selectedBooking){
+            if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');
             } else {
                 swal("Error","Please select booking","error");
             }
-        })
+        });
+
         $(document).on('click','.cancel_booking_confirmed',function(e){
             e.preventDefault();
-            var selectedBooking = $('input[name="selectListed"]:checked').val();
-            if(selectedBooking){
+            if(selectedBooking!=""){
                 $(document).find(".cancel_booking_confirmed").attr('disabled');
                 $.ajax({
                     url: "{{ route('web.cancel_booking')}}",
@@ -730,7 +758,7 @@
                     success: function(response) {
                         if(response.status){
                             $(".SelectedDateList").html("");
-                            $(document).find(".SelectedListBooking[data-id='"+selectedBooking+"']").parents('li.list-group-item').remove();
+                            $(document).find(".bookingList[data-id='"+selectedBooking+"']").remove();
                             $("#cancelBookingModal").modal('hide');
                             swal("Success",response.message,"success");
                         } else if(response.status == 0){
@@ -746,12 +774,11 @@
             } else {
                 swal("Error","Please select booking","error");
             }
-        })
+        });
 
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
-            var selectedBooking = $('input[name="selectListed"]:checked').val();
-            if(selectedBooking){
+            if(selectedBooking!=""){
                 window.location.href= "booking_edit/"+selectedBooking;
             } else {
                 swal("Error","Please select booking","error");

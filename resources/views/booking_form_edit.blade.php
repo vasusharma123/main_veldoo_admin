@@ -194,14 +194,16 @@
         }
         img.img-clock.w-100.img-responsive {
             position: absolute;
-            left: 3px;
-            top: 50%;
+            left: 18px;
+            top: 35%;
             max-width: 25px;
             transform: translateY(-50%);
         }
         #timerValue {
-            padding-left: 30px;
-            width: 100%;
+            width: 44px;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            border: 0px;
         }
         .show_case .lst_col{
             padding: 0px ;
@@ -396,10 +398,15 @@
                                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                             <div class="form-group" style="display: block;">
                                                 <div class="timer_box">
-                                                    <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}" required />
+                                                    <div class="" style="width: 100%;display: flex;">
+                                                        <input type="text" value="{{date('D-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}">
                                                         <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                                     </div>
+                                                    {{-- <div class="show_value">
+                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}" required />
+                                                        <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                    </div> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -566,8 +573,13 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script>
         $(function() {
+            $(document).on('change','#timerValue',function(){
+                datetime = $(this).val();
+                $('#timerValueShowInput').val(moment(datetime).format('YYYY-MM-ddd HH:mm'));
+            });
             var code = "+{{$rideDetail->user->country_code}}";
             $('#txtPhone').intlTelInput({
             });
