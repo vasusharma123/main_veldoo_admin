@@ -353,7 +353,7 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
-                <h2 class="title_form">Booking Details</h2>
+                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="logo_img_top_1">
                     <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
@@ -364,13 +364,13 @@
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
                                     <input type="text" class="form-control input_field" name="first_name"
-                                        placeholder="First Name" required />
+                                        placeholder="{{ __('First Name') }}" required />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
                                     <input type="text" class="form-control input_field" name="last_name"
-                                        placeholder="Last Name" />
+                                        placeholder="{{ __('Last Name') }}" />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -378,7 +378,7 @@
                                     <input class="form-control" name="country_code" type="hidden"
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
+                                        class="txtbox form-control input_field" name="phone" placeholder="{{ __('Enter Phone Number') }}" minlength="8" required />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -407,7 +407,7 @@
                                         <option value="{{ $vehicle_type->car_type }}"
                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                             data-price_per_km="{{ $vehicle_type->price_per_km }}">
-                                            {{ $vehicle_type->car_type }}</option>
+                                            {{ __($vehicle_type->car_type) }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -442,9 +442,9 @@
                             <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                 <div class="form-group">
                                     <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
-                                        <option value="">Payment Method</option>
-                                        <option value="Cash" selected>Cash</option>
-                                        <option value="Card">Card</option>
+                                        <option value="">{{ __('Payment Method') }}</option>
+                                        <option value="Cash" selected>{{ __('Cash') }}</option>
+                                        <option value="Card">{{ __('Card') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -453,7 +453,7 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
+                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="{{ __('Enter notes...') }}"></textarea>
                                 </div>
                             </div>
                             <!-- 
@@ -468,7 +468,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
+                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -484,12 +484,12 @@
                                     <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
                                     <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
                                     <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
+                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">{{ __('BOOK') }}</button>
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
+                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
                                 </div>
                             </div>
                             <div class="col-lg-12">

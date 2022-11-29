@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ env('APP_NAME') }}</title>
+    <title>{{ __(env('APP_NAME')) }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
     <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
@@ -14,6 +14,17 @@
 <body>
     <section class="map-booking">
         <article class="container-fluid form_container">
+            <div class="text-right">
+                <form action="{{ route('changeLocale') }}" id="changeLocaleForm" method="POST">
+                    @csrf
+                    <div class="form-group">
+                        <select name="locale" onchange="$('#changeLocaleForm').submit()" id="change_locale">
+                            <option value="en" {{ app()->getLocale()=="en"?'selected':'' }}>English</option>
+                            <option value="de" {{ app()->getLocale()=="de"?'selected':'' }}>German</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
             <div class="form_wrapper">
                 @yield('content')
             </div>

@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'driver_still_active' => \App\Http\Middleware\DriverStillActive::class,
+        'locale' => \App\Http\Middleware\Locale::class,
     ];
 
     /**
