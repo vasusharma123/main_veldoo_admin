@@ -1,4 +1,4 @@
-@extends('layouts.website')
+@extends('layouts.web_booking')
 @section('css')
     <style>
         .map-booking {
