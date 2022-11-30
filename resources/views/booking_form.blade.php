@@ -1,14 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veldoo Booking</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/css/intlTelInput.css" />
-    <link href="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+@extends('layouts.web_booking')
+@section('css')
     <style>
         .btn {
             border-radius: 50px;
@@ -194,14 +185,16 @@
         }
         img.img-clock.w-100.img-responsive {
             position: absolute;
-            left: 3px;
-            top: 50%;
+            left: 18px;
+            top: 35%;
             max-width: 25px;
             transform: translateY(-50%);
         }
         #timerValue {
-            padding-left: 30px;
-            width: 100%;
+            width: 44px;
+            border-top-left-radius: 0px;
+            border-bottom-left-radius: 0px;
+            border: 0px;
         }
         .show_case .lst_col{
             padding: 0px ;
@@ -355,207 +348,171 @@
             }
         }
     </style>
-</head>
-
-<body>
-    <section class="map-booking">
-        <article class="container-fluid form_container">
-            <div class="form_wrapper">
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
-                        <div class="booking_personal_information">
-                            <h2 class="title_form">Booking Details</h2>
-                            <div class="logo_img_top_1">
-                                <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
-                            </div>
-                            <div class="filter_booking_list">
-                                <form class="personal_info_form" id="personal_info_form" method="post">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="first_name"
-                                                    placeholder="First Name" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control input_field" name="last_name"
-                                                    placeholder="Last Name" />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <input class="form-control" name="country_code" type="hidden"
-                                                    id="country_code" value="41">
-                                                <input type="tel" id="txtPhone"
-                                                    class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group" style="display: block;">
-                                                <div class="timer_box">
-                                                    <div class="show_value">
-                                                        <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
-                                                        <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row w-100 m-0 filter_booking_section_row">
-                                        <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-taxi fa-2x mr-1"></i>
-                                                <select class="form-control select_field p-0" id="carType" name="car_type">
-                                                    <option value="{{ $vehicle_type->car_type }}"
-                                                        data-basic_fee="{{ $vehicle_type->basic_fee }}"
-                                                        data-price_per_km="{{ $vehicle_type->price_per_km }}">
-                                                        {{ $vehicle_type->car_type }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
-                                            <div class="form-group field_icons">
-                                                <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                                <select class="form-control select_field" id="numberOfPassenger" name="passanger">
-                                                    <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-4 col-3 align-self-center lst_col">
-                                            
-                                        </div>
-                                    </div>
-                                    <div class="row show_case">
-                                        <div class="col text-center">
-                                            <div class="form-group">
-                                                <p class="form-control chf"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
-                                                <input type="hidden" name="ride_cost" class="price_calculated_input"
-                                                value="{{ $input['price_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
-                                            <div class="form-group">
-                                                <p class="form-control km_m"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
-                                                <input type="hidden" name="distance"
-                                                    class="distance_calculated_input"
-                                                    value="{{ $input['distance_calculated'] }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-5 col-md-5 col-sm-5 col-5">
-                                            <div class="form-group">
-                                                <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
-                                                    <option value="">Payment Method</option>
-                                                    <option value="Cash" selected>Cash</option>
-                                                    <option value="Card">Card</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
-                                            </div>
-                                        </div>
-                                        <!-- 
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <label for="captcha" id="captchaOperation"><?php //echo(rand(100,1000)); ?></label>
-                                                <input type="text" class="form-control input_field" name="captcha" id="captcha" placeholder="Enter captcha code.." required/>
-                                            </div>
-                                        </div> -->
-
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <div class="form-check">
-                                                    <label class="form-check-label">
-                                                        <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <input type="hidden" name="pickup_address" value="{{ $input['pickup_address'] }}">
-                                                <input type="hidden" name="pick_lat" value="{{ $input['pickup_latitude'] }}">
-                                                <input type="hidden" name="pick_lng" value="{{ $input['pickup_longitude'] }}">
-                                                <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
-                                                <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
-                                                <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                                <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                            <div class="form-group">
-                                                <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-12">
-                                            <p class="msg_display"></p>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                <!-- ============================================================== -->
-                                <!-- Personal Information Form Content End -->
-                                <!-- ============================================================== -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-                        <div class="map_section">
-                            <div id="googleMap" style="width:100%;"></div>
-                        </div>
-                    </div>
+@endsection
+@section('content')
+    <div class="row">
+        <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
+            <div class="booking_personal_information">
+                <h2 class="title_form">Booking Details</h2>
+                <div class="logo_img_top_1">
+                    <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
-            </div>
-        </article>
-    </section>
-
-    <!-- Confirm Modal -->
-    <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
-        aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-            <form class="otp_form">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
-                        <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
+                <div class="filter_booking_list">
+                    <form class="personal_info_form" id="personal_info_form" method="post">
+                        @csrf
                         <div class="row">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control input_field" name="first_name"
+                                        placeholder="First Name" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control input_field" name="last_name"
+                                        placeholder="Last Name" />
+                                </div>
+                            </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group my-4">
-                                    {{-- <label for="otp_entered">Please enter the OTP number
-                                        you received on your applied mobile number
-                                        :</label> --}}
-                                    <input type="text" class="form-control input_field"
-                                        name="otp_entered" id="otp_entered"
-                                        placeholder="Please enter OTP" required />
+                                <div class="form-group">
+                                    <input class="form-control" name="country_code" type="hidden"
+                                        id="country_code" value="41">
+                                    <input type="tel" id="txtPhone"
+                                        class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group" style="display: block;">
+                                    <div class="timer_box">
+                                        <div class="" style="width: 100%;display: flex;">
+                                            <input type="text" value="{{date('D-m-Y H:i')}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
+                                            <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                        </div>
+                                        {{-- <div class="" style="width: 100%">
+                                            <input type="text" name="" style="width: 70%">
+                                            <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
+                                            <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                        </div> --}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">Confirm Booking</button>
-                    </div>
+
+                        <div class="row w-100 m-0 filter_booking_section_row">
+                            <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
+                                <div class="form-group field_icons">
+                                    <i class="fas fa-taxi fa-2x mr-1"></i>
+                                    <select class="form-control select_field p-0" id="carType" name="car_type">
+                                        <option value="{{ $vehicle_type->car_type }}"
+                                            data-basic_fee="{{ $vehicle_type->basic_fee }}"
+                                            data-price_per_km="{{ $vehicle_type->price_per_km }}">
+                                            {{ $vehicle_type->car_type }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
+                                <div class="form-group field_icons">
+                                    <i class="fas fa-male fa-2x ml-2 mr-1"></i>
+                                    <select class="form-control select_field" id="numberOfPassenger" name="passanger">
+                                        <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4 col-3 align-self-center lst_col">
+                                
+                            </div>
+                        </div>
+                        <div class="row show_case">
+                            <div class="col text-center">
+                                <div class="form-group">
+                                    <p class="form-control chf" style="font-size: 12px"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
+                                    <input type="hidden" name="ride_cost" class="price_calculated_input"
+                                    value="{{ $input['price_calculated'] }}">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
+                                <div class="form-group">
+                                    <p class="form-control km_m" style="font-size: 12px"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
+                                    <input type="hidden" name="distance"
+                                        class="distance_calculated_input"
+                                        value="{{ $input['distance_calculated'] }}">
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-5 col-5">
+                                <div class="form-group">
+                                    <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
+                                        <option value="">Payment Method</option>
+                                        <option value="Cash" selected>Cash</option>
+                                        <option value="Card">Card</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
+                                </div>
+                            </div>
+                            <!-- 
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <label for="captcha" id="captchaOperation"><?php //echo(rand(100,1000)); ?></label>
+                                    <input type="text" class="form-control input_field" name="captcha" id="captcha" placeholder="Enter captcha code.." required/>
+                                </div>
+                            </div> -->
+
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <input type="hidden" name="pickup_address" value="{{ $input['pickup_address'] }}">
+                                    <input type="hidden" name="pick_lat" value="{{ $input['pickup_latitude'] }}">
+                                    <input type="hidden" name="pick_lng" value="{{ $input['pickup_longitude'] }}">
+                                    <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
+                                    <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
+                                    <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
+                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <p class="msg_display"></p>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- ============================================================== -->
+                    <!-- Personal Information Form Content End -->
+                    <!-- ============================================================== -->
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
+            <div class="map_section">
+                <div id="googleMap" style="width:100%;"></div>
+            </div>
         </div>
     </div>
-
-
+@endsection
+@section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
@@ -565,8 +522,13 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script>
         $(function() {
+            $(document).on('change','#timerValue',function(){
+                datetime = $(this).val();
+                $('#timerValueShowInput').val(moment(datetime).format('YYYY-MM-ddd HH:mm'));
+            });
             var code = "+41";
             $('#txtPhone').intlTelInput({
                 initialCountry: "ch",
@@ -687,9 +649,9 @@
                 success: function(response) {
                     if(response.status){
                         swal("Success",response.message,"success");
-							setTimeout(function() {
-								window.location.href = "{{ url('booking')}}";
-							}, 2000);
+                            setTimeout(function() {
+                                window.location.href = "{{ url('booking')}}";
+                            }, 2000);
                     } else if(response.status == 0){
                         swal("Error",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -702,6 +664,4 @@
             });
         })
     </script>
-</body>
-
-</html>
+@endsection
