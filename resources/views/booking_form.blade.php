@@ -358,7 +358,7 @@
                     <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
                 <div class="filter_booking_list">
-                    <form class="personal_info_form" id="personal_info_form" method="post">
+                    <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
                         <?php
                             $first_name_validation = __('First name is required.');
@@ -368,7 +368,7 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" name="first_name" placeholder="{{ __('First Name') }}"  oninvalid="this.setCustomValidity('{{ $first_name_validation }}')" oninput="setCustomValidity('')" required />
+                                    <input type="text" class="form-control input_field" data-parsley-required-message="{{ $first_name_validation }}" name="first_name" placeholder="{{ __('First Name') }}"  required />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -378,12 +378,13 @@
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group">
+                                <div class="form-group mb-0 pb-0">
                                     <input class="form-control" name="country_code" type="hidden"
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" name="phone" placeholder="{{ __('Enter Phone Number') }}" minlength="8" oninvalid="this.setCustomValidity('{{ $phone_validation }}')" oninput="setCustomValidity('')" required />
+                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" name="phone" data-parsley-errors-container=".phoneError" placeholder="{{ __('Enter Phone Number') }}" minlength="8" data-parsley-required-message="{{ $phone_validation }}" required />
                                 </div>
+                                <div class="phoneError mb-3"></div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group" style="display: block;">
@@ -527,6 +528,7 @@
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(function() {
             $(document).on('change','#timerValue',function(){

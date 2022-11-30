@@ -78,5 +78,6 @@
     "Are you sure you want to cancel this booking?": "Möchten Sie diese Buchung wirklich stornieren?",
     "Yes, cancel it": "Ja, stornieren",
     "NEXT": "NÄCHSTE",
-    "BOOK": "BUCHEN"
+    "BOOK": "BUCHEN",
+    "This value is too short. It should have 8 characters or more." : "Dieser Wert ist zu kurz. Es sollte 8 Zeichen oder mehr haben."
 }

@@ -524,9 +524,9 @@
         function autocomplete_initialize() {
             var input = document.getElementById('pickupPoint');
             var autocomplete_pickup = new google.maps.places.Autocomplete(input);
-            autocomplete_pickup.setComponentRestrictions({
-                country: ["ch","de"],
-            });
+            // autocomplete_pickup.setComponentRestrictions({
+            //     country: ["ch","de"],
+            // });
             google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
                 var place = autocomplete_pickup.getPlace();
                 // document.getElementById('city2').value = place.name;
@@ -536,9 +536,9 @@
 
             var dropoff_input = document.getElementById('dropoffPoint');
             var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input);
-            autocomplete_dropoff.setComponentRestrictions({
-                country: ["ch","de"],
-            });
+            // autocomplete_dropoff.setComponentRestrictions({
+            //     country: ["ch","de"],
+            // });
             google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
                 var place = autocomplete_dropoff.getPlace();
                 // document.getElementById('city2').value = place.name;
