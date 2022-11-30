@@ -38,7 +38,7 @@
             <form class="otp_form">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">Enter OTP :</h5>
+                        <h5 class="modal-title" id="confirmOTPModalTitle">{{ __('Enter OTP') }} :</h5>
                         <button type="button" class="close" data-dismiss="modal"
                             aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -53,13 +53,13 @@
                                         :</label> --}}
                                     <input type="text" class="form-control input_field"
                                         name="otp_entered" id="otp_entered"
-                                        placeholder="Please enter OTP" required />
+                                        placeholder="{{ __('Please enter OTP') }}" required />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">Confirm Booking</button>
+                        <button type="button" class="btn custom_btn verify_otp">{{ __('Confirm Booking') }}</button>
                     </div>
                 </div>
             </form>
@@ -78,21 +78,53 @@
                                     class="img-responsive imagelogo_brand" alt="img Logo">
                             </div>
                             <div class="form-group mt-4 mb-0 text-center">
-                                <h3 class="modal_title_cs">Cancel Booking</h3>
-                                <p class="modal_desc_cs">Are you sure you want to cancel this booking?</p>
+                                <h3 class="modal_title_cs">{{ __('Cancel Booking') }}</h3>
+                                <p class="modal_desc_cs">{{ __('Are you sure you want to cancel this booking?') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
-                    <button type="button" class="btn custom_btn mb-4 cancel_booking_confirmed">Yes, cancel it</button>
+                    <button type="button" class="btn custom_btn mb-4 cancel_booking_confirmed">{{ __('Yes, cancel it') }}</button>
                     <button type="button" class="btn back_btn custom_btn close" data-dismiss="modal"
                         aria-label="Close">
-                        <span aria-hidden="true">Close</span>
+                        <span aria-hidden="true">{{ __('Close') }}</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <form class="otp_form">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmOTPModalTitle">{{ __('Enter OTP') }} :</h5>
+                        <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group my-4">
+                                    {{-- <label for="otp_entered">Please enter the OTP number
+                                        you received on your applied mobile number
+                                        :</label> --}}
+                                    <input type="text" class="form-control input_field"
+                                        name="otp_entered" id="otp_entered"
+                                        placeholder="{{ __('Please enter OTP') }}" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn custom_btn verify_otp">{{ __('Confirm Booking') }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
 </body>
 </html>

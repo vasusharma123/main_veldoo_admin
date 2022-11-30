@@ -360,11 +360,15 @@
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" method="post">
                         @csrf
+                        <?php
+                            $first_name_validation = __('First name is required.');
+                            $last_name_validation = __('Last name is required.');
+                            $phone_validation = __('Phone number is required.');
+                        ?>
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" name="first_name"
-                                        placeholder="{{ __('First Name') }}" required />
+                                    <input type="text" class="form-control input_field" name="first_name" placeholder="{{ __('First Name') }}"  oninvalid="this.setCustomValidity('{{ $first_name_validation }}')" oninput="setCustomValidity('')" required />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -378,7 +382,7 @@
                                     <input class="form-control" name="country_code" type="hidden"
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" name="phone" placeholder="{{ __('Enter Phone Number') }}" minlength="8" required />
+                                        class="txtbox form-control input_field" name="phone" placeholder="{{ __('Enter Phone Number') }}" minlength="8" oninvalid="this.setCustomValidity('{{ $phone_validation }}')" oninput="setCustomValidity('')" required />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -624,12 +628,12 @@
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
                     } else if(response.status == 0){
-                        swal("Error",response.message,"error");
+                        swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
+                    swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -648,17 +652,17 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("Success",response.message,"success");
+                        swal("{{ __('Success') }}",response.message,"success");
                             setTimeout(function() {
                                 window.location.href = "{{ url('booking')}}";
                             }, 2000);
                     } else if(response.status == 0){
-                        swal("Error",response.message,"error");
+                        swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
+                    swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });

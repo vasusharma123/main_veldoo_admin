@@ -147,8 +147,8 @@ class PageController extends Controller
 				foreach($drivers as $driver)
 				{
 					$driverids[] = $driver['id'];
-				$title = 'New Booking';
-		$message = 'You Received new booking';
+				$title = __('New Booking');
+		$message = __('You Received new booking');
 			
 		
 		$deviceToken = $driver['device_token'];
@@ -304,7 +304,7 @@ if($_REQUEST['cm'] == 2)
 
 	}
 	public function cancelpayment() {
-		echo "<h1>Sorry Your Payment is Canceled</h1>"; die;
+		echo "<h1>".__("Sorry Your Payment is Canceled")."</h1>"; die;
 	}
 
 	public function booking() {
@@ -540,7 +540,7 @@ if($_REQUEST['cm'] == 2)
 		}
 
 		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
-			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 		}
 		$haveOtp->delete();
 

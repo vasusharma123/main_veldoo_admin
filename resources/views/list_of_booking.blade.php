@@ -480,7 +480,7 @@
                     <img src="{{ asset('public/images/vel_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
-                <h2 class="title_form">My Bookings</h2>
+                <h2 class="title_form">{{ __('My Bookings') }}</h2>
                 <div class="filter_booking_list otp_verification_div">
                     <form id="verify_phone_form" method="post">
                         @csrf
@@ -491,12 +491,12 @@
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
                                         class="txtbox form-control input_field" name="phone"
-                                        placeholder="Enter Phone Number" minlength="8" required />
+                                        placeholder="{{ __('Enter Phone Number') }}" minlength="8" required />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <button type="submt" class="btn submit_btn custom_btn">Confirm</button>
+                                    <button type="submt" class="btn submit_btn custom_btn">{{ __('Confirm') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -520,13 +520,13 @@
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
                                     <button type="button" id="submit_request_cancel"
-                                        class="btn submit_btn custom_btn">CANCEL BOOKING</button>
+                                        class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
                                     <button type="button"
-                                        class="btn back_btn custom_btn edit_booking">EDIT BOOKING</button>
+                                        class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
                                 </div>
                             </div>
                         </div>
@@ -583,11 +583,11 @@
                     if (response.status) {
                         $("#confirmOTPModal").modal('show');
                     } else if (response.status == 0) {
-                        swal("Error", response.message, "error");
+                        swal("{{ __('Error') }}", response.message, "error");
                     }
                 },
                 error(response) {
-                    swal("Error", response.message, "error");
+                   swal("{{ __('Error') }}", response.message, "error");
                 }
             });
         })
@@ -633,13 +633,13 @@
                         }
                         $(document).find('.ride_list_div').removeClass('d-none');
                     } else if(response.status == 0){
-                        swal("Error",response.message,"error");
+                       swal("{{ __('Error') }}",response.message,"error");
                     }
                     $("#confirmOTPModal").modal('hide');
                     $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
+                   swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -655,7 +655,7 @@
             if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');
             } else {
-                swal("Error","Please select booking","error");
+               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -678,17 +678,17 @@
                             $("#cancelBookingModal").modal('hide');
                             swal("Success",response.message,"success");
                         } else if(response.status == 0){
-                            swal("Error",response.message,"error");
+                           swal("{{ __('Error') }}",response.message,"error");
                         }
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     },
                     error(response) {
-                        swal("Error",response.message,"error");
+                       swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     }
                 });
             } else {
-                swal("Error","Please select booking","error");
+               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -697,7 +697,7 @@
             if(selectedBooking!=""){
                 window.location.href= "booking_edit/"+selectedBooking;
             } else {
-                swal("Error","Please select booking","error");
+               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         })
     </script>
