@@ -27,8 +27,10 @@ class RideController extends Controller
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-        $ride = Ride::with(['user', 'driver'])->where('driver_id', $userObj->id)->whereDate('created_at', Carbon::today())->orderBy('id', 'DESC')->first();
-        return $this->successResponse((object)$ride, 'Get latest ride successfully');
+        $ride = Ride::with(['user', 'driver', 'company_data'])->where('driver_id', $userObj->id)->where(function ($query) {
+            $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+        })->orderBy('id', 'DESC')->first();
+        return $this->successResponse($ride, 'Get latest ride successfully');
     }
     /**
      * Created By Anil Dogra

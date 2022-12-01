@@ -674,8 +674,8 @@ function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional 
 
 	//set notification sound to default
 	$payload->setSound('example.caf');
-	$additional['content_available'] = 'yes';
-	$additional['mutable_content'] = 'yes';
+	// $payload->setContentAvailability(true);
+	// $payload->setMutableContent(true);
 	//add custom value to your notification, needs to be customized
 	foreach ($additional as $key => $value) {
 		$payload->setCustomValue($key, $value);
@@ -703,35 +703,35 @@ function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional 
 
 function bulk_firebase_android_notification($title = '', $msg = '', $token, $additionalPushData = [])
 {
-	$ride_data = $additionalPushData['ride_data'];
-	unset($ride_data['accept_time']);
-	unset($ride_data['cancel_amount']);
-	unset($ride_data['commission']);
-	unset($ride_data['created_at']);
-	unset($ride_data['cus_token']);
-	unset($ride_data['driver_earning']);
-	unset($ride_data['notification_send']);
-	unset($ride_data['payment_id']);
-	unset($ride_data['payment_by']);
-	unset($ride_data['reach_time']);
-	unset($ride_data['token']);
-	unset($ride_data['updated_at']);
-	unset($ride_data['all_drivers']);
-	unset($ride_data['driver_id']);
-	if (empty($ride_data['dest_address'])) {
-		$ride_data['dest_address'] = "";
-	}
-	if (empty($ride_data['ride_cost'])) {
-		$ride_data['ride_cost'] = "";
-	}
-	if (empty($ride_data['note'])) {
-		$ride_data['note'] = "";
-	}
-	if (empty($ride_data['alert_time'])) {
-		$ride_data['alert_time'] = "";
-	}
-	// prep the bundle
-	if ($additionalPushData['type'] == 1) {
+	if(!empty($additionalPushData['ride_data'])){
+		$ride_data = $additionalPushData['ride_data'];
+		unset($ride_data['accept_time']);
+		unset($ride_data['cancel_amount']);
+		unset($ride_data['commission']);
+		unset($ride_data['created_at']);
+		unset($ride_data['cus_token']);
+		unset($ride_data['driver_earning']);
+		unset($ride_data['notification_send']);
+		unset($ride_data['payment_id']);
+		unset($ride_data['payment_by']);
+		unset($ride_data['reach_time']);
+		unset($ride_data['token']);
+		unset($ride_data['updated_at']);
+		unset($ride_data['all_drivers']);
+		unset($ride_data['driver_id']);
+		if (empty($ride_data['dest_address'])) {
+			$ride_data['dest_address'] = "";
+		}
+		if (empty($ride_data['ride_cost'])) {
+			$ride_data['ride_cost'] = "";
+		}
+		if (empty($ride_data['note'])) {
+			$ride_data['note'] = "";
+		}
+		if (empty($ride_data['alert_time'])) {
+			$ride_data['alert_time'] = "";
+		}
+		// prep the bundle
 		$message = array(
 			'message' 	=> (!empty($msg))?$msg:"",
 			'not_type' => $additionalPushData['type'],
@@ -743,16 +743,14 @@ function bulk_firebase_android_notification($title = '', $msg = '', $token, $add
 		);
 	} else {
 		$message = array(
-			'message' 	=> (!empty($msg))?$msg:"",
+			'title' => $title,
+			'message' => (!empty($msg))?$msg:"",
 			'not_type' => $additionalPushData['type'],
-			'ride_id' => $additionalPushData['ride_id'],
-			'ride_data' => json_encode($ride_data),
-			'vibrate'	    => 1,
-			'title'	    => $title,
-			'sound'		    => 'default'
+			'vibrate' => 1,
+			'sound'	=> 'default'
 		);
 	}
-
+	
 	$fields = array(
 		'registration_ids' => $token,
 		'data' => $message,
