@@ -620,7 +620,7 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
-                                                    <img src="http://localhost/Veldoo_admin/public/images/icons8-vanpool-30.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                    <img src="{{ asset('images/icons8-vanpool-30.png')}}" class="img-clock w-100 img-responsive" alt="img clock">
                                                 </div>
                                                 <div class="col-10 pl-0 ml-0" style="line-height:1;">
                                                     <span class="" style="font-size:12px">`+element.pickup_address+`</span>

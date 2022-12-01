@@ -109,7 +109,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.js"></script>
-<script src="http://3.140.176.203/resources/assets/plugins/select2/dist/css/select2.css"></script>  
+<script src="{{ asset('assets/plugins/select2/dist/css/select2.css')}}"></script>  
 <script type="text/javascript">
 	$(document).ready(function () {
 		$('#userCreate').validate();

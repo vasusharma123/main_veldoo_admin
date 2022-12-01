@@ -36,29 +36,29 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.js"></script>
 		<script src="//cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
-		<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+		<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 
         @if (Auth::check())
- 		<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+ 		<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 		
 		@else
 		  
 		@endif
 
-{{Html::script('http://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js
+{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js
 ')}} 
-{{Html::script('http://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')}} 
-{{Html::script('http://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js')}}
-{{Html::script('http://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js')}} 
-{{Html::script('http://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js')}} 
-{{Html::script('http://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js')}} 
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')}} 
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js')}}
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js')}} 
+{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js')}} 
+{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js')}} 
 
-{{Html::style('http://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css')}}
-{{Html::script('http://code.jquery.com/ui/1.13.2/jquery-ui.js')}}
-{{Html::script('http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js')}}
-{{Html::style('http://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css')}} 
+{{Html::style('//cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css')}}
+{{Html::script('//code.jquery.com/ui/1.13.2/jquery-ui.js')}}
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js')}}
+{{Html::style('//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css')}} 
 {{Html::style('assets/css/intlTelInput.css')}} 
 {{Html::script('assets/js/intlTelInput.js')}} 
 

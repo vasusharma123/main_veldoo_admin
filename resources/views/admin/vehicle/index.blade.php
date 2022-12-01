@@ -61,7 +61,7 @@
             text-align: center;
         }
     </style>
-    <script src="http://cdn.jsdelivr.net/npm/sweetalert2@10.5.0/dist/sweetalert2.all.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10.5.0/dist/sweetalert2.all.min.js"></script>
 
     <script type="text/javascript">
         $(function() {
