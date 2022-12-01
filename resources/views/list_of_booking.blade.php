@@ -477,7 +477,7 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <img src="{{ asset('public/images/vel_logo.png') }}"
+                    <img src="{{ asset('images/vel_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
                 <h2 class="title_form">My Bookings</h2>
@@ -558,7 +558,7 @@
     <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
-    <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script>
         $(function() {
             var code = "+41";
@@ -627,7 +627,7 @@
                                                 </div>
                                             </div>
                                         </li>`;
-                                // $(".SelectedDateList").append(`<li class="list-group-item list-group-flush"><div><input type="radio" name="selectListed" class="SelectedListBooking form-radio" data-id="`+element.id+`" value="`+element.id+`"><img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" style="top:33%" class="img-clock w-100 img-responsive" alt="img clock"><span class="listDate">`+element.ride_time+`</span></div><span class="listDate" style=" ">`+element.pickup_address+`</span><img src="{{ asset('public/images/icons8-vanpool-30.png') }}" class="img-clock w-100 img-responsive" alt="img clock" style=" top: 50px; left: 4px; "><div></div></li>`);
+                                // $(".SelectedDateList").append(`<li class="list-group-item list-group-flush"><div><input type="radio" name="selectListed" class="SelectedListBooking form-radio" data-id="`+element.id+`" value="`+element.id+`"><img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" style="top:33%" class="img-clock w-100 img-responsive" alt="img clock"><span class="listDate">`+element.ride_time+`</span></div><span class="listDate" style=" ">`+element.pickup_address+`</span><img src="{{ asset('images/icons8-vanpool-30.png') }}" class="img-clock w-100 img-responsive" alt="img clock" style=" top: 50px; left: 4px; "><div></div></li>`);
                                 $(".SelectedDateList").append(div);
                             });
                         }

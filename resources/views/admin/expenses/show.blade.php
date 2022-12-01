@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 
 @section('css')
-<link href="{{ URL::asset('resources') }}/assets/plugins/Magnific-Popup-master/dist/magnific-popup.css" rel="stylesheet">
+<link href="{{ URL::asset('assets/plugins/Magnific-Popup-master/dist/magnific-popup.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -95,8 +95,8 @@
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
 @section('footer_scripts')
-<script src="{{ URL::asset('resources') }}/assets/plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js"></script>
-<script src="{{ URL::asset('resources') }}/assets/plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js"></script>
+<script src="{{ URL::asset('assets/plugins/Magnific-Popup-master/dist/jquery.magnific-popup.min.js') }}"></script>
+<script src="{{ URL::asset('assets/plugins/Magnific-Popup-master/dist/jquery.magnific-popup-init.js') }}"></script>
 <script>
 
 </script>

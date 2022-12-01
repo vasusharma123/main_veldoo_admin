@@ -353,10 +353,10 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
-                <h2 class="title_form">Booking Details</h2>
                 <div class="logo_img_top_1">
-                    <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                    <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
+                <h2 class="title_form">Booking Details</h2>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" method="post">
                         @csrf
@@ -521,7 +521,7 @@
     <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
     </script>
-    <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+    <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script>
         $(function() {
