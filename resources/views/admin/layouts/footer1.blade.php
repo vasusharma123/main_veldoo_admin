@@ -137,7 +137,7 @@ $(document).ready(function(){
  jQuery("#Regphones").intlTelInput({
  initialCountry:"us",
       separateDialCode: true,
-      utilsScript: "{{url('public/assets/js/utils.js')}}"
+      utilsScript: "{{url('assets/js/utils.js')}}"
 	  
     });  
 </script>

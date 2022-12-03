@@ -6044,8 +6044,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 					Ride::where('id', $request->ride_id)->update(['status' => $request->status, 'vehicle_id' => $request->car_id, 'waiting' => $request->waiting, 'driver_id' => Auth::user()->id]);
 					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
-					$rideHistoryDetail->status = "1";
-					$rideHistoryDetail->save();
+					if(!empty($rideHistoryDetail)){
+						$rideHistoryDetail->status = "1";
+						$rideHistoryDetail->save();
+					}
 					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
 					$userdata = User::find($ride['user_id']);
 					$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
@@ -6800,7 +6802,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function saveUserData(Request $request)
 	{
-
 		try {
 			$rules = [
 				'first_name' => 'required',
@@ -6813,39 +6814,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 			$input = $request->all();
-			// print_r($input ); die;
-			// $user = \App\User::create(['first_name' => $input['first_name'], 'last_name' => $input['last_name'], 'user_type' => 1, 'email' => null]);
 			if (!empty($_FILES['image'])) {
-
 				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
-					$file = $_FILES['image'];
-					$file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
-					$filename = time() . '-' . $file;
-					$ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
+					$ext = $request->image->extension();
 					$arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
-
-					if (in_array($ext, $arr_ext)) {
-						$path = "public/images/user_image/";
-						if (move_uploaded_file($_FILES['image']['tmp_name'], $path . $filename)) {
-							$url = URL::to('/');
-							$input['image'] = $url . "/" . $path . $filename;
-						}
-					} else {
-
-
-						return response()->json(['message' => 'Upload valid image'], $this->warningCode);
+					if (!in_array($ext, $arr_ext)) {
+						return response()->json(['success' => false, 'message' => "Please upload a valid Image"], $this->warningCode);
 					}
 				}
-			} else {
-				$input['image'] = '';
 			}
-			// print_r($input); die;
-			// $user->update(['image' => $input['image']]);
-			//unset($input['phone_number'],$input['email'],$input['addresses'],$input['favourite_address']);
-			// $checkuserExist =  \App\User::where([['user_id', '=', $user->id]])->first();
-			// if (!empty($checkuserExist)) {
-			// 	return response()->json(['message' => 'this user  already exist', 'error' => 'this user  already exist'], $this->warningCode);
-			// }
 			if ($input['phone_number'] && !$input['email']) {
 				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->first();
 			} else if ($input['email'] && !$input['phone_number']) {
@@ -6853,14 +6830,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} else {
 				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->orWhere([['email', '=', $input['email']]])->first();
 			}
-
-			// print_r($checkuser->phone_number);
-			// die;
 			if (!empty($checkuserPhnEml)) {
 				return response()->json(['message' => 'This user email or phone already exist', 'error' => 'this user email or phone already exist'], $this->warningCode);
 			}
 			$input['phone'] = $request->phone_number;
-
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
 			$input['country_code'] = $request->country_code;
@@ -6873,11 +6846,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$input['city'] = $request->city;
 			$input['zip'] = $request->zip;
 			$record = \App\User::create($input);
-			// print_r($record );
+			if (!empty($_FILES['image'])) {
+				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
+					$imageName = 'profile-image.' . $request->image->extension();
+					$record->image = Storage::disk('public')->putFileAs(
+						'user/' . $record->id,
+						$request->image,
+						$imageName
+					);
+					$record->save();
+				}
+			}
 			$newData = DB::table('users')->select('*')->where([['id', '=', $record->id]])->first();
 			return response()->json(['success' => true, 'message' => 'user data saved successfully', 'data' => $newData], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -6916,22 +6898,23 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			if (!empty($_FILES['image'])) {
 				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
-					$file = $_FILES['image'];
-					$file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
-					$filename = "IMG-" . date('Ymd') . '-' . $file;
-					$ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
+					$ext = $request->image->extension();
 					$arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
 
 					if (in_array($ext, $arr_ext)) {
-						$path = "public/images/user_image/";
-						if (move_uploaded_file($_FILES['image']['tmp_name'], $path . $filename)) {
-							$input['image'] = url($path . $filename);
+						$imageName = 'profile-image.' . $request->image->extension();
+						if (!empty($user['image'])) {
+							Storage::disk('public')->delete($user['image']);
 						}
+						$user['image'] = Storage::disk('public')->putFileAs(
+							'user/' . $user['id'],
+							$request->image,
+							$imageName
+						);
 					} else {
 						return response()->json(['success' => false, 'message' => "Please upload a valid Image"], $this->warningCode);
 					}
 				}
-				$user['image'] = $input['image'];
 			}
 			if (isset($input['first_name'])) {
 				$user['first_name'] = $input['first_name'];

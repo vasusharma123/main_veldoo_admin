@@ -2,11 +2,11 @@
 @section('content')
 <style>
 	.iti-flag{
-		background-image:url("{{asset('public/assets/images/flags.png')}}") !important;
+		background-image:url("{{asset('assets/images/flags.png')}}") !important;
 	}
 	@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2 / 1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx){
 		.iti-flag{
-			background-image:url("{{asset('public/assets/images/flags@2x.png')}}") !important;
+			background-image:url("{{asset('assets/images/flags@2x.png')}}") !important;
 		}
 	}
 </style>
