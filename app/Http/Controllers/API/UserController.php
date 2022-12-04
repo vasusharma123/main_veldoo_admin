@@ -771,7 +771,7 @@ class UserController extends Controller
 			}
 
 			\App\User::where('id', $userData->id)->update($input);
-			$newUserData = DB::table('users')->select('*')->where([['id', '=', $userData->id]])->first();
+			$newUserData = User::where([['id', '=', $userData->id]])->first();
 			$newUserData->full_name = $newUserData->first_name . ' ' . $newUserData->last_name;
 
 			DB::commit();
@@ -6412,10 +6412,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			$text = $request->text;
 			if (isset($request->text) && $request->text != '') {
-				$users = DB::table('users')->select('*')->where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->orderBy('first_name', 'ASC')->paginate(100);
+				$users = User::where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->orderBy('first_name', 'ASC')->paginate(100);
 				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->count();
 			} else {
-				$users = DB::table('users')->select('*')->where([['user_type', '=', 1]])->orderBy('first_name', 'ASC')->paginate(100);
+				$users = User::where([['user_type', '=', 1]])->orderBy('first_name', 'ASC')->paginate(100);
 				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->count();
 			}
 			if (!empty($usercount)) {
@@ -6784,7 +6784,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$record->save();
 				}
 			}
-			$newData = DB::table('users')->select('*')->where([['id', '=', $record->id]])->first();
+			$newData = User::where([['id', '=', $record->id]])->first();
 			return response()->json(['success' => true, 'message' => 'user data saved successfully', 'data' => $newData], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
