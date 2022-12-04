@@ -53,6 +53,10 @@ class User extends Authenticatable implements HasMedia
 	// protected $appends = [
 	// 	'full_name','avg_rating','car_data','phone_number','country_code','country','state','city','zip','addresses'
 	// ];
+
+	protected $appends = [
+		'user_role'
+	];
 	
 	public function setPasswordAttribute($password){
 		 
@@ -354,5 +358,11 @@ if(!empty($car_data)){
 	function ride()
 	{
 		return $this->hasOne(Ride::class, 'driver_id', 'id');
+	}
+
+	public function getUserRoleAttribute()
+	{
+		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company"];
+		return $user_types[$this->user_type];
 	}
 }

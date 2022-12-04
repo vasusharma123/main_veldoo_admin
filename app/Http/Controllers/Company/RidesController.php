@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Company;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Ride;
 use App\RideHistory;
@@ -12,8 +13,9 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\RideExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use Auth;
 
-class RideController extends Controller
+class RidesController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,8 +26,7 @@ class RideController extends Controller
     {
         $data = array();
         $data = array('title' => 'Ride', 'action' => 'Ride Lists');
-
-
+        $company = Auth::user();
         if ($request->ajax()) {
 
             $data = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'rides.payment_type', 'users.first_name', 'users.last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name'])
@@ -35,6 +36,7 @@ class RideController extends Controller
                     $join->on('vehicles.category_id', '=', 'prices.id')->where('prices.deleted_at', null);
                 })
                 ->leftJoin('payment_methods', 'payment_methods.id', 'rides.payment_type')
+                ->where('rides.company_id',$company->id)
                 ->orderBy('rides.id', 'DESC');
 
             return Datatables::of($data)
@@ -99,7 +101,7 @@ class RideController extends Controller
                             Action
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="' . route('bookings.show', $row->id) . '">' . trans("admin.View") . '</a>
+                            <a class="dropdown-item" href="' . route('company.rides.show', $row->id) . '">' . trans("admin.View") . '</a>
                             <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
                         </div>
                     </div>';
@@ -108,9 +110,24 @@ class RideController extends Controller
                 ->rawColumns(['action', 'status', 'driver', 'date', 'car', 'seat_capacity', 'pick_up', 'drop_off', 'distance', 'cash', 'guest', 'payment', 'ride_cost', 'checkboxes'])
                 ->make(true);
         }
-        return view('admin.rides.index')->with($data);
+        return view('company.rides.index')->with($data);
     }
 
+    public function show($id, Request $request)
+	{
+		$breadcrumb = array('title' => 'Rides', 'action' => 'Ride Details');
+		$data = [];
+		$where = array('rides.id' => $id,'company_id'=>Auth::user()->id);
+		$record = \App\Ride::select('rides.*', 'users.first_name', 'users.last_name', 'categories.name')->with(['company'])->leftjoin('users', 'users.id', '=', 'rides.user_id')->leftjoin('categories', 'rides.car_type', '=', 'categories.id')->where($where)->first();
+		if (empty($record)) {
+			return redirect()->route("company.rides")->with('warning', 'Record not found!');
+		}
+		$data['status'] = array(1 => 'Active', 0 => 'In-active');
+		$data['record'] = $record;
+		$data = array_merge($breadcrumb, $data);
+		return view("company.rides.show")->with($data);
+	}
+    
     public function destroy($id)
     {
         try {

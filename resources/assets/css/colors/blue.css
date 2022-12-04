@@ -131,18 +131,25 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav > ul > li.active > a {
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
+  color: white;
   border-color: var(--primary-color);
 }
 
 .sidebar-nav > ul > li.active > a i {
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
+  color: white;
 }
 
-.sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
-  color: var(--primary-color);
+.sidebar-nav ul li a.active, .sidebar-nav ul li a.active i
+{
+  color:  white;
 }
-
-.sidebar-nav ul li a.active i, .sidebar-nav ul li a:hover i {
+.sidebar-nav ul li a:hover {
   color: var(--primary-color);
+  
+}
+.sidebar-nav ul li a:hover i {
+  color: var(--primary-color);
+  /* color: white; */
 }

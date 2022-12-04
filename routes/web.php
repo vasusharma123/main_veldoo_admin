@@ -76,10 +76,14 @@ Route::group(['middleware' => 'guest'], function(){
 	Route::post('/password/reset/{token}', 'Auth\ResetPasswordController@reset');
 	Route::get('/password/success', ['as'=>'password.success','uses'=>'UserController@guest_message']);
 }); 
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
+	Route::get('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
+	Route::post('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
+	Route::get('logout',  ['as' => 'logout','uses' => 'UserController@logout']);
+});
 
 Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
-	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
-	Route::get('logout',  ['uses' => 'UserController@logout']);
 	Route::get('/users/import',  ['as' => 'users.import', 'uses' => 'UserController@userImport']);
 	Route::get('/users/profile',  ['as' => 'users.profile', 'uses' => 'UserController@profile']);
 	Route::get('/users/settings',  ['as' => 'users.settings', 'uses' => 'UserController@settings']);
@@ -169,8 +173,15 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'
 	Route::get('/admin-contact','ContactSupportController@adminContact');
 	Route::post('/send-to-admin','ContactSupportController@sendToAdmin');
 	Route::get('/book-ride','RideManagementController@bookRide');
-	
 });
+
+Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permission:Company']], function(){
+	Route::get('/rides','Company\RidesController@index')->name('company.rides');
+	Route::delete('ride/delete_multiple','Company\RidesController@delete_multiple')->name('company.rides.delete_multiple');
+	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
+	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
+});
+
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);
 		//Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');

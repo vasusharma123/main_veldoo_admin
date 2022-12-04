@@ -60,11 +60,11 @@ class UserController extends Controller
 		$rules = [
 			'email' => 'required|email',
 			'password' => 'required|min:6',
-			'user_type'=>'required'
+			// 'user_type'=>'required'
 		];
 		$request->validate($rules);
 		$input = $request->all();
-		$whereData = array('email' => $input['email'], 'password' => $input['password'],'user_type'=>$request->user_type);
+		$whereData = array('email' => $input['email'], 'password' => $input['password']);
         if(auth()->attempt($whereData)){
             return redirect()->route('users.dashboard');
         } else{
@@ -75,24 +75,29 @@ class UserController extends Controller
 	}
 	
 	public function dashboard(){
-		$breadcrumb = array('title'=>'Home','action'=>'Dashboard');
+		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
-		if(Auth::user()->user_type==3){
-		Auth::user()->syncRoles('Administrator');
-		}elseif(Auth::user()->user_type==4){
-			Auth::user()->syncRoles('Company');
-		}
-		$data['rider_count']=User::where('user_type',1)->count();
-		$data['driver_count']=User::where('user_type',2)->count();
-		$data['booking_count']=Ride::count();
-		$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->count();
-		$data['companies_registered']=\App\User::where('user_type',4)->count();
-		$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->count();
-		$data['upcoming_booking_count']=Ride::whereDate('ride_time','>',Carbon::today())->count();
-		$data['revenue']=Ride::where('status',3)->sum('price');
-		$data['company_users']=User::where('user_type',1)->where('created_by','>',0)->count();
 		$data = array_merge($breadcrumb,$data);
-		return view('admin.dashboard')->with($data);
+
+		if(Auth::user()->user_type==3)
+		{
+			$data['booking_count'] = Ride::count();
+			$data['rider_count'] = User::where('user_type',1)->count();
+			$data['driver_count'] = User::where('user_type',2)->count();
+			$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->count();
+			$data['companies_registered']=\App\User::where('user_type',4)->count();
+			$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->count();
+			$data['upcoming_booking_count']=Ride::whereDate('ride_time','>',Carbon::today())->count();
+			$data['revenue']=Ride::where('status',3)->sum('price');
+			$data['company_users']=User::where('user_type',1)->where('created_by','>',0)->count();
+			Auth::user()->syncRoles('Administrator');
+		}
+		elseif(Auth::user()->user_type==4)
+		{
+			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
+			Auth::user()->syncRoles('Company');	
+		}
+		return view('dashboards.'.Auth::user()->user_role)->with($data);
 	}
    
     /**
@@ -435,6 +440,33 @@ class UserController extends Controller
 	    return view('admin.users.my_profile')->with($data);
     }
 	
+	public function myProfile(Request $request)
+	{
+		if ($request->isMethod('post')) 
+		{
+			$data = ['name'=>$request->name,'email'=>$request->email];
+			if ($request->has('password') && !empty($request->password)) 
+			{
+				$data['password'] = hash::make($request->password);
+			}
+			if ($request->hasFile('profile') && !empty($request->profile)) 
+			{
+				$path = 'user/'.Auth::user()->id;
+				$imageName = 'profile-image-'.Auth::user()->id.'.'.$request->profile->extension();
+				Storage::disk('public')->putFileAs(
+					$path, $request->file('profile'), $imageName
+				);
+				$data['image'] = $path.'/'.$imageName;
+			}
+			$user = Auth::user();
+			$user->fill($data);
+			$user->update();
+			return back()->with('success', __('Profile updated!'));
+		}
+		$data = array('title'=>'My Profile','action'=>'Information');
+		return view('my-profile')->with($data);
+	}
+
     public function profileUpdate(Request $request)
     {
 
@@ -974,7 +1006,7 @@ public function register(){
 	public function logout(Request $request){
         Session::flush();
         Auth::logout();
-        return Redirect('admin');
+        return redirect()->route('adminLogin');
 	}
 
 	/**
