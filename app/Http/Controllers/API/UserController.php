@@ -3368,9 +3368,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['success' => true, 'message' => $message, 'data' => $ride], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
-			return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
 		} catch (\Exception $exception) {
-			return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
 		}
 	}
 	public function rideDetail(Request $request)
