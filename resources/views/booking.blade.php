@@ -404,7 +404,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <input type="text" class="form-control input_field" name="pickupPoint"
-                                    id="pickupPoint" placeholder="From" required>
+                                    id="pickupPoint" placeholder="{{ __('From') }}" required>
                                 <input type="hidden" id="pickup_latitude" name="pickup_latitude">
                                 <input type="hidden" id="pickup_longitude" name="pickup_longitude">
                             </div>
@@ -413,7 +413,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <input type="text" class="form-control input_field" name="dropoffPoint"
-                                    id="dropoffPoint" placeholder="To" required>
+                                    id="dropoffPoint" placeholder="{{ __('To') }}" required>
                                 <input type="hidden" id="dropoff_latitude" name="dropoff_latitude">
                                 <input type="hidden" id="dropoff_longitude" name="dropoff_longitude">
                             </div>
@@ -430,7 +430,7 @@
                                                 data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                                 data-price_per_km="{{ $vehicle_type->price_per_km }}"
                                                 data-seating_capacity="{{ $vehicle_type->seating_capacity }}">
-                                                {{ $vehicle_type->car_type }}</option>
+                                                {{ __($vehicle_type->car_type) }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -448,7 +448,7 @@
                         <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-end">
                             <div class="form-group">
                                 <button type="button" class="btn submit_btn custom_btn calculate_route"
-                                    style="padding: 7px;">CALCULATE</button>
+                                    style="padding: 7px;">{{ __('CALCULATE') }}</button>
                             </div>
                         </div>
                     </div>
@@ -495,7 +495,7 @@
                                 <input type="hidden" id="booking_numberOfPassenger"
                                     name="numberOfPassenger">
                                 <button type="button" class="btn custom_btn book_online_now"
-                                    style="padding: 7px;">NEXT</a>
+                                    style="padding: 7px;">{{ __('NEXT') }}</a>
                             </div>
                         </div>
                     </div>
@@ -510,8 +510,7 @@
                 <div class="row row_fileterBooking show_case">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="form-group">
-                            <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">MANAGE
-                                BOOKINGS</a>
+                            <a href="{{ route('list_of_booking') }}" class="btn btn-outline-danger btn-block">{{ __('MANAGE BOOKINGS') }}</a>
                         </div>
                     </div>
                 </div>
@@ -530,7 +529,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&language={{ app()->getLocale() }}">
     </script>
     <script src="{{ URL::asset('resources') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
     <script>
@@ -548,7 +547,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition,mapError);
             } else {
-                alert("Geolocation is not supported by this browser.");
+                alert("{{ __('Geolocation is not supported by this browser.') }}");
             }
         }
 
@@ -557,7 +556,7 @@
             if (err.code==1) {
                 if (err.message=="User denied Geolocation") 
                 {
-                    alert("Please enable location permission in your browser");
+                    alert("{{ __('Please enable location permission in your browser') }}");
                 }
             }
         }
@@ -641,7 +640,7 @@
             var pickup_longitude = $("#pickup_longitude").val();
             var pickup_address = $("#pickupPoint").val();
             if (pickup_latitude == '' || pickup_longitude == '') {
-                swal("Error", "Please select Pick up address", "error");
+                swal("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
                 return false;
             }
             var dropoff_latitude = $("#dropoff_latitude").val();
@@ -682,7 +681,7 @@
             $(".distance_calculated").text(distance_calculated + " KM");
             $(".distance_calculated_input").val(distance_calculated);
             if ($("#carType").val() == '') {
-                swal("Error", "Please select Car type", "error");
+                swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
             }
             var carType = $('#carType').val();
