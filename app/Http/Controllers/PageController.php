@@ -16,6 +16,7 @@ use Exception;
 use Twilio\Rest\Client;
 use App\Notification;
 use App\RideHistory;
+use App;
 
 class PageController extends Controller
 {
@@ -146,8 +147,8 @@ class PageController extends Controller
 				foreach($drivers as $driver)
 				{
 					$driverids[] = $driver['id'];
-				$title = 'New Booking';
-		$message = 'You Received new booking';
+				$title = __('New Booking');
+		$message = __('You Received new booking');
 			
 		
 		$deviceToken = $driver['device_token'];
@@ -303,10 +304,12 @@ if($_REQUEST['cm'] == 2)
 
 	}
 	public function cancelpayment() {
-		echo "<h1>Sorry Your Payment is Canceled</h1>"; die;
+		echo "<h1>".__("Sorry Your Payment is Canceled")."</h1>"; die;
 	}
 
 	public function booking() {
+		// app()->setLocale("de");
+		// App::setLocale('de');
 		$vehicle_types = Price::orderBy('sort')->get();
 		return view('booking')->with(['vehicle_types' => $vehicle_types]);
 	}
@@ -342,7 +345,7 @@ if($_REQUEST['cm'] == 2)
 				['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
 				['otp' => $otp, 'expiry' => $endTime]
 			);
-			return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number']);
+			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		} catch (\Exception $exception) {
@@ -356,11 +359,11 @@ if($_REQUEST['cm'] == 2)
 		$now = Carbon::now();
 		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 		if (empty($haveOtp)) {
-			return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
 		}
 
 		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
-			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 		}
 		$haveOtp->delete();
 
@@ -421,9 +424,9 @@ if($_REQUEST['cm'] == 2)
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
 					['otp' => $otp, 'expiry' => $endTime]
 				);
-				return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number']);
+				return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 			} else {
-				return response()->json(['status' => 0, 'message' => "No such number exists in our record"]);
+				return response()->json(['status' => 0, 'message' => __("No such number exists in our record")]);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -438,11 +441,11 @@ if($_REQUEST['cm'] == 2)
 			$now = Carbon::now();
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 			if (empty($haveOtp)) {
-				return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+				return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
 			}
 
 			if ($now->diffInMinutes($haveOtp->expiry) < 0) {
-				return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+				return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 			}
 			$haveOtp->delete();
 			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
@@ -452,12 +455,12 @@ if($_REQUEST['cm'] == 2)
 					$rideList[$key]->ride_time = date('Y-m-D H:i',strtotime($ride->ride_time));
 				}
 				if($rideList && count($rideList) > 0){
-					return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number', 'data' => $rideList]);
+					return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number'), 'data' => $rideList]);
 				} else {
-					return response()->json(['status' => 0, 'message' => "No rides available"]);
+					return response()->json(['status' => 0, 'message' => __("No rides available")]);
 				}
 			} else {
-				return response()->json(['status' => 0, 'message' => "No such number exists in our record"]);
+				return response()->json(['status' => 0, 'message' => __("No such number exists in our record")]);
 			}
 		} catch (\Exception $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -471,7 +474,7 @@ if($_REQUEST['cm'] == 2)
 			$ride_detail = Ride::find($ride_id);
 			$ride_detail->delete();
             RideHistory::where(['ride_id' => $ride_id])->delete();
-			return response()->json(['status' => 1, 'message' => 'Ride has been deleted.']);
+			return response()->json(['status' => 1, 'message' => __('Ride has been deleted.')]);
 		} catch (\Exception $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
@@ -501,7 +504,7 @@ if($_REQUEST['cm'] == 2)
 				['country_code' => $request->country_code, 'phone' => $request->phone],
 				['otp' => $otp, 'expiry' => $endTime]
 			);
-			return response()->json(['status' => 1, 'message' => 'OTP is sent to Your Mobile Number']);
+			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		} catch (\Exception $exception) {
@@ -533,11 +536,11 @@ if($_REQUEST['cm'] == 2)
 		$request->phone = $phone_number[1];
 		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp])->first();
 		if (empty($haveOtp)) {
-			return response()->json(['status' => 0, 'message' => 'Verification code is incorrect, please try again']);
+			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
 		}
 
 		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
-			return response()->json(['status' => 0, 'message' => 'Verification code has expired']);
+			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 		}
 		$haveOtp->delete();
 
@@ -566,5 +569,10 @@ if($_REQUEST['cm'] == 2)
 		return $jsonResponse;
 	}
 
+	public function changeLocale(Request $request)
+	{
+		session()->put('locale', $request->locale);
+		return redirect()->route('booking');
+	}
 	
 }

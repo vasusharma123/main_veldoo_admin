@@ -358,28 +358,33 @@
                 </div>
                 <h2 class="title_form">Booking Details</h2>
                 <div class="filter_booking_list">
-                    <form class="personal_info_form" id="personal_info_form" method="post">
+                    <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
+                        <?php
+                            $first_name_validation = __('First name is required.');
+                            $last_name_validation = __('Last name is required.');
+                            $phone_validation = __('Phone number is required.');
+                        ?>
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" name="first_name"
-                                        placeholder="First Name" required />
+                                    <input type="text" class="form-control input_field" data-parsley-required-message="{{ $first_name_validation }}" name="first_name" placeholder="{{ __('First Name') }}"  required />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
                                     <input type="text" class="form-control input_field" name="last_name"
-                                        placeholder="Last Name" />
+                                        placeholder="{{ __('Last Name') }}" />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group">
+                                <div class="form-group mb-0 pb-0">
                                     <input class="form-control" name="country_code" type="hidden"
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" name="phone" placeholder="Enter Phone Number" minlength="8" required />
+                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" name="phone" data-parsley-errors-container=".phoneError" placeholder="{{ __('Enter Phone Number') }}" minlength="8" data-parsley-required-message="{{ $phone_validation }}" required />
                                 </div>
+                                <div class="phoneError mb-3"></div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group" style="display: block;">
@@ -407,7 +412,7 @@
                                         <option value="{{ $vehicle_type->car_type }}"
                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                             data-price_per_km="{{ $vehicle_type->price_per_km }}">
-                                            {{ $vehicle_type->car_type }}</option>
+                                            {{ __($vehicle_type->car_type) }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -442,9 +447,9 @@
                             <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                 <div class="form-group">
                                     <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
-                                        <option value="">Payment Method</option>
-                                        <option value="Cash" selected>Cash</option>
-                                        <option value="Card">Card</option>
+                                        <option value="">{{ __('Payment Method') }}</option>
+                                        <option value="Cash" selected>{{ __('Cash') }}</option>
+                                        <option value="Card">{{ __('Card') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -453,7 +458,7 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes..."></textarea>
+                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="{{ __('Enter notes...') }}"></textarea>
                                 </div>
                             </div>
                             <!-- 
@@ -468,7 +473,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> I have read and accepted the general terms and conditions</a>
+                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -484,12 +489,12 @@
                                     <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
                                     <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
                                     <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">BOOK</button>
+                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">{{ __('BOOK') }}</button>
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >Go Back</a>
+                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
                                 </div>
                             </div>
                             <div class="col-lg-12">
@@ -519,10 +524,11 @@
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/js/intlTelInput-jquery.min.js"></script>
     <script type="text/javascript"
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&language={{ app()->getLocale() }}">
     </script>
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(function() {
             $(document).on('change','#timerValue',function(){
@@ -624,12 +630,12 @@
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
                     } else if(response.status == 0){
-                        swal("Error",response.message,"error");
+                        swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
+                    swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -648,17 +654,17 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("Success",response.message,"success");
+                        swal("{{ __('Success') }}",response.message,"success");
                             setTimeout(function() {
                                 window.location.href = "{{ url('booking')}}";
                             }, 2000);
                     } else if(response.status == 0){
-                        swal("Error",response.message,"error");
+                        swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("Error",response.message,"error");
+                    swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
