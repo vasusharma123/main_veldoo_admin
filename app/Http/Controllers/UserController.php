@@ -542,17 +542,17 @@ class UserController extends Controller
 			}
 			
 			$setting["value->admin_logo"] = Storage::disk('public')->putFileAs(
-				'setting/', $request->admin_logo_tmp, $logoName
+				'setting', $request->admin_logo_tmp, $logoName
 			);
 		}
  		if(!empty($request->admin_favicon_tmp)){
 			$favName = 'admin-favicon.'.$request->admin_favicon_tmp->extension();
 			if(!empty($record->admin_favicon)){
-				Storage::disk('public')->delete('setting/'.$record->admin_favicon);
+				Storage::disk('public')->delete('setting'.$record->admin_favicon);
 			}
 			
 			$setting["value->admin_favicon"] = Storage::disk('public')->putFileAs(
-				'setting/', $request->admin_favicon_tmp, $favName
+				'setting', $request->admin_favicon_tmp, $favName
 			);
 		}
  		if(!empty($request->admin_background_tmp)){
@@ -562,17 +562,17 @@ class UserController extends Controller
 			}
 			
 			$setting["value->admin_background"] = Storage::disk('public')->putFileAs(
-				'setting/', $request->admin_background_tmp, $backgroundName
+				'setting', $request->admin_background_tmp, $backgroundName
 			);
 		}
  		if(!empty($request->admin_sidebar_logo_tmp)){
 			$sidebarLogoName = 'admin-sidebar-logo.'.$request->admin_sidebar_logo_tmp->extension();
 			if(!empty($record->admin_sidebar_logo)){
-				Storage::disk('public')->delete('setting/'.$record->admin_sidebar_logo);
+				Storage::disk('public')->delete('setting'.$record->admin_sidebar_logo);
 			}
 			
 			$setting["value->admin_sidebar_logo"] = Storage::disk('public')->putFileAs(
-				'setting/', $request->admin_sidebar_logo_tmp, $sidebarLogoName
+				'setting', $request->admin_sidebar_logo_tmp, $sidebarLogoName
 			);
 		}
 

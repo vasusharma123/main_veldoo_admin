@@ -7,8 +7,8 @@
 		<div class="user-profile">
 			<!-- User profile image -->
 			<div class="profile-img"> 
-					@if(file_exists('storage/app/public/'.$currentUser['image']))
-						<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" alt="user" /> 
+					@if(file_exists('storage/'.$currentUser['image']))
+						<img src="{{ env('URL_PUBLIC').'/'.$currentUser['image'] }}" alt="user" /> 
 					@else
 						<img src="{{ asset('/assets/images/users/profile.png')}}" alt="user" class="" />
 					@endif

@@ -11,8 +11,8 @@
 				<b>
 					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
 					<!-- Dark Logo icon -->
-					@if(!empty($setting['admin_logo']) && file_exists('storage/app/public/'.$setting['admin_logo']))
-						<img src="{{ config('app.url_public').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="40" height="40" /> 
+					@if(!empty($setting['admin_logo']) && file_exists('storage/'.$setting['admin_logo']))
+						<img src="{{ env('URL_PUBLIC').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="40" height="40" /> 
 					@else
 						<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" class="dark-logo" />
 					@endif
@@ -49,8 +49,8 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						
-						@if(!empty($currentUser['image']) && file_exists('storage/app/public/'.$currentUser['image']))
-							<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" class="profile-pic" /> 
+						@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
+							<img src="{{ env('URL_PUBLIC').'/'.$currentUser['image'] }}" class="profile-pic" /> 
 						@else
 							<img src="{{ asset('/assets/images/users/1.jpg')}}" alt="user" class="profile-pic" />
 						@endif
