@@ -197,7 +197,7 @@ class AdminControlController extends Controller
 		
 		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
 			
-			$imageName = 'profile-image.'.$request->image_tmp->extension();
+			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
 			if(!empty($haveUser->image)){
 				Storage::disk('public')->delete($haveUser->image);
 			}

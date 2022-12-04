@@ -246,7 +246,7 @@ class UserController extends Controller
 					$input['image'] = Storage::disk('public')->putFileAs(
 						'user/' . $user_id,
 						$request->file('image'),
-						'profile-image.' . $input['image']->extension()
+						'profile-image'.time().'.' . $input['image']->extension()
 					);
 				}
 
@@ -283,7 +283,7 @@ class UserController extends Controller
 					$input['image'] = Storage::disk('public')->putFileAs(
 						'user/' . $user_id,
 						$request->file('image'),
-						'profile-image.' . $input['image']->extension()
+						'profile-image'.time().'.' . $input['image']->extension()
 					);
 				}
 
@@ -6775,7 +6775,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$record = \App\User::create($input);
 			if (!empty($_FILES['image'])) {
 				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
-					$imageName = 'profile-image.' . $request->image->extension();
+					$imageName = 'profile-image'.time().'.' . $request->image->extension();
 					$record->image = Storage::disk('public')->putFileAs(
 						'user/' . $record->id,
 						$request->image,
@@ -6829,7 +6829,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
 
 					if (in_array($ext, $arr_ext)) {
-						$imageName = 'profile-image.' . $request->image->extension();
+						$imageName = 'profile-image'.time().'.' . $request->image->extension();
 						if (!empty($user['image'])) {
 							Storage::disk('public')->delete($user['image']);
 						}

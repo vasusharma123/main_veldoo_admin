@@ -281,7 +281,7 @@ class UserController extends Controller
 			//SAVE IMAGE
 			if ($request->image) {
 				$path = 'users/' . $user->id . '/profile/';
-				$imageName = 'profile-image.' . $request->image->extension();
+				$imageName = 'profile-image'.time().'.' . $request->image->extension();
 
 				$image = Storage::disk('public')->putFileAs(
 					'user/' . $user->id,
@@ -385,7 +385,7 @@ class UserController extends Controller
 		
 		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
 			
-			$imageName = 'profile-image.'.$request->image_tmp->extension();
+			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
 			if(!empty($haveUser->image)){
 				Storage::disk('public')->delete($haveUser->image);
 			}
@@ -467,7 +467,7 @@ class UserController extends Controller
 				Storage::disk('public')->delete("$isImage");
 			}
 			
-			$imageName = 'profile-image.'.$request->image->extension();
+			$imageName = 'profile-image'.time().'.'.$request->image->extension();
 			
 			$user->image = Storage::disk('public')->putFileAs(
 				'user/'.Auth::user()->id, $request->file('image'), $imageName
@@ -763,7 +763,7 @@ class UserController extends Controller
 		
 		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
 			
-			$imageName = 'profile-image.'.$request->image_tmp->extension();
+			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
 			if(!empty($haveUser->image)){
 				Storage::disk('public')->delete($haveUser->image);
 			}

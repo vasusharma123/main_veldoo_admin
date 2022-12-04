@@ -156,7 +156,7 @@ class CompanyController extends Controller
 		
         if(!empty($request->image) ){
             $path = 'users/'.$user->id.'/profile/';
-           $imageName = 'profile-image.'.$request->image->extension();
+           $imageName = 'profile-image'.time().'.'.$request->image->extension();
         
            $data['image']=Storage::disk('public')->putFileAs(
                 'user/'.$user->id, $request->image, $imageName);
@@ -263,7 +263,7 @@ class CompanyController extends Controller
 		
 		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
 			
-			$imageName = 'profile-image.'.$request->image_tmp->extension();
+			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
 			if(!empty($haveUser->image)){
 				Storage::disk('public')->delete($haveUser->image);
 			}
