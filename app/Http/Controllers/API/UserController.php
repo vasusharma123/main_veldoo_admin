@@ -3367,9 +3367,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			return response()->json(['success' => true, 'message' => $message, 'data' => $ride], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
+			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
 		} catch (\Exception $exception) {
+			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
 		}
 	}
