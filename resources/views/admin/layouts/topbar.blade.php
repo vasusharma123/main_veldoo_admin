@@ -60,9 +60,8 @@
 							<li>
 								<div class="dw-user-box">
 									<div class="u-img">
-										
 										@if(!empty($currentUser['image']) && file_exists('storage/app/public/'.$currentUser['image']))
-											<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}" alt="user" /> 
+											<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}?time()" alt="user" /> 
 										@else
 											<img src="{{ URL::asset('resources') }}/assets/images/users/1.jpg" alt="user">
 										@endif
@@ -74,10 +73,14 @@
 								</div>
 							</li>
 							<li role="separator" class="divider"></li>
-							<li><a href="{{ route('users.profile') }}"><i class="ti-user"></i> My Profile</a></li>
-							<li><a href="{{ route('users.settings') }}"><i class="ti-settings"></i> Setting</a></li>
+							<li><a href="{{ route('my-profile') }}"><i class="ti-user"></i> My Profile</a></li>
+							@if (Auth::user()->user_type==3)
+								<li>
+									<a href="{{ route('users.settings') }}"><i class="ti-settings"></i> Setting</a>
+								</li>
+							@endif
 							<li role="separator" class="divider"></li>
-							<li><a href="{{url('admin/logout')}}"><i class="fa fa-power-off"></i> Logout</a></li>
+							<li><a href="{{ route('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
 						</ul>
 					</div>
 				</li>
