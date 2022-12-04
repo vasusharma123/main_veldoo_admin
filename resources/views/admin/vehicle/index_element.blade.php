@@ -55,7 +55,7 @@
 					@if(!empty($vehicle->vehicle_image))
 					<img src="{{ $vehicle->vehicle_image }}" height="50px" width="80px">
 					@else
-					<img src="{{url('public/no-images.png')}}" height="50px" width="80px">
+					<img src="{{ asset('no-images.png') }}" height="50px" width="80px">
 					@endif
 					</td>
 					<td>

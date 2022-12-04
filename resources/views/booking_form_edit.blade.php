@@ -355,7 +355,7 @@
             <div class="booking_personal_information">
                 <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="logo_img_top_1">
-                    <img src="{{asset('public/images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                    <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">

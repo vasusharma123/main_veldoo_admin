@@ -26,7 +26,7 @@
 											@if(!empty($record->image))
 											<img src="{{url('storage/app/public/'.$record->image)}}" height="50px" width="80px">
 											@else
-											<img src="{{url('public/no-images.png')}}" height="50px" width="80px">	
+											<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
 										@endif
 										</td>
 									</tr>

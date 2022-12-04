@@ -87,11 +87,11 @@
                                         </div>
                                         <div class="col-md-4">
                                             @if (!empty($record->vehicle_image))
-                                                <img src="{{ $record->vehicle_image }}" height="50px">
+                                                <img src="{{ env('URL_PUBLIC').'/'.$record->vehicle_image }}" height="50px">
                                                 <button type="button" class="btn btn-info btn-sm"
                                                     onclick="removeImage({{ $record->id }});">Remove Image</button>
                                             @else
-                                                <img src="{{ url('public/no-images.png') }}" height="50px">
+                                                <img src="{{ asset('no-images.png') }}" height="50px">
                                             @endif
                                         </div>
                                     </div>

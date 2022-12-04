@@ -96,33 +96,45 @@ class VehicleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request,Vehicle $vehicle)
-    {   
-         $this->validate($request, [
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    public function store(Request $request, Vehicle $vehicle)
+    {
+        $this->validate($request, [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'vehicle_number_plate' => 'required',
             'year' => 'required',
             'model' => 'required',
             'color' => 'required',
-            'car_type'=>'required'
-          
+            'car_type' => 'required'
         ]);
-       $input=$request->all();
+        $input = $request->all();
         //SAVE IMAGE
-       
-           if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $name = time().'.'.$image->getClientOriginalExtension();
-                $destinationPath = public_path('/images/user_image/');
-                $image->move($destinationPath, $name);
-                 $url = URL::to('/');
-                  $path="public/images/user_image/";
-             $input['vehicle_image']=$url."/".$path.$name;
-             }
 
-              
-            $input['category_id']=$input['car_type'];
-        \App\Vehicle::create($input);
+        if (!empty($_FILES['image'])) {
+            if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
+                $ext = $request->image->extension();
+                $arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
+                if (!in_array($ext, $arr_ext)) {
+                    return back()->with('error', 'Please upload a valid Image');
+                }
+            }
+        }
+
+        $input['category_id'] = $input['car_type'];
+        $vehicleObj = \App\Vehicle::create($input);
+
+        if (!empty($_FILES['image'])) {
+            if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
+
+                $imageName = 'vehicle-image.' . $request->image->extension();
+                $vehicleObj->vehicle_image = Storage::disk('public')->putFileAs(
+                    'vehicle/' . $vehicleObj->id,
+                    $request->image,
+                    $imageName
+                );
+                $vehicleObj->save();
+            }
+        }
+
         return back()->with('success', 'Record created!');
     }
 
@@ -191,7 +203,7 @@ class VehicleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $vehicle = \App\Vehicle::where(['id' => $id])->first();;
+        $vehicle = \App\Vehicle::find($id);
 
         $rules = [
             // 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
@@ -207,26 +219,28 @@ class VehicleController extends Controller
         $input['category_id'] = $input['car_type'];
         unset($input['_method'], $input['_token'], $input['image_tmp'], $input['car_type'], $input['mileage']);
         // dd($_FILES['vehicle_image']);
+        
         if (!empty($_FILES['vehicle_image'])) {
-
             if (isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['name'] !== '' && !empty($_FILES['vehicle_image']['name'])) {
-                $file = $_FILES['vehicle_image'];
-                $file = preg_replace("/[^a-zA-Z0-9.]/", "", $file['name']);
-                $filename = time() . '-' . $file;
-                $ext = substr(strtolower(strrchr($file, '.')), 1); //get the extension
+                $ext = $request->vehicle_image->extension();
                 $arr_ext = array('jpg', 'jpeg', 'gif', 'png'); //set allowed extensions
-
+        
                 if (in_array($ext, $arr_ext)) {
-                    $path = "public/images/user_image/";
-                    if (move_uploaded_file($_FILES['vehicle_image']['tmp_name'], $path . $filename)) {
-                        $url = URL::to('/');
-                        $input['vehicle_image'] = $url . "/" . $path . $filename;
+                    $imageName = 'vehicle-image.' . $request->vehicle_image->extension();
+                    if (!empty($vehicle['vehicle_image'])) {
+                        Storage::disk('public')->delete($vehicle['vehicle_image']);
                     }
+                    $input['vehicle_image'] = Storage::disk('public')->putFileAs(
+                        'vehicle/' . $vehicle->id,
+                        $request->vehicle_image,
+                        $imageName
+                    );
                 } else {
-                    return response()->json(['message' => 'Upload valid image'], $this->warningCode);
+                    return back()->with('error', 'Please upload a valid Image');
                 }
             }
         }
+
         \App\Vehicle::where('id', $id)->update($input);
         if(isset($request->mileage)){
             $choosenVehicle = DriverChooseCar::where(['car_id' => $id])->latest()->first();
