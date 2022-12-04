@@ -2739,8 +2739,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$rules = [
 			'status' => 'required',
 			'ride_id' => 'required',
-
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -2748,8 +2746,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
 		try {
-
-			$ride = Ride::query()->where([['id', '=', $_REQUEST['ride_id']]])->first();
+			$ride = Ride::find($_REQUEST['ride_id']);
 
 			if (!empty($request->note)) {
 				$ride->note = $request->note;
@@ -2772,11 +2769,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride_id = $rideid;
 					$type = 3;
 
-
-
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					$ride->status = 2;
 					$message = "Ride Started Successfully";
@@ -2794,11 +2787,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride_id = $rideid;
 					$type = 7;
 
-
-
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					$ride->status = 4;
 					$message = "Driver Reached Successfully";
@@ -2819,8 +2808,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					if (!empty($request->ride_cost)) {
 						$ride->ride_cost = $request->ride_cost;
@@ -2871,9 +2858,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							}
 						}
 					}
-
-
-
 
 					$ride->status = 3;
 					$message = "Ride Completed Successfully";
@@ -2927,10 +2911,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['success' => true, 'message' => $message, 'data' => $ride], $this->successCode);
 			}
 
-
 			$rideid = $_REQUEST['ride_id'];
-
-
 
 			if (!empty($ride)) {
 				if ($request->status == 1) {
@@ -2959,7 +2940,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 					$ride->status = 1;
 					$ride->vehicle_id = $choosed_vehicle->car_id;
-					$ride->waiting = $request->waiting??0;
+					$ride->waiting = $request->waiting ?? 0;
 					$ride->driver_id = $user_id;
 					$message = "Ride Accepted Successfully";
 
@@ -3000,9 +2981,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					} else {
 						//$totaldrivers = 1;
 						if ($totaldrivers == $sendtoactualdrivers) {
-							/* $ride->status = -4;	
-				$ride->save(); */
-
 							$master_drivers = User::query()->where([['user_type', '=', 2], ['is_master', '=', 1], ['availability', '=', 1]])->get()->toArray();
 							$driverids = array();
 							// print_r($master_drivers); die;
@@ -3012,19 +2990,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 									$ride->status = -4;
 									//print_r($input); die;
 									$ride->save();
-
-
-
-
-
-
-
 									$driverids[] = $master_driver['id'];
 								}
 							} else {
 								//return response()->json(['message'=>'No Master Driver Found'], $this->warningCode);
 							}
-
 
 							if (!empty($driverids)) {
 								$driverids = implode(",", $driverids);
@@ -3032,13 +3002,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								//return response()->json(['message'=>"No Driver Found"], $this->warningCode);
 							}
 
-
-
-
 							$driverids = explode(",", $driverids);
-							//print_r($driverids); die;
-							/* echo "ride data :";
-		print_r($ride_data); die; */
 							foreach ($driverids as $driverid) {
 								$driver_id = $driverid;
 								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
@@ -3050,17 +3014,14 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$title = 'Pending Ride';
 								$message = 'No Driver Accepted Ride';
 
-
 								$deviceToken = $driver_data['device_token'];
 								$type = 9;
 								$ride_data['user_data'] = $user_data;
 								$settings = \App\Setting::first();
 								$settingValue = json_decode($settings['value']);
 								$ride_data['waiting_time'] = $settingValue->waiting_time;
-								/* echo "ride data :";
-		print_r($ride); */
-								$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
 
+								$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
 
 								$deviceType = $driver_data['device_type'];
 								if ($deviceType == 'android') {
@@ -3100,9 +3061,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							//$query->where('user_type', '=',2)->orderBy('distance','asc');
 							$drivers = $query->get()->toArray();
 
-
-							//$driverids = array();
-							//print_r($drivers); die;
 							if (!empty($drivers)) {
 								foreach ($drivers as $driver) {
 
@@ -3131,8 +3089,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$ride_data['price'] = $ride_data['ride_cost'];
 							}
 							$driverids = explode(",", $driverids);
-							/* echo "ride data :";
-		print_r($ride_data); die; */
+
 							foreach ($driverids as $driverid) {
 								$driver_id = $driverid;
 								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
@@ -3151,10 +3108,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$settings = \App\Setting::first();
 								$settingValue = json_decode($settings['value']);
 								$ride_data['waiting_time'] = $settingValue->waiting_time;
-								/* echo "ride data :";
-		print_r($ride); */
-								$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
 
+								$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
 
 								$deviceType = $driver_data['device_type'];
 								if ($deviceType == 'android') {
@@ -3167,12 +3122,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 									$notification->save();
 								}
 								if ($deviceType == 'ios') {
-									/* $deviceToken = $driver_data['device_token'];
-		send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]); */
 									$user_type = $driver_data['user_type'];
 
-									/* echo "Driver id : ".$driver_data['id'];
-		echo "User type : $user_type"; */
 									ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
 									$notification = new Notification();
 									$notification->title = $title;
@@ -3184,7 +3135,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							}
 						}
 					}
-
 
 					$message = "Ride Rejected Successfully";
 
@@ -3203,11 +3153,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 3;
 
-
-
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					$ride->status = 2;
 					$message = "Ride Started Successfully";
@@ -3241,16 +3187,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$title = 'Ride Completed';
 					$message = 'Your Ride Completed';
 
-					$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
-					$deviceToken = $userdata['device_token'];
 					$ride_id = $_REQUEST['ride_id'];
-					$type = 4;
-
-
-
-					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					if (!empty($request->ride_cost)) {
 						$ride->ride_cost = $request->ride_cost;
@@ -3277,6 +3214,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					} else {
 						$user_id = $ride['user_id'];
 					}
+
+					$userdata = User::find($user_id);
+					$deviceToken = $userdata['device_token']??"";
+					$type = 4;
+
+					$deviceType = $userdata['device_type']??"";
+
 					if (!empty($request->distance)) {
 						$ride->distance = $request->distance;
 						//echo $request->distance; die;
@@ -3287,7 +3231,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$miles_got = round(($distance * $mile_per_ride) / 100);
 						$ride->miles_received = $miles_got;
 
-
 						//echo $user_id; die;
 						if (!empty($user_id)) {
 							if ($request->payment_type == 'voucher' || $request->payment_type == 'Voucher') {
@@ -3297,7 +3240,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$uservoucher->user_id = $user_id;
 								$uservoucher->ride_id = $request->ride_id;
 								$uservoucher->type = 1;
-
 
 								unset($uservoucher->created_at);
 								unset($uservoucher->updated_at);
@@ -3315,23 +3257,18 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['success' => true, 'message' => "Ride Cancelled already"], $this->successCode);
 					}
 					$title = 'Ride Cancelled';
-					$message = 'Your Ride Cancelled';
+					$message = "Ride Cancelled Successfully";
 
-					$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
-					$deviceToken = $userdata['device_token'];
+					$userdata = User::find($ride['user_id']);
+					$deviceToken = $userdata['device_token']??"";
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 5;
 					$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
 
-
-					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
-
+					$deviceType = $userdata['device_type']??"";
 
 					$ride->status = -2;
 					//$ride->cancel_reason = $request->cancel_reason;
-					$message = "Ride Cancelled Successfully";
 				}
 
 				if ($request->status == -3) {
@@ -3347,11 +3284,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 6;
 
-
-
 					$deviceType = $userdata['device_type'];
-					/* echo $deviceType; 
-		echo $deviceToken; die; */
 
 					$ride->status = -3;
 					if (!empty($request->cancel_reason)) {
@@ -3398,23 +3331,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride['waiting_time'] = $settingValue->waiting_time;
 			if ($request->status == -1) {
 			} else {
-
 				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				//echo $deviceType; 
+
 				if ($deviceType == 'android') {
-					send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $userdata['id'];
-					$notification->save();
+					bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
 				}
 				if ($deviceType == 'ios') {
-					//$deviceToken = $userdata['device_token'];
-					//send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-					$user_type = $userdata['user_type'];
-					ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
+					bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+				}
+				if(!empty($userdata)){
 					$notification = new Notification();
 					$notification->title = $title;
 					$notification->description = $message;
@@ -3432,7 +3357,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$uservoucher->user_id = $ride['user_id'];
 						$uservoucher->ride_id = $request->ride_id;
 						$uservoucher->type = 3;
-
 
 						unset($uservoucher->created_at);
 						unset($uservoucher->updated_at);
