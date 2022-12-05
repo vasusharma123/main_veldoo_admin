@@ -36,7 +36,7 @@ class CompanyController extends Controller
 
         if ($request->ajax()) {
             
-            $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code'])->where('user_type',4)->orderBy('id','DESC')->get();
+            $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->orderBy('id','DESC')->get();
             
             return Datatables::of($data)
                             ->addIndexColumn()
