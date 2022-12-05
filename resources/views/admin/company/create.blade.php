@@ -39,7 +39,7 @@
 								 </button>
 							   </div>
 				        @endif							
-							{{ Form::open(array('url' => route('company.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
+							{{ Form::open(array('url' => route('company.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data','autocomplete'=>"off",'role'=>"presentation")) }}
 								<div class="form-body">
 									<div class="row p-t-5">
 										<div class="col-md-6">
@@ -74,7 +74,7 @@
 											<div class="form-group">
 												<?php
 												echo Form::label('user_name', 'Company Name',['class'=>'control-label']);
-												echo Form::text('user_name',null,['class'=>'form-control','required'=>true]);
+												echo Form::text('user_name',null,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
 												?>
 
 												@error('user_name')
@@ -88,7 +88,7 @@
 											<div class="form-group">
 												<?php
 												echo Form::label('email', 'Email',['class'=>'control-label']);
-												echo Form::email('email',null,['class'=>'form-control','required'=>false]);
+												echo Form::email('email',null,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('email')
 															<span class="invalid-feedback" role="alert">
@@ -99,7 +99,7 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 												echo Form::label('phone', 'Phone',['class'=>'control-label']);
-												echo Form::text('phone',null,['class'=>'form-control','required'=>false,'id'=>'Regphones']);
+												echo Form::text('phone',null,['class'=>'form-control','required'=>false,'id'=>'Regphones','autocomplete'=>'off']);
 												?>
 												<input type="hidden" value="+1" id="test1" name="country_code" />
 												@error('phone')
@@ -111,7 +111,7 @@
 											<div class="form-group">
 												<?php
 												echo Form::label('password', 'Password',['class'=>'control-label']);
-												echo Form::password('password',['class'=>'form-control','required'=>true]);
+												echo Form::password('password',['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
 												?>
 												@error('password')
 															<span class="invalid-feedback" role="alert">
@@ -119,21 +119,11 @@
 															</span>
 														@enderror 
 											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('country', 'Country',['class'=>'control-label']);
-												echo Form::text('country',null,['class'=>'form-control','required'=>true]);
-												?>
-												@error('country')
-															<span class="invalid-feedback" role="alert">
-																<strong>{{ $message }}</strong>
-															</span>
-														@enderror 
-											</div>
+											
 											<div class="form-group">
 												<?php
 												echo Form::label('state', 'State',['class'=>'control-label']);
-												echo Form::text('state',null,['class'=>'form-control']);
+												echo Form::text('state',null,['class'=>'form-control','autocomplete'=>'off']);
 												?>
 												@error('state')
 															<span class="invalid-feedback" role="alert">
@@ -144,7 +134,7 @@
 											<div class="form-group">
 												<?php
 												echo Form::label('city', 'City',['class'=>'control-label']);
-												echo Form::text('city',null,['class'=>'form-control','required'=>true]);
+												echo Form::text('city',null,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
 												?>
 												@error('city')
 															<span class="invalid-feedback" role="alert">
@@ -155,15 +145,26 @@
 											<div class="form-group">
 												<?php
 												echo Form::label('street', 'Street',['class'=>'control-label']);
-												echo Form::text('street',null,['class'=>'form-control']);
+												echo Form::text('street',null,['class'=>'form-control','autocomplete'=>'off']);
 												?>
 											</div>
 											<div class="form-group">
 												<?php
 												echo Form::label('zip', 'Zip Code',['class'=>'control-label']);
-												echo Form::text('zip',null,['class'=>'form-control','required'=>true]);
+												echo Form::text('zip',null,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
 												?>
 												@error('zip')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('country', 'Country',['class'=>'control-label']);
+												echo Form::text('country',null,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+												?>
+												@error('country')
 															<span class="invalid-feedback" role="alert">
 																<strong>{{ $message }}</strong>
 															</span>
@@ -214,6 +215,17 @@
 
 
 <script type="text/javascript">
+	$(function(){
+		$('#userCreate').hide();
+		
+		setTimeout(function(){
+			$('[autocomplete=off]').val('');
+			$('#userCreate').show();
+			var myStr = $("#Regphones").val().replaceAll(/-/g, "").replaceAll(" ", "");
+			$("#Regphones").removeAttr('placeholder');
+			$("#Regphones").val(myStr);
+		}, 500);
+	});
 	$(document).ready(function () {
 		$('#userCreate').validate();
 	});
@@ -233,15 +245,6 @@
 		var data = $('.selected-dial-code').html();
 		$("#test1").val(data);
 	});
-
-$(document).ready(function(){
-    setTimeout(function(){  
-           var myStr = $("#Regphones").val().replace(/-/g, "");
-           
-           $("#Regphones").val(myStr);
-           }, 1000);
-
-});
 
 
 	</script>

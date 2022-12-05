@@ -315,5 +315,9 @@ class CompanyController extends Controller
         exit;
     }
 	
-
+    public function settings(Request $request)
+    {
+        $data = array('title' => 'Settings', 'action' => 'Company Information');
+		return view("company.settings.index")->with($data);
+    }
 }
