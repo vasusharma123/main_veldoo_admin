@@ -3146,17 +3146,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
 					$title = 'Ride Started';
-					$message = 'Your Ride Started';
-
-					$userdata = User::query()->where([['id', '=', $ride['user_id']]])->first();
-					$deviceToken = $userdata['device_token'];
+					$message = 'Ride Started Successfully';
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 3;
-
-					$deviceType = $userdata['device_type'];
-
 					$ride->status = 2;
-					$message = "Ride Started Successfully";
+
+					$userdata = User::find($ride['user_id']);
+					if(!empty($userdata)){
+						$deviceToken = $userdata['device_token'];
+						$deviceType = $userdata['device_type'];
+					}
 				}
 				if ($request->status == 4) {
 
@@ -3164,19 +3163,19 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
 					}
 					$title = 'Driver Reached';
-					$message = 'Driver Reached at Pickup Location';
+					$message = "Driver Reached Successfully";
 
-					$userdata = User::find($ride['user_id']);
-					$deviceToken = $userdata['device_token'];
 					$ride_id = $_REQUEST['ride_id'];
 					$type = 7;
-
-					$deviceType = $userdata['device_type'];
-
 					$ride->status = 4;
-					$message = "Driver Reached Successfully";
-					if ($ride->platform == 'web') {
-						$ride->driver_reach_sms_notify($userdata);
+
+					$userdata = User::find($ride['user_id']);
+					if(!empty($userdata)){
+						$deviceToken = $userdata['device_token'];
+						$deviceType = $userdata['device_type'];
+						if ($ride->platform == 'web') {
+							$ride->driver_reach_sms_notify($userdata);
+						}
 					}
 				}
 				if ($request->status == 3) {
@@ -3334,12 +3333,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if ($request->status == -1) {
 			} else {
 				$additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-
-				if ($deviceType == 'android') {
-					bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
-				}
-				if ($deviceType == 'ios') {
-					bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+				if (!empty($deviceToken)) {
+					if ($deviceType == 'android') {
+						bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+					}
+					if ($deviceType == 'ios') {
+						bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+					}
 				}
 				if(!empty($userdata)){
 					$notification = new Notification();
@@ -5977,33 +5977,34 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
 					$userdata = User::find($ride['user_id']);
-					$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
-					if ($ride->platform == 'web') {
-						$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
-					}
+					if (!empty($userdata)) {
+						$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
+						if ($ride->platform == 'web') {
+							$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
+						}
 
-					/* Send Notification to User */
-					$title = 'Ride Accepted';
-					$message = 'Your booking accepted by the driver please check the driver detail';
-					$deviceType = $userdata['device_type'];
-					$type = 2;
-					$additional = ['type' => $type, 'ride_id' => $request->ride_id, 'ride_data' => $ride];
-					$deviceToken = $userdata['device_token'];
-					if (!empty($deviceToken)) {
-						if ($deviceType == 'android') {
-							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						/* Send Notification to User */
+						$title = 'Ride Accepted';
+						$message = 'Your booking accepted by the driver please check the driver detail';
+						$deviceType = $userdata['device_type'];
+						$type = 2;
+						$additional = ['type' => $type, 'ride_id' => $request->ride_id, 'ride_data' => $ride];
+						$deviceToken = $userdata['device_token'];
+						if (!empty($deviceToken)) {
+							if ($deviceType == 'android') {
+								bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+							}
+							if ($deviceType == 'ios') {
+								bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+							}
 						}
-						if ($deviceType == 'ios') {
-							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
-						}
+						$notification = new Notification();
+						$notification->title = $title;
+						$notification->description = $message;
+						$notification->type = $type;
+						$notification->user_id = $userdata['id'];
+						$notification->save();
 					}
-					$notification = new Notification();
-					$notification->title = $title;
-					$notification->description = $message;
-					$notification->type = $type;
-					$notification->user_id = $userdata['id'];
-					$notification->save();
-					
 					return $this->successResponse($ride, 'Ride Accepted Successfully.');
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
@@ -6057,9 +6058,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => 'Record not found'], $this->errorCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
+			Log::info($exception->getMessage()."---".$exception->getLine());
 			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
 		} catch (\Exception $exception) {
+			Log::info($exception->getMessage()."---".$exception->getLine());
 			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
 		}
 	}
