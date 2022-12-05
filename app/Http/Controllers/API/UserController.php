@@ -955,11 +955,11 @@ class UserController extends Controller
 
 		$ride = Ride::query()->where([['id', '=', $ride_id]])->first();
 
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride['user_id'])->first();
+		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride['user_id'])->first();
 
 
 		//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
-		$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone')->where('id', $ride['driver_id'])->first();
+		$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->where('id', $ride['driver_id'])->first();
 
 		$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
 		$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
@@ -1097,7 +1097,7 @@ class UserController extends Controller
 		}
 		// $userdata = $userd ;
 		// $userdata= User::query()->where([['id', '=', $id]])->first();
-		$userdata = DB::table('users')->where($where)->get();
+		$userdata = User::where($where)->get();
 		// print_r($userdata[0]->id); die;
 		$userdata = $userdata[0];
 		$driver_car = DriverChooseCar::where('user_id', $id)->orderBy('id', 'desc')->first();
@@ -3005,7 +3005,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							$driverids = explode(",", $driverids);
 							foreach ($driverids as $driverid) {
 								$driver_id = $driverid;
-								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
+								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride_data['user_id'])->first();
 
 								$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'device_token', 'device_type', 'country_code', 'phone', 'user_type')->where('id', $driverid)->first();
 								$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
@@ -3092,7 +3092,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 							foreach ($driverids as $driverid) {
 								$driver_id = $driverid;
-								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
+								$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride_data['user_id'])->first();
 
 								$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'device_token', 'device_type', 'country_code', 'phone', 'user_type')->where('id', $driverid)->first();
 								$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
@@ -3394,7 +3394,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride = Ride::query()->where([['id', '=', $_REQUEST['ride_id']]])->first();
 
-			$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride['user_id'])->first();
+			$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride['user_id'])->first();
 
 
 			//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
@@ -4855,7 +4855,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		$ride_data = Ride::find($ride->id);
 		$driverids = explode(",", $driverids);
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
+		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
 		$ride_data['user_data'] = $user_data;
@@ -5192,7 +5192,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride_data = Ride::query()->find($ride->id);
 
 		$driverids = explode(",", $driverids);
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
+		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
 		$ride_data['user_data'] = $user_data;
@@ -5484,7 +5484,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$user_data = User::select('id', 'current_lat', 'current_lng')->where('id', $user_id)->first();
+		$user_data = User::select('id', 'current_lat', 'current_lng', 'user_type')->where('id', $user_id)->first();
 		$lat = $user_data['current_lat'];
 		$lon = $user_data['current_lng'];
 		$joinridedata = Ride::where([['id', '=', $request->ride_id], ['actual_share_ride', '=', 1]])->first();
@@ -5887,7 +5887,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				'location_name' => $request->name
 			]);
 			if ($result == 1) {
-				$defaultLocation = \App\User::select('id', 'location_type', 'current_lng', 'current_lat', 'location_name')->where('id', $userId)->first();
+				$defaultLocation = \App\User::select('id', 'location_type', 'current_lng', 'current_lat', 'location_name', 'user_type')->where('id', $userId)->first();
 				return response()->json(['success' => true, 'message' => 'Default Location Changed Successfully.', 'date' => $defaultLocation], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Something went wrong'], $this->warningCode);
@@ -6269,7 +6269,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$newresultarray[$i]['ride_data'] = $ride_data;
 					}
 					if (!empty($result['refer_use_by'])) {
-						$user_data = User::select('id', 'first_name', 'last_name', 'image')->where('id', $result['refer_use_by'])->first();
+						$user_data = User::select('id', 'first_name', 'last_name', 'image', 'user_type')->where('id', $result['refer_use_by'])->first();
 						$newresultarray[$i]['user_data'] = $user_data;
 					}
 
@@ -6447,7 +6447,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image')
+			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
 				->where('country_code', $request->country_code)->where('phone', $request->phone)->where('user_type', 1)->first();
 
 			//$userData=\App\UserData::whereRaw('json_contains(phone_number, \''.$request->phone.'\')')->first();
@@ -6461,7 +6461,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			if (!empty($userData)) {
-				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image')
+				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
 					->where('id', $userData->user_id)->where('user_type', 1)->first();
 				$user['phone_number'] = json_decode($userData->phone_number);
 				$user['emails'] = json_decode($userData->email);
@@ -6470,7 +6470,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			if (!empty($userData2)) {
 				//echo "true"; die;
-				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image')
+				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
 					->where('id', $userData2->user_id)->where('user_type', 1)->first();
 				$user['phone_number'] = json_decode($userData2->phone_number);
 				$user['emails'] = json_decode($userData2->email);
