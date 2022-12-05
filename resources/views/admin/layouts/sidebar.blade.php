@@ -25,13 +25,12 @@
 		<nav class="sidebar-nav">
 			<ul id="sidebarnav">
 				<li class="nav-devider"></li>
-				<li class="nav-small-cap">{{ trans("api.Admin") }}</li>
+				{{-- <li class="nav-small-cap">{{ trans("api.Admin") }}</li> --}}
 				<li> 
 					<a class="waves-effect waves-dark" href="{{ route('users.dashboard') }}" aria-expanded="false">
 						<i class="mdi mdi-gauge"></i><span class="hide-menu">{{ trans("admin.Dashboard") }}</span>
 					</a>
 				</li>
-				 @if(Auth::user()->hasRole(['Administrator']))
 				<li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
@@ -218,66 +217,6 @@
 						<li><a href="{{ route('daily-report.expenses') }}">Expenses Report</a></li>
 					</ul>
 				</li>
-				
-				@endif
-				@if(Auth::user()->hasRole(['Company']))
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="{{ url('admin/task-management') }}" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Task Management") }}</span>
-					</a>
-				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.User Account Management") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('users.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('users.index') }}">{{ trans("admin.List") }}</a></li>
-					</ul>
-				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Booking History") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/current-bookings') }}">{{ trans("admin.Current Trips") }}</a></li>
-						<li><a href="{{ url('admin/past-bookings') }}">{{ trans("admin.Past Trips") }}</a></li>
-						<li><a href="{{ url('admin/upcoming-bookings') }}">{{ trans("admin.Upcoming Trips") }}</a></li>
-					</ul>
-				</li>
-				<!---<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Book Ride") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/book-ride') }}">{{ trans("admin.create Ride") }}</a></li>
-					</ul>
-				</li>---->
-				
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Push Notifications") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/notifications') }}">{{ trans("admin.Notifications") }}</a></li>
-					</ul>
-				</li>
-				
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Admin Contact") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/admin-contact') }}">{{ trans("admin.Contact") }}</a></li>
-					</ul>
-				</li>
-				@endif
 			</ul>
 		</nav>
 		<!-- End Sidebar navigation -->

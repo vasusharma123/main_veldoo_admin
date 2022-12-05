@@ -94,7 +94,7 @@
                     ],
                     processing: true,
                     serverSide: true,
-                    ajax: "{{ url('admin/rides') }}",
+                    ajax: "{{ route('company.rides') }}",
                     'columnDefs': [{
                             'targets': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                             'searchable': true,
@@ -229,9 +229,11 @@
             }).then((result) => {
                 if (result.value) {
                     var ride_id = $(this).attr('data-id');
+                    action = "{{ route('company.rides.destroy','~') }}";
+                    action = action.replace('~',ride_id);
                     $.ajax({
                         type: "delete",
-                        url: "{{ url('admin/rides') }}/" + ride_id,
+                        url: action,
                         data: {
                             "_token": "{{ csrf_token() }}"
                         },
@@ -278,7 +280,7 @@
                     if (result.value) {
                         $.ajax({
                             type: "delete",
-                            url: "{{ route('ride/delete_multiple') }}",
+                            url: "{{ route('company.rides.delete_multiple') }}",
                             data: {
                                 "_token": "{{ csrf_token() }}",
                                 "selected_ids": selected_checkbox

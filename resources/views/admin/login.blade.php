@@ -35,13 +35,13 @@
                                 <input class="form-control" name="password" type="password" required="" placeholder="Password"> </div>
                         </div>
                          <div class="form-group">
-                            <div class="col-xs-12">
+                            {{-- <div class="col-xs-12">
                                 <select name="user_type" class="form-control">
                                     <option value="">Select Role</option>
                                     <option value="3">Super Admin</option>
                                      <option value="4">Company</option>
                                 </select>
-                        </div>
+                            </div> --}}
                         <div class="form-group row">
                             <div class="col-md-12 font-14">
                                 <div class="checkbox checkbox-primary pull-left p-t-0">

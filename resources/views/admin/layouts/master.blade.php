@@ -5,7 +5,11 @@
     <!-- ============================================================== -->
     <div id="main-wrapper">
 		@include('admin.layouts.topbar')
-		@include('admin.layouts.sidebar')
+        @if (Auth::user()->user_type==4)
+            @include('company.elements.sidebar')
+        @else
+            @include('admin.layouts.sidebar')
+        @endif
         <!-- Page wrapper  -->
 		
         <!-- ============================================================== -->

@@ -51,11 +51,11 @@ class User extends Authenticatable implements HasMedia
 	];
 
 	protected $appends = [
-		'image_with_url'
+		'image_with_url', 'user_role'
 	];
-
-	public function setPasswordAttribute($password)
-	{
+	
+	public function setPasswordAttribute($password){
+		 
 		if (!empty($password)) {
 
 			// check if the value is already a hash (Regex: String begins with '$2y$##$' followed by at least 50 characters)
@@ -286,4 +286,9 @@ class User extends Authenticatable implements HasMedia
 		return $this->image;
 	}
 
+	public function getUserRoleAttribute()
+	{
+		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company"];
+		return $user_types[$this->user_type];
+	}
 }

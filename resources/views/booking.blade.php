@@ -559,41 +559,52 @@
                     alert("{{ __('Please enable location permission in your browser') }}");
                 }
             }
+            showPosition(false);
         }
 
         function showPosition(position) {
-            var lat = cur_lat = position.coords.latitude;
-            var lng = cur_lng = position.coords.longitude;
-            pt = new google.maps.LatLng(lat, lng);
-            map.setCenter(pt);
-            map.setZoom(13);
-            $('#pickup_latitude').val(lat);
-            $('#pickup_longitude').val(lng);
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({'latLng': pt}, function(results, status) {
-                if(status == google.maps.GeocoderStatus.OK) {
-                    $('#pickupPoint').val(results[0]['formatted_address']);//alert(results[0]['formatted_address']);
-                    new google.maps.Marker({
-                        position: pt,
-                        map,
-                        title: results[0]['formatted_address'],
-                    });
-                };
-            });
+            if (position!=false) 
+            {
+                var lat = cur_lat = position.coords.latitude;
+                var lng = cur_lng = position.coords.longitude;
+                pt = new google.maps.LatLng(lat, lng);
+                map.setCenter(pt);
+                map.setZoom(13);
+                $('#pickup_latitude').val(lat);
+                $('#pickup_longitude').val(lng);
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({'latLng': pt}, function(results, status) {
+                    if(status == google.maps.GeocoderStatus.OK) {
+                        $('#pickupPoint').val(results[0]['formatted_address']);//alert(results[0]['formatted_address']);
+                        new google.maps.Marker({
+                            position: pt,
+                            map,
+                            title: results[0]['formatted_address'],
+                        });
+                    };
+                });
 
-            var center = { lat: cur_lat, lng: cur_lng };
-            var defaultBounds = {
-                                        north: center.lat + 5,
-                                        south: center.lat - 5,
-                                        east: center.lng + 5,
-                                        west: center.lng - 5,
-                                    };
-            var options = {
-                                        bounds: defaultBounds,
-                                        // fields: ["address_components"], // Or whatever fields you need
-                                        strictBounds: true, // Only if you want to restrict, not bias
-                                        types: ["establishment"], // Whatever types you need
-                                    };
+                var center = { lat: cur_lat, lng: cur_lng };
+                var defaultBounds = {
+                                            north: center.lat + 5,
+                                            south: center.lat - 5,
+                                            east: center.lng + 5,
+                                            west: center.lng - 5,
+                                        };
+                var options = {
+                                            bounds: defaultBounds,
+                                            // fields: ["address_components"], // Or whatever fields you need
+                                            strictBounds: true, // Only if you want to restrict, not bias
+                                            types: ["establishment"], // Whatever types you need
+                                        };   
+            }
+            else
+            {
+                var options = {
+                                    strictBounds: true, // Only if you want to restrict, not bias
+                                    types: ["establishment"], // Whatever types you need
+                                };  
+            }
             var input = document.getElementById('pickupPoint');
             var autocomplete_pickup = new google.maps.places.Autocomplete(input,options);
             // autocomplete_pickup.setComponentRestrictions({
