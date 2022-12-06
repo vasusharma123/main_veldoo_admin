@@ -198,7 +198,7 @@ $(function() {
             serverSide: true,
            ajax: "{{ url('admin/company') }}",
                'columnDefs': [{
-         'targets': [0,1,2,3,4,5,6],
+        //  'targets': [0,1,2,3,4,5,6],
          'searchable':true,
          'orderable':true,
           'className': 'dt-body-center text-center new-class',
@@ -233,18 +233,19 @@ $(function() {
                     data: 'phone',
                     name: 'phone'
                 },
+				{
+                    data: 'state',
+                    name: 'state'
+                },
+				{
+                    data: 'city',
+                    name: 'city'
+                },
                 {
                     data: 'country',
                     name: 'country'
                 },
-                {
-                    data: 'state',
-                    name: 'state'
-                },
-                {
-                    data: 'city',
-                    name: 'city'
-                },
+                
                  {
                     data: 'status',
                     name: 'status'

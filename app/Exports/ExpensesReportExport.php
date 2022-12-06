@@ -28,15 +28,31 @@ class ExpensesReportExport implements FromCollection, WithHeadings, WithTitle, W
 	 */
 	public function collection()
 	{
-		$start_date = date('Y-m-d', strtotime($this->data['start_date']));
-		$end_date = date("Y-m-d", strtotime($this->data['end_date']));
+		// $start_date = date('Y-m-d', strtotime($this->data['start_date']));
+		// $end_date = date("Y-m-d", strtotime($this->data['end_date']));
+		
+		// if (!empty($this->data['driver'])) {
+		// 	$expenses = $expenses->where(['driver_id' => $this->data['driver']]);
+		// }
+		// $expenses =	$expenses->where(function ($query) use ($start_date, $end_date) {
+		// 	$query->whereRaw("Date(created_at) >= ? && Date(created_at) <= ?", [$start_date, $end_date]);
+		// })->get();
+
 		$expenses = Expense::with(['attachments']);
-		if (!empty($this->data['driver'])) {
-			$expenses = $expenses->where(['driver_id' => $this->data['driver']]);
-		}
-		$expenses =	$expenses->where(function ($query) use ($start_date, $end_date) {
-			$query->whereRaw("Date(created_at) >= ? && Date(created_at) <= ?", [$start_date, $end_date]);
-		})->get();
+        if(!empty($this->data['driver'])){
+            $expenses = $expenses->where(['driver_id' => $this->data['driver']]);
+        }
+        if(!empty($this->data['expense_type'])){
+			$expenses = $expenses->where(['type' => $this->data['expense_type']]);
+        }
+        if(!empty($this->data['start_date']) && !empty($this->data['end_date'])){
+            $selected_from_date = $this->data['start_date'];
+            $selected_to_date = $this->data['end_date'];
+            $expenses->where(function ($query) use ($selected_from_date, $selected_to_date) {
+                $query->whereRaw("date(created_at) between date('".date('Y-m-d',strtotime($selected_from_date))."') and date('".date('Y-m-d',strtotime($selected_to_date))."')");
+            });
+        }
+        $expenses = $expenses->get();
 		return $expenses;
 	}
 

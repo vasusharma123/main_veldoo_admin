@@ -569,7 +569,7 @@
                 var lng = cur_lng = position.coords.longitude;
                 pt = new google.maps.LatLng(lat, lng);
                 map.setCenter(pt);
-                map.setZoom(13);
+                map.setZoom(8);
                 $('#pickup_latitude').val(lat);
                 $('#pickup_longitude').val(lng);
                 var geocoder = new google.maps.Geocoder();
@@ -716,6 +716,7 @@
                 Longitude: dropoff_longitude,
                 AddressLocation: dropoff_address
             }];
+            // console.log(MapPoints);
             initializeMapReport(MapPoints);
             $("#booking_pickup_address").val(pickup_address);
             $("#booking_pickup_latitude").val(pickup_latitude);
@@ -798,6 +799,13 @@
                 {
                     map.setZoom(8);
                 }
+                if ($("#dropoff_latitude").val()=="") 
+                {
+                    setTimeout(() => {
+                        map.setZoom(12);
+                    }, 500);
+                }
+               
             }
         }
 

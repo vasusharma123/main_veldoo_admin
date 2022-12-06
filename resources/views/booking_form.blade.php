@@ -660,7 +660,7 @@
                     if(response.status){
                         swal("{{ __('Success') }}",response.message,"success");
                             setTimeout(function() {
-                                window.location.href = "{{ url('booking')}}";
+                                window.location.href = "{{ route('booking')}}";
                             }, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
