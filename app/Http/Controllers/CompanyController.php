@@ -123,60 +123,54 @@ class CompanyController extends Controller
             'zip' => 'required|min:3',
             'status' => 'required',
             'phone' => 'required',
-          
+
         ]);
 
-      
-		
-			DB::beginTransaction();
-	try {
+        DB::beginTransaction();
+        try {
+            $data = array();
+            $data['name'] = $request->user_name;
+            $data['email'] = $request->email;
+            $data['password'] = Hash::make($request->password);
+            $data['user_type'] = 4;
+            $data['country'] = $request->country;
+            $data['state'] = $request->state;
+            $data['city'] = $request->city;
+            $data['street'] = $request->street;
+            $data['zip'] = $request->zip;
+            $data['status'] = $request->status;
+            $data['addresses'] = $request->street;
+            $data['country_code'] = $request->country_code;
+            $data['phone'] = $request->phone;
+            $user = User::create($data);
 
-        
-       
-        $data=array();	
-       
+            //SAVE IMAGE
 
-		$data['name']=$request->user_name;
-        $data['email']=$request->email;
-        $data['password']=Hash::make($request->password);
-        $data['user_type']=4;
-		$data['country']=$request->country;
-        $data['state']=$request->state;
-        $data['city']=$request->city;
-        $data['street']=$request->street;
-         $data['zip']=$request->zip;
-        $data['status']=$request->status;
-        $data['addresses']=$request->street;
-        $data['country_code']=$request->country_code;
-        $data['phone']=$request->phone;
-		
-         $user= User::create($data);
-        
-		//SAVE IMAGE
-		
-        if(!empty($request->image) ){
-            $path = 'users/'.$user->id.'/profile/';
-           $imageName = 'profile-image'.time().'.'.$request->image->extension();
-        
-           $data['image']=Storage::disk('public')->putFileAs(
-                'user/'.$user->id, $request->image, $imageName);
-            
+            if (!empty($request->image)) {
+                $imageName = 'profile-image' . time() . '.' . $request->image->extension();
+
+                $user->image = Storage::disk('public')->putFileAs(
+                    'user/' . $user->id,
+                    $request->image,
+                    $imageName
+                );
+                $user->save();
+            }
+
+            if (!empty($request->email)) {
+                // $m = Mail::send('admin.company.email', $data, function($message) use ($request) {
+                //                   $message->to($request->email, 'Login Credential')->subject('Login Credential');
+                // });
+            }
+            DB::commit();
+            return back()->with('success', 'Company created!');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
         }
-		
-		if(!empty($request->email)){
-		// $m = Mail::send('admin.company.email', $data, function($message) use ($request) {
-  //                   $message->to($request->email, 'Login Credential')->subject('Login Credential');
-				// });
-        }
-		DB::commit();
-		return back()->with('success', 'Company created!');
-		} catch (\Illuminate\Database\QueryException $exception){
-			DB::rollBack();
-			return back()->with('error',$exception->getMessage());
-		}catch(\Exception $exception){
-			DB::rollBack();
-			return back()->with('error',$exception->getMessage());
-		}
     }
 
     /**
