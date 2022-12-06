@@ -34,7 +34,7 @@
                                         </div>
                                         <div class="col-md-6"></div>
                                         <div class="col-md-6 mb-2">
-                                            <img width="100px" height="100px" src="{{ config('app.url_public').'/'.Auth::user()->image }}" class="profile-pic rounded" /> 
+                                            <img width="100px" height="100px" src="{{ (!empty(Auth::user()->image)) ? (config('app.url_public').'/'.Auth::user()->image) : asset('no-images.png') }}" class="profile-pic rounded" /> 
                                             {{-- <img src="{{ asset('user-profile/'.Auth::user()->image) }}"> --}}
                                         </div>
                                         <div class="col-md-6">

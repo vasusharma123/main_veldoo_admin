@@ -238,7 +238,7 @@ class User extends Authenticatable implements HasMedia
 			'email' => $this->email,
 			'country_code' => (int)$this->country_code,
 			'phone' => $this->phone,
-			'image' => (!empty($this->image)) ? url('storage/' . $this->image) : $this->image,
+			'image' => $this->image,
 			'latitude' => $this->current_lat,
 			'longitude' => $this->current_lng,
 			'country' => $this->country,
@@ -250,6 +250,7 @@ class User extends Authenticatable implements HasMedia
 			'user_type' => $this->user_type,
 			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
+			'image_with_url' => (!empty($this->image)) ? url('storage/' . $this->image) : $this->image
 		];
 		return $returnArr;
 	}
