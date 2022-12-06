@@ -392,8 +392,9 @@
                                 <div class="form-group" style="display: block;">
                                     <div class="timer_box">
                                         <div class="" style="width: 100%;display: flex;">
-                                            <input type="text" value="{{date('D d-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
-                                            <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}">
+                                            <input type="text" value="{{date('D d-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" class="datetimepicker form-control" style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
+                                            {{-- <input type="text" value="{{date('D d-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px"> --}}
+                                            {{-- <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}"> --}}
                                             <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                         </div>
                                         {{-- <div class="show_value">

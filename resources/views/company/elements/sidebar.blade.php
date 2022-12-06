@@ -37,6 +37,12 @@
 						<span class="hide-menu">{{ __('Rides') }}</span>
 					</a>
 				</li>
+				<li> 
+					<a class="waves-effect waves-dark" href="{{ route('company.settings') }}" aria-expanded="false">
+						<i class="mdi mdi-settings"></i>
+						<span class="hide-menu">{{ __('Settings') }}</span>
+					</a>
+				</li>
 			</ul>
 		</nav>
 		<!-- End Sidebar navigation -->

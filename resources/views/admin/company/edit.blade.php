@@ -99,17 +99,7 @@
 												echo Form::password('password',['class'=>'form-control','required'=>false]);
 												?>
 											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('country', 'Country',['class'=>'control-label']);
-												echo Form::text('country',null,['class'=>'form-control','required'=>true]);
-												?>
-												@error('country')
-															<span class="invalid-feedback" role="alert">
-																<strong>{{ $message }}</strong>
-															</span>
-														@enderror 
-											</div>
+											
 											<div class="form-group">
 												<?php
 												echo Form::label('state', 'State',['class'=>'control-label']);
@@ -144,6 +134,17 @@
 												echo Form::text('zip',null,['class'=>'form-control','required'=>true]);
 												?>
 												@error('zip')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror 
+											</div>
+											<div class="form-group">
+												<?php
+												echo Form::label('country', 'Country',['class'=>'control-label']);
+												echo Form::text('country',null,['class'=>'form-control','required'=>true]);
+												?>
+												@error('country')
 															<span class="invalid-feedback" role="alert">
 																<strong>{{ $message }}</strong>
 															</span>
