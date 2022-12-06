@@ -11,7 +11,8 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <form action="{{ route('expenses.list') }}">
+                        <form action="" id="mainFrom">
+                            @csrf
                             <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
@@ -35,8 +36,46 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
-                                    <button type="submit" class="btn btn-primary">Search</button>
+                                {{-- <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <select name="driver" class="form-control">
+                                            <option value="">Select Driver</option>
+                                            @foreach ($drivers as $driver)
+                                                <option value="{{ $driver->id }}">
+                                                    {{ $driver->first_name . ' ' . $driver->last_name . ' (' . $driver->phone . ')' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div> --}}
+                                <div class="col-sm-6"></div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Start Date</label>
+                                        <input type="text" class="form-control" id="start_date" name="start_date"
+                                            value="{{ $selected_from_date }}">
+                                            @error('start_date')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label class="form-control-label">End Date</label>
+                                        <input type="text" class="form-control" id="end_date" name="end_date"
+                                            value="{{ $selected_to_date }}">
+                                            @error('end_date')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <button type="button" style="margin-top: 30px" class="btn btn-primary submitBtn">Search</button>
+                                    <button type="button" form="abc" style="margin-top: 30px" class="btn btn-primary exportBtn">Export</button>
                                 </div>
                             </div>
                         </form>
@@ -95,5 +134,22 @@
 @section('footer_scripts')
 <script>
     $(document).find(".pagination").addClass("laravel_pagination");
+    $("#start_date").datepicker({
+            dateFormat: 'dd-mm-yy'
+    });
+    $("#end_date").datepicker({
+        dateFormat: 'dd-mm-yy'
+    });
+    $(document).on('click','.exportBtn',function(){
+        
+        $('#mainFrom').attr('action',"{{ route('daily-report.expenses_export') }}");
+        $('#mainFrom').attr('method',"POST");
+        $('#mainFrom').submit();
+    });
+    $(document).on('click','.submitBtn',function(){
+        $('#mainFrom').attr('action',"{{ route('expenses.list') }}");
+        $('#mainFrom').attr('method',"GET");
+        $('#mainFrom').submit();
+    });
 </script>
 @stop

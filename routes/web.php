@@ -42,7 +42,8 @@ Route::get('/cron/notification',  ['uses'=>'CronController@notification']);
 Route::get('/cron/shareRideExecute',  ['uses'=>'CronController@shareRideExecute']);
 
 Route::group(['middleware' => 'locale'], function(){
-	Route::get('/booking',  ['uses'=>'PageController@booking'])->name('booking');
+	Route::get('/taxisteinemann/booking',  ['uses'=>'PageController@booking'])->name('booking');
+	Route::get('/taxi2000/booking',  ['uses'=>'PageController@booking'])->name('booking_taxi200');
 	// Route::get('/booking_form',  ['uses'=>'PageController@booking_form']);
 	Route::post('/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form');
 	Route::post('/send_otp_before_ride_booking',  ['uses'=>'PageController@send_otp_before_ride_booking'])->name('send_otp_before_ride_booking');

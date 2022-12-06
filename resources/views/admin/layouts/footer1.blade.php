@@ -135,10 +135,12 @@ $(document).ready(function(){
           })
 
  jQuery("#Regphones").intlTelInput({
- initialCountry:"us",
-      separateDialCode: true,
-      utilsScript: "{{url('assets/js/utils.js')}}"
-	  
+		initialCountry:"us",
+		separateDialCode: true,
+		utilsScript: "{{url('assets/js/utils.js')}}",
+		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+			return "";
+		},
     });  
 </script>
 		 @yield ('footer_scripts')
