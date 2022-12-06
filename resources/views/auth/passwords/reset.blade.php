@@ -14,7 +14,7 @@
 	
 	
 <section id="wrapper">
-        <div class="login-register" style="background-image:url({{ URL::asset('resources') }}/assets/images/background/login-register.jpg);">
+        <div class="login-register" style="background-image:url({{ URL::asset('assets/images/background/login-register.jpg') }});">
             <div class="">
                 <div class="card-body">
     <div class="row justify-content-center">

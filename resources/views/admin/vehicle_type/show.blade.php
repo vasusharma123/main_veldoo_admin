@@ -23,7 +23,7 @@
 									<tr>
 										<td><strong>{{trans('admin.Car Image')}}</strong></td>
 										<td>
-											<a href="{{url('storage/app/public/'.$record->car_image)}}" target="_blank"><img src="{{url('storage/app/public/'.$record->car_image)}}" width="100px" height=80px"></a>
+											<a href="{{url('storage/'.$record->car_image)}}" target="_blank"><img src="{{url('storage/'.$record->car_image)}}" width="100px" height=80px"></a>
 										</td>
 									</tr>
 									<tr>

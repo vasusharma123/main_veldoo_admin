@@ -3,21 +3,21 @@
  <!-- Main wrapper - style you can find in pages.scss -->
     <!-- ============================================================== -->
     <section id="wrapper">
-		@if(!empty($setting['admin_background']) && file_exists('storage/app/public/'.$setting['admin_background']))
+		@if(!empty($setting['admin_background']) && file_exists('storage/'.$setting['admin_background']))
 			<div class="login-register" style="background-image:url({{ config('app.url_public').'/'.$setting['admin_background'] }});">
 		@else
-			<div class="login-register" style="background-image:url({{ URL::asset('resources') }}/assets/images/background/login-register.jpg);">
+			<div class="login-register" style="background-image:url({{ asset('assets/images/background/login-register.jpg')}});">
 		@endif
 			<a href="javascript:void(0)" class="text-center db">
-				@if(!empty($setting['admin_logo']) && file_exists('public/storage/'.$setting['admin_logo']))
+				@if(!empty($setting['admin_logo']) && file_exists('storage/'.$setting['admin_logo']))
 					<img src="{{ config('app.url_public').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" style="max-width: 150px;" /> 
 				@else
-					<img src="{{ URL::asset('resources') }}/assets/images/logo-icon.png" alt="homepage" />
+					<img src="{{ asset('assets/images/logo-icon.png')}}" alt="homepage" />
 				@endif
-				@if(!empty($setting['admin_sidebar_logo']) && file_exists('public/storage/'.$setting['admin_sidebar_logo']))
+				@if(!empty($setting['admin_sidebar_logo']) && file_exists('storage/'.$setting['admin_sidebar_logo']))
 					<br><img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" width="128" height="19" class="hide" alt="Home">
 				@else
-					<br><img src="{{ URL::asset('resources') }}/assets/images/logo-text.png" class="hide" alt="Home">
+					<br><img src="{{ asset('assets/images/logo-text.png') }}" class="hide" alt="Home">
 				@endif
 			</a>
             <div class="login-box card" style=" height:400px;overflow-y: scroll;">

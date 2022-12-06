@@ -24,7 +24,7 @@
 										<td><strong>{{trans('admin.Image')}}</strong></td>
 										<td>
 											@if(!empty($record->image))
-											<img src="{{url('storage/app/public/'.$record->image)}}" height="50px" width="80px">
+											<img src="{{url('storage/'.$record->image)}}" height="50px" width="80px">
 											@else
 											<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
 										@endif

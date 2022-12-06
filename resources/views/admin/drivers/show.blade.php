@@ -137,33 +137,30 @@
 							<tr>
 							<td><strong>Driving License</strong></td>
 							<td>
-							<!--@if($record->driverVehicle && file_exists('public/storage/'.$record->driverVehicle->driving_license))
-							<img src="{{asset('public/storage/'.$record->driverVehicle->driving_license)}}" width="50" />
-							<!--@endif-->
 							@if(!empty($record->driverVehicle))
 							<img src="{{$record->driverVehicle->driving_license}}" width="50" />
 						@else
 							
-							<img src="{{asset('public/storage/no-images.png')}}" width="50" />
+							<img src="{{asset('no-images.png')}}" width="50" />
 						@endif
 							</td>
 							</tr>
 							<tr>
 							<td><strong>Vehicle RC</strong></td>
 							<td>
-							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_rc:asset('public/storage/no-images.png')}}" width="50" />
+							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_rc:asset('no-images.png')}}" width="50" />
 							</td>
 							</tr>
 							<tr>
 							<td><strong>Vehicle Image</strong></td>
 							<td>
-							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_image:asset('public/storage/no-images.png')}}" width="50" />
+							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_image:asset('no-images.png')}}" width="50" />
 							</td>
 							</tr>
 							<tr>
 							<td><strong>Vehicle Number Plate</strong></td>
 							<td>
-							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_number_plate:asset('public/storage/no-images.png')}}" width="50" />
+							<img src="{{$record->driverVehicle?$record->driverVehicle->vehicle_number_plate:asset('no-images.png')}}" width="50" />
 							</td>
 							</tr>
 							

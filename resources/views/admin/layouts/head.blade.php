@@ -9,10 +9,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-	@if(!empty($setting['admin_favicon']) && file_exists('public/storage/'.$setting['admin_favicon']))
+	@if(!empty($setting['admin_favicon']) && file_exists('storage/'.$setting['admin_favicon']))
 		<link rel="icon" type="image/png" sizes="16x16" href="{{ config('app.url_public').'/'.$setting['admin_favicon'] }}">
 	@else
-		<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('/assets/images/favicon.png')}}">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon.png')}}">
 	@endif
 		<title>{{ (!empty($action) ? $action : '').(!empty($setting['site_name']) ? ' | '.$setting['site_name'] : ' | Admin') }}</title>
     <!-- Bootstrap Core CSS -->

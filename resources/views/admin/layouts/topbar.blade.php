@@ -21,7 +21,7 @@
 				<!-- Logo text -->
 				<span>
 					<!-- dark Logo text -->
-					@if(!empty($setting['admin_sidebar_logo']) && file_exists('public/storage/'.$setting['admin_sidebar_logo']))
+					@if(!empty($setting['admin_sidebar_logo']) && file_exists('storage/'.$setting['admin_sidebar_logo']))
 						<img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="128" height="19" /> 
 					@else
 						<img src="{{ asset('/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" />
@@ -52,7 +52,7 @@
 						@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
 							<img src="{{ env('URL_PUBLIC').'/'.$currentUser['image'] }}" class="profile-pic" /> 
 						@else
-							<img src="{{ asset('/assets/images/users/1.jpg')}}" alt="user" class="profile-pic" />
+							<img src="{{ asset('assets/images/users/1.jpg')}}" alt="user" class="profile-pic" />
 						@endif
 					</a>
 					<div class="dropdown-menu dropdown-menu-right scale-up">
@@ -60,10 +60,10 @@
 							<li>
 								<div class="dw-user-box">
 									<div class="u-img">
-										@if(!empty($currentUser['image']) && file_exists('storage/app/public/'.$currentUser['image']))
+										@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
 											<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}?time()" alt="user" /> 
 										@else
-											<img src="{{ asset('/assets/images/users/1.jpg')}}" alt="user">
+											<img src="{{ asset('assets/images/users/1.jpg')}}" alt="user">
 										@endif
 									</div>
 									<div class="u-text">

@@ -78,7 +78,7 @@
                         <div class="popup-gallery row m-t-30">
                             @foreach($expense_detail->attachments as $attachment_value)
                             <div class="col-md-4">
-                                <a href="{{url('storage/app/public/'.$attachment_value->url)}}" title=""> <img src="{{url('storage/app/public/'.$attachment_value->url)}}" class="img-responsive" alt="img" /> </a>
+                                <a href="{{url('storage/'.$attachment_value->url)}}" title=""> <img src="{{url('storage/'.$attachment_value->url)}}" class="img-responsive" alt="img" /> </a>
                             </div>
                             @endforeach
                         </div>
