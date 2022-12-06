@@ -54,7 +54,7 @@
 												</div>
 												<div class="col-md-2">
 													<?php 
-														echo Html::image(config('app.url_public').'/'.($record->image ? $record->image : '/no-images.png'),'sidebar logo',['id'=>'previewimage','width'=>'50','height'=>'50']);
+														echo Html::image(((!empty($record->image)) ? (config('app.url_public').'/'.$record->image) : asset('no-images.png')),'sidebar logo',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>
 												</div>
 											</div>

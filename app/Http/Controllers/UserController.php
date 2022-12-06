@@ -757,59 +757,57 @@ class UserController extends Controller
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
     }
-	
+
 	public function updateDriver(Request $request, $id)
-    {
-		$query = User::where(['id'=>$id,'user_type'=>2]);
-		$haveUser = $query->first();
+	{
 		$rules = [
-           // 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
-            // 'email' => 'required|'.(!empty($haveUser->id) ? 'unique:users,email,'.$haveUser->id : ''),
-            'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            //'gender' => 'required|integer|between:1,2',
-            //'dob' => 'required',
+			// 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
+			// 'email' => 'required|'.(!empty($haveUser->id) ? 'unique:users,email,'.$haveUser->id : ''),
+			'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+			//'gender' => 'required|integer|between:1,2',
+			//'dob' => 'required',
 		];
-		if(!empty($request->reset_password)){
+		if (!empty($request->reset_password)) {
 			$rules['password'] = 'required|min:6';
 		}
 		$request->validate($rules);
-		$user=\App\User::where('user_type',2)->where('id','!=',$id)->where('phone',$request->phone)->first();
-		if(!empty($user)){
+		$haveUser = User::where(['id' => $id, 'user_type' => 2])->first();
+
+		$user = \App\User::where('user_type', 2)->where('id', '!=', $id)->where('phone', $request->phone)->first();
+		if (!empty($user)) {
 			return redirect()->route("users.drivers")->with('warning', trans('This phone number already exists!'));
 		}
-		$email_already_exist = User::where('id','!=',$id)->where(['email' => $request->email])->withTrashed()->first();
-		if(!empty($email_already_exist)){
+		$email_already_exist = User::where('id', '!=', $id)->where(['email' => $request->email])->withTrashed()->first();
+		if (!empty($email_already_exist)) {
 			return back()->with('warning', "This email address is already used by another user.");
 		}
 		$input = $request->all();
-		if(!empty($request->phone)){
+		if (!empty($request->phone)) {
 			$input['phone'] = str_replace(' ', '', $request->phone);
-			if(substr($input['phone'], 0, 1) == 0){
-				$input['phone'] = substr_replace($input['phone'],"",0,1);
+			if (substr($input['phone'], 0, 1) == 0) {
+				$input['phone'] = substr_replace($input['phone'], "", 0, 1);
 			}
 		}
-		unset($input['_method'],$input['_token'],$input['image_tmp']);
-		
-		$path = 'users/'.$haveUser->id.'/profile/';
-		$pathDB = 'public/users/'.$haveUser->id.'/profile/';
-		
-		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
-			
-			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
-			if(!empty($haveUser->image)){
+		if ($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()) {
+
+			$imageName = 'profile-image' . time() . '.' . $request->image_tmp->extension();
+			if (!empty($haveUser->image)) {
 				Storage::disk('public')->delete($haveUser->image);
 			}
-			
 			$input['image'] = Storage::disk('public')->putFileAs(
-				'user/'.$haveUser->id, $request->image_tmp, $imageName
+				'user/' . $id,
+				$request->image_tmp,
+				$imageName
 			);
 		}
+		unset($input['_method'], $input['_token'], $input['image_tmp']);
+
 		unset($input['reset_password']);
-		$input['password']=Hash::make($request->input('password'));
+		$input['password'] = Hash::make($request->input('password'));
 		User::where('id', $id)->update($input);
-		
+
 		return back()->with('success', __('Record updated!'));
-    }
+	}
 	
 	
 	public function createDriver(Request $request){

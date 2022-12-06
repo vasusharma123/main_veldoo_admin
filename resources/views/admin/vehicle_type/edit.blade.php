@@ -133,7 +133,7 @@
 												</div>
 												<div class="col-md-2">
 													<?php 
-														echo Html::image(config('app.url_public').'/'.($record->car_image ? $record->car_image : '/no-images.png'),'car image',['id'=>'previewimage','width'=>'50','height'=>'50']);
+														echo Html::image(((!empty($record->car_image)) ? (config('app.url_public').'/'.$record->car_image) : asset('no-images.png')),'car image',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>
 												</div>
 											</div>

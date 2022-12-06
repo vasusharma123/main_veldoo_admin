@@ -98,7 +98,7 @@
 												</div>
 												<div class="col-md-2">
 													<?php 
-														echo Html::image(config('app.url_public').(!empty($record->admin_logo) ? '/'.$record->admin_logo : '/no-images.png'),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
+														echo Html::image(((!empty($record->admin_logo)) ? (config('app.url_public').'/'.$record->admin_logo) : asset('no-images.png')),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>	
 												</div>
 											</div>
@@ -125,7 +125,7 @@
 												</div>
 												<div class="col-md-2">
 												<?php 
-													echo Html::image(config('app.url_public').(!empty($record->admin_favicon) ? '/'.$record->admin_favicon : '/no-images.png'),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
+													echo Html::image(((!empty($record->admin_favicon)) ? (config('app.url_public').'/'.$record->admin_favicon) : asset('no-images.png')),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>	
 												</div>
 											</div>
@@ -155,7 +155,7 @@
 												</div>
 												<div class="col-md-2">
 													<?php 
-														echo Html::image(config('app.url_public').(!empty($record->admin_background) ? '/'.$record->admin_background : '/no-images.png'),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
+														echo Html::image(((!empty($record->admin_background)) ? (config('app.url_public').'/'.$record->admin_background) : asset('no-images.png')),'Background Image',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>	
 												</div>
 											</div>
@@ -182,7 +182,7 @@
 												</div>
 												<div class="col-md-2">
 													<?php 
-														echo Html::image(config('app.url_public').(!empty($record->admin_sidebar_logo) ? '/'.$record->admin_sidebar_logo : '/no-images.png'),'sidebar logo',['id'=>'previewimage','width'=>'50','height'=>'50']);
+														echo Html::image(((!empty($record->admin_sidebar_logo)) ? (config('app.url_public').'/'.$record->admin_sidebar_logo) : asset('no-images.png')),'sidebar logo',['id'=>'previewimage','width'=>'50','height'=>'50']);
 													?>	
 												</div>
 											</div>
