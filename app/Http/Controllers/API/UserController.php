@@ -960,19 +960,19 @@ class UserController extends Controller
 
 		//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
 		$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->where('id', $ride['driver_id'])->first();
-
-		$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
-		$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
 		if (!empty($driver_data)) {
+			$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
 			$ride['driver_data'] = $driver_data;
+			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
+			if (!empty($car_data)) {
+				$driver_data['car_data'] = $car_data;
+			} else {
+				$driver_data['car_data'] = new \stdClass();
+			}
 		} else {
 			$ride['driver_data'] = new \stdClass();
 		}
-		if (!empty($car_data)) {
-			$driver_data['car_data'] = $car_data;
-		} else {
-			$driver_data['car_data'] = new \stdClass();
-		}
+
 		$ride['user_data'] = $user_data;
 
 		return $ride;
