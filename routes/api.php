@@ -131,7 +131,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('getVouchers', 'UserController@getVouchers');
 
 	Route::get('latest_ride_detail','RideController@latest_ride_detail');
-
+	Route::post('ride/detail','user\RideController@ride_detail');
 	
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {

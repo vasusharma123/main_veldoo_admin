@@ -14,6 +14,10 @@ class Vehicle extends Model
         'year', 'model', 'color', 'vehicle_number_plate', 'vehicle_image', 'category_id'
     ];
 
+    protected $appends = [
+		'image_with_url'
+	];
+
     public function carType()
     {
         return $this->belongsTo(Price::class, 'category_id', 'id');
@@ -34,4 +38,12 @@ class Vehicle extends Model
     {
         return $this->hasOne(DriverChooseCar::class, 'car_id', 'id')->orderBy('id', 'Desc');
     }
+
+    public function getImageWithUrlAttribute(){
+		if(!empty($this->vehicle_image)){
+			return env('URL_PUBLIC').'/'.$this->vehicle_image;
+		}
+		return $this->vehicle_image;
+	}
+
 }
