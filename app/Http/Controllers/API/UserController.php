@@ -960,19 +960,19 @@ class UserController extends Controller
 
 		//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
 		$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->where('id', $ride['driver_id'])->first();
-
-		$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
-		$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
 		if (!empty($driver_data)) {
+			$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
 			$ride['driver_data'] = $driver_data;
+			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
+			if (!empty($car_data)) {
+				$driver_data['car_data'] = $car_data;
+			} else {
+				$driver_data['car_data'] = new \stdClass();
+			}
 		} else {
 			$ride['driver_data'] = new \stdClass();
 		}
-		if (!empty($car_data)) {
-			$driver_data['car_data'] = $car_data;
-		} else {
-			$driver_data['car_data'] = new \stdClass();
-		}
+
 		$ride['user_data'] = $user_data;
 
 		return $ride;
@@ -5975,9 +5975,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideHistoryDetail->status = "1";
 						$rideHistoryDetail->save();
 					}
-					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
+					$ride = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
 					$userdata = User::find($ride['user_id']);
 					if (!empty($userdata)) {
+						$ride->driver->car_data = $ride->driver->car_data;
+						$avgrating = Rating::where(['to_id' => $ride->driver->id])->avg('rating');
+						$ride->driver->avg_rating = (!empty($avgrating))?round($avgrating, 2):0;
 						$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
 						if ($ride->platform == 'web') {
 							$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
