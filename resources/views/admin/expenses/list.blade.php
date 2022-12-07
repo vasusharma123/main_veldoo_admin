@@ -19,7 +19,7 @@
                                         <select name="driver" class="form-control">
                                             <option value="">Select Driver</option>
                                             @foreach ($drivers as $driver)
-                                                <option value="{{ $driver->id }}" {{ ($selected_driver == $driver->id)?"selected":"" }}>
+                                                <option value="{{ $driver->id }}" {{ ($selected_driver == $driver->id)?"selected":"" }} class="text-capitalize">
                                                     {{ $driver->first_name . ' ' . $driver->last_name . ' (' . $driver->phone . ')' }}
                                                 </option>
                                             @endforeach
@@ -99,7 +99,7 @@
                                     @foreach ($expenses as $expense_key => $expense_value)
                                         <tr>
                                             <td>{{ $expense_value->id }}</td>
-                                            <td>{{ $expense_value->driver->first_name . ' ' . $expense_value->driver->last_name }}
+                                            <td class="text-capitalize">{{ $expense_value->driver->first_name . ' ' . $expense_value->driver->last_name }}
                                             </td>
                                             <td>{{ $expense_value->type }}</td>
                                             <td><a href="{{ route('bookings.show',$expense_value->ride_id) }}">{{ !empty($expense_value->ride_id) ? $expense_value->ride_id : '' }}</a>

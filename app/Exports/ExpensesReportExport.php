@@ -48,9 +48,10 @@ class ExpensesReportExport implements FromCollection, WithHeadings, WithTitle, W
         if(!empty($this->data['start_date']) && !empty($this->data['end_date'])){
             $selected_from_date = $this->data['start_date'];
             $selected_to_date = $this->data['end_date'];
-            $expenses->where(function ($query) use ($selected_from_date, $selected_to_date) {
-                $query->whereRaw("date(created_at) between date('".date('Y-m-d',strtotime($selected_from_date))."') and date('".date('Y-m-d',strtotime($selected_to_date))."')");
-            });
+            // $expenses->where(function ($query) use ($selected_from_date, $selected_to_date) {
+                
+            // });
+			$expenses->whereRaw("date(created_at) between date('".date('Y-m-d',strtotime($selected_from_date))."') and date('".date('Y-m-d',strtotime($selected_to_date))."')");
         }
         $expenses = $expenses->get();
 		return $expenses;
