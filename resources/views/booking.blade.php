@@ -403,7 +403,7 @@
                     <div class="row w-100 m-0">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
-                                <input type="text" class="form-control input_field" name="pickupPoint"
+                                <input type="search" class="form-control input_field" name="pickupPoint"
                                     id="pickupPoint" placeholder="{{ __('From') }}" required>
                                 <input type="hidden" id="pickup_latitude" name="pickup_latitude">
                                 <input type="hidden" id="pickup_longitude" name="pickup_longitude">
@@ -412,7 +412,7 @@
 
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
-                                <input type="text" class="form-control input_field" name="dropoffPoint"
+                                <input type="search" class="form-control input_field" name="dropoffPoint"
                                     id="dropoffPoint" placeholder="{{ __('To') }}" required>
                                 <input type="hidden" id="dropoff_latitude" name="dropoff_latitude">
                                 <input type="hidden" id="dropoff_longitude" name="dropoff_longitude">
@@ -542,6 +542,73 @@
         var onLoadVar = 0;
         var cur_lat = "";
         var cur_lng = "";
+        var markers = [];
+        
+
+        $('#pickupPoint').on('search keyup', function(evt) {
+            if($(this).val()=="")
+            {
+                $('#pickup_latitude').val('');
+                $('#pickup_longitude').val('');
+                $('.price_calculated').html('CHF ---');
+                $('.distance_calculated').html('KM ---');
+                pt = new google.maps.LatLng(46.8182, 8.2275);
+                map.setCenter(pt);
+                setTimeout(() => {
+                    map.setZoom(8);
+                }, 500);
+                for (let i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
+                }
+                directionsDisplay.setMap(null);
+            }
+        });
+
+        $('#dropoffPoint').on('search', function(evt) {
+
+            if($('#pickupPoint').val()!="")
+            {
+                for (let i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
+                }
+                pt = new google.maps.LatLng($('#pickup_latitude').val(), $('#pickup_longitude').val());
+                map.setCenter(pt);
+                map.setZoom(12);
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({'latLng': pt}, function(results, status) {
+                    if(status == google.maps.GeocoderStatus.OK) {
+                        $('#pickupPoint').val(results[0]['formatted_address']);//alert(results[0]['formatted_address']);
+                        new google.maps.Marker({
+                            position: pt,
+                            map,
+                            title: results[0]['formatted_address'],
+                        });
+                    };
+                });
+                $('#dropoff_latitude').val('');
+                $('#dropoff_longitude').val(''); 
+                $('.price_calculated').html('CHF ---');
+                $('.distance_calculated').html('KM ---');
+                directionsDisplay.setMap(null);
+            }
+            else
+            {
+                if($(this).val()=="")
+                {
+                    pt = new google.maps.LatLng(46.8182, 8.2275);
+                    map.setCenter(pt);
+                    setTimeout(() => {
+                        map.setZoom(8);
+                    }, 500);  
+                    $('#dropoff_latitude').val('');
+                    $('#dropoff_longitude').val(''); 
+                    $('.price_calculated').html('CHF ---');
+                    $('.distance_calculated').html('KM ---');
+                    directionsDisplay.setMap(null);
+                }
+            }
+           
+        });
 
         function getLocation() {
             if (navigator.geolocation) {
@@ -762,6 +829,7 @@
                     });
                     bounds.extend(marker.position);
 
+
                     google.maps.event.addListener(marker, 'click', (function(marker, i) {
                         return function() {
                             infowindow.setContent(locations[i]['AddressLocation']);
@@ -780,6 +848,7 @@
                             stopover: true
                         });
                     }
+                    markers.push(marker);
                 }
                 // call directions service
                 if (locations.length) {

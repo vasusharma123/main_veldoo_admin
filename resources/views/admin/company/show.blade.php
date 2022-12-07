@@ -79,9 +79,9 @@
 								</table>
 								<div class="form-actions">
 									<a href="{{route( $route.'.index')}}" class="btn btn-inverse">{{trans('admin.Back')}}</a>
-								@if(!empty($record) && $record->verify==0)
+								{{-- @if(!empty($record) && $record->verify==0)
 									<a href="javascript:;" class="btn btn-success approve" data-id="{{$record->id}}">Approve</a>
-								@endif
+								@endif --}}
 								</div>
 							</div>
 						</div>
