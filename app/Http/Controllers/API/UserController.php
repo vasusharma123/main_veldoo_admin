@@ -5979,6 +5979,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$userdata = User::find($ride['user_id']);
 					if (!empty($userdata)) {
 						$ride->driver->car_data = $ride->driver->car_data;
+						$avgrating = Rating::where(['to_id' => $ride->driver->id])->avg('rating');
+						$ride->driver->avg_rating = (!empty($avgrating))?round($avgrating, 2):0;
 						$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
 						if ($ride->platform == 'web') {
 							$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
