@@ -50,7 +50,7 @@ class ExpensesController extends Controller
     {
         // DB::enableQueryLog();
 
-        $expenses = new Expense;
+        $expenses = Expense::where('id','!=',null);
         $selected_driver = "";
         $selected_expense_type = "";
         $selected_from_date = "";
@@ -66,14 +66,15 @@ class ExpensesController extends Controller
         if(!empty($request->start_date) && !empty($request->end_date)){
             $selected_from_date = $request->start_date;
             $selected_to_date = $request->end_date;
-            $expenses->where(function ($query) use ($selected_from_date, $selected_to_date) {
-                $query->whereRaw("date(created_at) between date('".date('Y-m-d',strtotime($selected_from_date))."') and date('".date('Y-m-d',strtotime($selected_to_date))."')");
-            });
+            // $expenses->where(function ($query) use ($selected_from_date, $selected_to_date) {
+               
+            // });
+            $expenses->whereRaw("date(created_at) between date('".date('Y-m-d',strtotime($selected_from_date))."') and date('".date('Y-m-d',strtotime($selected_to_date))."')");
         }
-        $expenses = $expenses->paginate(20);
+        $expenses = $expenses->orderBy('created_at','desc')->paginate(20);
         // dd(DB::getQueryLog());
 
-        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2])->get();
+        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2])->orderBy('first_name')->get();
         $expense_types = Expense::select('type')->groupBy('type')->orderBy('type')->get();
         return view('admin.expenses.list')->with(['selected_from_date'=>$selected_from_date,'selected_to_date'=>$selected_to_date,'title' => 'Expenses', 'action' => '', 'expenses' => $expenses, 'drivers' => $drivers, 'expense_types' => $expense_types, 'selected_driver' => $selected_driver, 'selected_expense_type' => $selected_expense_type]);
     }
