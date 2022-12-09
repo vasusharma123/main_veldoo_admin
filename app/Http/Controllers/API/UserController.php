@@ -6689,13 +6689,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						})->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
 					} elseif ($user->user_type == 2) {
 						if ($user->is_master == 1) {
-							$myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
+							$ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
 								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
-							$overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+							$globalRideswaiting = Ride::whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query) {
 								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
 							$globalridespending = Ride::where(['status' => -4])->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
@@ -6707,9 +6707,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							$rides = array();
 							$newarray = array();
 							if ($request->master_driver == 1) {
-								$rides[0] = $myOngoingRides;
+								$rides[0] = $ownrideswaiting;
 							} else {
-								$rides[0] = $overallOngoingRides;
+								$rides[0] = $globalRideswaiting;
 								$rides[1] = $globalridespending;
 								$rides[2] = $overallPendingRides;
 							}
@@ -6772,20 +6772,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						})->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
 					} elseif ($user->user_type == 2) {
 						if ($user->is_master == 1) {
-							$ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
+							$myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
 								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
-							$globalRideswaiting = Ride::whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query) {
+							$overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
 								$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-							})->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+							})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
 							$rides = array();
 							$newarray = array();
 							if ($request->master_driver == 1) {
-								$rides[0] = $ownrideswaiting;
+								$rides[0] = $myOngoingRides;
 							} else {
-								$rides[0] = $globalRideswaiting;
+								$rides[0] = $overallOngoingRides;
 							}
 							foreach ($rides as $ridedata) {
 								if (!empty($ridedata)) {
