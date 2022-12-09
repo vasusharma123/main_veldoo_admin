@@ -33,8 +33,7 @@ class RideController extends Controller
             if ($ride_detail) {
                 if(!empty($ride_detail->driver)){
                     $ride_detail->driver->car_data = $ride_detail->driver->car_data;
-                    $avgrating = Rating::where(['to_id' => $ride_detail->driver->id])->avg('rating');
-                    $ride_detail->driver->avg_rating = (!empty($avgrating)) ? round($avgrating, 2) : 0;
+                    $ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
                 }
                 return response()->json(['success' => true, 'message' => 'Ride Detail', 'data' => $ride_detail], $this->successCode);
             } else {

@@ -67,10 +67,8 @@ class Ride extends Model
 	}
 	public function getAvgRating($id)
 	{
-		$avgrating = DB::table('ratings')->where('to_id', $id)->avg('rating');
-		return $avgrating = round($avgrating, 2);
-		//$driver_data->avg_rating = '$avgrating';
-		//return $this->first_name.' '.$this->last_name;
+		$avgrating = Rating::where('to_id', $id)->avg('rating');
+		return  (!empty($avgrating)) ? round($avgrating, 2) : 0;
 	}
 
 	public static function getRideDriverList($rideId)
