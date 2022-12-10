@@ -494,7 +494,7 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <a href="{{url('/booking')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
+                                    <a href="{{route('booking_taxisteinemann')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
                                 </div>
                             </div>
                             <div class="col-lg-12">
@@ -660,7 +660,7 @@
                     if(response.status){
                         swal("{{ __('Success') }}",response.message,"success");
                             setTimeout(function() {
-                                window.location.href = "{{ route('booking')}}";
+                                window.location.href = "{{ route('booking_taxisteinemann')}}";
                             }, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
