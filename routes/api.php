@@ -132,6 +132,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 
 	Route::get('latest_ride_detail','RideController@latest_ride_detail');
 	Route::post('ride/detail','user\RideController@ride_detail');
+	Route::post('ride/status_change','user\RideController@statusChange');
 	
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
