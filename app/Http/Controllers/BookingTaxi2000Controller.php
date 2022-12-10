@@ -18,7 +18,7 @@ use App\Notification;
 use App\RideHistory;
 use App;
 
-class PageController extends Controller
+class BookingTaxi2000Controller extends Controller
 {
 	public function __construct() {
 		$this->table = 'pages';
@@ -311,16 +311,16 @@ if($_REQUEST['cm'] == 2)
 		// app()->setLocale("de");
 		// App::setLocale('de');
 		$vehicle_types = Price::orderBy('sort')->get();
-		return view('booking')->with(['vehicle_types' => $vehicle_types]);
+		return view('taxi2000.booking')->with(['vehicle_types' => $vehicle_types]);
 	}
 
 	public function booking_form(Request $request) {
 		if(empty($request->carType)){
-			return redirect()->route("booking_taxisteinemann");
+			return redirect()->route("booking_taxi2000");
 		}
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
-		return view('booking_form')->with(['vehicle_type' => $vehicle_type, 'input' => $input]);
+		return view('taxi2000.booking_form')->with(['vehicle_type' => $vehicle_type, 'input' => $input]);
 	}
 
 	public function send_otp_before_ride_booking(Request $request)
@@ -355,7 +355,6 @@ if($_REQUEST['cm'] == 2)
 
 	public function verify_otp_and_ride_booking(Request $request)
 	{
-		// dd($request->all());
 		$expiryMin = config('app.otp_expiry_minutes');
 		$now = Carbon::now();
 		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
@@ -367,14 +366,14 @@ if($_REQUEST['cm'] == 2)
 			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 		}
 		$haveOtp->delete();
-
+		
 		if ($request->pick_lat==$request->dest_lat) 
 		{
 			$request->dest_address = "";
 			$request->dest_lat = "";
 			$request->dest_lng = "";
 		}
-
+		
 		$webobj = new UserWebController;
 		if ($now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $webobj->create_ride_driver($request);
@@ -405,7 +404,7 @@ if($_REQUEST['cm'] == 2)
 	}
 
 	public function list_of_booking(){
-		return view('list_of_booking');
+		return view('taxi2000.list_of_booking');
 	}
 
 	public function send_otp_for_my_bookings(Request $request)
@@ -523,17 +522,17 @@ if($_REQUEST['cm'] == 2)
 	public function booking_edit(Request $request, $ride_id) {
 		$rideDetail = Ride::find($ride_id);
 		$vehicle_types = Price::orderBy('sort')->get();
-		return view('booking_edit')->with(['vehicle_types' => $vehicle_types, 'rideDetail' => $rideDetail]);
+		return view('taxi2000.booking_edit')->with(['vehicle_types' => $vehicle_types, 'rideDetail' => $rideDetail]);
 	}
 
 	public function booking_form_edit(Request $request, $ride_id) {
 		if(empty($request->carType)){
-			return redirect()->route("booking_taxisteinemann");
+			return redirect()->route("booking_taxi2000");
 		}
 		$rideDetail = Ride::with(['user'])->find($ride_id);
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
-		return view('booking_form_edit')->with(['vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
+		return view('taxi2000.booking_form_edit')->with(['vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
 	}
 
 	public function verify_otp_and_ride_booking_edit(Request $request)
@@ -551,12 +550,14 @@ if($_REQUEST['cm'] == 2)
 			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 		}
 		$haveOtp->delete();
+
 		if ($request->pick_lat==$request->dest_lat) 
 		{
 			$request->dest_address = "";
 			$request->dest_lat = "";
 			$request->dest_lng = "";
 		}
+
 		$webobj = new UserWebController;
 		if ($now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $webobj->create_ride_driver_edit($request);

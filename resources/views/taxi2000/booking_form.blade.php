@@ -1,4 +1,4 @@
-@extends('layouts.web_booking')
+@extends('layouts.web_booking_taxi_2000')
 @section('css')
     <style>
         .btn {
@@ -353,14 +353,13 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
-                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="logo_img_top_1">
                     <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
+                <h2 class="title_form">Booking Details</h2>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
-                        <input type="hidden" name="ride_id" value="{{$rideDetail->id}}">
                         <?php
                             $first_name_validation = __('First name is required.');
                             $last_name_validation = __('Last name is required.');
@@ -369,22 +368,21 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" name="first_name" data-parsley-required-message="{{ $first_name_validation }}" value="{{$rideDetail->user->first_name ?? ''}}"
-                                        placeholder="{{ _('First Name') }}" readonly />
+                                    <input type="text" class="form-control input_field" data-parsley-required-message="{{ $first_name_validation }}" name="first_name" placeholder="{{ __('First Name') }}"  required />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" name="last_name" value="{{$rideDetail->user->last_name ?? ''}}"
-                                        placeholder="{{ _('Last Name') }}" readonly />
+                                    <input type="text" class="form-control input_field" name="last_name"
+                                        placeholder="{{ __('Last Name') }}" />
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group mb-0 pb-0">
                                     <input class="form-control" name="country_code" type="hidden"
-                                        id="country_code" value="{{$rideDetail->user->country_code}}">
+                                        id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" data-parsley-errors-container=".phoneError" data-parsley-required-message="{{ $phone_validation }}" name="phone" placeholder="{{ __('Enter Phone Number') }}" minlength="8" value="+{{$rideDetail->user->country_code}}-{{$rideDetail->user->phone}}" required readonly />
+                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" name="phone" data-parsley-errors-container=".phoneError" placeholder="{{ __('Enter Phone Number') }}" minlength="8" data-parsley-required-message="{{ $phone_validation }}" required />
                                 </div>
                                 <div class="phoneError mb-3"></div>
                             </div>
@@ -392,13 +390,13 @@
                                 <div class="form-group" style="display: block;">
                                     <div class="timer_box">
                                         <div class="" style="width: 100%;display: flex;">
-                                            <input type="text" value="{{date('D d-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" class="datetimepicker form-control" style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
-                                            {{-- <input type="text" value="{{date('D d-m-Y H:i', strtotime($rideDetail->ride_time))}}" name="ride_time" id="timerValueShowInput" readonly style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px"> --}}
-                                            {{-- <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}"> --}}
+                                            <input type="text" value="{{date('D d-m-Y H:i')}}" name="ride_time" class="datetimepicker form-control" style="width: 70%;border-bottom-right-radius: 0px !important;border-top-right-radius: 0px !important;border: 0px;border-radius: 4px;padding-left:35px">
+                                            {{-- <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}"> --}}
                                             <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                         </div>
-                                        {{-- <div class="show_value">
-                                            <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i', strtotime($rideDetail->ride_time))}}" required />
+                                        {{-- <div class="" style="width: 100%">
+                                            <input type="text" name="" style="width: 70%">
+                                            <input type="datetime-local" id="timerValue" class="txtbox form-control input_field" name="ride_time" value="{{date('Y-m-d H:i')}}" required />
                                             <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
                                         </div> --}}
                                     </div>
@@ -431,27 +429,27 @@
                             </div>
                         </div>
                         <div class="row show_case">
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                            <div class="col text-center">
                                 <div class="form-group">
-                                    <p class="form-control chf pl-0 pr-0"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
+                                    <p class="form-control chf" style="font-size: 12px"><span class="value">CHF {{ $input['price_calculated'] }}</span></p>
                                     <input type="hidden" name="ride_cost" class="price_calculated_input"
                                     value="{{ $input['price_calculated'] }}">
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-3 text-center">
                                 <div class="form-group">
-                                    <p class="form-control km_m pl-0 pr-0"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
+                                    <p class="form-control km_m" style="font-size: 12px"><span class="value">KM {{ $input['distance_calculated'] }}</span></p>
                                     <input type="hidden" name="distance"
                                         class="distance_calculated_input"
                                         value="{{ $input['distance_calculated'] }}">
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                            <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                 <div class="form-group">
-                                    <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
+                                    <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
                                         <option value="">{{ __('Payment Method') }}</option>
-                                        <option value="Cash" {{$rideDetail->payment_type == 'Cash'?'selected':''}}>{{ __('Cash') }}</option>
-                                        <option value="Card" {{$rideDetail->payment_type == 'Card'?'selected':''}}>{{ __('Card') }}</option>
+                                        <option value="Cash" selected>{{ __('Cash') }}</option>
+                                        <option value="Card">{{ __('Card') }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -460,7 +458,7 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes...">{{$rideDetail->note}}</textarea>
+                                    <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="{{ __('Enter notes...') }}"></textarea>
                                 </div>
                             </div>
                             <!-- 
@@ -475,7 +473,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> {{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -496,7 +494,7 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <a href="{{route('booking_taxisteinemann')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
+                                    <a href="{{route('booking_taxi2000')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
                                 </div>
                             </div>
                             <div class="col-lg-12">
@@ -520,7 +518,7 @@
     </div>
 @endsection
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript"
@@ -535,14 +533,15 @@
         $(function() {
             $(document).on('change','#timerValue',function(){
                 datetime = $(this).val();
-                // $('#timerValueShowInput').val(moment(datetime).format('YYYY-MM-ddd HH:mm'));
                 $('#timerValueShowInput').val(moment(datetime).format('ddd')+' '+moment(datetime).format('DD-MM-YYYY HH:mm'));
             });
             $(document).on('click','#timerValueShowInput',function(){
+                // alert('hlo');
                 $('#timerValue').trigger('click');
             });
-            var code = "+{{$rideDetail->user->country_code}}";
+            var code = "+41";
             $('#txtPhone').intlTelInput({
+                initialCountry: "ch",
             });
             $("#txtPhone").on("countrychange", function() {
                 var countryCode = $('.iti__selected-flag').attr('title');
@@ -627,7 +626,7 @@
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
             $.ajax({
-                url: "{{ route('send_otp_before_ride_edit')}}",
+                url: "{{ route('send_otp_before_ride_booking')}}",
                 type: 'post',
                 dataType: 'json',
                 data: $('form#personal_info_form').serialize(),
@@ -653,16 +652,16 @@
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
             $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking_edit')}}",
+                url: "{{ route('verify_otp_and_ride_booking')}}",
                 type: 'post',
                 dataType: 'json',
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("{{ _('Success') }}",response.message,"success");
-							setTimeout(function() {
-								window.location.href = "{{ route('booking_taxisteinemann')}}";
-							}, 2000);
+                        swal("{{ __('Success') }}",response.message,"success");
+                            setTimeout(function() {
+                                window.location.href = "{{ route('booking_taxi2000')}}";
+                            }, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
