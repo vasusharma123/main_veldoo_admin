@@ -3495,7 +3495,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride->save();
 
-			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
+			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
 
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
