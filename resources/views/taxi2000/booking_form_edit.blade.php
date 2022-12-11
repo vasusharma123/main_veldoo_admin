@@ -1,4 +1,4 @@
-@extends('layouts.web_booking')
+@extends('layouts.web_booking_taxi_2000')
 @section('css')
     <style>
         .btn {
@@ -496,7 +496,7 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <a href="{{route('booking_taxisteinemann')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
+                                    <a href="{{route('booking_taxi2000')}}" class="btn back_btn custom_btn" >{{ __('Go Back') }}</a>
                                 </div>
                             </div>
                             <div class="col-lg-12">
@@ -661,7 +661,7 @@
                     if(response.status){
                         swal("{{ _('Success') }}",response.message,"success");
 							setTimeout(function() {
-								window.location.href = "{{ route('booking_taxisteinemann')}}";
+								window.location.href = "{{ route('booking_taxi2000')}}";
 							}, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");

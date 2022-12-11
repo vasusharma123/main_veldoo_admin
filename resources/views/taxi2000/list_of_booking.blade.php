@@ -1,4 +1,4 @@
-@extends('layouts.web_booking')
+@extends('layouts.web_booking_taxi_2000')
 @section('css')
     <style>
         .btn {
@@ -695,7 +695,7 @@
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
             if(selectedBooking!=""){
-                route = "{{ route('booking_edit_taxisteinemann','~') }}";
+                route = "{{ route('booking_edit_taxi2000','~') }}";
                 route = route.replace('~',selectedBooking);
                 window.location.href= route;
             } else {
