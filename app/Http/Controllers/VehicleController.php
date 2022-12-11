@@ -64,7 +64,7 @@ class VehicleController extends Controller
                 ->addColumn('car_type', function ($row) {
                     return (!empty($row->carType))?ucfirst($row->carType->car_type):"";
                 })->addColumn('vehicle_image', function ($row) {
-                    return ($row->vehicle_image) ? '<img src="' . $row->vehicle_image . '" height="50px" width="80px">' : '<img src="' . url('public/no-images.png') . '" height="50px" width="80px">';
+                    return (!empty($row->vehicle_image)) ? '<img src="' .  asset('storage/'.$row->vehicle_image) . '" height="50px" width="80px">' : '<img src="' . asset('no-images.png') . '" height="50px" width="80px">';
                 })
                 ->addColumn('mileage', function ($row) {
                     return (!empty($row->last_driver_choosen))?$row->last_driver_choosen->logout_mileage:"";
