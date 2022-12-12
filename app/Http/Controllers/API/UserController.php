@@ -2542,9 +2542,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$rideWithPayment = $rideWithPayment->whereDate('ride_time', date("$date"));
 			} else if ($request->type == 3) {
 				$start_date = Carbon::parse($request->start_date)
-					->toDateTimeString();
+					->toDateString();
 				$end_date = Carbon::parse($request->end_date)
-					->toDateTimeString();
+					->toDateString();
 				$resnewarray = $resnewarray->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 				$rideWithPayment = $rideWithPayment->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 			}
