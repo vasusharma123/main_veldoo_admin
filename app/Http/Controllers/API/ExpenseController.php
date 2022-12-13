@@ -90,9 +90,9 @@ class ExpenseController extends Controller
             $total_expense = $total_expense->whereDate('created_at', date("$date"));
         } else if ($request->type == 3) {
             $start_date = Carbon::parse($request->start_date)
-                ->toDateTimeString();
+                ->toDateString();
             $end_date = Carbon::parse($request->end_date)
-                ->toDateTimeString();
+                ->toDateString();
             $expense_list = $expense_list->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
             $total_expense = $total_expense->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
         }

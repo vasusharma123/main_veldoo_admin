@@ -40,7 +40,7 @@
 										<td><strong>{{trans('admin.Vehicle Image')}}</strong></td>
 										<td>
 											@if(!empty($record->vehicle_image))
-												<img src="{{ $record->vehicle_image }}" height="50px" width="80px">
+												<img src="{{ asset('storage/'.$record->vehicle_image) }}" height="50px" width="80px">
 												@else
 												<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
 											@endif

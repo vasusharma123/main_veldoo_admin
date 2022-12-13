@@ -131,33 +131,27 @@ a.link:hover, a.link:focus {
 }
 
 .sidebar-nav > ul > li.active > a {
-  /* color: var(--primary-color); */
-  color: white;
+  color: var(--primary-color);
   border-color: var(--primary-color);
-  background: #000000;
-}
-
-.sidebar-nav > ul > li.active > a:hover {
-  /* color: var(--primary-color); */
-  color: white;
-  border-color: var(--primary-color);
-  background: #000000;
+  background: white;
 }
 
 .sidebar-nav > ul > li.active > a i {
-  /* color: var(--primary-color); */
-  color: white;
+  color: var(--primary-color);
 }
 
-.sidebar-nav ul li a.active, .sidebar-nav ul li a.active i
-{
-  color:  #000000;
-}
-.sidebar-nav ul li a:hover {
+.sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
   color: var(--primary-color);
-  
 }
-.sidebar-nav ul li a:hover i {
+
+.sidebar-nav ul li a.active i, .sidebar-nav ul li a:hover i {
   color: var(--primary-color);
-  /* color: white; */
+}
+
+.sidebar-nav li.active .has-arrow::after{
+  border-color: var(--primary-color);
+}
+
+.sidebar-nav li:hover .has-arrow::after{
+  border-color: var(--primary-color);
 }

@@ -2542,9 +2542,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$rideWithPayment = $rideWithPayment->whereDate('ride_time', date("$date"));
 			} else if ($request->type == 3) {
 				$start_date = Carbon::parse($request->start_date)
-					->toDateTimeString();
+					->toDateString();
 				$end_date = Carbon::parse($request->end_date)
-					->toDateTimeString();
+					->toDateString();
 				$resnewarray = $resnewarray->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 				$rideWithPayment = $rideWithPayment->whereBetween('ride_time', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 			}
@@ -3495,7 +3495,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride->save();
 
-			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
+			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
 
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
@@ -6146,7 +6146,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideHistoryDetail->status = "1";
 						$rideHistoryDetail->save();
 					}
-					$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
+					$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($request->ride_id);
 					$userdata = User::find($ride_detail['user_id']);
 					if (!empty($userdata)) {
 						$ride_detail->driver->car_data = $ride_detail->driver->car_data;
@@ -7618,6 +7618,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			->orderBy('users.id', 'DESC')->get();
 		$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
 		foreach ($resultArr['data'] as $driver_key => $driver_value) {
+			if(!empty($driver_value->vehicle_image)){
+				$resultArr['data'][$driver_key]['vehicle_image'] = env('URL_PUBLIC').'/'.$driver_value->vehicle_image;
+			}
 			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
 				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 			})->count();

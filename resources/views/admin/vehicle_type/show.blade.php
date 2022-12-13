@@ -23,7 +23,11 @@
 									<tr>
 										<td><strong>{{trans('admin.Car Image')}}</strong></td>
 										<td>
-											<a href="{{url('storage/'.$record->car_image)}}" target="_blank"><img src="{{url('storage/'.$record->car_image)}}" width="100px" height=80px"></a>
+											@if(!empty($record->car_image))
+												<a href="{{ url('storage/'.$record->car_image)}}" target="_blank"><img src="{{url('storage/'.$record->car_image)}}" width="100px" height=80px"></a>
+											@else
+												<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
+											@endif
 										</td>
 									</tr>
 									<tr>
