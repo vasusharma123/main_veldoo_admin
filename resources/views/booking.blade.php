@@ -404,7 +404,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control input_field" name="pickupPoint" id="pickupPoint" placeholder="{{ __('From') }}" required>
+                                    <input type="text" class="form-control input_field" name="pickupPoint" id="pickupPoint" placeholder="{{ __('From') }}" required>
                                     <div class="input-group-prepend">
                                         <div class="input-group-text pt-0 mt-0 ">
                                             <button type="button" class="close pickupPointCloseBtn" aria-label="Close">
@@ -421,7 +421,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control input_field" name="dropoffPoint" id="dropoffPoint" placeholder="{{ __('To') }}" required>
+                                    <input type="text" class="form-control input_field" name="dropoffPoint" id="dropoffPoint" placeholder="{{ __('To') }}" required>
                                     <div class="input-group-prepend">
                                         <div class="input-group-text pt-0 mt-0 ">
                                             <button type="button" class="close dropoffPointCloseBtn" aria-label="Close">
@@ -475,7 +475,7 @@
 
             </div>
             <div class="filter_result ">
-                <form id="booking_list_form" method="POST" action="{{ route('booking_form_taxi2000') }}">
+                <form id="booking_list_form" method="POST" action="{{ route('booking_form_taxisteinemann') }}">
                     @csrf
                     <div class="row row_fileterBooking show_case">
 
@@ -526,7 +526,7 @@
                 <div class="row row_fileterBooking show_case">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         <div class="form-group">
-                            <a href="{{ route('list_of_booking_taxi2000') }}" class="btn btn-outline-danger btn-block">{{ __('MANAGE BOOKINGS') }}</a>
+                            <a href="{{ route('list_of_booking_taxisteinemann') }}" class="btn btn-outline-danger btn-block">{{ __('MANAGE BOOKINGS') }}</a>
                         </div>
                     </div>
                 </div>
@@ -738,14 +738,14 @@
                                             bounds: defaultBounds,
                                             // fields: ["address_components"], // Or whatever fields you need
                                             strictBounds: true, // Only if you want to restrict, not bias
-                                            types: ["establishment"], // Whatever types you need
+                                            // types: ["establishment"], // Whatever types you need
                                         };   
             }
             else
             {
                 var options = {
                                     strictBounds: true, // Only if you want to restrict, not bias
-                                    types: ["establishment"], // Whatever types you need
+                                    // types: ["establishment"], // Whatever types you need
                                 };  
             }
             var input = document.getElementById('pickupPoint');

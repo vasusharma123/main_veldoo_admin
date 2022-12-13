@@ -45,7 +45,13 @@ class UserWebController extends Controller
         try {
             $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
             if (!$user) {
-                $user = User::create(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $generateRandomString = $this->generateRandomString(16);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+            }
+            elseif ($user && !$user->random_token) {
+                $generateRandomString = $this->generateRandomString(16);
+                $user->fill(['random_token'=>$generateRandomString]);
+                $user->update();
             }
 
             $ride = new Ride();
@@ -99,6 +105,21 @@ class UserWebController extends Controller
         }
     }
 
+    function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        $checkToken = User::where(['random_token'=>$randomString])->first();
+        if ($checkToken) 
+        {
+            return $this->generateRandomString($length);
+        }
+        return $randomString;
+    }
+
     public function create_ride_driver(Request $request)
     {
         $rules = [
@@ -122,7 +143,13 @@ class UserWebController extends Controller
         try {
             $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
             if (!$user) {
-                $user = User::create(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $generateRandomString = $this->generateRandomString(16);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+            }
+            elseif ($user && !$user->random_token) {
+                $generateRandomString = $this->generateRandomString(16);
+                $user->fill(['random_token'=>$generateRandomString]);
+                $user->update();
             }
             $ride = new Ride();
             $ride->user_id = $user->id;

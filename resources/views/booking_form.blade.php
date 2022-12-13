@@ -633,6 +633,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
+                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -644,6 +645,60 @@
                 }
             });
         })
+
+        // var timerOn = true;
+        function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
+            $('.'+confirmOTPModalResendOtpClass).hide();
+            $('.'+timerClass).show();
+            var m = Math.floor(remaining / 60);
+            var s = remaining % 60;
+            
+            m = m < 10 ? '0' + m : m;
+            s = s < 10 ? '0' + s : s;
+            // console.log(timerClass);
+            // console.log(s);
+            $('.'+timerClass).html('Resend OTP in ' + s);
+            // document.getElementById(id).innerHTML = 
+            remaining -= 1;
+            
+            if(remaining >= 0) {
+                setTimeout(function() {
+                    timer(remaining,timerClass,confirmOTPModalResendOtpClass);
+                }, 1000);
+                return;
+            }
+
+            
+            // Do timeout stuff here
+            // alert('Timeout for otp');
+            $('.'+confirmOTPModalResendOtpClass).show();
+            $('.'+timerClass).hide();
+        }
+
+        $(document).on('click','.confirmOTPModalResendOtp',function(){
+            $.ajax({
+                url: "{{ route('send_otp_before_ride_booking')}}",
+                type: 'post',
+                dataType: 'json',
+                data: $('form#personal_info_form').serialize(),
+                success: function(response) {
+                    if(response.status){
+                        $("#confirmOTPModal").modal('show');
+                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                    } else if(response.status == 0){
+                        swal("{{ __('Error') }}",response.message,"error");
+                        $(document).find(".verify_otp").removeAttr('disabled');
+                    }
+                },
+                error(response) {
+                    swal("{{ __('Error') }}",response.message,"error");
+                    $(document).find(".verify_otp").removeAttr('disabled');
+                }
+            });
+        });
+
+
+
 
         $(document).on("click", ".verify_otp", function(e) {
             e.preventDefault();
