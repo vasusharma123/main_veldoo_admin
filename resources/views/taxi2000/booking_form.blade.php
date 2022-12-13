@@ -703,6 +703,18 @@
             var otp_entered = $(document).find("#otp_entered").val();
             var post_data = $('form#personal_info_form').serialize();
             post_data += '&otp='+otp_entered;
+            <?php
+                $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+                if (strpos($url,'taxisteinemann') !== false) {
+                    ?>
+                        post_data += '&url_type=taxisteinemann';
+                    <?php
+                } else {
+                    ?>
+                        post_data += '&url_type=taxi2000';
+                    <?php
+                }
+            ?>
             $(document).find(".verify_otp").attr('disabled',true);
             $.ajax({
                 url: "{{ route('verify_otp_and_ride_booking')}}",

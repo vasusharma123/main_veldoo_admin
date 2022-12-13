@@ -412,7 +412,7 @@ if($_REQUEST['cm'] == 2)
 			
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			if (strpos($url,'taxisteinemann') !== false) {
+			if ($request->url_type=="taxisteinemann") {
 				// dd(route('list_of_booking_taxisteinemann',$user->random_token));
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
 			} else {
@@ -687,7 +687,7 @@ if($_REQUEST['cm'] == 2)
 
 			$message_content = "";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			if (strpos($url,'taxisteinemann') !== false) {
+			if ($request->url_type=="taxisteinemann") {
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
 			} else {
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);

@@ -862,10 +862,13 @@
                     },
                     success: function(response) {
                         if(response.status){
-                            $(".SelectedDateList").html("");
+                            // $(".SelectedDateList").html("");
                             $(document).find(".bookingList[data-id='"+selectedBooking+"']").remove();
                             $("#cancelBookingModal").modal('hide');
                             swal("Success",response.message,"success");
+                            $('#bookingDetailsTable').html('');
+                            $('.booking_user_name').html('');
+                            $('.booking_created_at').html('');
                         } else if(response.status == 0){
                            swal("{{ __('Error') }}",response.message,"error");
                         }
