@@ -481,7 +481,7 @@
                         class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
                 <h2 class="title_form">{{ __('My Bookings') }}</h2>
-                <div class="filter_booking_list otp_verification_div">
+                <div class="filter_booking_list otp_verification_div {{ $user?'d-none':'' }}">
                     <form id="verify_phone_form" method="post">
                         @csrf
                         <div class="row">
@@ -503,7 +503,7 @@
                     </form>
                 </div>
 
-                <div class="filter_booking_list ride_list_div d-none">
+                <div class="filter_booking_list ride_list_div {{ !$user?'d-none':'' }}">
                     <div class="booking_list">
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -511,24 +511,51 @@
                                     <div class="timer_box">
                                         <div class="show_value">
                                             <ul class="list-group SelectedDateList">
-                                                
+                                                @if ($user)
+                                                    @forelse ($rides as $key=>$ride)
+                                                        <li class="list-group-item bookingList" style="cursor:pointer" data-id="{{ $ride->id }}">
+                                                            <div class="row">
+                                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                                    <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
+                                                                </div>
+                                                                <div class="col-10 pl-0 ml-0">
+                                                                    <span class="listDate" style="padding: 0px;margin:0px">{{ $ride->ride_time }}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                                    <img src="{{ asset('images/icons8-vanpool-30.png')}}" class="img-clock w-100 img-responsive" alt="img clock">
+                                                                </div>
+                                                                <div class="col-10 pl-0 ml-0" style="line-height:1;">
+                                                                    <span class="" style="font-size:12px">{{ $ride->pickup_address }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    @empty
+                                                        <li class="list-group-item text-center">
+                                                            No rides available
+                                                        </li>
+                                                    @endforelse
+                                                @endif
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group">
-                                    <button type="button" id="submit_request_cancel"
-                                        class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
+                            @if ($user && !empty($rides[0]))
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <button type="button" id="submit_request_cancel"
+                                            class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group">
-                                    <button type="button"
-                                        class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <button type="button"
+                                            class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                         <div class="col-lg-12">
                             <p class="msg_display"></p>
@@ -543,8 +570,28 @@
         </div>
 
         <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-            <div class="map_section">
-                <div id="googleMap" style="width:100%;"></div>
+            <div class="map_section card">
+                <div class="p-3">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="booking_user_name"></h5>
+                        </div>
+                        <div class="col-6 text-right">
+                            <div class="bagde-red">
+                                <span class="badge badge-primary booking_created_at" style="background-color: #ef4f23"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="table-responsive mt-4">
+                                <table class="table table-bordered">
+                                  <tbody id="bookingDetailsTable">
+                                    
+                                  </tbody>
+                                </table>
+                              </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -582,6 +629,7 @@
                 success: function(response) {
                     if (response.status) {
                         $("#confirmOTPModal").modal('show');
+                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
                     } else if (response.status == 0) {
                         swal("{{ __('Error') }}", response.message, "error");
                     }
@@ -643,13 +691,154 @@
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
-        })
+        });
+
+        $(document).on('click','.confirmOTPModalResendOtp',function(){
+            $.ajax({
+                url: "{{ route('send_otp_before_ride_booking')}}",
+                type: 'post',
+                dataType: 'json',
+                data: $('form#personal_info_form').serialize(),
+                success: function(response) {
+                    if(response.status){
+                        $("#confirmOTPModal").modal('show');
+                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                    } else if(response.status == 0){
+                        swal("{{ __('Error') }}",response.message,"error");
+                        $(document).find(".verify_otp").removeAttr('disabled');
+                    }
+                },
+                error(response) {
+                    swal("{{ __('Error') }}",response.message,"error");
+                    $(document).find(".verify_otp").removeAttr('disabled');
+                }
+            });
+        });
+
+        function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
+            $('.'+confirmOTPModalResendOtpClass).hide();
+            $('.'+timerClass).show();
+            var m = Math.floor(remaining / 60);
+            var s = remaining % 60;
+            
+            m = m < 10 ? '0' + m : m;
+            s = s < 10 ? '0' + s : s;
+            // console.log(timerClass);
+            // console.log(s);
+            $('.'+timerClass).html('Resend OTP in ' + s);
+            // document.getElementById(id).innerHTML = 
+            remaining -= 1;
+            
+            if(remaining >= 0) {
+                setTimeout(function() {
+                    timer(remaining,timerClass,confirmOTPModalResendOtpClass);
+                }, 1000);
+                return;
+            }
+
+            
+            // Do timeout stuff here
+            // alert('Timeout for otp');
+            $('.'+confirmOTPModalResendOtpClass).show();
+            $('.'+timerClass).hide();
+        }
+
+        @if ($user)
+            bookingsArray = JSON.parse('<?php echo ($rides) ?>');
+        @else
+            bookingsArray = [];
+        @endif
+
+        function checkText(text) {
+            return (text=="" || text==null? 'Not Available' : text);
+        }
 
         var selectedBooking = "";
         $(document).on('click','.bookingList',function(){
             selectedBooking = $(this).data('id');
             $('.bookingList').removeClass('active-background');
             $(this).addClass('active-background');
+            bookingsArray.forEach(element => {
+                if (selectedBooking==element.id) 
+                {
+                    div = `<tr>
+                            <td>
+                                <strong>Driver Name</strong>
+                            </td>
+                            <td> `+checkText(element.driver_name)+` </td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Pickup Location</strong>
+                            </td>
+                            <td>`+checkText(element.pickup_address)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Dropoff Location</strong>
+                            </td>
+                            <td>`+checkText(element.dest_address)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Price</strong>
+                            </td>
+                            <td>`+checkText(element.ride_cost)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Distance</strong>
+                            </td>
+                            <td>`+checkText(element.distance)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Payment Type</strong>
+                            </td>
+                            <td> `+checkText(element.payment_type)+` </td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Ride Type</strong>
+                            </td>
+                            <td> `+checkText(element.ride_type)+` </td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Additional Note</strong>
+                            </td>
+                            <td>`+checkText(element.additional_notes)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Number of Passanger</strong>
+                            </td>
+                            <td>`+checkText(element.passanger)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Car Type</strong>
+                            </td>
+                            <td>`+checkText(element.car_type)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Ride Time</strong>
+                            </td>
+                            <td>`+checkText(element.ride_type)+`</td>
+                            </tr>
+                            <tr>
+                            <td>
+                                <strong>Status</strong>
+                            </td>
+                            <td> `+checkText(element.ride_status)+` </td>
+                            </tr>
+                            <tr>`;
+                    $('.booking_user_name').html(element.user_name);
+                    $('.booking_created_at').html(element.create_date);
+                    $('#bookingDetailsTable').html(div);
+                }
+            });
         });
         $(document).on('click','#submit_request_cancel',function(){
             if(selectedBooking!=""){

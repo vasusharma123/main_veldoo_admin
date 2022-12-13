@@ -331,7 +331,30 @@ if($_REQUEST['cm'] == 2)
 			$sid = env("TWILIO_ACCOUNT_SID");
 			$token = env("TWILIO_AUTH_TOKEN");
 			$twilio = new Client($sid, $token);
-
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+			$now = Carbon::now();
+			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+			if ($haveOtp) 
+			{
+				if ($now->gt($haveOtp->expiry)) 
+				{
+					OtpVerification::updateOrCreate(
+						['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+						['otp' => $otp, 'expiry' => $endTime]
+					);
+				}
+				else
+				{
+					$otp = $haveOtp->otp;
+				}
+			}
+			else
+			{
+				OtpVerification::updateOrCreate(
+					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+					['otp' => $otp, 'expiry' => $endTime]
+				);
+			}
 			$message = $twilio->messages
 				->create(
 					"+".$request->country_code.ltrim($request->phone, "0"), // to
@@ -340,11 +363,7 @@ if($_REQUEST['cm'] == 2)
 						"from" => env("TWILIO_FROM_SEND")
 					]
 				);
-			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-			OtpVerification::updateOrCreate(
-				['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-				['otp' => $otp, 'expiry' => $endTime]
-			);
+			
 			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -382,16 +401,26 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
+		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 		if($responseObj['status'] == 1){
 			$sid = env("TWILIO_ACCOUNT_SID");
 			$token = env("TWILIO_AUTH_TOKEN");
 			$twilio = new Client($sid, $token);
 
+			$message_content = "Your Booking has been confirmed with Veldoo, for time";
+			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			if (strpos($url,'taxisteinemann') !== false) {
+				// dd(route('list_of_booking_taxisteinemann',$user->random_token));
+				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
+			} else {
+				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);
+			}
+
 			$message = $twilio->messages
 				->create(
 					"+".$request->country_code.ltrim($request->phone, "0"), // to
 					[
-						"body" => "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).".",
+						"body" => $message_content,
 						"from" => env("TWILIO_FROM_SEND")
 					]
 				);
@@ -403,8 +432,90 @@ if($_REQUEST['cm'] == 2)
 		return view('my_booking');
 	}
 
-	public function list_of_booking(){
-		return view('taxi2000.list_of_booking');
+	public function list_of_booking($token=null){
+		$data['user'] = [];
+		if ($token) 
+		{
+			$data['user'] = User::where('random_token',$token)->first();
+			if ($data['user']) 
+			{
+				$now = Carbon::now();
+				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
+				foreach ($rideList as $key => $ride) {
+					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
+					$rideList[$key]->create_date = date('D d-m-Y H:i',strtotime($ride->created_at));
+					$driver_ids = explode(',', $ride->driver_id);
+					if (count($driver_ids) > 1 && $ride->status != 1)
+					{
+						$rideList[$key]->driver_name = "Not Available";
+					}
+					else
+					{
+						$rideList[$key]->driver_name = $ride->driver ? wordwrap($ride->driver->first_name, 10, "\n", true) : '';
+					}
+					$ride_type = "Not Available";
+					if ($ride->ride_type == 1)
+					{
+						$ride_type = "Ride Schedule";
+					}
+					elseif($ride->ride_type == 2)
+					{
+						$ride_type = "Ride Now";
+					}
+					elseif($ride->ride_type == 3)
+					{
+						$ride_type = "Instant Ride";
+					}
+					elseif($ride->ride_type == 4)
+					{
+						$ride_type = "Ride Sharing";
+					}
+					$rideList[$key]->ride_type = $ride_type;
+
+					$ride_status = "";
+					if ($ride->status == -2)
+					{
+						$ride_status = "Cancelled";
+					}
+					elseif($ride->status == -1)
+					{
+						$ride_status = "Rejected";
+					}
+					elseif($ride->status == 1)
+					{
+						$ride_status = "Accepted";
+					}
+					elseif($ride->status == 2)
+					{
+						$ride_status = "Started";
+					}
+					elseif($ride->status == 4)
+					{
+						$ride_status = "Driver Reached";
+					}
+					elseif($ride->status == 3)
+					{
+						$ride_status = "Completed";
+					}
+					elseif($ride->status == -3)
+					{
+						$ride_status = "Cancelled";
+					}
+					elseif($ride->status == 0)
+					{
+						$ride_status = "Pending";
+					}
+					elseif($ride->ride_status > date('Y-m-d H:i:s'))
+					{
+						$ride_status = "Upcoming";
+					}
+					$rideList[$key]->ride_status = $ride_status;
+					$rideList[$key]->user_name = ($ride->user ? $ride->user->first_name : 'Not Available').' '.($ride->user ? $ride->user->last_name : '');
+				}
+				$data['rides'] = $rideList;
+			}
+		}
+		return view('taxi2000.list_of_booking',$data);
 	}
 
 	public function send_otp_for_my_bookings(Request $request)
@@ -459,7 +570,7 @@ if($_REQUEST['cm'] == 2)
 			if($user){
 				$rideList = Ride::where(['user_id' => $user->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
 				foreach ($rideList as $key => $ride) {
-					$rideList[$key]->ride_time = date('Y-m-D H:i',strtotime($ride->ride_time));
+					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
 				}
 				if($rideList && count($rideList) > 0){
 					return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number'), 'data' => $rideList]);
@@ -566,16 +677,24 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
+		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 		if($responseObj['status'] == 1){
 			$sid = env("TWILIO_ACCOUNT_SID");
 			$token = env("TWILIO_AUTH_TOKEN");
 			$twilio = new Client($sid, $token);
 
+			$message_content = "";
+			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			if (strpos($url,'taxisteinemann') !== false) {
+				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
+			} else {
+				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);
+			}
 			$message = $twilio->messages
 				->create(
 					"+".$request->country_code.ltrim($request->phone, "0"), // to
 					[
-						"body" => "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).".",
+						"body" => $message_content,
 						"from" => env("TWILIO_FROM_SEND")
 					]
 				);
