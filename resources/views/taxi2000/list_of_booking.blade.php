@@ -887,7 +887,7 @@
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
             if(selectedBooking!=""){
-                route = "{{ route('booking_edit_taxi2000','~') }}";
+                route = "{{ route('booking_edit_taxi2000','~') }}{{ isset($token)?'?token='.$token:'' }}";
                 route = route.replace('~',selectedBooking);
                 window.location.href= route;
             } else {

@@ -3423,7 +3423,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 7;
 					$ride->status = 4;
 					if ($ride->platform == 'web' && (!empty($userdata))) {
-						$ride->driver_reach_sms_notify($userdata);
+						// $ride->driver_reach_sms_notify($userdata);
 					}
 				}
 				if ($request->status == 3) {
@@ -6152,7 +6152,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
 						$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
 						if ($ride->platform == 'web') {
-							$ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
+							// $ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
 						}
 
 						/* Send Notification to User */
