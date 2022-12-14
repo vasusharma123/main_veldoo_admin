@@ -97,8 +97,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer" style="justify-content:center">
                         <button type="button" class="btn custom_btn verify_otp">{{ __('Confirm Booking') }}</button>
+                        <p class="confirmOTPModalTimer">Resend OTP in 30</p>
+                        <a class="btn confirmOTPModalResendOtp" href="javascript:;" style="text-decoration: underline; display: none;">{{ __('Resend OTP') }}</a>
                     </div>
                 </div>
             </form>

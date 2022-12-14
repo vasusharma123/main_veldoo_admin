@@ -404,7 +404,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control input_field" name="pickupPoint" id="pickupPoint" placeholder="{{ __('From') }}" required>
+                                    <input type="text" class="form-control input_field" name="pickupPoint" id="pickupPoint" placeholder="{{ __('From') }}" required>
                                     <div class="input-group-prepend">
                                         <div class="input-group-text pt-0 mt-0 ">
                                             <button type="button" class="close pickupPointCloseBtn" aria-label="Close">
@@ -421,7 +421,7 @@
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 p-0">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="search" class="form-control input_field" name="dropoffPoint" id="dropoffPoint" placeholder="{{ __('To') }}" required>
+                                    <input type="text" class="form-control input_field" name="dropoffPoint" id="dropoffPoint" placeholder="{{ __('To') }}" required>
                                     <div class="input-group-prepend">
                                         <div class="input-group-text pt-0 mt-0 ">
                                             <button type="button" class="close dropoffPointCloseBtn" aria-label="Close">
@@ -738,14 +738,14 @@
                                             bounds: defaultBounds,
                                             // fields: ["address_components"], // Or whatever fields you need
                                             strictBounds: true, // Only if you want to restrict, not bias
-                                            types: ["establishment"], // Whatever types you need
+                                            // types: ["establishment"], // Whatever types you need
                                         };   
             }
             else
             {
                 var options = {
                                     strictBounds: true, // Only if you want to restrict, not bias
-                                    types: ["establishment"], // Whatever types you need
+                                    // types: ["establishment"], // Whatever types you need
                                 };  
             }
             var input = document.getElementById('pickupPoint');

@@ -44,13 +44,13 @@ Route::get('/cron/shareRideExecute',  ['uses'=>'CronController@shareRideExecute'
 Route::group(['middleware' => 'locale'], function(){
 	Route::get('/taxisteinemann/booking',  ['uses'=>'PageController@booking'])->name('booking_taxisteinemann');
 	Route::post('/taxisteinemann/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form_taxisteinemann');
-	Route::get('/taxisteinemann/list_of_booking',  ['uses' => 'PageController@list_of_booking'])->name('list_of_booking_taxisteinemann');
+	Route::get('/taxisteinemann/list_of_booking/{token?}',  ['uses' => 'PageController@list_of_booking'])->name('list_of_booking_taxisteinemann');
 	Route::get('/taxisteinemann/booking_edit/{id}',  ['uses' => 'PageController@booking_edit'])->name('booking_edit_taxisteinemann');
 	Route::post('/taxisteinemann/booking_form_edit/{id}',  ['uses' => 'PageController@booking_form_edit'])->name('booking_form_edit_taxisteinemann');
 
 	Route::get('/taxi2000/booking',  ['uses'=>'BookingTaxi2000Controller@booking'])->name('booking_taxi2000');
 	Route::post('/taxi2000/booking_form',  ['uses'=>'BookingTaxi2000Controller@booking_form'])->name('booking_form_taxi2000');
-	Route::get('/taxi2000/list_of_booking',  ['uses' => 'BookingTaxi2000Controller@list_of_booking'])->name('list_of_booking_taxi2000');
+	Route::get('/taxi2000/list_of_booking/{token?}',  ['uses' => 'BookingTaxi2000Controller@list_of_booking'])->name('list_of_booking_taxi2000');
 	Route::get('/taxi2000/booking_edit/{id}',  ['uses' => 'BookingTaxi2000Controller@booking_edit'])->name('booking_edit_taxi2000');
 	Route::post('/taxi2000/booking_form_edit/{id}',  ['uses' => 'BookingTaxi2000Controller@booking_form_edit'])->name('booking_form_edit_taxi2000');
 
