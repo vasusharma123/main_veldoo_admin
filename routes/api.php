@@ -133,6 +133,9 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('latest_ride_detail','RideController@latest_ride_detail');
 	Route::post('ride/detail','user\RideController@ride_detail');
 	Route::post('ride/status_change','user\RideController@statusChange');
+
+	Route::post('get_user_by_phone','user\ProfileController@getUserByPhone');
+	Route::get('my_profile','user\ProfileController@my_profile');
 	
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
