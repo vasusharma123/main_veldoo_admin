@@ -475,6 +475,9 @@
             <div class="filter_result ">
                 <form id="booking_list_form" method="POST" action="{{ route('booking_form_edit_taxi2000', $rideDetail->id) }}">
                     @csrf
+                    @if (isset($_GET) && isset($_GET['token']) && !empty($_GET['token']))
+                        <input type="hidden" name="token" value="{{ $_GET['token'] }}">
+                    @endif
                     <div class="row row_fileterBooking show_case">
                         <div class="col-lg-4 col-md-4 col-sm-4 col-4 text-center">
                             <div class="form-group">

@@ -409,7 +409,7 @@ if($_REQUEST['cm'] == 2)
 
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			if (strpos($url,'taxisteinemann') !== false) {
+			if ($request->url_type=="taxisteinemann") {
 				// dd(route('list_of_booking_taxisteinemann',$user->random_token));
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
 			} else {
@@ -434,11 +434,13 @@ if($_REQUEST['cm'] == 2)
 
 	public function list_of_booking($token=null){
 		$data['user'] = [];
+		$data['token'] = "";
 		if ($token) 
 		{
 			$data['user'] = User::where('random_token',$token)->first();
 			if ($data['user']) 
 			{
+				$data['token'] = $token;
 				$now = Carbon::now();
 				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
 				foreach ($rideList as $key => $ride) {
@@ -601,6 +603,31 @@ if($_REQUEST['cm'] == 2)
 	public function send_otp_before_ride_edit(Request $request)
 	{
 		try {
+			
+			if ($request->user==true) 
+			{
+				$now = Carbon::now();
+				$phone_number = explode("-",$request->phone);
+				$request->phone = $phone_number[1];
+				
+				if ($request->pick_lat==$request->dest_lat) 
+				{
+					$request->dest_address = "";
+					$request->dest_lat = "";
+					$request->dest_lng = "";
+				}
+				$webobj = new UserWebController;
+				if ($now->diffInMinutes($request->ride_time) <= 15) {
+					$jsonResponse = $webobj->create_ride_driver_edit($request);
+				} else {
+					$jsonResponse = $webobj->book_ride_edit($request);
+				}
+				$content = $jsonResponse->getContent();
+				$responseObj = json_decode($content, true);
+
+				return $responseObj;
+			}
+
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$sid = env("TWILIO_ACCOUNT_SID");
@@ -643,7 +670,8 @@ if($_REQUEST['cm'] == 2)
 		$rideDetail = Ride::with(['user'])->find($ride_id);
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
-		return view('taxi2000.booking_form_edit')->with(['vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
+		$user = User::where('random_token',$request->token)->first();
+		return view('taxi2000.booking_form_edit')->with(['user'=>$user,'vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
 	}
 
 	public function verify_otp_and_ride_booking_edit(Request $request)
@@ -685,7 +713,7 @@ if($_REQUEST['cm'] == 2)
 
 			$message_content = "";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			if (strpos($url,'taxisteinemann') !== false) {
+			if ($request->url_type=="taxisteinemann") {
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
 			} else {
 				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);

@@ -626,14 +626,28 @@
 
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
+            var post_data = $('form#personal_info_form').serialize();
+            @if ($user)
+                post_data += '&user=true';
+            @else
+                post_data += '&user=true';
+            @endif
             $.ajax({
                 url: "{{ route('send_otp_before_ride_edit')}}",
                 type: 'post',
                 dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
+                data: post_data,
                 success: function(response) {
                     if(response.status){
-                        $("#confirmOTPModal").modal('show');
+                        @if ($user)
+                            swal("{{ _('Success') }}",response.message,"success");
+                            setTimeout(function() {
+                                window.location.href = "{{ route('list_of_booking_taxisteinemann',$user->random_token)}}";
+                            }, 2000);
+                        @else
+                            timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                            $("#confirmOTPModal").modal('show');
+                        @endif
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -644,13 +658,76 @@
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
-        })
+        });
+
+        // var timerOn = true;
+        function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
+            $('.'+confirmOTPModalResendOtpClass).hide();
+            $('.'+timerClass).show();
+            var m = Math.floor(remaining / 60);
+            var s = remaining % 60;
+            
+            m = m < 10 ? '0' + m : m;
+            s = s < 10 ? '0' + s : s;
+            // console.log(timerClass);
+            // console.log(s);
+            $('.'+timerClass).html('Resend OTP in ' + s);
+            // document.getElementById(id).innerHTML = 
+            remaining -= 1;
+            
+            if(remaining >= 0) {
+                setTimeout(function() {
+                    timer(remaining,timerClass,confirmOTPModalResendOtpClass);
+                }, 1000);
+                return;
+            }
+
+            
+            // Do timeout stuff here
+            // alert('Timeout for otp');
+            $('.'+confirmOTPModalResendOtpClass).show();
+            $('.'+timerClass).hide();
+        }
+
+        $(document).on('click','.confirmOTPModalResendOtp',function(){
+            $.ajax({
+                url: "{{ route('send_otp_before_ride_edit')}}",
+                type: 'post',
+                dataType: 'json',
+                data: $('form#personal_info_form').serialize(),
+                success: function(response) {
+                    if(response.status){
+                        $("#confirmOTPModal").modal('show');
+                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                    } else if(response.status == 0){
+                        swal("{{ __('Error') }}",response.message,"error");
+                        $(document).find(".verify_otp").removeAttr('disabled');
+                    }
+                },
+                error(response) {
+                    swal("{{ __('Error') }}",response.message,"error");
+                    $(document).find(".verify_otp").removeAttr('disabled');
+                }
+            });
+        });
 
         $(document).on("click", ".verify_otp", function(e) {
             e.preventDefault();
             var otp_entered = $(document).find("#otp_entered").val();
             var post_data = $('form#personal_info_form').serialize();
             post_data += '&otp='+otp_entered;
+            <?php
+                $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+                if (strpos($url,'taxisteinemann') !== false) {
+                    ?>
+                        post_data += '&url_type=taxisteinemann';
+                    <?php
+                } else {
+                    ?>
+                        post_data += '&url_type=taxi2000';
+                    <?php
+                }
+            ?>
             $(document).find(".verify_otp").attr('disabled',true);
             $.ajax({
                 url: "{{ route('verify_otp_and_ride_booking_edit')}}",
@@ -660,9 +737,9 @@
                 success: function(response) {
                     if(response.status){
                         swal("{{ _('Success') }}",response.message,"success");
-							setTimeout(function() {
-								window.location.href = "{{ route('booking_taxisteinemann')}}";
-							}, 2000);
+                        setTimeout(function() {
+                            window.location.href = "{{ route('booking_taxisteinemann')}}";
+                        }, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
