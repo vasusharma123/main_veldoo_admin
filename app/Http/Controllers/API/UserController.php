@@ -1424,9 +1424,8 @@ class UserController extends Controller
 
 	public function logout(Request $request)
 	{
-		$user = Auth::user();
-		$user_id = $user['id'];
-		if ($user->user_type == 2) {
+		$user_id = Auth::user()->id;
+		if (Auth::user()->user_type == 2) {
 			DriverStayActiveNotification::where(['driver_id' => $user_id])->delete();
 		}
 		if (!empty($request->car_id)) {
@@ -1439,11 +1438,11 @@ class UserController extends Controller
 				$driverhoosecar->save();
 			}
 		}
-		$user['fcm_token'] = "";
-		$user['device_type'] = "";
-		$user['device_token'] = "";
-		$user['updated_at'] = Carbon::now();
-		$user['availability'] = 0;
+		$user = User::find($user_id);
+		$user->fcm_token = "";
+		$user->device_type = "";
+		$user->device_token = "";
+		$user->availability = 0;
 		$user->save();
 		Auth::user()->AauthAcessToken()->delete();
 		return response()->json(['message' => __('Logged out successfully')], $this->successCode);
