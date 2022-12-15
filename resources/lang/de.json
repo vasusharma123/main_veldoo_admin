@@ -1,6 +1,7 @@
 {
-    "From": "Aus",
-    "To": "Zu",
+    "From": "Von",
+    "To": "Nach",
+    "CHECK": "ÜBERPRÜFEN",
     "Calculate": "Berechnung",
     "Next": "Kommend",
     "Manage Bookings": "Buchungen verwalten",
@@ -40,7 +41,6 @@
     "Regular": "Regulär",
     "Business": "Geschäft",
     "Veldoo Booking": "Veldoo-Buchung",
-    "Booking Details": "Buchungsdetails",
     "First Name": "Vorname",
     "Last Name": "Nachname",
     "Enter Phone Number": "Telefonnummer eingeben",

@@ -441,7 +441,7 @@ if($_REQUEST['cm'] == 2)
 			if ($data['user']) 
 			{
 				$data['token'] = $token;
-				$now = Carbon::now();
+				$now = Carbon::now()->subHour();
 				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
 				foreach ($rideList as $key => $ride) {
 					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
@@ -568,9 +568,10 @@ if($_REQUEST['cm'] == 2)
 				return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
 			}
 			$haveOtp->delete();
+			$minus1hourFromNow = Carbon::now()->subHour();
 			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 			if($user){
-				$rideList = Ride::where(['user_id' => $user->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
+				$rideList = Ride::where(['user_id' => $user->id, 'platform' => 'web'])->where('ride_time', '>', $minus1hourFromNow)->get();
 				foreach ($rideList as $key => $ride) {
 					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
 				}

@@ -33,7 +33,7 @@
                     <div class="form-group">
                         <select name="locale" onchange="$('#changeLocaleForm').submit()" id="change_locale">
                             <option value="en" {{ app()->getLocale()=="en"?'selected':'' }}>English</option>
-                            <option value="de" {{ app()->getLocale()=="de"?'selected':'' }}>German</option>
+                            <option value="de" {{ app()->getLocale()=="de"?'selected':'' }}>Deutsch</option>
                         </select>
                     </div>
                     <?php

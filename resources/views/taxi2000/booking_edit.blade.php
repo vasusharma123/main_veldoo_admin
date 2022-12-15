@@ -259,7 +259,7 @@
         }
 
         @media (max-width: 400px) {
-            .filter_booking_section_row .custom_btn {
+            .filter_booking_section_row .custom_btn, .book_online_now {
                 font-size: 9px;
                 padding: 9px !important;
                 font-weight: 700;
@@ -310,7 +310,7 @@
                 font-size: 12px;
             }
 
-            .filter_booking_list {
+            .filter_booking_list, .filter_result {
                 padding: 20px 10px 10px !important;
             }
 
@@ -462,7 +462,7 @@
                         <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-end">
                             <div class="form-group">
                                 <button type="button" class="btn submit_btn custom_btn calculate_route"
-                                    style="padding: 7px;">{{ __('CALCULATE') }}</button>
+                                    style="padding: 7px;">{{ __('CHECK') }}</button>
                             </div>
                         </div>
                     </div>
