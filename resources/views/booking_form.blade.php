@@ -356,7 +356,7 @@
                 <div class="logo_img_top_1">
                     <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
-                <h2 class="title_form">Booking Details</h2>
+                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
@@ -447,7 +447,7 @@
                             <div class="col-lg-5 col-md-5 col-sm-5 col-5">
                                 <div class="form-group">
                                     <select class="form-control select_field " style="font-size: 12px" id="paymentMethod" name="payment_type" required>
-                                        <option value="">{{ __('Payment Method') }}</option>
+                                        {{-- <option value="">{{ __('Payment Method') }}</option> --}}
                                         <option value="Cash" selected>{{ __('Cash') }}</option>
                                         <option value="Card">{{ __('Card') }}</option>
                                     </select>

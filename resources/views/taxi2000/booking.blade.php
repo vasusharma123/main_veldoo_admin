@@ -260,7 +260,7 @@
         }
 
         @media (max-width: 400px) {
-            .filter_booking_section_row .custom_btn {
+            .filter_booking_section_row .custom_btn, .book_online_now {
                 font-size: 9px;
                 padding: 9px !important;
                 font-weight: 700;
@@ -311,7 +311,7 @@
                 font-size: 12px;
             }
 
-            .filter_booking_list {
+            .filter_booking_list, .filter_result {
                 padding: 20px 10px 10px !important;
             }
 
@@ -464,7 +464,7 @@
                         <div class="col-lg-5 col-md-5 col-sm-4 col-4 align-self-end">
                             <div class="form-group">
                                 <button type="button" class="btn submit_btn custom_btn calculate_route"
-                                    style="padding: 7px;">{{ __('CALCULATE') }}</button>
+                                    style="padding: 7px;">{{ __('CHECK') }}</button>
                             </div>
                         </div>
                     </div>
@@ -477,9 +477,9 @@
             <div class="filter_result ">
                 <form id="booking_list_form" method="POST" action="{{ route('booking_form_taxi2000') }}">
                     @csrf
-                    <div class="row row_fileterBooking show_case">
+                    <div class="row row_fileterBooking show_case w-100 m-0">
 
-                        <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
                             <div class="form-group">
                                 <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="price_calculated">CHF ---</span></p>
                             </div>

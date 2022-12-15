@@ -449,7 +449,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-4 col-4">
                                 <div class="form-group">
                                     <select class="form-control select_field" id="paymentMethod" name="payment_type" required>
-                                        <option value="">{{ __('Payment Method') }}</option>
+                                        {{-- <option value="">{{ __('Payment Method') }}</option> --}}
                                         <option value="Cash" {{$rideDetail->payment_type == 'Cash'?'selected':''}}>{{ __('Cash') }}</option>
                                         <option value="Card" {{$rideDetail->payment_type == 'Card'?'selected':''}}>{{ __('Card') }}</option>
                                     </select>
