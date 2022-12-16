@@ -224,12 +224,11 @@ $('body').on('click', '.change_invoice_status', function(){
          //   'order': [1, 'desc'],
 		  
             columns: [
-                // {
-                    // data: 'id',
-                    // name: 'id'
-                // },
-
-                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {
+                    data: 'id',
+                    name: 'id'
+                },
+                // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
 				{
                     data: 'first_name',
                     name: 'first_name',
