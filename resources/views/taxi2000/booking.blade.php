@@ -480,12 +480,12 @@
                     <div class="row row_fileterBooking show_case w-100 m-0">
 
                         <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
-                            <div class="form-group">
+                            <div class="form-group" style="width: 95%">
                                 <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="price_calculated">CHF ---</span></p>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-6 col-6 text-center lst_col">
-                            <div class="form-group">
+                            <div class="form-group" style="width: 95%;float:right">
                                 <p class="form-control pr-0 pl-0" style="font-size: 13px"><span class="distance_calculated">KM ---</span></p>
                             </div>
                         </div>
