@@ -343,6 +343,10 @@ class UserController extends Controller
 		if (auth()->attempt($where2)) {
 			Auth::user()->AauthAcessToken()->delete();
 			$user = Auth::user();
+			$user->fcm_token = "";
+			$user->device_type = "";
+			$user->device_token = "";
+			$user->save();
 			// print_r($user->id); die;
 			if (!empty($request->fcm_token)) {
 				$user['fcm_token'] = $request->fcm_token;
