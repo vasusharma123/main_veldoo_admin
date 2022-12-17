@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{{ asset('css/landing-pg-style.css')}}" rel="stylesheet" type="text/css">
+	@if(!empty($setting['admin_favicon']) && file_exists($setting['admin_favicon']))
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset($setting['admin_favicon']) }}">
+	@else
+		<link rel="icon" type="image/png" sizes="16x16" href="//veldoo.com/storage/setting/admin-favicon.png">
+	@endif
   </head>
   <body>
 	<div class="hay-ln-pg-main">

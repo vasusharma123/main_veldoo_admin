@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ asset('datetime/css/bootstrap-datetimepicker.css') }}">
+    @if(!empty($setting['admin_favicon']) && file_exists($setting['admin_favicon']))
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ URL::asset($setting['admin_favicon']) }}">
+	@else
+		<link rel="icon" type="image/png" sizes="16x16" href="//veldoo.com/storage/setting/admin-favicon.png">
+	@endif
     @yield('css')
     <style>
         .parsley-errors-list
