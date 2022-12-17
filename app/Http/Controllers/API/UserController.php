@@ -1112,9 +1112,6 @@ class UserController extends Controller
 		} else {
 			$userdata->cardata = null;
 		}
-		$avgrating = DB::table('ratings')->where([['to_id', '=', $id]])->avg('rating');
-		$avgrating = round($avgrating, 2);
-		$userdata->avg_rating = $avgrating;
 		$userdata->full_name = $userdata->first_name . ' ' . $userdata->last_name;
 
 		//$cardata = DriverChooseCar::query()->where([['user_id', '=', $id]])->orderBy('id','desc')->first();
@@ -7281,7 +7278,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function driverlistforMaster(Request $request)
 	{
 		$user = Auth::user();
-		$user_id = $user['id'];
 		$rules = [
 			'ride_id' => 'required',
 		];
@@ -7292,7 +7288,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
-			$ride_data = Ride::query()->where([['id', '=', $request->ride_id]])->first();
+			$ride_data = Ride::find($request->ride_id);
+			if (!$ride_data) {
+				return response()->json(['message' => 'No such ride exist'], $this->warningCode);
+			}
 			$lat = $ride_data['pick_lat'];
 			$lon = $ride_data['pick_lng'];
 
@@ -7344,10 +7343,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => 'No Driver Found'], $this->warningCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $exception->getMessage() . "---" . $exception->getLine()], $this->warningCode);
 		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $exception->getMessage() . "---" . $exception->getLine()], $this->warningCode);
 		}
 	}
 

@@ -51,7 +51,7 @@ class User extends Authenticatable implements HasMedia
 	];
 
 	protected $appends = [
-		'image_with_url', 'user_role'
+		'image_with_url', 'user_role', 'avg_rating'
 	];
 	
 	public function setPasswordAttribute($password){
@@ -170,10 +170,8 @@ class User extends Authenticatable implements HasMedia
 	}
 	public function getAvgRatingAttribute()
 	{
-		$avgrating = DB::table('ratings')->where('to_id', $this->id)->avg('rating');
-		return $avgrating = round($avgrating, 2);
-		//$driver_data->avg_rating = "$avgrating";
-		//return $this->first_name.' '.$this->last_name;
+		$avgrating = Rating::where(['to_id' => $this->id])->avg('rating');
+		return  (!empty($avgrating)) ? round($avgrating, 2) : 0;
 	}
 
 	public static function logoutUserByIdAllDevices($id)
