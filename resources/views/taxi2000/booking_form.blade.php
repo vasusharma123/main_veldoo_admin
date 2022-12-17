@@ -610,6 +610,14 @@
                     }
                 });
                 map.fitBounds(bounds);
+                setInterval(() => {
+                    if ((map.getZoom() != 17) && (MapPoints[0].Latitude==MapPoints[1].Latitude))
+                    {
+                        // alert('shlo');
+                        // console.log(MapPoints);
+                        map.setZoom(17);
+                    }
+                }, 1000);
             }
         }
         MapPoints = [{
