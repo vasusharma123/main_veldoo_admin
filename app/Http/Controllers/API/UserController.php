@@ -3522,6 +3522,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notification->description = $message;
 					$notification->type = $type;
 					$notification->user_id = $userdata['id'];
+					$notification->additional_data = json_encode($additional);
 					$notification->save();
 				}
 			}
@@ -6176,6 +6177,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$notification->description = $message;
 						$notification->type = $type;
 						$notification->user_id = $userdata['id'];
+						$notification->additional_data = json_encode($additional);
 						$notification->save();
 					}
 					return $this->successResponse($ride_detail, 'Ride Accepted Successfully.');
@@ -7416,6 +7418,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notification->description = $message;
 					$notification->type = $type;
 					$notification->user_id = $driverdata['id'];
+					$notification->additional_data = json_encode($additional);
 					$notification->save();
 
 					RideHistory::create(['ride_id' => $request->ride_id, 'driver_id' => $request->driver_id, 'status' => '2']);

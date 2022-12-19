@@ -119,6 +119,7 @@ class RideController extends Controller
                 if (!empty($userData)) {
                     $notification->type = $type;
                     $notification->user_id = $userData['id'];
+                    $notification->additional_data = (!empty($additional))?json_encode($additional):null;
                     $notification->save();
                 }
             }
