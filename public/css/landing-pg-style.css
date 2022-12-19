@@ -29,7 +29,8 @@ img{
 	align-items: center;
 }
 .hay-ln-pg-main-sec{
-	padding: 60px 60px 0px;
+	/* padding: 60px 60px 0px; */
+	padding: 60px 0px 0px;
 	width: 100%;
 }
 .hay-ln-pg-main-row{
