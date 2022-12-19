@@ -605,6 +605,7 @@
     <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&language={{ app()->getLocale() }}">
     </script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script>
         $(function() {
@@ -653,6 +654,7 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
+                        bookingsArray = response.data;
                         $(document).find('.otp_verification_div').addClass('d-none');
                         $(".SelectedDateList").html("");
                         if(response.data != ""){
@@ -680,10 +682,10 @@
                             });
                         }
                         $(document).find('.ride_list_div').removeClass('d-none');
+                        $("#confirmOTPModal").modal('hide');
                     } else if(response.status == 0){
                        swal("{{ __('Error') }}",response.message,"error");
                     }
-                    $("#confirmOTPModal").modal('hide');
                     $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {

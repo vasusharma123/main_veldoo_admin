@@ -473,7 +473,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" name="terms_conditions" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -633,25 +633,30 @@
 
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
-            $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
-                type: 'post',
-                dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
-                success: function(response) {
-                    if(response.status){
-                        $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
-                    } else if(response.status == 0){
+            var form = $(this);
+            form.parsley().validate();
+            if (form.parsley().isValid()){
+                // alert('valid');
+                $.ajax({
+                    url: "{{ route('send_otp_before_ride_booking')}}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: $('form#personal_info_form').serialize(),
+                    success: function(response) {
+                        if(response.status){
+                            $("#confirmOTPModal").modal('show');
+                            timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        } else if(response.status == 0){
+                            swal("{{ __('Error') }}",response.message,"error");
+                            $(document).find(".verify_otp").removeAttr('disabled');
+                        }
+                    },
+                    error(response) {
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
-                },
-                error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
-                    $(document).find(".verify_otp").removeAttr('disabled');
-                }
-            });
+                });
+            }
         })
 
         // var timerOn = true;

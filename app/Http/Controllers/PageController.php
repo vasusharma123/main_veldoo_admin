@@ -610,7 +610,7 @@ if($_REQUEST['cm'] == 2)
 	{
 		try {
 
-			if ($request->user==true) 
+			if ($request->user=="true") 
 			{
 				$now = Carbon::now();
 				$phone_number = explode("-",$request->phone);

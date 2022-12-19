@@ -353,10 +353,10 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
-                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="logo_img_top_1">
                     <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
+                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
@@ -475,7 +475,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> {{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" name="terms" type="checkbox" required> <a href="#" class="text-secondary"> {{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
