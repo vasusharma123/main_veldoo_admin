@@ -13,7 +13,7 @@
 					<div class="hay-ln-pg-main-left">
 						<div class="hay-ln-pg-main-left-cont">
 							<div class="hay-ln-pg-main-logo"><img src="{{ asset('images/vel_web_logo.png')}}" /></div>
-							<h1>Our app is now on Android and iPhone</h1>
+							<h1>Our app is now live on App Store and Play Store</h1>
 							<ul>
 								<li><a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser"><img src="{{ asset('images/glp-button.png')}}" /></a></li>
 								<li><a href="https://apps.apple.com/in/app/id1597936025"><img src="{{ asset('images/aps-button.png')}}" /></a></li>
