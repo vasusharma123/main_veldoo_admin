@@ -5739,9 +5739,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$ride->schedule_time = $request->schedule_time;
 			}
 			if (!empty($request->alert_time)) {
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->time)));
 			} else {
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
+				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->time));
 			}
 			$ride->alert_time = $request->alert_time;
 

@@ -54,6 +54,10 @@ class RideController extends Controller
                         $status = '<label class="badge badge-danger">Cancelled</label>';
                     } else if ($row->status == -4 or $row->status == 5) {
                         $status = '<label class="badge badge-warning">Pending</label>';
+                    } else if ($row->status == -3) {
+                        $status = '<label class="badge badge-danger">Cancelled By Customer</label>';
+                    } else {
+                        $status = "";
                     }
                     return $status;
                 })->addColumn('driver', function ($row) {
