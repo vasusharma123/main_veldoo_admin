@@ -608,6 +608,7 @@ if($_REQUEST['cm'] == 2)
 
 	public function send_otp_before_ride_edit(Request $request)
 	{
+		dd($request->all());
 		try {
 
 			if ($request->user=="true") 
@@ -677,7 +678,7 @@ if($_REQUEST['cm'] == 2)
 		$rideDetail = Ride::with(['user'])->find($ride_id);
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
-		$user = User::where('random_token',$request->token)->first();
+		$user = User::where('random_token',$request->token)->where('random_token','!=','')->first();
 		return view('booking_form_edit')->with(['user'=>$user,'vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
 	}
 

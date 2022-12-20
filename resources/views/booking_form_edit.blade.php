@@ -347,6 +347,11 @@
                 max-width: 1840px;
             }
         }
+        .sselect {
+            -webkit-appearance: none;
+            appearance: none;
+            padding-left : 10px !important;
+        }
     </style>
 @endsection
 @section('content')
@@ -410,7 +415,7 @@
                             <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-taxi fa-2x mr-1"></i>
-                                    <select class="form-control select_field p-0" id="carType" name="car_type">
+                                    <select class="form-control select_field sselect" id="carType" name="car_type">
                                         <option value="{{ $vehicle_type->car_type }}"
                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                             data-price_per_km="{{ $vehicle_type->price_per_km }}">
@@ -421,7 +426,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                    <select class="form-control select_field" id="numberOfPassenger" name="passanger">
+                                    <select class="form-control select_field sselect" id="numberOfPassenger" name="passanger">
                                         <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
                                     </select>
                                 </div>
@@ -630,7 +635,7 @@
             @if ($user)
                 post_data += '&user=true';
             @else
-                post_data += '&user=true';
+                post_data += '&user=false';
             @endif
             $.ajax({
                 url: "{{ route('send_otp_before_ride_edit')}}",
