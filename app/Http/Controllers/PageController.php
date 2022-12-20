@@ -608,7 +608,7 @@ if($_REQUEST['cm'] == 2)
 
 	public function send_otp_before_ride_edit(Request $request)
 	{
-		dd($request->all());
+		// dd($request->all());
 		try {
 
 			if ($request->user=="true") 
