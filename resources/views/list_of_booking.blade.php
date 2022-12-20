@@ -523,10 +523,10 @@
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;position: absolute;margin-top: 15px;">
                                                                     <img src="{{ asset('images/icons8-vanpool-30.png')}}" class="img-clock w-100 img-responsive" alt="img clock">
                                                                 </div>
-                                                                <div class="col-10 pl-0 ml-0" style="line-height:1;">
+                                                                <div class="col-10 pl-0" style="margin-left: 37px;line-height: 1;">
                                                                     <span class="" style="font-size:12px">{{ $ride->pickup_address }}</span>
                                                                 </div>
                                                             </div>
@@ -542,20 +542,18 @@
                                     </div>
                                 </div>
                             </div>
-                            @if ($user && !empty($rides[0]))
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <button type="button" id="submit_request_cancel"
-                                            class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
-                                    </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button" id="submit_request_cancel"
+                                        class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
                                 </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <button type="button"
-                                            class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
-                                    </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="form-group">
+                                    <button type="button"
+                                        class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                         <div class="col-lg-12">
                             <p class="msg_display"></p>
@@ -605,6 +603,7 @@
     <script type="text/javascript"
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&language={{ app()->getLocale() }}">
     </script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script>
         $(function() {
@@ -653,6 +652,7 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
+                        bookingsArray = response.data;
                         $(document).find('.otp_verification_div').addClass('d-none');
                         $(".SelectedDateList").html("");
                         if(response.data != ""){
@@ -667,10 +667,10 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
+                                                <div class="col-2 mr-0 pr-0" style="max-width: 35px;position: absolute;margin-top: 15px;">
                                                     <img src="{{ asset('images/icons8-vanpool-30.png')}}" class="img-clock w-100 img-responsive" alt="img clock">
                                                 </div>
-                                                <div class="col-10 pl-0 ml-0" style="line-height:1;">
+                                                <div class="col-10 pl-0" style="margin-left: 37px;line-height: 1;">
                                                     <span class="" style="font-size:12px">`+element.pickup_address+`</span>
                                                 </div>
                                             </div>
@@ -680,10 +680,10 @@
                             });
                         }
                         $(document).find('.ride_list_div').removeClass('d-none');
+                        $("#confirmOTPModal").modal('hide');
                     } else if(response.status == 0){
                        swal("{{ __('Error') }}",response.message,"error");
                     }
-                    $("#confirmOTPModal").modal('hide');
                     $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {
@@ -695,10 +695,10 @@
 
         $(document).on('click','.confirmOTPModalResendOtp',function(){
             $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
+                url: "{{ route('send_otp_for_my_bookings')}}",
                 type: 'post',
                 dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
+                data: $('form#verify_phone_form').serialize(),
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');

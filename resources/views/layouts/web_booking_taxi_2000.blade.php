@@ -171,6 +171,17 @@
                 </div>
             </form>
         </div>
-        </div>
+    </div>
+    <script>
+        $(document).on('submit','.otp_form',function(e){
+            e.preventDefault();
+            var form = $(this);
+            form.parsley().validate();
+            if (form.parsley().isValid()){
+                // alert('hlo');
+                $('.verify_otp').trigger('click');
+            }
+        });
+    </script>
 </body>
 </html>

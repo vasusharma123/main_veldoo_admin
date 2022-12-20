@@ -347,16 +347,21 @@
                 max-width: 1840px;
             }
         }
+        .sselect {
+            -webkit-appearance: none;
+            appearance: none;
+            padding-left : 10px !important;
+        }
     </style>
 @endsection
 @section('content')
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
-                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="logo_img_top_1">
                     <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                 </div>
+                <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="filter_booking_list">
                     <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
                         @csrf
@@ -410,7 +415,7 @@
                             <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-taxi fa-2x mr-1"></i>
-                                    <select class="form-control select_field p-0" id="carType" name="car_type">
+                                    <select class="form-control select_field sselect" id="carType" name="car_type">
                                         <option value="{{ $vehicle_type->car_type }}"
                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                             data-price_per_km="{{ $vehicle_type->price_per_km }}">
@@ -421,7 +426,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                    <select class="form-control select_field" id="numberOfPassenger" name="passanger">
+                                    <select class="form-control select_field sselect" id="numberOfPassenger" name="passanger">
                                         <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
                                     </select>
                                 </div>
@@ -475,7 +480,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary"> {{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" name="terms" type="checkbox" required> <a href="#" class="text-secondary"> {{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -630,7 +635,7 @@
             @if ($user)
                 post_data += '&user=true';
             @else
-                post_data += '&user=true';
+                post_data += '&user=false';
             @endif
             $.ajax({
                 url: "{{ route('send_otp_before_ride_edit')}}",
