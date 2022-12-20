@@ -678,59 +678,68 @@ class Socket{
 					
 				});
 			
-			socket.on('user-cancel-send-alldrivers', async (datas) => {
-				
-						console.log('driver-accept-send-alldrivers');
-						console.log('datas '+datas);
-						//response.send('food fix socket working');
-               let data = JSON.parse( datas );
-				var ride_id = data.ride_id;
-				var driver_id = data.driver_id;
-				//var lng = data.lng;
-				//var socketid = data.socket_id;
-				//console.log('socket id: '+socketid);
-				//room_name = data.group_id;
-				// console.log(data.socket_id);
-				//console.log(room_name);
-				//this.io.to(room_name).emit(`user-typing-response`,data); */ 
-				// this.io.to(data.socket_id).emit(`test-message-response`,`Job id required`); 
-				if (data.ride_id=='') {
-                    this.io.to(socketid).emit(`user-message-response-error`,`Ride Id required`); 
-					return false;
+			socket.on("user-cancel-send-alldrivers", async (datas) => {
+                console.log("driver-accept-send-alldrivers");
+                console.log("datas " + datas);
+                //response.send('food fix socket working');
+                let data = JSON.parse(datas);
+                var ride_id = data.ride_id;
+                var driver_id = data.driver_id;
+                //var lng = data.lng;
+                //var socketid = data.socket_id;
+                //console.log('socket id: '+socketid);
+                //room_name = data.group_id;
+                // console.log(data.socket_id);
+                //console.log(room_name);
+                //this.io.to(room_name).emit(`user-typing-response`,data); */
+                // this.io.to(data.socket_id).emit(`test-message-response`,`Job id required`);
+                if (data.ride_id == "") {
+                    this.io
+                        .to(socketid)
+                        .emit(
+                            `user-message-response-error`,
+                            `Ride Id required`
+                        );
+                    return false;
                 }
-				/* if (data.driver_id=='') {
+                /* if (data.driver_id=='') {
                     this.io.to(socketid).emit(`user-message-response-error`,`Driver Id required`); 
 					return false;
                 } */
-				
-				var ridedata = await helper.RideData(ride_id);
-			console.log("ridedata "+ridedata);
-			
-			var ridedatanew = JSON.parse(JSON.stringify(ridedata));
-			console.log("ridedatanew "+ridedatanew);
-				var driver_ids = ridedatanew[0]['driver_id'];
-				console.log("driver_ids"+driver_ids);
-				var driver_idsarray = driver_ids.split(",");
-				console.log("here working");
-				driver_idsarray.forEach(async(driverid,index) => {
-					
-					console.log("foreach "+index);
-					console.log("driverid "+driverid);
-					
-						 console.log("async works ");
-       var driverdata = await helper.DriverData(driverid);
-       var userdata = await helper.DriverData(ridedatanew[0]['user_id']);
-					var driverdatanew = JSON.parse(JSON.stringify(driverdata));
-					console.log("driverdatanew 0 "+driverdatanew[0]); 
-					var driversocketid = driverdatanew[0]['socket_id'];
-					console.log("driversocketid "+driversocketid);
 
-					//ridedata[0]['user_data'] = userdata[0]; 
-			//ridedata = JSON.stringify(ridedata);
-					this.io.to(driversocketid).emit(`ride-data-cancel-alldrivers`, ridedata);
-					
-				});
-			});
+                var ridedata = await helper.RideData(ride_id);
+                console.log("ridedata " + ridedata);
+
+                var ridedatanew = JSON.parse(JSON.stringify(ridedata));
+                console.log("ridedatanew " + ridedatanew);
+                var driver_ids = ridedatanew[0]["all_drivers"] || "";
+                console.log("driver_ids" + driver_ids);
+                var driver_idsarray = driver_ids.split(",");
+                console.log("here working");
+                driver_idsarray.forEach(async (driverid, index) => {
+                    console.log("foreach " + index);
+                    console.log("driverid " + driverid);
+                    if (driverid) {
+                        console.log("async works ");
+                        var driverdata = await helper.DriverData(driverid);
+                        var userdata = await helper.DriverData(
+                            ridedatanew[0]["user_id"]
+                        );
+                        var driverdatanew = JSON.parse(
+                            JSON.stringify(driverdata)
+                        );
+                        console.log("driverdatanew 0 " + driverdatanew[0]);
+                        var driversocketid = driverdatanew[0]["socket_id"];
+                        console.log("driversocketid " + driversocketid);
+
+                        //ridedata[0]['user_data'] = userdata[0];
+                        //ridedata = JSON.stringify(ridedata);
+                        this.io
+                            .to(driversocketid)
+                            .emit(`ride-data-cancel-alldrivers`, ridedata);
+                    }
+                });
+            });
 			socket.on('master-driver-update', async (datas) => {
 				
 						console.log('master-driver-rides');
