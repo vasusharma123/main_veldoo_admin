@@ -347,6 +347,11 @@
                 max-width: 1840px;
             }
         }
+        .sselect {
+            -webkit-appearance: none;
+            appearance: none;
+            padding-left : 10px !important;
+        }
     </style>
 @endsection
 @section('content')
@@ -408,7 +413,7 @@
                             <div class="col-lg-5 col-md-5 col-sm-4 col-6 frt_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-taxi fa-2x mr-1"></i>
-                                    <select class="form-control select_field p-0" id="carType" name="car_type">
+                                    <select class="form-control select_field sselect" id="carType" name="car_type">
                                         <option value="{{ $vehicle_type->car_type }}"
                                             data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                             data-price_per_km="{{ $vehicle_type->price_per_km }}">
@@ -419,7 +424,7 @@
                             <div class="col-lg-4 col-md-4 col-sm-4 col-3 mdl_col">
                                 <div class="form-group field_icons">
                                     <i class="fas fa-male fa-2x ml-2 mr-1"></i>
-                                    <select class="form-control select_field" id="numberOfPassenger" name="passanger">
+                                    <select class="form-control select_field sselect" id="numberOfPassenger" name="passanger">
                                         <option value="{{ $input['numberOfPassenger'] }}">{{ $input['numberOfPassenger'] }}</option>
                                     </select>
                                 </div>
@@ -473,7 +478,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" name="terms_conditions" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -633,25 +638,29 @@
 
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
-            $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
-                type: 'post',
-                dataType: 'json',
-                data: $('form#personal_info_form').serialize(),
-                success: function(response) {
-                    if(response.status){
-                        $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
-                    } else if(response.status == 0){
+            var form = $(this);
+            form.parsley().validate();
+            if (form.parsley().isValid()){
+                $.ajax({
+                    url: "{{ route('send_otp_before_ride_booking')}}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: $('form#personal_info_form').serialize(),
+                    success: function(response) {
+                        if(response.status){
+                            $("#confirmOTPModal").modal('show');
+                            timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        } else if(response.status == 0){
+                            swal("{{ __('Error') }}",response.message,"error");
+                            $(document).find(".verify_otp").removeAttr('disabled');
+                        }
+                    },
+                    error(response) {
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
-                },
-                error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
-                    $(document).find(".verify_otp").removeAttr('disabled');
-                }
-            });
+                });
+            }
         });
 
 
