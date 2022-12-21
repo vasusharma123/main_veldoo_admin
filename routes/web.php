@@ -166,8 +166,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('ride/export','RideController@rideExport')->name('ride/export');
 	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
-	
-	
+	Route::resources(['sms-template'=>'SMSTemplateController']);
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){	
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');

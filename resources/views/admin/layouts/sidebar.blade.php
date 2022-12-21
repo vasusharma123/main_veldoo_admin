@@ -116,9 +116,13 @@
 						<i class="mdi mdi-settings"></i>
 						<span class="hide-menu">{{ trans("admin.Settings") }}</span>
 					</a>
-					
 				</li>
-				
+				<li> 
+					<a class="waves-effect waves-dark" href="{{ route('sms-template.index') }}" aria-expanded="false">
+						<i class="mdi mdi-message-alert"></i>
+						<span class="hide-menu">{{ __("SMS Template") }}</span>
+					</a>
+				</li>
 				<li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
