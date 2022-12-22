@@ -52,7 +52,7 @@
 											</div>
 										</div>
 										<div class="col-12">
-											<h6 style="color: gray">Please put this tag <strong>#OTP#</strong>. where you want to add otp number</h6>
+											<h6 style="color: gray">Please put this tag <strong>#OTP#</strong>,<strong>#TIME#</strong>,<strong>#LINK#</strong>. where you want to add otp number</h6>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">

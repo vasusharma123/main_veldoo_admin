@@ -13,11 +13,13 @@
 					<div class="card-body">
 						@include('admin.layouts.flash-message')
 						<div class=" box" id="allDataUpdate">
-							<div class="text-right mb-2">
-								<a href="{{ route('sms-template.create') }}" class="btn btn-info">
-									<em class="fa fa-plus"></em> Add
-								</a>
-							</div>
+							@if (isset($_GET) && isset($_GET['add']) && $_GET['add']=="true")
+								<div class="text-right mb-2">
+									<a href="{{ route('sms-template.create') }}" class="btn btn-info">
+										<em class="fa fa-plus"></em> Add
+									</a>
+								</div>
+							@endif
 							<div class="table-responsive">
 								<table class="table table-bordered data-table">
 									<thead class="thead-light">
