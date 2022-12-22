@@ -49,7 +49,7 @@
                             <?php
                         } else {
                             ?>
-                                <input type="hidden" name="route" value="booking_taxi200">
+                                <input type="hidden" name="route" value="booking_taxi2000">
                             <?php
                         }
                     ?>
