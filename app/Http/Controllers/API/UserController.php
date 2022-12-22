@@ -421,8 +421,10 @@ class UserController extends Controller
 			if (!empty($request->device_token)) {
 				$user['device_token'] = $request->device_token;
 			}
+			if (!empty($request->socket_id)) {
+				$user['socket_id'] = $request->socket_id;
+			}
 
-			$user['updated_at'] = Carbon::now();
 			$user['availability'] = 0;
 			$user->save();
 			/* if($user->status == 0){
