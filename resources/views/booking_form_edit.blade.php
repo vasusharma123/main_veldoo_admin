@@ -676,7 +676,7 @@
             s = s < 10 ? '0' + s : s;
             // console.log(timerClass);
             // console.log(s);
-            $('.'+timerClass).html('Resend OTP in ' + s);
+            $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
             // document.getElementById(id).innerHTML = 
             remaining -= 1;
             
