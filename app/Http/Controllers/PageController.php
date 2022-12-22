@@ -17,6 +17,7 @@ use Twilio\Rest\Client;
 use App\Notification;
 use App\RideHistory;
 use App;
+use App\SMSTemplate;
 
 class PageController extends Controller
 {
@@ -356,11 +357,18 @@ if($_REQUEST['cm'] == 2)
 				);
 			}
 
+			$SMSTemplate = SMSTemplate::find(1);
+			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
+			if (app()->getLocale()!="en") 
+			{
+				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
+			}
+			// dd($body);
 			$message = $twilio->messages
 				->create(
 					"+".$request->country_code.ltrim($request->phone, "0"), // to
 					[
-						"body" => "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking",
+						"body" => $body,
 						"from" => env("TWILIO_FROM_SEND")
 					]
 				);
@@ -412,11 +420,19 @@ if($_REQUEST['cm'] == 2)
 			
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			$SMSTemplate = SMSTemplate::find(2);
 			if ($request->url_type=="taxisteinemann") {
-				// dd(route('list_of_booking_taxisteinemann',$user->random_token));
-				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en") 
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
 			} else {
-				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en") 
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
 			}
 			// dd($user->random);
 			$message = $twilio->messages
@@ -536,11 +552,17 @@ if($_REQUEST['cm'] == 2)
 				$token = env("TWILIO_AUTH_TOKEN");
 				$twilio = new Client($sid, $token);
 	
+				$SMSTemplate = SMSTemplate::find(3);
+				$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
+				if (app()->getLocale()!="en") 
+				{
+					$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
+				}
 				$message = $twilio->messages
 					->create(
 						"+".$request->country_code.ltrim($request->phone, "0"), // to
 						[
-							"body" => "Dear User, your Veldoo verification code is $otp",
+							"body" => $body,
 							"from" => env("TWILIO_FROM_SEND")
 						]
 					);
@@ -641,11 +663,19 @@ if($_REQUEST['cm'] == 2)
 			$token = env("TWILIO_AUTH_TOKEN");
 			$twilio = new Client($sid, $token);
 
+
+			$SMSTemplate = SMSTemplate::find(4);
+			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
+			if (app()->getLocale()!="en") 
+			{
+				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
+			}
+
 			$message = $twilio->messages
 				->create(
 					$request->phone, // to
 					[
-						"body" => "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking",
+						"body" => $body,
 						"from" => env("TWILIO_FROM_SEND")
 					]
 				);
@@ -719,10 +749,20 @@ if($_REQUEST['cm'] == 2)
 
 			$message_content = "";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+
+			$SMSTemplate = SMSTemplate::find(5);
 			if ($request->url_type=="taxisteinemann") {
-				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxisteinemann',$user->random_token);
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en") 
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
 			} else {
-				$message_content = "Your Booking has been confirmed with Veldoo, for time - ".date('d M, Y h:ia', strtotime($request->ride_time)).". To view the status of your ride go to: ".route('list_of_booking_taxi2000',$user->random_token);
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en") 
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
 			}
 			$message = $twilio->messages
 				->create(
