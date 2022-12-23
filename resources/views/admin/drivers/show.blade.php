@@ -16,7 +16,7 @@
 						
 						@endif
 					</div>
-							<ul class="nav nav-tabs" role="tablist">
+				<ul class="nav nav-tabs" role="tablist">
 					<li role="presentation" class="active"><a href="#personal_detail" aria-controls="home" role="tab" data-toggle="tab">Personal Detail</a> | </li>
 					<li role="presentation" class="active"><a href="#vehicle_detail" aria-controls="home" role="tab" data-toggle="tab">Vehicle Detail</a> | </li>
 					<!--<li role="presentation"><a href="#car_images" aria-controls="profile" role="tab" data-toggle="tab">Car Images</a></li>-->
@@ -44,7 +44,7 @@
 										<td>{{ $record->last_name }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('admin.country_code')}}</strong></td>
+										<td><strong>{{ __('Country Code') }}</strong></td>
 										<td>{{ $record->country_code }}</td>
 									</tr>
 									<tr>
@@ -60,19 +60,7 @@
 										<td>{{ ($record->dob) }}</td>
 									</tr>--->
 									<tr>
-										<td><strong>{{trans('admin.Primary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat && $record->lng ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat.','.$record->lng.'">'.$record->location : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
-										<td><strong>{{trans('admin.Secondary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat_2 && $record->lng_2 ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat_2.','.$record->lng_2.'">'.$record->location_2 : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
-										<td><strong>{{trans('admin.Status')}}</strong></td>
+										{{-- <td><strong>{{trans('admin.Status')}}</strong></td>
 										<td>{{ ($status[$record->status] ? $status[$record->status] : 'N/A' ) }}</td>
 									</tr>
 									<tr>
@@ -86,7 +74,7 @@
 									<tr>
 										<td><strong>{{trans('admin.Updated at')}}</strong></td>
 										<td>{{ $record->updated_at }}</td>
-									</tr>
+									</tr> --}}
 								</table>
 								<div class="form-actions">
 									<a href="{{ route('users.drivers') }}" class="btn btn-inverse">Cancel</a>

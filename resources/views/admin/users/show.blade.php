@@ -48,34 +48,22 @@
 										<td><strong>{{trans('admin.DOB')}}</strong></td>
 										<td>{{ ($record->dob) }}</td>
 									</tr>-->
-									<tr>
-										<td><strong>{{trans('admin.Primary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat && $record->lng ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat.','.$record->lng.'">'.$record->location : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
-										<td><strong>{{trans('admin.Secondary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat_2 && $record->lng_2 ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat_2.','.$record->lng_2.'">'.$record->location_2 : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
+									{{-- <tr>
 										<td><strong>{{trans('admin.Status')}}</strong></td>
 										<td>{{ ($status[$record->status] ? $status[$record->status] : 'N/A' ) }}</td>
-									</tr>
-									<tr>
+									</tr> --}}
+									{{-- <tr>
 										<td><strong>{{trans('admin.Created at')}}</strong></td>
 										<td>{{ $record->created_at }}</td>
-									</tr>
-									<tr>
+									</tr> --}}
+									{{-- <tr>
 										<td><strong>{{trans('admin.IP Address')}}</strong></td>
 										<td>{{(!empty($record->log->other) ? json_decode($record->log->other)[0]->ip_address : 'N/A')}}</td>
 									</tr>
 									<tr>
 										<td><strong>{{trans('admin.Updated at')}}</strong></td>
 										<td>{{ $record->updated_at }}</td>
-									</tr>
+									</tr> --}}
 								</table>
 								<div class="form-actions">
 									<a href="{{route( $route.'.index')}}" class="btn btn-inverse">{{trans('admin.Back')}}</a>
