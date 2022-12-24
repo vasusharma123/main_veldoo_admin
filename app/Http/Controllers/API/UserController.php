@@ -6182,6 +6182,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$notification->additional_data = json_encode($additional);
 						$notification->save();
 					}
+					$rideDetail = Ride::find($request->ride_id);
+					if(!empty($rideDetail->check_assigned_driver_ride_acceptation)){
+						$rideDetail->check_assigned_driver_ride_acceptation = null;
+						$rideDetail->save();
+					}
 					return $this->successResponse($ride_detail, 'Ride Accepted Successfully.');
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
@@ -6228,6 +6233,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// Notifications::checkAllDriverCancelRide($request->ride_id);
 
 					// return response()->json(['success' => true, 'message' => ''], $this->successCode);
+					$rideDetail = Ride::find($request->ride_id);
+					if(!empty($rideDetail->check_assigned_driver_ride_acceptation)){
+						$rideDetail->check_assigned_driver_ride_acceptation = null;
+						$rideDetail->save();
+					}
 					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
 					return $this->successResponse($ride, 'Ride Rejected Successfully.');
 				}
@@ -7415,6 +7425,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverdata['user_type']);
 						}
 					}
+
+					$rideDetail = Ride::find($request->ride_id);
+					$rideDetail->check_assigned_driver_ride_acceptation = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds '));
+					$rideDetail->save();
+
 					$notification = new Notification();
 					$notification->title = $title;
 					$notification->description = $message;
