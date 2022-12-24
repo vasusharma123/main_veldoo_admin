@@ -25,9 +25,15 @@
 										<td>{{ $record->first_name }} {{ $record->last_name }}</td>
 									</tr>--->
 									<tr>
+										<td><strong>{{trans('admin.Image')}}</strong></td>
+										<td>
+											<?php echo Html::image(((!empty($record->image)) ? (config('app.url_public').'/'.$record->image) : asset('no-images.png')), 'sidebar logo', ['id' => 'previewimage', 'width' => '50', 'height' => '50']); ?>
+										</td>
+									</tr>
+									<tr>
 										<td><strong>{{trans('admin.Email')}}</strong></td>
 										<td>{{ $record->email }}</td>
-									</tr>
+									{{-- </tr>
 									<tr>
 										<td><strong>{{trans('admin.First Name')}}</strong></td>
 										<td>{{ $record->first_name }}</td>
@@ -35,10 +41,38 @@
 									<tr>
 										<td><strong>{{trans('admin.Last Name')}}</strong></td>
 										<td>{{ $record->last_name }}</td>
-									</tr>
+									</tr> --}}
 									<tr>
+										<td><strong>{{trans('admin.Name')}}</strong></td>
+										<td>{{ $record->first_name.' '.$record->last_name }}</td>
+									</tr>
+									{{-- <tr>
 										<td><strong>{{trans('admin.Phone')}}</strong></td>
 										<td>{{ $record->phone }}</td>
+									</tr> --}}
+									<tr>
+										<td><strong>{{trans('admin.Phone')}}</strong></td>
+										<td>{{ $record->country_code.'-'.$record->phone }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Alternate Phone No')}}</strong></td>
+										<td>{{ $record->second_country_code.'-'.$record->second_phone_number }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.City')}}</strong></td>
+										<td>{{ $record->city }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.State')}}</strong></td>
+										<td>{{ $record->state }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Street')}}</strong></td>
+										<td>{{ $record->street }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Zip')}}</strong></td>
+										<td>{{ $record->zip }}</td>
 									</tr>
 									<!--<tr>
 										<td><strong>{{trans('admin.Gender')}}</strong></td>

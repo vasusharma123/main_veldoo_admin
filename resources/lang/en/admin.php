@@ -226,5 +226,10 @@ return [
     'Price Per KM'=>'Price Per KM',
 	'Currency Symbol'=>'Currency Symbol',
 	'Currency Name'=>'Currency Name',
-	'Payment Method'=>'Payment Method'
+	'Payment Method'=>'Payment Method',
+	'State'=>'State',
+	'City'=>'City',
+	'Street'=>'Street',
+	'Zip'=>'Zip',
+	'Alternate Phone No'=>'Alternate Phone No',
 ];
