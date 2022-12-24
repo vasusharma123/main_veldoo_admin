@@ -25,9 +25,15 @@
 										<td>{{ $record->first_name }} {{ $record->last_name }}</td>
 									</tr>--->
 									<tr>
+										<td><strong>{{trans('admin.Image')}}</strong></td>
+										<td>
+											<?php echo Html::image(((!empty($record->image)) ? (config('app.url_public').'/'.$record->image) : asset('no-images.png')), 'sidebar logo', ['id' => 'previewimage', 'width' => '50', 'height' => '50']); ?>
+										</td>
+									</tr>
+									<tr>
 										<td><strong>{{trans('admin.Email')}}</strong></td>
 										<td>{{ $record->email }}</td>
-									</tr>
+									{{-- </tr>
 									<tr>
 										<td><strong>{{trans('admin.First Name')}}</strong></td>
 										<td>{{ $record->first_name }}</td>
@@ -35,10 +41,38 @@
 									<tr>
 										<td><strong>{{trans('admin.Last Name')}}</strong></td>
 										<td>{{ $record->last_name }}</td>
-									</tr>
+									</tr> --}}
 									<tr>
+										<td><strong>{{trans('admin.Name')}}</strong></td>
+										<td>{{ $record->first_name.' '.$record->last_name }}</td>
+									</tr>
+									{{-- <tr>
 										<td><strong>{{trans('admin.Phone')}}</strong></td>
 										<td>{{ $record->phone }}</td>
+									</tr> --}}
+									<tr>
+										<td><strong>{{trans('admin.Phone')}}</strong></td>
+										<td>{{ $record->country_code.'-'.$record->phone }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Alternate Phone No')}}</strong></td>
+										<td>{{ $record->second_country_code.'-'.$record->second_phone_number }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.City')}}</strong></td>
+										<td>{{ $record->city }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.State')}}</strong></td>
+										<td>{{ $record->state }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Street')}}</strong></td>
+										<td>{{ $record->street }}</td>
+									</tr>
+									<tr>
+										<td><strong>{{trans('admin.Zip')}}</strong></td>
+										<td>{{ $record->zip }}</td>
 									</tr>
 									<!--<tr>
 										<td><strong>{{trans('admin.Gender')}}</strong></td>
@@ -48,34 +82,22 @@
 										<td><strong>{{trans('admin.DOB')}}</strong></td>
 										<td>{{ ($record->dob) }}</td>
 									</tr>-->
-									<tr>
-										<td><strong>{{trans('admin.Primary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat && $record->lng ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat.','.$record->lng.'">'.$record->location : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
-										<td><strong>{{trans('admin.Secondary Location')}}</strong></td>
-										<td>
-											<?php echo ($record->lat_2 && $record->lng_2 ? '<a target="_blank" href="https://maps.google.com/?q='.$record->lat_2.','.$record->lng_2.'">'.$record->location_2 : 'N/A'); ?>
-										</td>
-									</tr>
-									<tr>
+									{{-- <tr>
 										<td><strong>{{trans('admin.Status')}}</strong></td>
 										<td>{{ ($status[$record->status] ? $status[$record->status] : 'N/A' ) }}</td>
-									</tr>
-									<tr>
+									</tr> --}}
+									{{-- <tr>
 										<td><strong>{{trans('admin.Created at')}}</strong></td>
 										<td>{{ $record->created_at }}</td>
-									</tr>
-									<tr>
+									</tr> --}}
+									{{-- <tr>
 										<td><strong>{{trans('admin.IP Address')}}</strong></td>
 										<td>{{(!empty($record->log->other) ? json_decode($record->log->other)[0]->ip_address : 'N/A')}}</td>
 									</tr>
 									<tr>
 										<td><strong>{{trans('admin.Updated at')}}</strong></td>
 										<td>{{ $record->updated_at }}</td>
-									</tr>
+									</tr> --}}
 								</table>
 								<div class="form-actions">
 									<a href="{{route( $route.'.index')}}" class="btn btn-inverse">{{trans('admin.Back')}}</a>

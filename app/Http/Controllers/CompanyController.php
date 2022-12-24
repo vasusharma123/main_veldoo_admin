@@ -81,6 +81,9 @@ class CompanyController extends Controller
                             })->addColumn('state', function ($row) {
                                 return ucfirst($row->state);
                             })
+                            ->addColumn('country_code_phone', function ($row) {
+                                return $row->country_code.'-'.$row->phone;
+                            })
                            
                             ->rawColumns(['action','status','name','email','country','city','state'])
                             ->make(true);

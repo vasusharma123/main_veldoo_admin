@@ -32,13 +32,17 @@
 					</a>
 				</li>
 				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
+					{{-- <a class="waves-effect waves-dark" href="{{url('admin/rides')}}" aria-expanded="false">
+						<i class="mdi mdi-car-connected"></i>
+						<span class="hide-menu">{{ trans("Rides") }}</span>
+					</a> --}}
+					<a class="waves-effect waves-dark" href="{{ route('users.index') }}" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
 						<span class="hide-menu">{{ trans("admin.User Account Management") }}</span>
 					</a>
-					<ul aria-expanded="false" class="collapse">
+					{{-- <ul aria-expanded="false" class="collapse">
 						<li><a href="{{ route('users.index') }}">{{ trans("admin.List") }}</a></li>
-					</ul>
+					</ul> --}}
 				</li>
 				<li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">

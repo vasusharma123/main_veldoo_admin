@@ -15,23 +15,23 @@
 						
 						<div class="box" id="allDataUpdate">
 							<div class="">
-	<table class="table table-bordered data-table table-responsive data-table" width="100%">
+	<table class="table table-bordered data-table data-table" width="100%">
 		<thead class="thead-light">
 			<tr>
 			<th>ID</th>
 			<th>
 				
-				First Name
+				Full Name
 			</th>
-			<th>
+			{{-- <th>
 				
 				Last Name
-			</th>
+			</th> --}}
 			<th>
 				
 				Email
 			</th>
-			<th>Country Code</th>
+			{{-- <th>Country Code</th> --}}
 			<th>
 				
 				Phone
@@ -40,10 +40,10 @@
 				
 				Master Driver
 			</th>
-			<th>
+			{{-- <th>
 				
 				Status
-			</th>
+			</th> --}}
 			<th>Action</th>
 		</tr>
 		</thead>
@@ -223,7 +223,7 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
             serverSide: true,
            ajax: "{{ url('admin/drivers') }}",
                'columnDefs': [{
-         'targets': [0,1,2,3,4,5,6,7,8],
+         'targets': [0,1,2,3,4,5],
          'searchable':true,
          'orderable':true,
           'className': 'dt-body-center text-center new-class',
@@ -241,22 +241,22 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 
                 // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
 				{
-                    data: 'first_name',
-                    name: 'first_name',
+                    data: 'full_name',
+                    name: 'full_name',
                     orderable: true, searchable: true
                 },
-               {
-                    data: 'last_name',
-                    name: 'last_name'
-                },
+            //    {
+            //         data: 'last_name',
+            //         name: 'last_name'
+            //     },
                 {
                     data: 'email',
                     name: 'email'
                 },
-                {
-                	data:'country_code',
-                	name:'country_code'
-                },
+                // {
+                // 	data:'country_code',
+                // 	name:'country_code'
+                // },
                 {
                     data: 'phone',
                     name: 'phone'
@@ -265,10 +265,10 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
                     data: 'master_driver',
                     name: 'master_driver'
                 },
-                 {
-                    data: 'status',
-                    name: 'status'
-                },
+                //  {
+                //     data: 'status',
+                //     name: 'status'
+                // },
 				{
                     data: 'action',
                     name: 'action'
@@ -277,7 +277,7 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
             ],
             dom: 'Bfrtip',
         buttons: [
-            'csv', 'excel', 'pdf', 'print', 'pageLength'
+            'excel', 'pageLength'
         ],  
         });
     });

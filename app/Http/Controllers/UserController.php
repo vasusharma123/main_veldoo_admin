@@ -198,6 +198,11 @@ class UserController extends Controller
                                 
                                 return ucfirst($row->first_name);
                         
+							})->addColumn('full_name', function ($row) {
+                                
+                                
+                                return ucfirst($row->first_name).' '.ucfirst($row->last_name);
+                        
                             })
                             ->addColumn('last_name', function ($row) {
                                 
@@ -735,6 +740,9 @@ class UserController extends Controller
 				})
 				->addColumn('last_name', function ($row) {
 					return ucfirst($row->last_name);
+				})
+				->addColumn('full_name', function ($row) {
+					return ucfirst($row->last_name).' '.ucfirst($row->last_name);
 				})
 				->rawColumns(['action', 'status', 'master_driver', 'first_name', 'last_name'])
 				->make(true);
