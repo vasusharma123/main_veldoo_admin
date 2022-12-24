@@ -14,23 +14,23 @@
 						@include('admin.layouts.flash-message')
 						
 						<div class=" box" id="allDataUpdate">
-							<table class="table table-bordered data-table table-responsive data-table" width="100%">
+							<table class="table table-bordered data-table data-table" width="100%">
 		<thead class="thead-light">
 			<tr>
 			<th>ID</th>
 			<th>
 				
-				First Name
+				Name
 			</th>
-			<th>
+			{{-- <th>
 				
-				Last Name
+				Last Name --}}
 			</th>
 			<th>
 				
 				Email
 			</th>
-			<th>Country Code</th>
+			{{-- <th>Country Code</th> --}}
 			<th>
 				
 				Phone
@@ -39,10 +39,10 @@
 				
 				Invoice Status	
 			</th>
-			<th>
+			{{-- <th>
 				
 				Status
-			</th>
+			</th> --}}
 			<th>Action</th>
 		</tr>
 		</thead>
@@ -213,7 +213,7 @@ $('body').on('click', '.change_invoice_status', function(){
             serverSide: true,
            ajax: "{{ url('admin/users') }}",
                'columnDefs': [{
-         'targets': [0,1,2,3,4,5,6,7],
+         'targets': [0,1,2,3,4,5],
          'searchable':true,
          'orderable':true,
           'className': 'dt-body-center text-center new-class',
@@ -230,22 +230,18 @@ $('body').on('click', '.change_invoice_status', function(){
                 },
                 // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
 				{
-                    data: 'first_name',
-                    name: 'first_name',
+                    data: 'full_name',
+                    name: 'full_name',
                     orderable: true, searchable: true
-                },
-               {
-                    data: 'last_name',
-                    name: 'last_name'
                 },
                 {
                     data: 'email',
                     name: 'email'
                 },
-                {
-                	data:'country_code',
-                	name:'country_code'
-                },
+                // {
+                // 	data:'country_code',
+                // 	name:'country_code'
+                // },
                 {
                     data: 'phone',
                     name: 'phone'
@@ -254,10 +250,10 @@ $('body').on('click', '.change_invoice_status', function(){
                     data: 'invoice_status',
                     name: 'invoice_status'
                 },
-                 {
-                    data: 'status',
-                    name: 'status'
-                },
+                //  {
+                //     data: 'status',
+                //     name: 'status'
+                // },
 				{
                     data: 'action',
                     name: 'action'
@@ -266,7 +262,7 @@ $('body').on('click', '.change_invoice_status', function(){
             ],
             dom: 'Bfrtip',
         buttons: [
-            'csv', 'excel', 'pdf', 'print', 'pageLength'
+            'excel', 'pageLength'
         ],  
         });
     });

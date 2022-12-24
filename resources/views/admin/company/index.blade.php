@@ -16,7 +16,7 @@
 					
 						<div class=" box" id="allDataUpdate">
 							<div class="">
-	<table class="table table-bordered data-table table-responsive " width="100%">
+	<table class="table table-bordered data-table " width="100%">
 		<thead class="thead-light">
 			<tr>
 			<th>ID</th>
@@ -29,7 +29,7 @@
 				
 				Email
 			</th>
-			<th>Country Code</th>
+			{{-- <th>Country Code</th> --}}
 			<th>
 				
 				Phone
@@ -214,7 +214,7 @@ $(function() {
                     // name: 'id'
                 // },
 
-                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'id', name: 'id', orderable: true, searchable: true},
 				{
                     data: 'name',
                     name: 'name',
@@ -226,13 +226,13 @@ $(function() {
                     name: 'email'
                 },
                 {
-                	data:'country_code',
-                	name:'country_code'
+                	data:'country_code_phone',
+                	name:'country_code_phone'
                 },
-                {
-                    data: 'phone',
-                    name: 'phone'
-                },
+                // {
+                //     data: 'phone',
+                //     name: 'phone'
+                // },
 				{
                     data: 'state',
                     name: 'state'
@@ -258,7 +258,7 @@ $(function() {
             ],
             dom: 'Bfrtip',
         buttons: [
-            'csv', 'excel', 'pdf', 'print', 'pageLength'
+            'excel', 'pageLength'
         ],  
         });
     });
