@@ -17,6 +17,7 @@ use Twilio\Rest\Client;
 use App\Notification;
 use App\RideHistory;
 use App;
+use App\Setting;
 
 class BookingTaxi2000Controller extends Controller
 {
@@ -610,12 +611,62 @@ if($_REQUEST['cm'] == 2)
 	public function cancel_booking(Request $request)
 	{
 		try {
+			DB::beginTransaction();
 			$ride_id = $request->ride_id;
-			$ride_detail = Ride::find($ride_id);
-			$ride_detail->delete();
-            RideHistory::where(['ride_id' => $ride_id])->delete();
-			return response()->json(['status' => 1, 'message' => __('Ride has been deleted.')]);
+			$ride = Ride::find($ride_id);
+			if (!empty($ride)) {
+				if (!empty($ride['driver_id'])) {
+					$driverData = User::find($ride['driver_id']);
+				}
+				if (!empty($ride['user_id'])) {
+					$userData = User::find($ride['user_id']);
+				}
+
+				if ($ride['status'] == -3) {
+					return response()->json(['status' => 0, 'message' => "Ride Cancelled already"]);
+				}
+				$title = 'Ride Cancelled';
+				$message = 'Ride Cancelled by User';
+
+				$type = 6;
+				$ride->status = -3;
+				// if (!empty($request->cancel_reason)) {
+				// 	$ride->cancel_reason = $request->cancel_reason;
+				// }
+				$ride->save();
+				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng'])->find($ride_id);
+
+				$settings = Setting::first();
+				$settingValue = json_decode($settings['value']);
+				$ride['waiting_time'] = $settingValue->waiting_time;
+				if (!empty($driverData)) {
+					$deviceToken = $driverData['device_token'] ?? "";
+					$deviceType = $driverData['device_type'] ?? "";
+					$additional = ['type' => $type, 'ride_id' => $ride_detail->id, 'ride_data' => $ride_detail];
+					if (!empty($deviceToken)) {
+						if ($deviceType == 'android') {
+							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						}
+						if ($deviceType == 'ios') {
+							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+						}
+					}
+				}
+
+				if (!empty($userData)) {
+					$notification = new Notification();
+					$notification->title = 'Ride Cancelled';
+					$notification->description = 'Ride Cancelled by you';
+					$notification->type = $type;
+					$notification->user_id = $userData['id'];
+					$notification->additional_data = (!empty($additional)) ? json_encode($additional) : null;
+					$notification->save();
+				}
+			}
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => __('The ride has been cancelled.')]);
 		} catch (\Exception $exception) {
+			DB::rollBack();
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
