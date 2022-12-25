@@ -5,4 +5,5 @@
 composer.lock
 .env
 chat/node_modules
+chat/utils/db.js
 storage/framework/cache/
