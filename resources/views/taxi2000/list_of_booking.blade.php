@@ -1,6 +1,28 @@
 @extends('layouts.web_booking_taxi_2000')
 @section('css')
     <style>
+        .input_check_box {
+            position: relative;
+        }
+        #flexCheckChecked {
+            visibility: hidden;
+        }
+        .check_status {
+            background: transparent;
+            width: 18px;
+            height: 18px;
+            /* background: red; */
+            position: absolute;
+            left: -8%;
+            top: 3px;
+            border: 2px solid #000;
+            border-radius: 2px;
+        }
+        #flexCheckChecked:checked ~ .check_status {
+            background: url(../../images/checkbox.png);
+            background-size: cover;
+            border: none;
+        }
         .btn {
             border-radius: 50px;
         }
@@ -282,6 +304,81 @@
             font-weight: 500;
         }
 
+        .listDate.font_bold{
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .item_text {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #253239;
+            font-weight: 400;
+        }
+        .runing_item {
+            position: relative;
+            list-style: none;
+        }
+        .runing_item:after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 7px;
+            width: 12px;
+            height: 12px;
+            border-radius: 300px;
+            background: #FC4C02;
+            
+            z-index: 1;
+        }
+        .runing_item.final:after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 7px;
+            width: 12px;
+            height: 12px;
+            border-radius: 1px;
+            background: #356681;
+            z-index: 1;
+        }
+        ul.timeline_action:after {
+            content: '';
+            background: #071E2B;
+            width: 1px;
+            height: 34%;
+            position: absolute;
+            top: 22px;
+            left: 17px;
+            z-index: 0;
+        }
+        ul.timeline_action {
+            position: relative;
+        }
+        .price_type span {
+            font-weight: 700;
+            margin-left: 10px;
+            font-family: inherit;
+        }
+        .timming_print.message_box {
+            background: rgba(249, 178, 51, 0.61);
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .info-area {
+            background: white !important;
+        }
+
+        .img-fluid.driver_avatar_img {
+            max-width: 69px;
+            max-height: 68px;
+            width: 69px;
+            height: 68px;
+            border-radius: 300px;
+            object-fit: cover;
+        }
+
         .SelectedListBooking.form-radio {
             position: absolute;
             left: 0;
@@ -294,6 +391,71 @@
 
         .SelectedListBooking.form-radio:checked~.listDate {
             color: #cc4452;
+        }
+
+        .map_area{
+            background: rgba(242, 242, 242, 0.68);
+            padding: 20px 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            height: 100%;
+        }
+        .map_area.half_area{
+            height: 56%;
+            min-height: 56%;
+        }
+        .map_area_price{
+            background: rgba(242, 242, 242, 0.68);
+            padding: 20px 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .timming_print {
+            font-size: 20px;
+            color: #000;
+        }
+        .title_main {
+            font-size: 20px;
+            margin-bottom: 3px;
+            font-weight: 700;
+            color: #000;
+        }
+        .price {
+            font-size: 25px;
+            margin: 2px;
+            color: #FC4C02;
+        }
+        .contact_name.ml-3 p {
+            font-size: 17px;
+        }
+        .user_img {
+            position: relative;
+        }
+        .img-fluid.driver_car {
+            width: 84px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            object-position: center;
+        }
+        .driver_info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .Status_live.online {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #66D10F;
+            border-radius: 200px;
+            bottom: 10px;
+            right: 2px;
+        }
+        .id_price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         @media (max-width: 300px) {
@@ -449,6 +611,9 @@
             #googleMap {
                 height: 630px !important;
             }
+            .small_height{
+                height: 100%;
+            }
         }
 
         @media (min-width:768px) {
@@ -567,27 +732,62 @@
             </div>
         </div>
 
-        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-            <div class="map_section card">
-                <div class="p-3">
-                    <div class="row">
-                        <div class="col-6">
-                            <h5 class="booking_user_name"></h5>
-                        </div>
-                        <div class="col-6 text-right">
-                            <div class="bagde-red">
-                                <span class="badge badge-primary booking_created_at" style="background-color: #ef4f23"></span>
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12 small_height">
+            <div class="map_area half_area">
+                <div class="map_section">
+                    <div class="">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="" style="height: 200px">
+                                    <div id="googleMap" style="width:100%;min-height:290px;height:290px;max-height:290px"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="table-responsive mt-4">
-                                <table class="table table-bordered">
-                                  <tbody id="bookingDetailsTable">
-                                    
-                                  </tbody>
-                                </table>
-                              </div>
+                    </div>
+                </div>
+            </div>
+            <div class="map_area_price" style="display: none">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <p class="timming_print"><b>Date & Time:</b><span class="booking_created_at"></span></p>
+                        <ul class="timeline_action">
+                            <li class="runing_item">
+                                <p class="item_text pick_loc"></p>
+                            </li>
+                            <li class="runing_item final dest_loc_par">
+                                <p class="item_text dest_loc"></p>
+                            </li>
+                        </ul>
+                        <p class="title_main">Payment Details </p>
+                        <div class="id_price">
+                            <p class="price ride_price"><b>CHF 60.00</b></p>
+                            <div class="price_type">
+                                <img src="{{ asset('images/cash.png') }}" class="img-responsive price_type_img">
+                                <span class="ride_payment_type">Cash</span>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <p class="timming_print d-none"><b>Ride Assigned To</b></p>
+                        <p class="timming_print message_box"><b class="latest_status">Pending</b></p>
+                        <div class="driver_info">
+                            <div class="driver_personal d-flex align-items-center">
+                                <div class="user_img">
+                                    <img src="{{ asset('images/avatar.png') }}" class="img-fluid driver_avatar_img driver_image">
+                                    <spna class="Status_live online"></span>
+                                </div>
+                                <div class="contact_name ml-3">
+                                    <p class="timming_print text-uppercase mb-1"><b class="driver_name">paedro</b></p>
+                                    <p class="timming_print text-uppercase mb-0"><b class="driver_phone">9876554321</b></p>
+                                </div>
+                            </div>
+                            <div class="car_infomation">
+                                <img src="{{ asset('images/cars.png') }}" class="img-fluid driver_car car_image">
+                                <p class="timming_print text-uppercase mb-1"><b class="car_number">SH50288</b></p>
+                            </div>
+                        </div>
+                        <textarea class="form-control info-area ride_notes" rows="2" cols="10" placeholder="Additional note" readonly></textarea>
                     </div>
                 </div>
             </div>
@@ -606,7 +806,19 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>																																																						
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
     <script>
+        var map;
+        var MapPoints = [];
+        var directionsDisplay;
+        var directionsService = new google.maps.DirectionsService();
+        var markers = [];
         $(function() {
+            map = new google.maps.Map(document.getElementById('googleMap'), {
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                scrollwheel: false,
+                center: { lat: 46.8182, lng: 8.2275 },//Setting Initial Position
+                zoom: 8
+            });
+
             var code = "+41";
             $('#txtPhone').intlTelInput({
                 initialCountry: "ch",
@@ -761,82 +973,171 @@
             bookingsArray.forEach(element => {
                 if (selectedBooking==element.id) 
                 {
-                    div = `<tr>
-                            <td>
-                                <strong>Driver Name</strong>
-                            </td>
-                            <td> `+checkText(element.driver_name)+` </td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Pickup Location</strong>
-                            </td>
-                            <td>`+checkText(element.pickup_address)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Dropoff Location</strong>
-                            </td>
-                            <td>`+checkText(element.dest_address)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Price</strong>
-                            </td>
-                            <td>`+checkText(element.ride_cost)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Distance</strong>
-                            </td>
-                            <td>`+checkText(element.distance)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Payment Type</strong>
-                            </td>
-                            <td> `+checkText(element.payment_type)+` </td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Ride Type</strong>
-                            </td>
-                            <td> `+checkText(element.ride_type)+` </td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Additional Note</strong>
-                            </td>
-                            <td>`+checkText(element.additional_notes)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Number of Passanger</strong>
-                            </td>
-                            <td>`+checkText(element.passanger)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Car Type</strong>
-                            </td>
-                            <td>`+checkText(element.car_type)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Ride Time</strong>
-                            </td>
-                            <td>`+checkText(element.ride_type)+`</td>
-                            </tr>
-                            <tr>
-                            <td>
-                                <strong>Status</strong>
-                            </td>
-                            <td> `+checkText(element.ride_status)+` </td>
-                            </tr>
-                            <tr>`;
-                    $('.booking_user_name').html(element.user_name);
+                    if (element.dest_lat=="") 
+                    {
+                        for (let i = 0; i < markers.length; i++) {
+                            markers[i].setMap(null);
+                        }
+                        pt = new google.maps.LatLng(element.pick_lat, element.pick_lng);
+                        map.setCenter(pt);
+                        map.setZoom(13);
+                        marker = new google.maps.Marker({
+                            position: pt,
+                            map: map
+                        });   
+                    }
+                    else
+                    {
+                        MapPoints = [{
+                            Latitude: element.pick_lat,
+                            Longitude: element.pick_lng,
+                            AddressLocation: element.pickup_address
+                        }, {
+                            Latitude: element.dest_lat,
+                            Longitude: element.dest_lng,
+                            AddressLocation: element.dest_address
+                        }];
+                        directionsService = new google.maps.DirectionsService;
+                        directionsDisplay = new google.maps.DirectionsRenderer;
+                        directionsDisplay = new google.maps.DirectionsRenderer({
+                            map: map,
+                            suppressMarkers: true
+                        });
+                        var locations = MapPoints;
+                        var bounds = new google.maps.LatLngBounds();
+                        var infowindow = new google.maps.InfoWindow();
+                        var request = {
+                            travelMode: google.maps.TravelMode.DRIVING
+                        };
+                        for (i = 0; i < locations.length; i++) 
+                        {
+                            marker = new google.maps.Marker({
+                                position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
+                                    .toString()),
+                                //position: new google.maps.LatLng(locations[i].address.lat, locations[i].address.lng),
+                                map: map
+                            });
+                            bounds.extend(marker.position);
+
+                            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                                return function() {
+                                    infowindow.setContent(locations[i]['AddressLocation']);
+                                    infowindow.open(map, marker);
+                                }
+                            })(marker, i));
+                            // create request from locations array, 1st marker is origin
+                            if (i == 0) request.origin = marker.getPosition();
+                            // last marker is destination
+                            else if (i == locations.length - 1) request.destination = marker.getPosition();
+                            else {
+                                // any other markers are waypoints
+                                if (!request.waypoints) request.waypoints = [];
+                                request.waypoints.push({
+                                    location: marker.getPosition(),
+                                    stopover: true
+                                });
+                            }
+                            markers.push(marker);
+                        }
+                        directionsService.route(request, function(result, status) {
+                            if (status == google.maps.DirectionsStatus.OK) {
+                                directionsDisplay.setDirections(result);
+                            }
+                        });
+                        map.fitBounds(bounds);
+                        setInterval(() => {
+                            if ((map.getZoom() != 17) && (MapPoints[0].Latitude==MapPoints[1].Latitude))
+                            {
+                                // alert('shlo');
+                                // console.log(MapPoints);
+                                map.setZoom(17);
+                            }
+                        }, 1000);
+                    }
+																	
                     $('.booking_created_at').html(element.create_date);
-                    $('#bookingDetailsTable').html(div);
+                    $('.pick_loc').html(element.pickup_address);
+                    $('.dest_loc_par').hide();
+                    if(element.dest_address!=null)
+                    {
+                        $('.dest_loc_par').show();
+                        $('.dest_loc').html(element.dest_address);
+                    }
+                    $('.ride_notes').hide();
+                    if(element.note!=null)
+                    {
+                        $('.ride_notes').show();
+                        $('.ride_notes').html(element.note);
+                    }
+                    $('.ride_price').html("CHF "+element.ride_cost);
+                    $('.ride_payment_type').html(element.payment_type);
+                    ride_status_latest = element.ride_status_latest;
+                    $('.driver_info').hide();
+                    if (element.driver!=null) 
+                    {
+                        $('.driver_image').attr('src',element.driver.image_with_url);
+                        $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
+                        $('.driver_phone').html(element.driver.phone);
+                        $('.driver_info').show();
+
+                        if (element.status=="1") 
+                        {
+                            var distanceService = new google.maps.DistanceMatrixService();
+                            var origin = new google.maps.LatLng(element.driver.current_lat,element.driver.current_lng);
+                            var destination = new google.maps.LatLng(element.pick_lat,element.pick_lng);
+                            distanceService.getDistanceMatrix({
+                                    origins: [origin],
+                                    destinations: [destination],
+                                    travelMode: google.maps.TravelMode.DRIVING,
+                                    unitSystem: google.maps.UnitSystem.METRIC,
+                                    durationInTraffic: true,
+                                    avoidHighways: false,
+                                    avoidTolls: false
+                                },
+                                function(response, status) {
+                                    if (status !== google.maps.DistanceMatrixStatus.OK) {
+                                        console.log('Error:', status);
+                                    } else {
+                                        ride_status_latest = ride_status_latest.replace('#time#',response.rows[0].elements[0].duration.text);
+                                        $('.latest_status').html(ride_status_latest);
+                                    }
+                                });    
+                        }
+                        if (element.status=="2") 
+                        {
+                            var distanceService = new google.maps.DistanceMatrixService();
+                            var origin = new google.maps.LatLng(element.pick_lat,element.pick_lng);
+                            var destination = new google.maps.LatLng(element.dest_lat,element.dest_lng);
+                            distanceService.getDistanceMatrix({
+                                    origins: [origin],
+                                    destinations: [destination],
+                                    travelMode: google.maps.TravelMode.DRIVING,
+                                    unitSystem: google.maps.UnitSystem.METRIC,
+                                    durationInTraffic: true,
+                                    avoidHighways: false,
+                                    avoidTolls: false
+                                },
+                                function(response, status) {
+                                    if (status !== google.maps.DistanceMatrixStatus.OK) {
+                                        console.log('Error:', status);
+                                    } else {
+                                        ride_status_latest = ride_status_latest.replace('#time#',response.rows[0].elements[0].duration.text);
+                                        $('.latest_status').html(ride_status_latest);
+                                    }
+                                });    
+                        }
+                    }
+
+                    $('.car_image').hide();
+                    $('.car_number').hide();
+                    if (element.vehicle!=null) 
+                    {
+                        $('.car_image').attr('src',element.vehicle.image_with_url);
+                        $('.car_image').show();
+                        $('.car_number').html(element.vehicle.vehicle_number_plate);
+                        $('.car_number').show();
+                    }
+                    $('.map_area_price').show();
                 }
             });
         });
@@ -866,7 +1167,7 @@
                             $(document).find(".bookingList[data-id='"+selectedBooking+"']").remove();
                             $("#cancelBookingModal").modal('hide');
                             swal("Success",response.message,"success");
-                            $('#bookingDetailsTable').html('');
+                            // $('#bookingDetailsTable').html('');
                             $('.booking_user_name').html('');
                             $('.booking_created_at').html('');
                         } else if(response.status == 0){

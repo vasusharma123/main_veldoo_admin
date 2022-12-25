@@ -9,9 +9,9 @@ class Db {
 		this.connection = mysql.createPool({
 			connectionLimit: 100,
 			host: 'localhost',
-			user: 'admin',
-			password: 'f7LBRD6AGhv5tuQl',
-			database: 'veldoo',
+			user: 'root',
+			password: 'ItauwenTo7fi7dlw',
+			database: 'veldoo_dev',
 			debug: false,
 			charset : 'utf8mb4'
 		});
