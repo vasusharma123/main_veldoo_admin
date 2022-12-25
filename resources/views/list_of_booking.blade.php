@@ -1,6 +1,28 @@
 @extends('layouts.web_booking')
 @section('css')
     <style>
+        .input_check_box {
+            position: relative;
+        }
+        #flexCheckChecked {
+            visibility: hidden;
+        }
+        .check_status {
+            background: transparent;
+            width: 18px;
+            height: 18px;
+            /* background: red; */
+            position: absolute;
+            left: -8%;
+            top: 3px;
+            border: 2px solid #000;
+            border-radius: 2px;
+        }
+        #flexCheckChecked:checked ~ .check_status {
+            background: url(../../images/checkbox.png);
+            background-size: cover;
+            border: none;
+        }
         .btn {
             border-radius: 50px;
         }
@@ -282,6 +304,80 @@
             font-weight: 500;
         }
 
+        .listDate.font_bold{
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .item_text {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #253239;
+            font-weight: 400;
+        }
+        .runing_item {
+            position: relative;
+            list-style: none;
+        }
+        .runing_item:after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 7px;
+            width: 12px;
+            height: 12px;
+            border-radius: 300px;
+            background: #FC4C02;
+            
+            z-index: 1;
+        }
+        .runing_item.final:after {
+            content: '';
+            position: absolute;
+            left: -28px;
+            top: 7px;
+            width: 12px;
+            height: 12px;
+            border-radius: 1px;
+            background: #356681;
+            z-index: 1;
+        }
+        ul.timeline_action:after {
+            content: '';
+            background: #071E2B;
+            width: 1px;
+            height: 34%;
+            position: absolute;
+            top: 22px;
+            left: 17px;
+            z-index: 0;
+        }
+        ul.timeline_action {
+            position: relative;
+        }
+        .price_type span {
+            font-weight: 700;
+            margin-left: 10px;
+            font-family: inherit;
+        }
+        .timming_print.message_box {
+            background: rgba(249, 178, 51, 0.61);
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .info-area {
+            background: white !important;
+        }
+
+        .img-fluid.driver_avatar_img {
+            max-width: 69px;
+            max-height: 68px;
+            width: 69px;
+            height: 68px;
+            border-radius: 300px;
+            object-fit: cover;
+        }
         .SelectedListBooking.form-radio {
             position: absolute;
             left: 0;
@@ -295,7 +391,70 @@
         .SelectedListBooking.form-radio:checked~.listDate {
             color: #cc4452;
         }
-
+        .map_area{
+            background: rgba(242, 242, 242, 0.68);
+            padding: 20px 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            height: 100%;
+        }
+        .map_area.half_area{
+            height: 56%;
+            min-height: 56%;
+        }
+        .map_area_price{
+            background: rgba(242, 242, 242, 0.68);
+            padding: 20px 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .timming_print {
+            font-size: 20px;
+            color: #000;
+        }
+        .title_main {
+            font-size: 20px;
+            margin-bottom: 3px;
+            font-weight: 700;
+            color: #000;
+        }
+        .price {
+            font-size: 25px;
+            margin: 2px;
+            color: #FC4C02;
+        }
+        .contact_name.ml-3 p {
+            font-size: 17px;
+        }
+        .user_img {
+            position: relative;
+        }
+        .img-fluid.driver_car {
+            width: 84px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            object-position: center;
+        }
+        .driver_info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .Status_live.online {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #66D10F;
+            border-radius: 200px;
+            bottom: 10px;
+            right: 2px;
+        }
+        .id_price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         @media (max-width: 300px) {
 
             .col-4,
@@ -400,7 +559,7 @@
             .icon_img.img-repsonsive {
                 max-width: 14px;
             }
-
+            
             .filter_booking_section_row .form-group label {
                 min-width: 8px;
             }
@@ -448,6 +607,9 @@
         @media (max-width: 767px) {
             #googleMap {
                 height: 630px !important;
+            }
+            .small_height{
+                height: 100%;
             }
         }
 
@@ -542,6 +704,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 px-lg-5">
+                                <div class="form-check">
+                                    <div class="input_check_box">
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                        <div class="check_status"></div>
+                                    </div>
+                                    <label class="form-check-label listDate font_bold ml-0 pb-3" for="flexCheckChecked">
+                                        I have read and accepted the general terms and conditions
+                                    </label>
+                                </div>
+                            </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
                                     <button type="button" id="submit_request_cancel"
@@ -567,28 +740,78 @@
             </div>
         </div>
 
-        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
-            <div class="map_section card">
-                <div class="p-3">
-                    <div class="row">
-                        <div class="col-6">
-                            <h5 class="booking_user_name"></h5>
-                        </div>
-                        <div class="col-6 text-right">
-                            <div class="bagde-red">
-                                <span class="badge badge-primary booking_created_at" style="background-color: #ef4f23"></span>
+        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12 small_height">
+            <div class="map_area half_area">
+                <div class="map_section card">
+                    <div class="p-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <h5 class="booking_user_name"></h5>
+                            </div>
+                            <div class="col-6 text-right">
+                                <div class="bagde-red">
+                                    <span class="badge badge-primary booking_created_at" style="background-color: #ef4f23"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="table-responsive mt-4">
+                                    <table class="table table-bordered">
+                                    <tbody id="bookingDetailsTable">
+                                        
+                                    </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="table-responsive mt-4">
-                                <table class="table table-bordered">
-                                  <tbody id="bookingDetailsTable">
-                                    
-                                  </tbody>
-                                </table>
-                              </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map_area_price">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <p class="timming_print"><b>Date & Time:</b> Mo  26.12.22  12:00</p>
+                        <ul class="timeline_action">
+                            <li class="runing_item">
+                                <p class="item_text"> Strickstrasse 55, Zürich 8008 : <b>10 min</b></p>
+                            </li>
+                            <li class="runing_item final">
+                                <p class="item_text"> The Matterhorn</p>
+                            </li>
+                        </ul>
+                        <p class="title_main">Payment Details </p>
+                        <div class="id_price">
+                            <p class="price"><b>CHF 60.00</b></p>
+                            <div class="price_type">
+                                <img src="{{ asset('images/cash.png') }}" class="img-responsive price_type_img">
+                                <span>Cash</span>
+                            </div>
                         </div>
                     </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <p class="timming_print d-none"><b>Ride Assigned To</b></p>
+                        <p class="timming_print message_box"><b>Driver has arrived</b></p>
+                        <div class="driver_info">
+                            <div class="driver_personal d-flex align-items-center">
+                                <div class="user_img">
+                                    <img src="{{ asset('images/avatar.png') }}" class="img-fluid driver_avatar_img">
+                                    <spna class="Status_live online"></span>
+                                </div>
+                                <div class="contact_name ml-3">
+                                    <p class="timming_print text-uppercase mb-1"><b>paedro</b></p>
+                                    <p class="timming_print text-uppercase mb-0"><b>9876554321</b></p>
+                                </div>
+                            </div>
+                            <div class="car_infomation">
+                                <img src="{{ asset('images/cars.png') }}" class="img-fluid driver_car">
+                                <p class="timming_print text-uppercase mb-1"><b>SH50288</b></p>
+                            </div>
+                        </div>
+                        <textarea class="form-control info-area" rows="2" cols="10" placeholder="Additional note" readonly>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </textarea>
+                        
+                    </div>
+
                 </div>
             </div>
         </div>
