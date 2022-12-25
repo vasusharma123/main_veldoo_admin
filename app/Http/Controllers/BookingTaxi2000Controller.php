@@ -443,7 +443,7 @@ if($_REQUEST['cm'] == 2)
 			{
 				$data['token'] = $token;
 				$now = Carbon::now()->subHour();
-				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->get();
+				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->with(['driver','vehicle'])->get();
 				foreach ($rideList as $key => $ride) {
 					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
 					$rideList[$key]->create_date = date('D d-m-Y H:i',strtotime($ride->created_at));
@@ -476,43 +476,62 @@ if($_REQUEST['cm'] == 2)
 					$rideList[$key]->ride_type = $ride_type;
 
 					$ride_status = "";
+					$ride_status_latest = "";
 					if ($ride->status == -2)
 					{
 						$ride_status = "Cancelled";
+						$ride_status_latest = "Ride Cancelled";
 					}
 					elseif($ride->status == -1)
 					{
+						$ride_status_latest = "Ride Rejected";
 						$ride_status = "Rejected";
 					}
 					elseif($ride->status == 1)
 					{
+						$ride_status_latest = "Driver will arrive in #time#";
 						$ride_status = "Accepted";
 					}
 					elseif($ride->status == 2)
 					{
+						$ride_status_latest = "Ride in progress and will completed in #time#";
 						$ride_status = "Started";
 					}
 					elseif($ride->status == 4)
 					{
+						$ride_status_latest = "Driver has arrived";
 						$ride_status = "Driver Reached";
 					}
 					elseif($ride->status == 3)
 					{
+						$ride_status_latest = "Ride Completed";
 						$ride_status = "Completed";
 					}
 					elseif($ride->status == -3)
 					{
+						$ride_status_latest = "Ride Cancelled By You";
 						$ride_status = "Cancelled";
 					}
 					elseif($ride->status == 0)
 					{
+						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 					}
 					elseif($ride->ride_status > date('Y-m-d H:i:s'))
 					{
+						$ride_status_latest = "Upcoming Ride";
 						$ride_status = "Upcoming";
 					}
+
+					if (!$ride->driver) 
+					{
+						$ride_status_latest = "Pending";
+						$ride_status = "Pending";
+						$rideList[$key]->status = 0;
+					}
+					// dd($ride);					
 					$rideList[$key]->ride_status = $ride_status;
+					$rideList[$key]->ride_status_latest = $ride_status_latest;
 					$rideList[$key]->user_name = ($ride->user ? $ride->user->first_name : 'Not Available').' '.($ride->user ? $ride->user->last_name : '');
 				}
 				$data['rides'] = $rideList;
