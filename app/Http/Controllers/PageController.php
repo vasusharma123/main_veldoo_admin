@@ -905,7 +905,12 @@ if($_REQUEST['cm'] == 2)
 
 	public function changeLocale(Request $request)
 	{
+		$url = url()->previous();
 		session()->put('locale', $request->locale);
+		if (in_array('list_of_booking',explode('/',$url))) 
+		{
+			return redirect()->back();
+		}
 		return redirect()->route($request->route);
 	}
 	
