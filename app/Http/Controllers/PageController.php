@@ -525,7 +525,7 @@ if($_REQUEST['cm'] == 2)
 						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 					} elseif ($ride->status == -4) {
-						$ride_status_latest = "No one accepted";
+						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 					} elseif ($ride->ride_status > date('Y-m-d H:i:s')) {
 						$ride_status_latest = "Upcoming Ride";
@@ -664,7 +664,7 @@ if($_REQUEST['cm'] == 2)
 						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 					} elseif ($ride->status == -4) {
-						$ride_status_latest = "No one accepted";
+						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 					} elseif ($ride->ride_status > date('Y-m-d H:i:s')) {
 						$ride_status_latest = "Upcoming Ride";
