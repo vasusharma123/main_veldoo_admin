@@ -2,7 +2,7 @@
 @section('css')
     <style>
         .map-booking {
-            background: url('https://images.unsplash.com/photo-1565429504749-436a49cd9f45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
+            background: url("{{asset('images/taxi2000_bg.png')}}");
             width: 100%;
             height: 100%;
             background-position: center;
@@ -395,7 +395,7 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="logo_img_top_1">
-                <img src="{{ asset('images/vel_logo.png') }}" class="img-responsive imagelogo_brand"
+                <img src="{{ asset('images/taxi2000_logo.png') }}" class="img-responsive imagelogo_brand"
                     alt="img Logo">
             </div>
             <div class="filter_booking_list">

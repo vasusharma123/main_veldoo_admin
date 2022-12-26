@@ -17,7 +17,7 @@
             box-shadow: 0px 4px 10px rgb(0 0 0 / 30%);
         }
         .map-booking {
-            background: url('https://images.unsplash.com/photo-1565429504749-436a49cd9f45?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80');
+            background: url("{{asset('images/steinemann_bg.png')}}");
             width: 100%;
             height: 100%;
             background-position: center;
@@ -406,7 +406,7 @@
                     <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
                         <div class="booking_personal_information">
                             <div class="logo_img_top_1">
-                                <img src="{{asset('images/vel_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                                <img src="{{asset('images/steinemann_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
                             </div>
                             <h2 class="title_form">My Bookings</h2>
                             <div class="filter_booking_list">
