@@ -775,7 +775,7 @@
                             <div class="driver_personal d-flex align-items-center">
                                 <div class="user_img">
                                     <img src="{{ asset('images/avatar.png') }}" class="img-fluid driver_avatar_img driver_image">
-                                    <spna class="Status_live online"></span>
+                                    <span class="Status_live online"></span>
                                 </div>
                                 <div class="contact_name ml-3">
                                     <p class="timming_print text-uppercase mb-1"><b class="driver_name">paedro</b></p>
@@ -1102,8 +1102,7 @@
                                         $('.latest_status').html(ride_status_latest);
                                     }
                                 });    
-                        }
-                        if (element.status=="2") 
+                        } else if (element.status=="2") 
                         {
                             var distanceService = new google.maps.DistanceMatrixService();
                             var origin = new google.maps.LatLng(element.pick_lat,element.pick_lng);
@@ -1125,7 +1124,11 @@
                                         $('.latest_status').html(ride_status_latest);
                                     }
                                 });    
+                        } else {
+                            $('.latest_status').html(ride_status_latest);
                         }
+                    } else {
+                        $('.latest_status').html(ride_status_latest);
                     }
 
                     $('.car_image').hide();
