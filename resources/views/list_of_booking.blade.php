@@ -275,7 +275,7 @@
         }
 
         .logo_img_top_1 .img-responsive.imagelogo_brand {
-            max-width: 120px;
+            max-width: 240px;
         }
 
         .SelectedDateList {
@@ -396,12 +396,12 @@
             padding: 20px 20px 20px;
             border-radius: 5px;
             margin-bottom: 30px;
-            height: 100%;
+            /* height: 100%; */
         }
-        .map_area.half_area{
+        /* .map_area.half_area{
             height: 56%;
             min-height: 56%;
-        }
+        } */
         .map_area_price{
             background: rgba(242, 242, 242, 0.68);
             padding: 20px 20px 20px;
@@ -745,7 +745,7 @@
                     <div class="">
                         <div class="row">
                             <div class="col-12">
-                                <div class="" style="height: 200px">
+                                <div class="">
                                     <div id="googleMap" style="width:100%;min-height:290px;height:290px;max-height:290px"></div>
                                 </div>
                             </div>
@@ -1064,7 +1064,7 @@
                     $('.booking_created_at').html(element.create_date);
                     $('.pick_loc').html(element.pickup_address);
                     $('.dest_loc_par').hide();
-                    if(element.dest_address!=null)
+                    if(element.dest_address && element.dest_address!=null)
                     {
                         $('.dest_loc_par').show();
                         $('.dest_loc').html(element.dest_address);
