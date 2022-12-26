@@ -477,54 +477,37 @@ if($_REQUEST['cm'] == 2)
 
 					$ride_status = "";
 					$ride_status_latest = "";
-					if ($ride->status == -2)
-					{
+					if ($ride->status == -2) {
 						$ride_status = "Cancelled";
 						$ride_status_latest = "Ride Cancelled";
-					}
-					elseif($ride->status == -1)
-					{
+					} elseif ($ride->status == -1) {
 						$ride_status_latest = "Ride Rejected";
 						$ride_status = "Rejected";
-					}
-					elseif($ride->status == 1)
-					{
+					} elseif ($ride->status == 1) {
 						$ride_status_latest = "Driver will arrive in #time#";
 						$ride_status = "Accepted";
-					}
-					elseif($ride->status == 2)
-					{
+					} elseif ($ride->status == 2) {
 						$ride_status_latest = "Ride in progress and will completed in #time#";
 						$ride_status = "Started";
-					}
-					elseif($ride->status == 4)
-					{
+					} elseif ($ride->status == 4) {
 						$ride_status_latest = "Driver has arrived";
 						$ride_status = "Driver Reached";
-					}
-					elseif($ride->status == 3)
-					{
+					} elseif ($ride->status == 3) {
 						$ride_status_latest = "Ride Completed";
 						$ride_status = "Completed";
-					}
-					elseif($ride->status == -3)
-					{
+					} elseif ($ride->status == -3) {
 						$ride_status_latest = "Ride Cancelled By You";
 						$ride_status = "Cancelled";
-					}
-					elseif($ride->status == 0)
-					{
+					} elseif ($ride->status == 0) {
 						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
-					}
-					elseif($ride->ride_status > date('Y-m-d H:i:s'))
-					{
+					} elseif ($ride->status == -4) {
+						$ride_status_latest = "No one accepted";
+						$ride_status = "Pending";
+					} elseif ($ride->ride_status > date('Y-m-d H:i:s')) {
 						$ride_status_latest = "Upcoming Ride";
 						$ride_status = "Upcoming";
-					}
-
-					if (!$ride->driver) 
-					{
+					} else if (!$ride->driver) {
 						$ride_status_latest = "Pending";
 						$ride_status = "Pending";
 						$rideList[$key]->status = 0;
