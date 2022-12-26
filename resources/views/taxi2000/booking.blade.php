@@ -395,8 +395,9 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="logo_img_top_1">
-                <img src="{{ asset('images/taxi2000_logo.png') }}" class="img-responsive imagelogo_brand"
-                    alt="img Logo">
+                <a href="{{ route('booking_taxi2000') }}">
+                    <img src="{{ asset('images/taxi2000_logo.png') }}" class="img-responsive imagelogo_brand" alt="img Logo">
+                </a>
             </div>
             <div class="filter_booking_list">
                 <form class="booking_list_form">
