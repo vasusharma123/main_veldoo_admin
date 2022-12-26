@@ -806,9 +806,9 @@
     <!-------------------------------------------------- Modal Make -------------------------------------------------->
 
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#otpModal_list">
+    {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#otpModal_list">
     Launch demo modal
-    </button>
+    </button> --}}
 
     <!-- Modal -->
     <style>
