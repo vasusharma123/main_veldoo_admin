@@ -802,6 +802,86 @@
             </div>
         </div>
     </div>
+
+    <!-------------------------------------------------- Modal Make -------------------------------------------------->
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#otpModal_list">
+    Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <style>
+        .form-control.input_otp {
+            border: none;
+            border-bottom: 1px solid #9B9B9B;
+            border-radius: 0;
+            text-align: center;
+        }
+        .form-control.input_otp:focus{
+            box-shadow: none;
+            border-color: #000;
+        }
+        .sub_desc_otp {
+            margin-bottom: 30px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .otp_not_rec {
+            font-size: 16px;
+            color: #253239;
+        }
+        .otp_not_rec a {
+            color: #cc4452;
+        }
+        .otp_modal_dialog:before{
+            content: '';
+            background: rgba(255,255,255 , 71%);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(2px);
+
+        }
+    </style>
+    <div class="modal fade otp_modal_dialog" id="otpModal_list" tabindex="-1" role="dialog" aria-labelledby="otpModal_listTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 p-4">
+                <div class="modal-header border-0 pb-0">
+                    <img src="{{ asset('images/verify.png')}}" class="modal_header_img img-fluid">
+                </div>
+                <div class="modal-body">
+                    <h4 class="otp_main_title mb-4">Enter your verification code</h4>
+                    <p class="sub_desc_otp">Fill in the 4-digits verification code which we have shared on your registered phone number.</p>
+                    
+                    <h6 class="otp_sub_title">OTP</h6>
+                    <form class="otp_form">
+                        <div class="row mb-4">
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="text" class="form-control input_otp">
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="text" class="form-control input_otp">
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="text" class="form-control input_otp">
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="text" class="form-control input_otp">
+                            </div>
+                        </div>
+                        <input type="submit" class="btn custom_btn mt-2" value="Confirm Booking">
+                    </form>
+                </div>
+                <div class="modal-footer border-0 d-block p-2">
+                   <p class="otp_not_rec">Didn’t receive any code? <a href="#">RESEND</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
