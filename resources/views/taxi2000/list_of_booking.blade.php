@@ -435,7 +435,7 @@
             width: 84px;
             height: 80px;
             border-radius: 5px;
-            object-fit: cover;
+            object-fit: contain;
             object-position: center;
         }
         .driver_info {
@@ -642,8 +642,10 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <img src="{{ asset('images/taxi2000_logo.png') }}"
+                    <a href="{{ route('booking_taxi2000') }}">
+                        <img src="{{ asset('images/taxi2000_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
+                    </a>
                 </div>
                 <h2 class="title_form">{{ __('My Bookings') }}</h2>
                 <div class="filter_booking_list otp_verification_div {{ $user?'d-none':'' }}">
@@ -1069,7 +1071,16 @@
                         $('.ride_notes').show();
                         $('.ride_notes').html(element.note);
                     }
-                    $('.ride_price').html("CHF "+element.ride_cost);
+                    ride_cost = element.ride_cost;
+                    if(element.ride_cost==null)
+                    {
+                        ride_cost = "N/A";
+                    }
+                    if(element.ride_cost=="")
+                    {
+                        ride_cost = "N/A";
+                    }
+                    $('.ride_price').html("CHF "+ride_cost);
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
@@ -1191,9 +1202,22 @@
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
             if(selectedBooking!=""){
+                redirect = true;
+                bookingsArray.forEach(element => {
+                    if (selectedBooking==element.id) 
+                    { 
+                        if (element.status!=-4 && element.status!=0) 
+                        {
+                            swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
+                            redirect = false;
+                        }
+                    }
+                });
                 route = "{{ route('booking_edit_taxi2000','~') }}{{ isset($token)?'?token='.$token:'' }}";
                 route = route.replace('~',selectedBooking);
-                window.location.href= route;
+                if (redirect) {
+                    window.location.href= route;
+                }
             } else {
                swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
