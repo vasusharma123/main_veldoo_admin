@@ -275,7 +275,7 @@
         }
 
         .logo_img_top_1 .img-responsive.imagelogo_brand {
-            max-width: 120px;
+            max-width: 240px;
         }
 
         .SelectedDateList {

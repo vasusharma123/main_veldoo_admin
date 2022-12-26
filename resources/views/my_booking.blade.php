@@ -222,7 +222,7 @@
             border-radius: 10px;
         }
         .logo_img_top_1 .img-responsive.imagelogo_brand {
-            max-width: 120px;
+            max-width: 240px;
         }
         .SelectedDateList{
             padding: 20px;
