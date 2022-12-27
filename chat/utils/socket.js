@@ -872,6 +872,14 @@ class Socket{
 
                }
 			});
+			socket.on("send_message_to_user_with_ride_id", async (datas) => {
+                let data = JSON.parse(datas);
+                if (data.user_id) {
+					this.io.emit(`receive_message_by_driver_with_ride_id_${data.user_id}`, datas); 
+                } else {
+					console.log(`Error : There is no user id send from driver side`);
+				}
+            });
         });
 
     }
