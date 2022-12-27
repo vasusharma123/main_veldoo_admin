@@ -1006,6 +1006,13 @@
                     }
                     else
                     {
+                        if (directionsDisplay != null) {
+                            directionsDisplay.setMap(null);
+                            directionsDisplay = null;
+                        }
+                        for (let i = 0; i < markers.length; i++) {
+                            markers[i].setMap(null);
+                        }
                         MapPoints = [{
                             Latitude: element.pick_lat,
                             Longitude: element.pick_lng,
@@ -1016,7 +1023,6 @@
                             AddressLocation: element.dest_address
                         }];
                         directionsService = new google.maps.DirectionsService;
-                        directionsDisplay = new google.maps.DirectionsRenderer;
                         directionsDisplay = new google.maps.DirectionsRenderer({
                             map: map,
                             suppressMarkers: true

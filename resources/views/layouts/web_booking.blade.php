@@ -54,12 +54,23 @@
         .otp_modal_dialog:before{
             content: '';
             background: rgba(255,255,255 , 71%);
-            position: absolute;
+            position: fixed;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             backdrop-filter: blur(2px);
+        }
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+        -moz-appearance: textfield;
         }
     </style>
 </head>
