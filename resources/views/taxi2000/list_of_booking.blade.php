@@ -1088,7 +1088,7 @@
                     {
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
-                        $('.driver_phone').html(element.driver.phone);
+                        $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
                         $('.driver_info').show();
 
                         if (element.status=="1") 
