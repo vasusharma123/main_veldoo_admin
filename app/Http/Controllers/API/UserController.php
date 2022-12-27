@@ -736,7 +736,7 @@ class UserController extends Controller
 				'country_code' => 'required|integer',
 				'phone' => 'required',
 				'password' => 'required',
-				//'email'=>'email|unique:users',
+				'email'=>'email|unique:users',
 				'user_type' => 'required'
 			];
 			$validator = Validator::make($request->all(), $rules);
