@@ -652,7 +652,7 @@
                                 window.location.href = "{{ route('list_of_booking_taxisteinemann',$user->random_token)}}";
                             }, 2000);
                         @else
-                            timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                            timer(30,"confirmOTPModalTimer","otp_not_rec");
                             $("#confirmOTPModal").modal('show');
                         @endif
                     } else if(response.status == 0){
@@ -705,7 +705,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -718,9 +718,9 @@
             });
         });
 
-        $(document).on("click", ".verify_otp", function(e) {
+        $(document).on("submit", "#otp_form", function(e) {
             e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
+            var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
             var post_data = $('form#personal_info_form').serialize();
             post_data += '&otp='+otp_entered;
             <?php

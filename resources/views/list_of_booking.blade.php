@@ -310,7 +310,7 @@
         }
 
         .item_text {
-            font-size: 14px;
+            font-size: 17px;
             margin-bottom: 15px;
             color: #253239;
             font-weight: 400;
@@ -419,9 +419,8 @@
             color: #000;
         }
         .price {
-            font-size: 25px;
             margin: 2px;
-            color: #FC4C02;
+            color: #FC4C02 !important;
         }
         .contact_name.ml-3 p {
             font-size: 17px;
@@ -455,6 +454,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .driver_name {
+            font-weight: 400;
+        }
         @media (max-width: 300px) {
 
             .col-4,
@@ -465,6 +467,10 @@
             .col-2 {
                 min-width: 100% !important;
             }
+        }
+        .timming_print, .timming_print.message_box, .title_main, .price.ride_price, .contact_name.ml-3 p, .price_type span {
+            font-size: 17px !important;
+            color: #000;
         }
 
         @media (max-width: 400px) {
@@ -577,6 +583,7 @@
                 padding: 0px;
             } */
         }
+      
 
         @media (min-width: 550px) and (max-width:992px) {
             .map-booking {
@@ -803,85 +810,6 @@
         </div>
     </div>
 
-    <!-------------------------------------------------- Modal Make -------------------------------------------------->
-
-    <!-- Button trigger modal -->
-    {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#otpModal_list">
-    Launch demo modal
-    </button> --}}
-
-    <!-- Modal -->
-    <style>
-        .form-control.input_otp {
-            border: none;
-            border-bottom: 1px solid #9B9B9B;
-            border-radius: 0;
-            text-align: center;
-        }
-        .form-control.input_otp:focus{
-            box-shadow: none;
-            border-color: #000;
-        }
-        .sub_desc_otp {
-            margin-bottom: 30px;
-            color: #000;
-            font-size: 16px;
-            font-weight: 400;
-        }
-        .otp_not_rec {
-            font-size: 16px;
-            color: #253239;
-        }
-        .otp_not_rec a {
-            color: #cc4452;
-        }
-        .otp_modal_dialog:before{
-            content: '';
-            background: rgba(255,255,255 , 71%);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(2px);
-
-        }
-    </style>
-    <div class="modal fade otp_modal_dialog" id="otpModal_list" tabindex="-1" role="dialog" aria-labelledby="otpModal_listTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content border-0 p-4">
-                <div class="modal-header border-0 pb-0">
-                    <img src="{{ asset('images/verify.png')}}" class="modal_header_img img-fluid">
-                </div>
-                <div class="modal-body">
-                    <h4 class="otp_main_title mb-4">Enter your verification code</h4>
-                    <p class="sub_desc_otp">Fill in the 4-digits verification code which we have shared on your registered phone number.</p>
-                    
-                    <h6 class="otp_sub_title">OTP</h6>
-                    <form class="otp_form">
-                        <div class="row mb-4">
-                            <div class="col-lg-3 col-sm-3 col-6">
-                                <input type="text" class="form-control input_otp">
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
-                                <input type="text" class="form-control input_otp">
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
-                                <input type="text" class="form-control input_otp">
-                            </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
-                                <input type="text" class="form-control input_otp">
-                            </div>
-                        </div>
-                        <input type="submit" class="btn custom_btn mt-2" value="Confirm Booking">
-                    </form>
-                </div>
-                <div class="modal-footer border-0 d-block p-2">
-                   <p class="otp_not_rec">Didn’t receive any code? <a href="#">RESEND</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 @section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -930,7 +858,7 @@
                 success: function(response) {
                     if (response.status) {
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if (response.status == 0) {
                         swal("{{ __('Error') }}", response.message, "error");
                     }
@@ -941,9 +869,10 @@
             });
         })
 
-        $(document).on("click", ".verify_otp", function(e) {
+        $(document).on("submit", "#otp_form", function(e) {
             e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
+            var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
+            // var otp_entered = $(document).find("#otp_entered").val();
             var post_data = $('form#verify_phone_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
@@ -1004,7 +933,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -1180,7 +1109,7 @@
                     {
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
-                        $('.driver_phone').html(element.driver.phone);
+                        $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
                         $('.driver_info').show();
 
                         if (element.status=="1") 
