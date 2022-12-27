@@ -7387,7 +7387,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if ($ride_data->save()) {
 				$ride = Ride::find($request->ride_id);
 				$currentTime = Carbon::now()->format('Y-m-d H:i:s');
-				$rideAlertTime = date('Y-m-d H:i:s', strtotime('-' . $ride->alert_time . ' minutes', strtotime($ride->ride_time)));
+				if(!empty($ride->alert_time)){
+					$rideAlertTime = date('Y-m-d H:i:s', strtotime('-' . $ride->alert_time . ' minutes', strtotime($ride->ride_time)));
+				} else {
+					$rideAlertTime = $ride->ride_time;
+				}
 				if ($rideAlertTime > $currentTime) {
 					$rideDetail = Ride::find($request->ride_id);
 					$rideDetail->alert_notification_date_time = $rideAlertTime;
