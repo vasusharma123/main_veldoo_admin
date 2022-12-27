@@ -310,7 +310,7 @@
         }
 
         .item_text {
-            font-size: 14px;
+            font-size: 17px;
             margin-bottom: 15px;
             color: #253239;
             font-weight: 400;
@@ -419,9 +419,8 @@
             color: #000;
         }
         .price {
-            font-size: 25px;
             margin: 2px;
-            color: #FC4C02;
+            color: #FC4C02 !important;
         }
         .contact_name.ml-3 p {
             font-size: 17px;
@@ -455,6 +454,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .driver_name {
+            font-weight: 400;
+        }
         @media (max-width: 300px) {
 
             .col-4,
@@ -465,6 +467,10 @@
             .col-2 {
                 min-width: 100% !important;
             }
+        }
+        .timming_print, .timming_print.message_box, .title_main, .price.ride_price, .contact_name.ml-3 p, .price_type span {
+            font-size: 17px !important;
+            color: #000;
         }
 
         @media (max-width: 400px) {
@@ -577,6 +583,7 @@
                 padding: 0px;
             } */
         }
+      
 
         @media (min-width: 550px) and (max-width:992px) {
             .map-booking {
