@@ -1521,6 +1521,7 @@ class UserController extends Controller
 				['country_code' => $request->country_code, 'phone' => $request->phone],
 				['otp' => $otp, 'expiry' => $endTime]
 			);
+			$this->sendTextMessage("+".$request->country_code.ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
 			return response()->json(['message' => __('Send Successfully.'), 'otp' => $otp], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
