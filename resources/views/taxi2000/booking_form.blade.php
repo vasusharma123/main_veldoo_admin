@@ -359,11 +359,13 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <img src="{{asset('images/taxi2000_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                    <a href="{{ route('booking_taxi2000') }}">
+                        <img src="{{asset('images/taxi2000_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                    </a>
                 </div>
                 <h2 class="title_form">{{ __('Booking Details') }}</h2>
                 <div class="filter_booking_list">
-                    <form class="personal_info_form" id="personal_info_form" data-parsley-validate method="post">
+                    <form class="personal_info_form" id="personal_info_form" method="post">
                         @csrf
                         <?php
                             $first_name_validation = __('First name is required.');
@@ -373,7 +375,7 @@
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                                 <div class="form-group">
-                                    <input type="text" class="form-control input_field" data-parsley-required-message="{{ $first_name_validation }}" name="first_name" placeholder="{{ __('First Name') }}"  required />
+                                    <input type="text" class="form-control input_field" data-parsley-required-message="{{ $first_name_validation }}" name="first_name" placeholder="{{ __('First Name') }}" />
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
@@ -387,7 +389,7 @@
                                     <input class="form-control" name="country_code" type="hidden"
                                         id="country_code" value="41">
                                     <input type="tel" id="txtPhone"
-                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" name="phone" data-parsley-errors-container=".phoneError" placeholder="{{ __('Enter Phone Number') }}" minlength="8" data-parsley-required-message="{{ $phone_validation }}" required />
+                                        class="txtbox form-control input_field" data-parsley-minlength-message="{{ __('This value is too short. It should have 8 characters or more.') }}" name="phone" data-parsley-errors-container=".phoneError" placeholder="{{ __('Enter Phone Number') }}" minlength="8" data-parsley-required-message="{{ $phone_validation }}" />
                                 </div>
                                 <div class="phoneError mb-3"></div>
                             </div>
@@ -478,7 +480,7 @@
                                 <div class="form-group">
                                     <div class="form-check">
                                         <label class="form-check-label">
-                                            <input class="form-check-input" name="terms_conditions" type="checkbox" required> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
+                                            <input class="form-check-input" name="terms_conditions" type="checkbox"> <a href="#" class="text-secondary">{{ __('I have read and accepted the general terms and conditions') }}</a>
                                         </label>
                                     </div>
                                 </div>
@@ -638,9 +640,8 @@
 
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();
-            var form = $(this);
-            form.parsley().validate();
-            if (form.parsley().isValid()){
+            form_validate_res = form_validate();
+            if (form_validate_res){
                 $.ajax({
                     url: "{{ route('send_otp_before_ride_booking')}}",
                     type: 'post',
@@ -649,7 +650,7 @@
                     success: function(response) {
                         if(response.status){
                             $("#confirmOTPModal").modal('show');
-                            timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                            timer(30,"confirmOTPModalTimer","otp_not_rec");
                         } else if(response.status == 0){
                             swal("{{ __('Error') }}",response.message,"error");
                             $(document).find(".verify_otp").removeAttr('disabled');
@@ -663,6 +664,25 @@
             }
         });
 
+        function form_validate() 
+        {
+            if ($.trim($('input[name="first_name"]').val())=="") 
+            {
+                swal("{{ __('Error') }}","{{ __('First name is required.') }}","error");
+                return false;
+            }
+            if ($.trim($('input[name="phone"]').val())=="") 
+            {
+                swal("{{ __('Error') }}","{{ __('Phone number is required.') }}","error");
+                return false;
+            }
+            if ($('input[name="terms_conditions"]').prop('checked') != true) 
+            {
+                swal("{{ __('Error') }}","{{ __('Terms and conditions checkbox is required.') }}","error");
+                return false;
+            }
+            return true;
+        }
 
         // var timerOn = true;
         function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
@@ -702,7 +722,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -715,9 +735,9 @@
             });
         });
 
-        $(document).on("click", ".verify_otp", function(e) {
+        $(document).on("submit", "#otp_form", function(e) {
             e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
+            var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
             var post_data = $('form#personal_info_form').serialize();
             post_data += '&otp='+otp_entered;
             <?php

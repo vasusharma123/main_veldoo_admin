@@ -158,7 +158,7 @@
             display: none;
         }
 
-        #confirmOTPModal:before {
+        /* #confirmOTPModal:before {
             content: '';
             background: #160607ab;
             width: 100%;
@@ -166,7 +166,7 @@
             position: absolute;
             left: 0;
             top: 0;
-        }
+        } */
 
         .back_btn.custom_btn {
             background: transparent;
@@ -394,7 +394,9 @@
     <div class="row">
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="logo_img_top_1">
-                <img src="{{asset('images/taxi2000_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                <a href="{{ route('booking_taxi2000') }}">
+                    <img src="{{asset('images/taxi2000_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                </a>
             </div>
             <div class="filter_booking_list">
                 <form class="booking_list_form">

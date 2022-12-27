@@ -310,7 +310,7 @@
         }
 
         .item_text {
-            font-size: 14px;
+            font-size: 17px;
             margin-bottom: 15px;
             color: #253239;
             font-weight: 400;
@@ -419,9 +419,8 @@
             color: #000;
         }
         .price {
-            font-size: 25px;
             margin: 2px;
-            color: #FC4C02;
+            color: #FC4C02 !important;
         }
         .contact_name.ml-3 p {
             font-size: 17px;
@@ -433,7 +432,7 @@
             width: 84px;
             height: 80px;
             border-radius: 5px;
-            object-fit: cover;
+            object-fit: contain;
             object-position: center;
         }
         .driver_info {
@@ -455,6 +454,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .driver_name {
+            font-weight: 400;
+        }
         @media (max-width: 300px) {
 
             .col-4,
@@ -465,6 +467,10 @@
             .col-2 {
                 min-width: 100% !important;
             }
+        }
+        .timming_print, .timming_print.message_box, .title_main, .price.ride_price, .contact_name.ml-3 p, .price_type span {
+            font-size: 17px !important;
+            color: #000;
         }
 
         @media (max-width: 400px) {
@@ -577,6 +583,7 @@
                 padding: 0px;
             } */
         }
+      
 
         @media (min-width: 550px) and (max-width:992px) {
             .map-booking {
@@ -639,8 +646,10 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <img src="{{ asset('images/steinemann_logo.png') }}"
+                    <a href="{{ route('booking_taxisteinemann') }}">
+                        <img src="{{ asset('images/steinemann_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
+                    </a>
                 </div>
                 <h2 class="title_form">{{ __('My Bookings') }}</h2>
                 <div class="filter_booking_list otp_verification_div {{ $user?'d-none':'' }}">
@@ -800,6 +809,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 @section('script')
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -848,7 +858,7 @@
                 success: function(response) {
                     if (response.status) {
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if (response.status == 0) {
                         swal("{{ __('Error') }}", response.message, "error");
                     }
@@ -859,9 +869,10 @@
             });
         })
 
-        $(document).on("click", ".verify_otp", function(e) {
+        $(document).on("submit", "#otp_form", function(e) {
             e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
+            var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
+            // var otp_entered = $(document).find("#otp_entered").val();
             var post_data = $('form#verify_phone_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
@@ -922,7 +933,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -995,6 +1006,13 @@
                     }
                     else
                     {
+                        if (directionsDisplay != null) {
+                            directionsDisplay.setMap(null);
+                            directionsDisplay = null;
+                        }
+                        for (let i = 0; i < markers.length; i++) {
+                            markers[i].setMap(null);
+                        }
                         MapPoints = [{
                             Latitude: element.pick_lat,
                             Longitude: element.pick_lng,
@@ -1005,7 +1023,6 @@
                             AddressLocation: element.dest_address
                         }];
                         directionsService = new google.maps.DirectionsService;
-                        directionsDisplay = new google.maps.DirectionsRenderer;
                         directionsDisplay = new google.maps.DirectionsRenderer({
                             map: map,
                             suppressMarkers: true
@@ -1075,7 +1092,16 @@
                         $('.ride_notes').show();
                         $('.ride_notes').html(element.note);
                     }
-                    $('.ride_price').html("CHF "+element.ride_cost);
+                    ride_cost = element.ride_cost;
+                    if(element.ride_cost==null)
+                    {
+                        ride_cost = "N/A";
+                    }
+                    if(element.ride_cost=="")
+                    {
+                        ride_cost = "N/A";
+                    }
+                    $('.ride_price').html("CHF "+ride_cost);
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
@@ -1083,7 +1109,7 @@
                     {
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
-                        $('.driver_phone').html(element.driver.phone);
+                        $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
                         $('.driver_info').show();
 
                         if (element.status=="1") 
@@ -1198,9 +1224,22 @@
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
             if(selectedBooking!=""){
+                redirect = true;
+                bookingsArray.forEach(element => {
+                    if (selectedBooking==element.id) 
+                    { 
+                        if (element.status!=-4 && element.status!=0) 
+                        {
+                            swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
+                            redirect = false;
+                        }
+                    }
+                });
                 route = "{{ route('booking_edit_taxisteinemann','~') }}{{ isset($token)?'?token='.$token:'' }}";
                 route = route.replace('~',selectedBooking);
-                window.location.href= route;
+                if (redirect) {
+                    window.location.href= route;
+                }
             } else {
                swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }

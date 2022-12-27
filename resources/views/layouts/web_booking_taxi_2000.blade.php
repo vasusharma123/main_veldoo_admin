@@ -27,6 +27,52 @@
             color: red;
             padding-left: 5px;
         }
+
+        
+        .form-control.input_otp {
+            border: none;
+            border-bottom: 1px solid #9B9B9B;
+            border-radius: 0;
+            text-align: center;
+        }
+        .form-control.input_otp:focus{
+            box-shadow: none;
+            border-color: #000;
+        }
+        .sub_desc_otp {
+            margin-bottom: 30px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 400;
+        }
+        .otp_not_rec {
+            font-size: 16px;
+            color: #253239;
+        }
+        .otp_not_rec a {
+            color: #cc4452;
+        }
+        .otp_modal_dialog:before{
+            content: '';
+            background: rgba(255,255,255 , 71%);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(2px);
+        }
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+        -moz-appearance: textfield;
+        }
     </style>
 </head>
 <body>
@@ -76,7 +122,7 @@
         }
     </script>
     <!-- Confirm Modal -->
-    <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
+    {{-- <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog"
         aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
             <form class="otp_form">
@@ -92,9 +138,6 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group my-4">
-                                    {{-- <label for="otp_entered">Please enter the OTP number
-                                        you received on your applied mobile number
-                                        :</label> --}}
                                     <input type="text" class="form-control input_field"
                                         name="otp_entered" id="otp_entered"
                                         placeholder="{{ __('Please enter OTP') }}" required />
@@ -110,7 +153,48 @@
                 </div>
             </form>
         </div>
+    </div> --}}
+
+    <div class="modal fade otp_modal_dialog" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="otpModal_listTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0 p-4">
+                <div class="modal-header border-0 pb-0">
+                    <img src="{{ asset('images/verify.png')}}" class="modal_header_img img-fluid">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h4 class="otp_main_title mb-4">{{ __('Enter your verification code')}}</h4>
+                    <p class="sub_desc_otp">{{ __('Fill in the 4-digits verification code which we have shared on your registered phone number.')}}</p>
+                    
+                    <h6 class="otp_sub_title">{{ __('OTP')}}</h6>
+                    <form class="otp_form" id="otp_form">
+                        <div class="row mb-4 digit-group" data-group-name="digits">
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="number" class="form-control input_otp" id="digit-1" name="digit-1" data-next="digit-2" min="0" max="9" required>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="number" class="form-control input_otp"  id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" min="0" max="9" required>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="number" class="form-control input_otp" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" min="0" max="9" required>
+                            </div>
+                            <div class="col-lg-3 col-sm-3 col-6">
+                                <input type="number" class="form-control input_otp" id="digit-4" name="digit-4" data-previous="digit-3" min="0" max="9" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn custom_btn verify_otp mt-2">{{ __('Confirm Booking') }}</button>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 d-block p-2">
+                    <p class="confirmOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
+                    <p class="otp_not_rec" style="display: none;">Didn't receive any code? <a class="btn confirmOTPModalResendOtp" href="javascript:void(0);">{{ __('Resend OTP') }}</a></p>
+                </div>
+            </div>
+        </div>
     </div>
+
     <!-- cancel Modal -->
     <div class="modal fade" id="cancelBookingModal" tabindex="-1" role="dialog"
         aria-labelledby="cancelBookingTitle" aria-hidden="true">
@@ -140,38 +224,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="confirmOTPModalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-            <form class="otp_form">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmOTPModalTitle">{{ __('Enter OTP') }} :</h5>
-                        <button type="button" class="close" data-dismiss="modal"
-                            aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group my-4">
-                                    {{-- <label for="otp_entered">Please enter the OTP number
-                                        you received on your applied mobile number
-                                        :</label> --}}
-                                    <input type="text" class="form-control input_field"
-                                        name="otp_entered" id="otp_entered"
-                                        placeholder="{{ __('Please enter OTP') }}" required />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn custom_btn verify_otp">{{ __('Confirm Booking') }}</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
     <script>
         $(document).on('submit','.otp_form',function(e){
             e.preventDefault();
@@ -181,6 +233,31 @@
                 // alert('hlo');
                 $('.verify_otp').trigger('click');
             }
+        });
+
+        $(document).find('.input_otp').each(function() {
+            $(this).on('keyup', function(e) {
+                var parent = $($(this).parent().parent());
+
+                if (e.keyCode === 8 || e.keyCode === 37) {
+                    var prev = parent.find('input#' + $(this).data('previous'));
+
+                    if (prev.length) {
+                        $(prev).select();
+                    }
+                } else if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 65 && e.keyCode <= 90) || (
+                        e.keyCode >= 96 && e.keyCode <= 105) || e.keyCode === 39) {
+                    var next = parent.find('input#' + $(this).data('next'));
+
+                    if (next.length) {
+                        $(next).select();
+                    } else {
+                        if (parent.data('autosubmit')) {
+                            parent.submit();
+                        }
+                    }
+                }
+            });
         });
     </script>
 </body>

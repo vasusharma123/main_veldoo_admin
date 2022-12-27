@@ -435,7 +435,7 @@
             width: 84px;
             height: 80px;
             border-radius: 5px;
-            object-fit: cover;
+            object-fit: contain;
             object-position: center;
         }
         .driver_info {
@@ -642,8 +642,10 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <img src="{{ asset('images/taxi2000_logo.png') }}"
+                    <a href="{{ route('booking_taxi2000') }}">
+                        <img src="{{ asset('images/taxi2000_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
+                    </a>
                 </div>
                 <h2 class="title_form">{{ __('My Bookings') }}</h2>
                 <div class="filter_booking_list otp_verification_div {{ $user?'d-none':'' }}">
@@ -840,7 +842,7 @@
                 success: function(response) {
                     if (response.status) {
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if (response.status == 0) {
                         swal("{{ __('Error') }}", response.message, "error");
                     }
@@ -851,9 +853,9 @@
             });
         })
 
-        $(document).on("click", ".verify_otp", function(e) {
+        $(document).on("submit", "#otp_form", function(e) {
             e.preventDefault();
-            var otp_entered = $(document).find("#otp_entered").val();
+            var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
             var post_data = $('form#verify_phone_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
@@ -864,7 +866,7 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-						bookingsArray = response.data;	  
+                        bookingsArray = response.data;
                         $(document).find('.otp_verification_div').addClass('d-none');
                         $(".SelectedDateList").html("");
                         if(response.data != ""){
@@ -892,7 +894,7 @@
                             });
                         }
                         $(document).find('.ride_list_div').removeClass('d-none');
-						$("#confirmOTPModal").modal('hide');									
+                        $("#confirmOTPModal").modal('hide');
                     } else if(response.status == 0){
                        swal("{{ __('Error') }}",response.message,"error");
                     }
@@ -914,7 +916,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","confirmOTPModalResendOtp");
+                        timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -978,6 +980,10 @@
                         for (let i = 0; i < markers.length; i++) {
                             markers[i].setMap(null);
                         }
+                        if (directionsDisplay != null) {
+                            directionsDisplay.setMap(null);
+                            directionsDisplay = null;
+                        }
                         pt = new google.maps.LatLng(element.pick_lat, element.pick_lng);
                         map.setCenter(pt);
                         map.setZoom(13);
@@ -988,6 +994,13 @@
                     }
                     else
                     {
+                        if (directionsDisplay != null) {
+                            directionsDisplay.setMap(null);
+                            directionsDisplay = null;
+                        }
+                        for (let i = 0; i < markers.length; i++) {
+                            markers[i].setMap(null);
+                        }
                         MapPoints = [{
                             Latitude: element.pick_lat,
                             Longitude: element.pick_lng,
@@ -998,7 +1011,6 @@
                             AddressLocation: element.dest_address
                         }];
                         directionsService = new google.maps.DirectionsService;
-                        directionsDisplay = new google.maps.DirectionsRenderer;
                         directionsDisplay = new google.maps.DirectionsRenderer({
                             map: map,
                             suppressMarkers: true
@@ -1069,7 +1081,16 @@
                         $('.ride_notes').show();
                         $('.ride_notes').html(element.note);
                     }
-                    $('.ride_price').html("CHF "+element.ride_cost);
+                    ride_cost = element.ride_cost;
+                    if(element.ride_cost==null)
+                    {
+                        ride_cost = "N/A";
+                    }
+                    if(element.ride_cost=="")
+                    {
+                        ride_cost = "N/A";
+                    }
+                    $('.ride_price').html("CHF "+ride_cost);
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
@@ -1077,7 +1098,7 @@
                     {
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
-                        $('.driver_phone').html(element.driver.phone);
+                        $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
                         $('.driver_info').show();
 
                         if (element.status=="1") 
@@ -1191,9 +1212,22 @@
         $(document).on('click','.edit_booking',function(e){
             e.preventDefault();
             if(selectedBooking!=""){
+                redirect = true;
+                bookingsArray.forEach(element => {
+                    if (selectedBooking==element.id) 
+                    { 
+                        if (element.status!=-4 && element.status!=0) 
+                        {
+                            swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
+                            redirect = false;
+                        }
+                    }
+                });
                 route = "{{ route('booking_edit_taxi2000','~') }}{{ isset($token)?'?token='.$token:'' }}";
                 route = route.replace('~',selectedBooking);
-                window.location.href= route;
+                if (redirect) {
+                    window.location.href= route;
+                }
             } else {
                swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }

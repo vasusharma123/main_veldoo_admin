@@ -445,7 +445,7 @@ if($_REQUEST['cm'] == 2)
 				$now = Carbon::now()->subHour();
 				$rideList = Ride::where(['user_id' => $data['user']->id, 'platform' => 'web'])->where('ride_time', '>', $now)->where(function ($query) {
 					$query->where('status', '!=', 3)->where('status', '!=', -3)->where('status', '!=', -2);
-				})->with(['driver','vehicle'])->get();
+				})->with(['driver','vehicle'])->orderBy('created_at','DESC')->get();
 				foreach ($rideList as $key => $ride) {
 					$rideList[$key]->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
 					$rideList[$key]->create_date = date('D d-m-Y H:i',strtotime($ride->created_at));
