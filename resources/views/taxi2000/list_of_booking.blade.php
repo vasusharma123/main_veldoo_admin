@@ -1192,8 +1192,17 @@
                             $("#cancelBookingModal").modal('hide');
                             swal("Success",response.message,"success");
                             // $('#bookingDetailsTable').html('');
-                            $('.booking_user_name').html('');
-                            $('.booking_created_at').html('');
+                            $('.map_area_price').hide();
+                            if (directionsDisplay != null) {
+                                directionsDisplay.setMap(null);
+                                directionsDisplay = null;
+                            }
+                            for (let i = 0; i < markers.length; i++) {
+                                markers[i].setMap(null);
+                            }
+                            pt = new google.maps.LatLng(46.8182, 8.2275);
+                            map.setCenter(pt);
+                            map.setZoom(8);
                         } else if(response.status == 0){
                            swal("{{ __('Error') }}",response.message,"error");
                         }
