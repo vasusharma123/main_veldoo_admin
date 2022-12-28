@@ -21,7 +21,7 @@ class Controller extends BaseController
     }
 
 
-     protected function validationErrorResponse($errors)
+    protected function validationErrorResponse($errors)
     {
         $response = [
             'statusCode' => 422,
@@ -55,7 +55,7 @@ class Controller extends BaseController
     {
         $response = [
             'statusCode' => 422,
-            'message'=> $message
+            'message' => $message
             // 'errors' => [$message],
             // 'message' => 'Unprocessable entity'
         ];
@@ -70,20 +70,37 @@ class Controller extends BaseController
         ];
         return $this->returnResponse($response);
     }
-    
-    public function returnResponse($response){
-         return response()->json($response, $response['statusCode']);
+
+    public function returnResponse($response)
+    {
+        return response()->json($response, $response['statusCode']);
     }
 
-    public function sendTextMessage($recipientPhoneNumber, $textMessage){
+    public function sendTextMessage($recipientPhoneNumber, $textMessage)
+    {
         try {
             $twilioDetailArr = \Config::get('services.twilio');
-            
+
             $client = new Client($twilioDetailArr['sid'], $twilioDetailArr['auth_token']);
             $client->messages->create($recipientPhoneNumber, ['from' => $twilioDetailArr['number'], 'body' => $textMessage]);
         } catch (Exception $ex) {
             \Log::info($ex->getMessage());
         }
-            
+    }
+
+    public function sendSMS($recipientCountryCode, $recipientPhoneNumber, $textMessage)
+    {
+        try {
+            $twilioDetailArr = \Config::get('services.twilio');
+            if ($recipientCountryCode == "+41") {
+                $sender = "Taxi2000";
+            } else {
+                $sender = $twilioDetailArr['number'];
+            }
+            $client = new Client($twilioDetailArr['sid'], $twilioDetailArr['auth_token']);
+            $client->messages->create($recipientCountryCode . $recipientPhoneNumber, ['from' => $sender, 'body' => $textMessage]);
+        } catch (Exception $ex) {
+            \Log::info($ex->getMessage());
+        }
     }
 }

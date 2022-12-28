@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\UserWebController;
 use Exception;
-use Twilio\Rest\Client;
 use App\Notification;
 use App\RideHistory;
 use App;
@@ -330,9 +329,6 @@ if($_REQUEST['cm'] == 2)
 		try {
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
-			$sid = env("TWILIO_ACCOUNT_SID");
-			$token = env("TWILIO_AUTH_TOKEN");
-			$twilio = new Client($sid, $token);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
 			$now = Carbon::now();
 			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
@@ -364,16 +360,7 @@ if($_REQUEST['cm'] == 2)
 			{
 				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
 			}
-			// dd($body);
-			$message = $twilio->messages
-				->create(
-					"+".$request->country_code.ltrim($request->phone, "0"), // to
-					[
-						"body" => $body,
-						"from" => env("TWILIO_FROM_SEND")
-					]
-				);
-
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $body);
 			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -415,10 +402,7 @@ if($_REQUEST['cm'] == 2)
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 		if($responseObj['status'] == 1){
-			$sid = env("TWILIO_ACCOUNT_SID");
-			$token = env("TWILIO_AUTH_TOKEN");
-			$twilio = new Client($sid, $token);
-			
+		
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			$SMSTemplate = SMSTemplate::find(2);
@@ -435,16 +419,7 @@ if($_REQUEST['cm'] == 2)
 					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
 				}
 			}
-			// dd($user->random);
-			$message = $twilio->messages
-				->create(
-					"+".$request->country_code.ltrim($request->phone, "0"), // to
-					[
-						"body" => $message_content,
-						"from" => env("TWILIO_FROM_SEND")
-					]
-				);
-			// dd($message);
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
 		}
 		return $jsonResponse;
 	}
@@ -553,24 +528,14 @@ if($_REQUEST['cm'] == 2)
 			if($user){
 				$expiryMin = config('app.otp_expiry_minutes');
 				$otp = rand(1000, 9999);
-				$sid = env("TWILIO_ACCOUNT_SID");
-				$token = env("TWILIO_AUTH_TOKEN");
-				$twilio = new Client($sid, $token);
-	
+
 				$SMSTemplate = SMSTemplate::find(3);
 				$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
 				if (app()->getLocale()!="en") 
 				{
 					$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
 				}
-				$message = $twilio->messages
-					->create(
-						"+".$request->country_code.ltrim($request->phone, "0"), // to
-						[
-							"body" => $body,
-							"from" => env("TWILIO_FROM_SEND")
-						]
-					);
+				$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $body);
 				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 				OtpVerification::updateOrCreate(
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
@@ -786,29 +751,18 @@ if($_REQUEST['cm'] == 2)
 		
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
-			$sid = env("TWILIO_ACCOUNT_SID");
-			$token = env("TWILIO_AUTH_TOKEN");
-			$twilio = new Client($sid, $token);
-
-
+			$phone_number = explode("-",$request->phone);
+			$request->phone = $phone_number[1];
 			$SMSTemplate = SMSTemplate::find(4);
 			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
 			if (app()->getLocale()!="en") 
 			{
 				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
 			}
+			$this->sendSMS($phone_number[0], $phone_number[1], "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking");
 
-			$message = $twilio->messages
-				->create(
-					$request->phone, // to
-					[
-						"body" => $body,
-						"from" => env("TWILIO_FROM_SEND")
-					]
-				);
 			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-			$phone_number = explode("-",$request->phone);
-			$request->phone = $phone_number[1];
+			
 			OtpVerification::updateOrCreate(
 				['country_code' => $request->country_code, 'phone' => $request->phone],
 				['otp' => $otp, 'expiry' => $endTime]
@@ -870,10 +824,6 @@ if($_REQUEST['cm'] == 2)
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 		if($responseObj['status'] == 1){
-			$sid = env("TWILIO_ACCOUNT_SID");
-			$token = env("TWILIO_AUTH_TOKEN");
-			$twilio = new Client($sid, $token);
-
 			$message_content = "";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
@@ -891,14 +841,7 @@ if($_REQUEST['cm'] == 2)
 					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
 				}
 			}
-			$message = $twilio->messages
-				->create(
-					"+".$request->country_code.ltrim($request->phone, "0"), // to
-					[
-						"body" => $message_content,
-						"from" => env("TWILIO_FROM_SEND")
-					]
-				);
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
 		}
 		return $jsonResponse;
 	}
