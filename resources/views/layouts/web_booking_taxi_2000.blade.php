@@ -156,7 +156,7 @@
     </div> --}}
 
     <div class="modal fade otp_modal_dialog" id="confirmOTPModal" tabindex="-1" role="dialog" aria-labelledby="otpModal_listTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered" style="width: 400px" role="document">
             <div class="modal-content border-0 p-4">
                 <div class="modal-header border-0 pb-0">
                     <img src="{{ asset('images/verify.png')}}" class="modal_header_img img-fluid">

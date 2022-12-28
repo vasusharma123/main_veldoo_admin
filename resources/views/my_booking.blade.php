@@ -134,7 +134,7 @@
         .modal-backdrop.fade.show {
             display: none;
         }
-        #confirmOTPModal:before {
+        /* #confirmOTPModal:before {
             content: '';
             background: #160607ab;
             width: 100%;
@@ -142,7 +142,7 @@
             position: absolute;
             left: 0;
             top: 0;
-        }
+        } */
         .back_btn.custom_btn {
             background: transparent;
             border: 1px solid #cc4452;
