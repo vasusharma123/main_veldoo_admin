@@ -64,7 +64,6 @@ use App\Helpers\Notifications;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 use App\DriverStayActiveNotification;
-use Twilio\Rest\Client;
 use Exception;
 
 class UserController extends Controller
@@ -871,18 +870,8 @@ class UserController extends Controller
 		$otp = rand(1000, 9999);
 		$data = array('name' => $otp);
 
-		$sid = env("TWILIO_ACCOUNT_SID");
-		$token = env("TWILIO_AUTH_TOKEN");
-		$twilio = new Client($sid, $token);
+		$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
 
-		$twilio->messages
-			->create(
-				"+" . $request->country_code . ltrim($request->phone, "0"), // to
-				[
-					"body" => "Dear User, your Veldoo verification code is $otp. Use this to reset your password",
-					"from" => env("TWILIO_FROM_SEND")
-				]
-			);
 		/* 	$m = Mail::send('mail', $data, function($message) use ($request, $isUser) {
 			$message->to($isUser->email, 'OTP')->subject('OTP Verification Code');
 			
@@ -1521,7 +1510,7 @@ class UserController extends Controller
 				['country_code' => $request->country_code, 'phone' => $request->phone],
 				['otp' => $otp, 'expiry' => $endTime]
 			);
-			$this->sendTextMessage("+".$request->country_code.ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
 			return response()->json(['message' => __('Send Successfully.'), 'otp' => $otp], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
