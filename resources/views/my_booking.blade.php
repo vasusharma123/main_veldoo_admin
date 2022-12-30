@@ -395,6 +395,14 @@
                 max-width: 1840px;
             }
         }
+
+        .home_icon {
+            color: #c94552;
+        }
+
+        .home_icon:hover {
+            color: #c94552;
+        }
     </style>
 </head>
 
@@ -407,6 +415,7 @@
                         <div class="booking_personal_information">
                             <div class="logo_img_top_1">
                                 <img src="{{asset('images/steinemann_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                                <span class="float-right home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                             </div>
                             <h2 class="title_form">My Bookings</h2>
                             <div class="filter_booking_list">
@@ -482,6 +491,18 @@
                                 <!-- ============================================================== -->
                                 <!-- Personal Information Form Content End -->
                                 <!-- ============================================================== -->
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-center">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser" ><img src="{{ asset('images/glp-button.png')}}" class="w-100"></a>
+                                    </div>
+                                    <div class="col-6">
+                                        <a href="https://apps.apple.com/in/app/id1597936025" ><img src="{{ asset('images/aps-button.png')}}" class="w-100"></a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

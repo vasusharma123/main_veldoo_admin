@@ -170,16 +170,16 @@
                     <h6 class="otp_sub_title">{{ __('OTP')}}</h6>
                     <form class="otp_form" id="otp_form">
                         <div class="row mb-4 digit-group" data-group-name="digits">
-                            <div class="col-lg-3 col-sm-3 col-6">
+                            <div class="col-3">
                                 <input type="number" class="form-control input_otp" id="digit-1" name="digit-1" data-next="digit-2" min="0" max="9" required>
                             </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
+                            <div class="col-3">
                                 <input type="number" class="form-control input_otp"  id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" min="0" max="9" required>
                             </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
+                            <div class="col-3">
                                 <input type="number" class="form-control input_otp" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" min="0" max="9" required>
                             </div>
-                            <div class="col-lg-3 col-sm-3 col-6">
+                            <div class="col-3">
                                 <input type="number" class="form-control input_otp" id="digit-4" name="digit-4" data-previous="digit-3" min="0" max="9" required>
                             </div>
                         </div>
@@ -188,7 +188,7 @@
                 </div>
                 <div class="modal-footer border-0 d-block p-2">
                     <p class="confirmOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
-                    <p class="otp_not_rec" style="display: none;">Didn't receive any code? <a class="btn confirmOTPModalResendOtp" href="javascript:void(0);">{{ __('Resend OTP') }}</a></p>
+                    <p class="otp_not_rec" style="display: none;">{{__("Didn't receive any code?")}} <a class="btn confirmOTPModalResendOtp" href="javascript:void(0);">{{ __('Resend OTP') }}</a></p>
                 </div>
             </div>
         </div>

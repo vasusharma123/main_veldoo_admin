@@ -77,7 +77,7 @@
 
         .custom_btn {
             width: 100%;
-            background: #cc4452;
+            background: #78D648;
             height: 100%;
             padding: 13px !important;
             text-transform: capitalize;
@@ -102,7 +102,7 @@
         #captchaOperation {
             font-size: 30px;
             font-family: emoji;
-            color: #cc4452;
+            color: #ffffff;
         }
 
         .form-control {
@@ -138,10 +138,8 @@
 
         .title_form {
             padding: 15px;
-            text-align: center;
             color: white;
             margin-bottom: 30px;
-            font-size: 20px;
             border-radius: 5px;
             background-color: #9d9d9d;
         }
@@ -182,8 +180,8 @@
 
         .back_btn.custom_btn {
             background: transparent;
-            border: 1px solid #cc4452;
-            color: #cc4452;
+            border: 1px solid #78D648;
+            color: #ffffff;
         }
 
         form .field_icons {
@@ -390,7 +388,7 @@
         }
 
         .SelectedListBooking.form-radio:checked~.listDate {
-            color: #cc4452;
+            color: #78D648;
         }
 
         .map_area{
@@ -531,10 +529,6 @@
                 min-width: 8px;
             }
 
-            .title_form {
-                font-size: 18px;
-            }
-
             .map-booking {
                 padding-left: 0px;
                 padding-right: 0px;
@@ -549,7 +543,6 @@
 
             .filter_booking_list {
                 padding: 20px 10px 10px !important;
-                margin-bottom: 40px;
             }
 
             .car_walk.img-repsonsive {
@@ -635,6 +628,14 @@
         {
             background: #e6e1e1 !important;
         }
+
+        .home_icon {
+            color: #78D648;
+        }
+
+        .home_icon:hover {
+            color: #78D648;
+        }
     </style>
 @endsection
 @section('content')
@@ -642,12 +643,18 @@
         <div class="col-xl-4 col-lg-4 col-md-5 col-sm-12 col-12">
             <div class="booking_personal_information">
                 <div class="logo_img_top_1">
-                    <a href="{{ route('booking_taxi2000') }}">
+                    <a href="https://www.taxischaffhausen.ch">
                         <img src="{{ asset('images/taxi2000_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
+                        <span class="float-right pt-1 home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                     </a>
                 </div>
-                <h2 class="title_form">{{ __('My Bookings') }}</h2>
+                <div class="title_form">
+                    <div class="text-center">
+                      <h4 class="d-inline">{{ __('My Bookings') }}</h4>
+                      <a href="javascript::void(0);" onClick="window.location.reload()" class="float-right text-white pt-1"><i class="fas fa-redo-alt"></i></button></a>
+                    </div>
+                </div>
                 <div class="filter_booking_list otp_verification_div {{ $user?'d-none':'' }}">
                     <form id="verify_phone_form" method="post">
                         @csrf
@@ -700,7 +707,7 @@
                                                         </li>
                                                     @empty
                                                         <li class="list-group-item text-center">
-                                                            No rides available
+                                                            {{ __('No rides available')}}
                                                         </li>
                                                     @endforelse
                                                 @endif
@@ -709,16 +716,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="col-6">
                                 <div class="form-group">
                                     <button type="button" id="submit_request_cancel"
-                                        class="btn submit_btn custom_btn">{{ __('CANCEL BOOKING') }}</button>
+                                        class="btn submit_btn custom_btn">{{ __('CANCEL') }}</button>
                                 </div>
                             </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="col-6">
                                 <div class="form-group">
                                     <button type="button"
-                                        class="btn back_btn custom_btn edit_booking">{{ __('EDIT BOOKING') }}</button>
+                                        class="btn back_btn custom_btn edit_booking">{{ __('EDIT') }}</button>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <a href="{{ route('booking_taxi2000') }}"
+                                        class="btn back_btn custom_btn">{{ __('NEW BOOKING') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -730,6 +743,19 @@
                     <!-- ============================================================== -->
                     <!-- Personal Information Form Content End -->
                     <!-- ============================================================== -->
+                </div>
+
+                <div class="p-4">
+                    <div class="text-center">
+                        <div class="row">
+                            <div class="col-6">
+                                <a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser" ><img src="{{ asset('images/glp-button.png')}}" class="w-100"></a>
+                            </div>
+                            <div class="col-6">
+                                <a href="https://apps.apple.com/in/app/id1597936025" ><img src="{{ asset('images/aps-button.png')}}" class="w-100"></a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
