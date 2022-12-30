@@ -123,7 +123,7 @@
         .modal-backdrop.fade.show {
             display: none;
         }
-        #confirmOTPModal:before {
+        /* #confirmOTPModal:before {
             content: '';
             background: #160607ab;
             width: 100%;
@@ -131,7 +131,7 @@
             position: absolute;
             left: 0;
             top: 0;
-        }
+        } */
         .back_btn.custom_btn {
             background: transparent;
             border: 1px solid #cc4452;
@@ -762,11 +762,14 @@
                 dataType: 'json',
                 data: post_data,
                 success: function(response) {
+                    console.log(response);
                     if(response.status){
                         swal("{{ __('Success') }}",response.message,"success");
-                            setTimeout(function() {
-                                window.location.href = "{{ route('booking_taxisteinemann')}}";
-                            }, 2000);
+                        setTimeout(function() {
+                            route = "{{ route('list_of_booking_taxisteinemann','~') }}";
+                            route = route.replace('~',response.user_data.random_token);
+                            window.location.href = route;//"{{ route('booking_taxisteinemann')}}";
+                        }, 2000);
                     } else if(response.status == 0){
                         swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
