@@ -388,6 +388,14 @@
                 min-height: 70vh;
             }
         }
+
+        .home_icon {
+            color: #c94552;
+        }
+
+        .home_icon:hover {
+            color: #c94552;
+        }
     </style>
 @endsection
 @section('content')
@@ -396,6 +404,7 @@
             <div class="logo_img_top_1">
                 <a href="{{ route('booking_taxisteinemann') }}">
                     <img src="{{asset('images/steinemann_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                    <span class="float-right home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                 </a>
             </div>
             <div class="filter_booking_list">
@@ -474,7 +483,7 @@
                 <!-- ============================================================== -->
 
             </div>
-            <div class="filter_result ">
+            <div class="filter_booking_list ">
                 <form id="booking_list_form" method="POST" action="{{ route('booking_form_edit_taxisteinemann', $rideDetail->id) }}">
                     @csrf
                     @if (isset($_GET) && isset($_GET['token']) && !empty($_GET['token']))
@@ -512,6 +521,18 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="p-4">
+                <div class="text-center">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser" ><img src="{{ asset('images/glp-button.png')}}" class="w-100"></a>
+                        </div>
+                        <div class="col-6">
+                            <a href="https://apps.apple.com/in/app/id1597936025" ><img src="{{ asset('images/aps-button.png')}}" class="w-100"></a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- ============================================================== -->

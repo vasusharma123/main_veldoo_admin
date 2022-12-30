@@ -77,7 +77,7 @@
 
         .custom_btn {
             width: 100%;
-            background: #cc4452;
+            background: #78D648;
             height: 100%;
             padding: 13px !important;
             text-transform: capitalize;
@@ -102,7 +102,7 @@
         #captchaOperation {
             font-size: 30px;
             font-family: emoji;
-            color: #cc4452;
+            color: #ffffff;
         }
 
         .form-control {
@@ -180,8 +180,8 @@
 
         .back_btn.custom_btn {
             background: transparent;
-            border: 1px solid #cc4452;
-            color: #cc4452;
+            border: 1px solid #78D648;
+            color: #ffffff;
         }
 
         form .field_icons {
@@ -388,7 +388,7 @@
         }
 
         .SelectedListBooking.form-radio:checked~.listDate {
-            color: #cc4452;
+            color: #78D648;
         }
 
         .map_area{
@@ -630,11 +630,11 @@
         }
 
         .home_icon {
-            color: #000000;
+            color: #78D648;
         }
 
         .home_icon:hover {
-            color: #000000;
+            color: #78D648;
         }
     </style>
 @endsection
@@ -646,7 +646,7 @@
                     <a href="https://www.taxischaffhausen.ch">
                         <img src="{{ asset('images/taxi2000_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
-                        <span class="float-right pt-1 home_icon"><i class="fas fa-home "></i></button></span>
+                        <span class="float-right pt-1 home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                     </a>
                 </div>
                 <div class="title_form">

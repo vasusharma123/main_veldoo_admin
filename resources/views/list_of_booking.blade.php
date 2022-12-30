@@ -650,7 +650,7 @@
                     <a href="http://taxisteinemann.ch">
                         <img src="{{ asset('images/steinemann_logo.png') }}"
                         class="img-responsive imagelogo_brand" alt="img Logo">
-                        <span class="float-right pt-1 home_icon"><i class="fas fa-home "></i></button></span>
+                        <span class="float-right home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                     </a>
                 </div>
                 <div class="title_form">

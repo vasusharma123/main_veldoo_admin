@@ -47,7 +47,7 @@
         }
         .custom_btn {
             width: 100%;
-            background: #cc4452;
+            background: #78D648;
             height: 100%;
             padding: 13px;
             text-transform: capitalize;
@@ -67,7 +67,7 @@
         #captchaOperation {
             font-size: 30px;
             font-family: emoji;
-            color: #cc4452;
+            color: #78D648;
         }
         .form-control {
             font-weight: 400;
@@ -134,8 +134,8 @@
         } */
         .back_btn.custom_btn {
             background: transparent;
-            border: 1px solid #cc4452;
-            color: #cc4452;
+            border: 1px solid #78D648;
+            color: #fffff;
         }
         form .field_icons {
             display: flex;
@@ -352,6 +352,14 @@
             appearance: none;
             padding-left : 10px !important;
         }
+
+        .home_icon {
+            color: #78D648;
+        }
+
+        .home_icon:hover {
+            color: #78D648;
+        }
     </style>
 @endsection
 @section('content')
@@ -361,6 +369,7 @@
                 <div class="logo_img_top_1">
                     <a href="{{ route('booking_taxi2000') }}">
                         <img src="{{asset('images/taxi2000_logo.png')}}" class="img-responsive imagelogo_brand" alt="img Logo">
+                        <span class="float-right pt-1 home_icon"><i class="fa-2x fas fa-home "></i></button></span>
                     </a>
                 </div>
                 <h2 class="title_form">{{ __('Booking Details') }}</h2>
@@ -515,6 +524,18 @@
                     <!-- ============================================================== -->
                     <!-- Personal Information Form Content End -->
                     <!-- ============================================================== -->
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="text-center">
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser" ><img src="{{ asset('images/glp-button.png')}}" class="w-100"></a>
+                        </div>
+                        <div class="col-6">
+                            <a href="https://apps.apple.com/in/app/id1597936025" ><img src="{{ asset('images/aps-button.png')}}" class="w-100"></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
