@@ -73,7 +73,7 @@ class ExpenseController extends Controller
     public function list(Request $request)
     {
         $userDetail = Auth::user();
-        $user_id = $userDetail->id;
+        $user_id = 0;
         if (!empty($request->user_id)) {
             $user_id = $request->user_id;
         }
@@ -96,8 +96,12 @@ class ExpenseController extends Controller
             $expense_list = $expense_list->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
             $total_expense = $total_expense->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
         }
-        $expense_list = $expense_list->where(['driver_id' => $user_id])->orderBy('id', 'desc')->paginate(20);
-        $total_expense = $total_expense->where(['driver_id' => $user_id])->sum('amount');
+        if (!empty($user_id)) {
+            $expense_list = $expense_list->where(['driver_id' => $user_id]);
+            $total_expense = $total_expense->where(['driver_id' => $user_id]);
+        }
+        $expense_list = $expense_list->orderBy('id', 'desc')->paginate(20);
+        $total_expense = $total_expense->sum('amount');
         return response()->json(['status' => 1, 'message' => 'List of my expenses', 'data' => $expense_list, 'total_expense' => round($total_expense, 2)], $this->successCode);
     }
 
