@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use File;
 
 class DatabaseBackUp extends Command
 {
@@ -38,7 +39,7 @@ class DatabaseBackUp extends Command
      */
     public function handle()
     {
-        $filename = "backup-" . Carbon::now()->format('Y-m-d') . ".gz";
+        $filename = Carbon::now()->format('Y-m-d') . ".gz";
   
         $command = "mysqldump --user=" . env('DB_USERNAME') ." --password=" . env('DB_PASSWORD') . " --host=" . env('DB_HOST') . " " . env('DB_DATABASE') . "  | gzip > " . storage_path() . "/app/backup/" . $filename;
   
@@ -46,5 +47,13 @@ class DatabaseBackUp extends Command
         $output  = NULL;
   
         exec($command, $output, $returnVar);
+	    $files = File::glob(storage_path('app/backup/*'));
+        foreach ($files as $key => $file) 
+        {
+            if(today()->diffInDays(str_replace('.gz','',basename($file))) > 5)
+		{
+			unlink(storage_path('app/backup/'.basename($file)));
+		}
+        }
     }
 }
