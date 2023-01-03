@@ -790,6 +790,10 @@ if($_REQUEST['cm'] == 2)
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
 		$user = User::where('random_token',$request->token)->where('random_token','!=','')->first();
+		if ($rideDetail->user) 
+		{
+			$user = $rideDetail->user;
+		}
 		return view('booking_form_edit')->with(['user'=>$user,'vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
 	}
 

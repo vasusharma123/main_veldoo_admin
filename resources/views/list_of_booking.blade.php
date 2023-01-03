@@ -821,7 +821,7 @@
                                 </div>
                                 <div class="contact_name ml-3">
                                     <p class="timming_print text-uppercase mb-1"><b class="driver_name">paedro</b></p>
-                                    <p class="timming_print text-uppercase mb-0"><b class="driver_phone">9876554321</b></p>
+                                    <p class="timming_print text-uppercase mb-0"><a href="tel:+496170961709" class="driver_phone" style="color: black">9876554321</a></p>
                                 </div>
                             </div>
                             <div class="car_infomation">
@@ -1136,6 +1136,7 @@
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
                         $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
+                        $('.driver_phone').attr('href',"tel:"+element.driver.country_code+element.driver.phone);
                         $('.driver_info').show();
 
                         if (element.status=="1") 
