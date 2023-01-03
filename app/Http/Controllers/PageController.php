@@ -326,7 +326,19 @@ if($_REQUEST['cm'] == 2)
 
 	public function send_otp_before_ride_booking(Request $request)
 	{
-		try {
+		try 
+		{
+			if (!$request->has('g-recaptcha-response')) 
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$captcha = $request['g-recaptcha-response'];
+			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			if(!is_array($response) && isset($response) && $response['success'] == false)
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			// dd($request->all());
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
