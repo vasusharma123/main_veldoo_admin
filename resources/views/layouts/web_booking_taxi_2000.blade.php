@@ -73,6 +73,10 @@
         input[type=number] {
         -moz-appearance: textfield;
         }
+        .grecaptcha-badge
+        {
+            z-index: 999999;
+        }
     </style>
 </head>
 <body>

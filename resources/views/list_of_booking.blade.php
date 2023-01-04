@@ -675,7 +675,8 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <button type="submt" class="btn submit_btn custom_btn">{{ __('Confirm') }}</button>
+                                    <button  data-sitekey="{{ env('RECAPTCHA_KEY') }}" data-callback='onSubmitOtp' data-action='submit' type="button" id="submit_request" class="btn submit_btn custom_btn g-recaptcha">{{ __('Confirm') }}</button>
+                                    {{-- <button type="submt" class="btn submit_btn custom_btn">{{ __('Confirm') }}</button> --}}
                                 </div>
                             </div>
                         </div>
@@ -873,6 +874,11 @@
                 $('#country_code').val(countryCode);
             });
         });
+
+        function onSubmitOtp(token) 
+        {
+            $('#verify_phone_form').trigger('submit');
+        }
 
         $("#verify_phone_form").submit(function(e) {
             e.preventDefault();
