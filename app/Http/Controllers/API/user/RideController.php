@@ -11,15 +11,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Config;
+use Carbon\Carbon;
 
 class RideController extends Controller
 {
 
+    protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+    protected $limit;
+
     public function __construct(Request $request = null)
     {
-        $this->successCode = 200;
-        $this->errorCode = 401;
-        $this->warningCode = 500;
+        $this->limit = Config::get('limit_api');
     }
 
     public function ride_detail(Request $request)
@@ -130,6 +135,59 @@ class RideController extends Controller
         } catch (\Exception $exception) {
             Log::info($exception->getMessage() . "--" . $exception->getLine());
             return response()->json(['success' => false, 'message' => $exception->getMessage() . "--" . $exception->getLine()], $this->warningCode);
+        }
+    }
+
+    public function ride_list(Request $request)
+    {
+        try {
+            $rules = [
+                'type' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+            }
+            $userId = Auth::user()->id;
+            $user = \App\User::where('id', $userId)->first();
+            // $userlogintime = $user->updated_at;
+            if (!empty($user)) {
+                if ($request->type == 1) {
+                    $rides = Ride::where('user_id', $userId)->where(function ($query) {
+                        $query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                    })->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
+                } elseif ($request->type == 2) {
+                    // $todayDate = Carbon::today()->format('Y-m-d H:i:s');
+                    $rides = Ride::where('user_id', $userId)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                } elseif ($request->type == 3) {
+                    //$rides=Ride::where('user_id',$userId)->orWhere([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]])->orderBy('id', 'desc')->with('driver')->paginate($this->limit);
+                    $rides = Ride::where('user_id', $userId)->where(function ($query) {
+                        $query->where([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]]);
+                    })->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
+                } else if ($request->type == 4) {
+                    $rides = Ride::where('user_id', $userId)->where(function ($query) {
+                        $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                    })->orderBy('ride_time', 'desc')->with('driver')->paginate($this->limit);
+                }
+
+                if (!empty($rides)) {
+                    foreach ($rides as $ride_key => $ridRow) {
+                        if ($ridRow['driver']) {
+                            // $rides[$ride_key]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
+                            $rides[$ride_key]['driver']->car_data = $ridRow['driver']->car_date;
+                        }
+                    }
+                }
+
+                return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $rides], $this->successCode);
+            } else {
+                return response()->json(['message' => 'Record Not found'], $this->warningCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $errorCode = $exception->errorInfo[1];
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
         }
     }
 }
