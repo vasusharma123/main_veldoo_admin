@@ -2072,7 +2072,7 @@ class UserController extends Controller
 			if (!empty($request->distance)) {
 				$ride->distance = $request->distance;
 			}
-			$ride->created_by = Auth::user()->id;
+			$ride->created_by = 2;
 			$ride->status = 0;
 			$ride->platform = Auth::user()->device_type;
 			//print_r($input); die;
@@ -5294,7 +5294,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->ride_type = 3;
-		$ride->created_by = Auth::user()->id;
+		$ride->created_by = 2;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -6758,9 +6758,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 							if ($request->master_driver == 1) {
 								$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
 									$query->whereIn('status', [-2]);
+									$query->orWhere(function($query1){
+										$query1->where(['status' => -3, 'created_by' => 1]);
+									});
 								})->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 							} else {
-								$rides = Ride::whereDate('rides.ride_time', '>=', $userlogintime)->WhereIn('status', [-2])->with('user', 'driver', 'company_data')->paginate($this->limit);
+								$rides = Ride::whereDate('rides.ride_time', '>=', $userlogintime)->where(function ($query) {
+									$query->whereIn('status', [-2]);
+									$query->orWhere(function($query1){
+										$query1->where(['status' => -3, 'created_by' => 1]);
+									});
+								})->with('user', 'driver', 'company_data')->paginate($this->limit);
 							}
 						} else {
 							//$rides=Ride::where('driver_id',$userId)->orWhere([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]])->orderBy('id', 'desc')->with('user')->paginate($this->limit);
