@@ -670,7 +670,8 @@
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
-                                    <button type="submt" class="btn submit_btn custom_btn">{{ __('Confirm') }}</button>
+                                    <button  data-sitekey="{{ env('RECAPTCHA_KEY') }}" data-callback='onSubmitOtp' data-action='submit' type="button" id="submit_request" class="btn submit_btn custom_btn g-recaptcha">{{ __('Confirm') }}</button>
+                                    {{-- <button type="submit" class="btn submit_btn custom_btn">{{ __('Confirm') }}</button> --}}
                                 </div>
                             </div>
                         </div>
@@ -807,7 +808,7 @@
                                 </div>
                                 <div class="contact_name ml-3">
                                     <p class="timming_print text-uppercase mb-1"><b class="driver_name">paedro</b></p>
-                                    <p class="timming_print text-uppercase mb-0"><b class="driver_phone">9876554321</b></p>
+                                    <p class="timming_print text-uppercase mb-0"><a href="tel:" style="color: black" class="driver_phone">9876554321</a></p>
                                 </div>
                             </div>
                             <div class="car_infomation">
@@ -857,6 +858,11 @@
                 $('#country_code').val(countryCode);
             });
         });
+
+        function onSubmitOtp(token) 
+        {
+            $('#verify_phone_form').trigger('submit');
+        }
 
         $("#verify_phone_form").submit(function(e) {
             e.preventDefault();
@@ -1125,6 +1131,7 @@
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
                         $('.driver_phone').html(`+${element.driver.country_code} ${element.driver.phone}`);
+                        $('.driver_phone').attr('href',"tel:"+element.driver.country_code+element.driver.phone);
                         $('.driver_info').show();
 
                         if (element.status=="1") 

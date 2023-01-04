@@ -326,7 +326,19 @@ if($_REQUEST['cm'] == 2)
 
 	public function send_otp_before_ride_booking(Request $request)
 	{
-		try {
+		try 
+		{
+			if (!$request->has('g-recaptcha-response')) 
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$captcha = $request['g-recaptcha-response'];
+			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			if(!is_array($response) && isset($response) && $response['success'] == false)
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			// dd($request->all());
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
@@ -523,7 +535,21 @@ if($_REQUEST['cm'] == 2)
 
 	public function send_otp_for_my_bookings(Request $request)
 	{
-		try {
+		try 
+		{
+			// dd($request->all());
+			if (!$request->has('g-recaptcha-response')) 
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$captcha = $request['g-recaptcha-response'];
+			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			// dd($response);
+			if(!is_array($response) && isset($response) && $response['success'] == false)
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+
 			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 			if($user){
 				$expiryMin = config('app.otp_expiry_minutes');
@@ -724,6 +750,16 @@ if($_REQUEST['cm'] == 2)
 	{
 		// dd($request->all());
 		try {
+			if (!$request->has('g-recaptcha-response')) 
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$captcha = $request['g-recaptcha-response'];
+			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			if(!is_array($response) && isset($response) && $response['success'] == false)
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
 
 			if ($request->user=="true") 
 			{
@@ -790,6 +826,10 @@ if($_REQUEST['cm'] == 2)
 		$vehicle_type = Price::find($request->carType);
 		$input = $request->all();
 		$user = User::where('random_token',$request->token)->where('random_token','!=','')->first();
+		if ($rideDetail->user) 
+		{
+			$user = $rideDetail->user;
+		}
 		return view('booking_form_edit')->with(['user'=>$user,'vehicle_type' => $vehicle_type, 'input' => $input, 'rideDetail' => $rideDetail]);
 	}
 
