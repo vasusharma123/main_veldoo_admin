@@ -118,7 +118,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('cancel_ride', 'UserController@cancelRide');
 	Route::post('addLocation', 'UserController@addLocation');
 	Route::get('getLocations', 'UserController@getLocations');
-	Route::post('ride_list', 'UserController@RideList');
+	Route::post('ride_list','user\RideController@ride_list');
 	Route::post('add_stopover', 'UserController@addStopover');
 	Route::post('sendRidetoMaster', 'UserController@sendRidetoMaster');
 	
