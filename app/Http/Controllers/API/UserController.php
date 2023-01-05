@@ -6704,7 +6704,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						})->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
 						$othersFuturePendingRides = Ride::where(['status' => 0])->where(function ($query) use ($user) {
-							$query->where(['driver_id' != $user->id]);
+							$query->where('driver_id', '!=', $user->id);
 						})->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'desc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
 
 						$rides = array();
