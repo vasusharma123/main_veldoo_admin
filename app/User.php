@@ -299,8 +299,9 @@ class User extends Authenticatable implements HasMedia
 	}
 
 	public function driver_already_on_ride(){
-		$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
-		$count_of_assign_rides = Ride::where(['driver_id' => $this->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+		// $end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+		// ->where('ride_time', '<=', $end_date_time)
+		$count_of_assign_rides = Ride::where(['driver_id' => $this->id])->where(function ($query) {
 			$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 		})->count();
 		return $count_of_assign_rides ? 1 : 0;

@@ -7597,12 +7597,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			})
 			->where('users.availability', 1)
 			->orderBy('users.id', 'DESC')->get();
-		$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+		// $end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+		// ->where('ride_time', '<=', $end_date_time)
 		foreach ($resultArr['data'] as $driver_key => $driver_value) {
 			if(!empty($driver_value->vehicle_image)){
 				$resultArr['data'][$driver_key]['vehicle_image'] = env('URL_PUBLIC').'/'.$driver_value->vehicle_image;
 			}
-			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where(function ($query) {
 				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 			})->count();
 			$resultArr['data'][$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
