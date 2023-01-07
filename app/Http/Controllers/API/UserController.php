@@ -7308,7 +7308,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 					})->count();
 					$drivers[$driver_key]['already_have_ride'] = $count_of_assign_rides ? 1 : 0;
-					if($driver_value['availability'] == 0){
+					if (empty($lat) || $driver_value['availability'] == 0){
 						$drivers[$driver_key]['distance'] = 0;
 					}
 				}
