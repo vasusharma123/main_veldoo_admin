@@ -7650,7 +7650,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function all_drivers()
 	{
 		$user = Auth::user();
-		$all_drivers = User::where(['user_type' => 2])->orderBy('first_name')->get();
+		$all_drivers = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2])->orderBy('first_name')->get();
+		
+		foreach ($all_drivers as $driver_key => $driver_value) {
+			$driver_car = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0])->first();
+			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
+			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
+		}
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
 }

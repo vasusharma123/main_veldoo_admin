@@ -16,6 +16,7 @@ use Image;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -290,5 +291,18 @@ class User extends Authenticatable implements HasMedia
 		$selected_user_type = (!empty($this->user_type))?$this->user_type:2;
 		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company"];
 		return $user_types[$selected_user_type];
+	}
+
+	function all_rides()
+	{
+		return $this->hasMany(Ride::class, 'driver_id', 'id');
+	}
+
+	public function driver_already_on_ride(){
+		$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
+		$count_of_assign_rides = Ride::where(['driver_id' => $this->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+			$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+		})->count();
+		return $count_of_assign_rides ? 1 : 0;
 	}
 }
