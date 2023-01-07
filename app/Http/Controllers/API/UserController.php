@@ -7290,12 +7290,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					->leftJoin('vehicles', function ($join) {
 						$join->on('driver_choose_cars.car_id', '=', 'vehicles.id');
 					});
-				$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
+				$query->where([['user_type', '=', 2]])->orderBy('distance', 'asc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
 				$drivers = $query->get()->toArray();
 			} else {
-				$query = User::where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('created_at', 'desc');
+				$query = User::where([['user_type', '=', 2]])->orderBy('created_at', 'desc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
 				$drivers = $query->get()->toArray();
@@ -7308,6 +7308,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 					})->count();
 					$drivers[$driver_key]['already_have_ride'] = $count_of_assign_rides ? 1 : 0;
+					if($driver_value['availability'] == 0){
+						$drivers[$driver_key]['distance'] = 0;
+					}
 				}
 				return response()->json(['message' => 'Driver Listed successfully', 'data' => $drivers], $this->successCode);
 			} else {
