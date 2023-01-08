@@ -119,6 +119,13 @@ class RideController extends Controller
                             bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
                         }
                     }
+                    $driver_notification = new Notification();
+					$driver_notification->title = $title;
+					$driver_notification->description = $message;
+					$driver_notification->type = $type;
+					$driver_notification->user_id = $driverData['id'];
+					$driver_notification->additional_data = json_encode($additional);
+					$driver_notification->save();
                 }
 
                 if (!empty($userData)) {
@@ -174,7 +181,7 @@ class RideController extends Controller
                     foreach ($rides as $ride_key => $ridRow) {
                         if ($ridRow['driver']) {
                             // $rides[$ride_key]['driver']->car_data = $neRide->getCarData($ridRow['driver']->id);
-                            $rides[$ride_key]['driver']->car_data = $ridRow['driver']->car_date;
+                            $rides[$ride_key]['driver']->car_data = $ridRow['driver']->car_data;
                         }
                     }
                 }

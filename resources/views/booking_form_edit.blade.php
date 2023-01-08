@@ -507,7 +507,8 @@
                                     <input type="hidden" name="dest_address" value="{{ $input['dropoff_address'] }}">
                                     <input type="hidden" name="dest_lat" value="{{ $input['dropoff_latitude'] }}">
                                     <input type="hidden" name="dest_lng" value="{{ $input['dropoff_longitude'] }}">
-                                    <button type="submit" id="submit_request" class="btn submit_btn custom_btn">{{ __('BOOK') }}</button>
+                                    {{-- <button type="submit" id="submit_request" class="btn submit_btn custom_btn">{{ __('BOOK') }}</button> --}}
+                                    <button  data-sitekey="{{ env('RECAPTCHA_KEY') }}" data-callback='onSubmitOtp' data-action='submit' type="button" id="submit_request" class="btn submit_btn custom_btn g-recaptcha">{{ __('BOOK') }}</button>
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -651,6 +652,11 @@
             AddressLocation: "{{ $input['dropoff_address'] }}"
         }];
         initializeMapReport(MapPoints);
+
+        function onSubmitOtp(token) 
+        {
+            $('#personal_info_form').trigger('submit');
+        }
 
         $("#personal_info_form").submit(function(e) {
             e.preventDefault();

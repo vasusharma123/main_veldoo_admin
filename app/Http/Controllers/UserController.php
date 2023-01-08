@@ -250,7 +250,7 @@ class UserController extends Controller
 			'country_code' => 'required'
 		]);
 
-		$userData = User::where('country_code', str_replace('+', '', $request->country_code))->where('phone', $request->phone)->where('user_type', 2)->get()->count();
+		$userData = User::where('country_code', str_replace('+', '', $request->country_code))->where('phone', ltrim($request->phone, "0"))->where('user_type', 2)->get()->count();
 		if ($userData > 0) {
 			$this->validate($request, ['phone' => 'unique:users,phone']);
 		}
@@ -266,7 +266,7 @@ class UserController extends Controller
 				$user_type = 1;
 				$createdBy = Auth::user()->id;
 			} else {
-				$userData = \App\User::where('user_type', 2)->where('phone', $request->phone)->first();
+				$userData = \App\User::where('user_type', 2)->where('phone', ltrim($request->phone, "0"))->first();
 				//driver
 				if (!empty($userData)) {
 					return redirect()->route("users.drivers")->with('warning', trans('admin.This phone number already exists!'));
@@ -781,7 +781,7 @@ class UserController extends Controller
 		$request->validate($rules);
 		$haveUser = User::where(['id' => $id, 'user_type' => 2])->first();
 
-		$user = \App\User::where('user_type', 2)->where('id', '!=', $id)->where('phone', $request->phone)->first();
+		$user = \App\User::where('user_type', 2)->where('id', '!=', $id)->where('phone', ltrim($request->phone, "0"))->first();
 		if (!empty($user)) {
 			return redirect()->route("users.drivers")->with('warning', trans('This phone number already exists!'));
 		}
