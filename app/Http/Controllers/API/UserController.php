@@ -2047,8 +2047,10 @@ class UserController extends Controller
 			$ride->car_type = $request->car_type;
 			if (!empty($request->alert_time)) {
 				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+			} else {
+				$ride->alert_notification_date_time = $request->ride_time;
 			}
-			$ride->alert_time = $request->alert_time;
+			$ride->alert_time = $request->alert_time??null;
 			if (!empty($request->pick_lat)) {
 				$ride->pick_lat = $request->pick_lat;
 			}
@@ -7441,10 +7443,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$user = Auth::user();
 		$user_id = $user['id'];
 		$rules = [
-
 			'ride_id' => 'required',
-
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -7453,124 +7452,106 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
-			$ride_data = Ride::query()->where([['id', '=', $request->ride_id]])->first();
-			$ride_data->driver_id = "";
-			$ride_data->all_drivers = "";
+			$ride_data = Ride::find($request->ride_id);
+			$ride_data->driver_id = null;
+			$ride_data->all_drivers = null;
 			$ride_data->status = 0;
-
-
 			if ($ride_data->save()) {
-				$lat = $ride_data['pick_lat'];
-				$lon = $ride_data['pick_lng'];
-				if (!empty($lat) && !empty($lon)) {
-				} else {
-					return response()->json(['message' => "No Driver Found"], $this->warningCode);
-				}
-				$settings = \App\Setting::first();
-				$settingValue = json_decode($settings['value']);
-				$driverlimit = $settingValue->driver_requests;
-				$driver_radius = $settingValue->radius;
-				$query = User::select(
-					"users.*",
-					DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.current_lat)) 
-                    * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
-                    * sin(radians(users.current_lat))) AS distance")
-				);
-				$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
-				//$query->where('user_type', '=',2)->orderBy('distance','asc');
-				$drivers = $query->get()->toArray();
+				// $lat = $ride_data['pick_lat'];
+				// $lon = $ride_data['pick_lng'];
+				// if (!empty($lat) && !empty($lon)) {
+				// } else {
+				// 	return response()->json(['message' => "No Driver Found"], $this->warningCode);
+				// }
+				// $settings = \App\Setting::first();
+				// $settingValue = json_decode($settings['value']);
+				// $driverlimit = $settingValue->driver_requests;
+				// $driver_radius = $settingValue->radius;
+				// $query = User::select(
+				// 	"users.*",
+				// 	DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
+                //     * cos(radians(users.current_lat)) 
+                //     * cos(radians(users.current_lng) - radians(" . $lon . ")) 
+                //     + sin(radians(" . $lat . ")) 
+                //     * sin(radians(users.current_lat))) AS distance")
+				// );
+				// $query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
+				// //$query->where('user_type', '=',2)->orderBy('distance','asc');
+				// $drivers = $query->get()->toArray();
 
+				// $driverids = array();
 
-				$driverids = array();
+				// if (!empty($drivers)) {
+				// 	foreach ($drivers as $driver) {
+				// 		$driverids[] = $driver['id'];
+				// 		$socket_id = $driver['socket_id'];
+				// 	}
+				// } else {
+				// 	return response()->json(['message' => "No Driver Found"], $this->warningCode);
+				// }
+				// if (!empty($driverids)) {
+				// 	$driverids = implode(",", $driverids);
+				// } else {
+				// 	return response()->json(['message' => "No Driver Found"], $this->warningCode);
+				// }
+				// $ride = Ride::query()->where([['id', '=', $request->ride_id]])->first();
+				// $ride->driver_id = $driverids;
+				// $ride->all_drivers = $driverids;
 
-				if (!empty($drivers)) {
-					foreach ($drivers as $driver) {
+				// $ride->save();
+				// $rideid = $ride->id;
+				// $ride = Ride::query()->where([['id', '=', $rideid]])->first();
+				// $ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
+				// if (!empty($ride_data['ride_cost'])) {
+				// 	$ride_data['price'] = $ride_data['ride_cost'];
+				// }
+				// $driverids = explode(",", $driverids);
+				// foreach ($driverids as $driverid) {
+				// 	$driver_id = $driverid;
+				// 	$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
 
+				// 	$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'device_token', 'device_type', 'country_code', 'phone', 'user_type')->where('id', $driverid)->first();
+				// 	$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
+				// 	$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
+				// 	$driver_data['car_data'] = $car_data;
+				// 	$title = 'New Booking';
+				// 	$message = 'You Received new booking';
 
-						$driverids[] = $driver['id'];
-						$socket_id = $driver['socket_id'];
-					}
-				} else {
-					return response()->json(['message' => "No Driver Found"], $this->warningCode);
-				}
-				if (!empty($driverids)) {
-					$driverids = implode(",", $driverids);
-				} else {
-					return response()->json(['message' => "No Driver Found"], $this->warningCode);
-				}
-				$ride = Ride::query()->where([['id', '=', $request->ride_id]])->first();
-				$ride->driver_id = $driverids;
-				$ride->all_drivers = $driverids;
+				// 	$deviceToken = $driver_data['device_token'];
+				// 	$type = 1;
+				// 	$ride_data['user_data'] = $user_data;
+				// 	$settings = \App\Setting::first();
+				// 	$settingValue = json_decode($settings['value']);
+				// 	$ride_data['waiting_time'] = $settingValue->waiting_time;
+				// 	$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
 
-				$ride->save();
-				$rideid = $ride->id;
-				$ride = Ride::query()->where([['id', '=', $rideid]])->first();
-				$ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
-				if (!empty($ride_data['ride_cost'])) {
-					$ride_data['price'] = $ride_data['ride_cost'];
-				}
-				$driverids = explode(",", $driverids);
-				/* echo "ride data :";
-		print_r($ride_data); die; */
-				foreach ($driverids as $driverid) {
-					$driver_id = $driverid;
-					$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
-
-					$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'device_token', 'device_type', 'country_code', 'phone', 'user_type')->where('id', $driverid)->first();
-					$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
-					$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
-					$driver_data['car_data'] = $car_data;
-					$title = 'New Booking';
-					$message = 'You Received new booking';
-
-
-					$deviceToken = $driver_data['device_token'];
-					$type = 1;
-					$ride_data['user_data'] = $user_data;
-					$settings = \App\Setting::first();
-					$settingValue = json_decode($settings['value']);
-					$ride_data['waiting_time'] = $settingValue->waiting_time;
-					/* echo "ride data :";
-		print_r($ride); */
-					$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
-
-
-					$deviceType = $driver_data['device_type'];
-					if ($deviceType == 'android') {
-						send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
-						$notification = new Notification();
-						$notification->title = $title;
-						$notification->description = $message;
-						$notification->type = $type;
-						$notification->user_id = $driver_data['id'];
-						$notification->save();
-					}
-					if ($deviceType == 'ios') {
-						/* $deviceToken = $driver_data['device_token'];
-		send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]); */
-						$user_type = $driver_data['user_type'];
-
-						/* echo "Driver id : ".$driver_data['id'];
-		echo "User type : $user_type"; */
-						ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
-						$notification = new Notification();
-						$notification->title = $title;
-						$notification->description = $message;
-						$notification->type = $type;
-						$notification->user_id = $driver_data['id'];
-						$notification->save();
-					}
-				}
-
+				// 	$deviceType = $driver_data['device_type'];
+				// 	if ($deviceType == 'android') {
+				// 		send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
+				// 		$notification = new Notification();
+				// 		$notification->title = $title;
+				// 		$notification->description = $message;
+				// 		$notification->type = $type;
+				// 		$notification->user_id = $driver_data['id'];
+				// 		$notification->save();
+				// 	}
+				// 	if ($deviceType == 'ios') {
+				// 		$user_type = $driver_data['user_type'];
+				// 		ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
+				// 		$notification = new Notification();
+				// 		$notification->title = $title;
+				// 		$notification->description = $message;
+				// 		$notification->type = $type;
+				// 		$notification->user_id = $driver_data['id'];
+				// 		$notification->save();
+				// 	}
+				// }
 
 				return response()->json(['message' => 'Ride Unassigned successfully'], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Something went wrong'], $this->warningCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
