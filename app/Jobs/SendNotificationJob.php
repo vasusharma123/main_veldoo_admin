@@ -43,7 +43,7 @@ class SendNotificationJob implements ShouldQueue
 		{
 			$user_type = [1,2];
 		}
-		$android_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->where('deleted',0)->whereNull('deleted_at')->paginate(1, ['*'], 'page', $current_page);
+		$android_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->where('deleted',0)->whereNull('deleted_at')->paginate(100, ['*'], 'page', $current_page);
         $android_tokens = [];
         foreach ($android_users as $key => $android_user) 
         {
@@ -54,7 +54,7 @@ class SendNotificationJob implements ShouldQueue
             bulk_firebase_android_notification($itemData->title, $itemData->description, $android_tokens, $additional);
         }
         
-		$ios_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->where('deleted',0)->whereNull('deleted_at')->paginate(1, ['*'], 'page', $current_page);
+		$ios_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->where('deleted',0)->whereNull('deleted_at')->paginate(100, ['*'], 'page', $current_page);
         $ios_tokens = [];
         foreach ($ios_users as $key => $ios_user) 
         {

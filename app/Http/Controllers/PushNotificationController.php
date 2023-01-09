@@ -67,7 +67,7 @@ class PushNotificationController extends Controller
 			$user_type = [1,2];
 		}
 		$total_page = User::whereIn('user_type',$user_type)->where('deleted',0)->whereNull('deleted_at')->count();
-		$total_page = ceil($total_page/1);
+		$total_page = ceil($total_page/100);
 		$data = collect($request->all())->forget(['image','_token'])->put('total_page',$total_page)->put('current_page',1)->toArray();
 		$notification = new PushNotification;
 		$notification->fill($data);
