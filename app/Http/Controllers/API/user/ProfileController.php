@@ -49,7 +49,7 @@ class ProfileController extends Controller
             }
 
             $user = User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type', 'country', 'state', 'city', 'street', 'zip')
-                ->where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 1])->first();
+                ->where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
             if ($user) {
                 return response()->json(['success' => true, 'message' => 'User Detail', 'data' => $user], $this->successCode);
             } else {
