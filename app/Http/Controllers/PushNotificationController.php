@@ -13,6 +13,7 @@ use Helper;
 use Twilio\Rest\Client;
 use App\PushNotification;
 use Storage;
+use App\Jobs\SendNotificationJob;
 
 class PushNotificationController extends Controller
 {
@@ -21,7 +22,8 @@ class PushNotificationController extends Controller
 		$this->folder = 'push_notification';
 		view()->share('route', 'notifications');
 		$this->limit = Config::get('limit');
-   }
+   	}
+
     public function index(Request $request)
     {
 		$data['title'] = "Send Notification to driver or users";
@@ -59,9 +61,14 @@ class PushNotificationController extends Controller
 			'title' => 'required',
 		];
 		$request->validate($rules);
-		
-		// dd($request->all());
-		$data = collect($request->all())->forget(['image','_token'])->toArray();
+		$user_type = [$request->receiver];
+		if ($request->receiver == 3) 
+		{
+			$user_type = [1,2];
+		}
+		$total_page = User::whereIn('user_type',$user_type)->where('deleted',0)->whereNull('deleted_at')->count();
+		$total_page = ceil($total_page/1);
+		$data = collect($request->all())->forget(['image','_token'])->put('total_page',$total_page)->put('current_page',1)->toArray();
 		$notification = new PushNotification;
 		$notification->fill($data);
 		$notification->save();
@@ -117,105 +124,8 @@ class PushNotificationController extends Controller
 		// 			   ]);
 		// 	}
 		// }
+		
+		dispatch(new SendNotificationJob($notification))->onQueue('push_notifications');
 		return redirect()->route('push-notifications.index')->with('success', __('Notification Sent Successfully!'));
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Posts  $posts
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-	    
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Posts  $posts
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-	 
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Posts  $posts
-     * @return \Illuminate\Http\Response
-     */
-    // public function update(Request $request, Posts $posts)
-    public function update(Request $request, $id)
-    {
-		
-		
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Posts  $posts
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Posts $posts)
-    {
-        //
-    }
-	
-	public function promotionalOffer(Request $request){
-		$breadcrumb = array('title'=>'Send Promotional Offers','action'=>'Send Promotional Offers');
-		$data = [];
-		$data = array_merge($breadcrumb,$data);
-		if ($request->ajax()) {
-			return rand();
-		}
-	    return view("admin.{$this->folder}.promotional_offer")->with($data);
-	}
-	
-	
-	public function storePromotionalOffer(Request $request){
-		$rules = [
-			'message' => 'required',
-			'users' => 'required',
-		];
-		$request->validate($rules);
-		$title = 'New Offers';
-		$message = strip_tags($request->message);
-		$type=1;
-		if($request->users==1){
-		$users=\App\User::where('user_type',['1','2','4'])->get();
-		}elseif($request->users==2){
-		$users=\App\User::where('user_type',1);
-		}elseif($request->users==3){
-		$users=\App\User::where('user_type',2);
-		}elseif($request->users==4){
-		$users=\App\User::where('user_type',4);
-		}
-		
-		$users=$users->get();
-		foreach($users as $user){
-		$additional = ['type'=>$type,'ride_id'=>0,'user_id'=>$user->id];
-		$deviceToken=$user->device_token;
-		$deviceType=$user->device_type;
-		//$res=send_notification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-
-		if($deviceType=="android"){
-				$res=send_notification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-				}elseif($deviceType=="ios"){
-					$res=send_iosnotification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
-		}
-		$notification = new Notification();
-		$notification->title = $title;
-		$notification->description = $message;
-		$notification->type = $type;
-		$notification->user_id = $user->id;
-		$notification->save();
-		}
-		return back()->with('success', __('Sent Successfully!'));
-	}
 }
