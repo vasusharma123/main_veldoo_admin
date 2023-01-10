@@ -15,50 +15,50 @@
 						
 					
 						<div class=" box" id="allDataUpdate">
-							<div class="">
-	<table class="table table-bordered data-table " width="100%">
-		<thead class="thead-light">
-			<tr>
-			<th>ID</th>
-			<th>
-				
-				Name
-			</th>
-			
-			<th>
-				
-				Email
-			</th>
-			{{-- <th>Country Code</th> --}}
-			<th>
-				
-				Phone
-			</th>
-			<th>
-				
-				State
-			</th>
-			<th>
-				
-				City
-			</th>
-			<th>
-				
-				Country
-			</th>
-			<th>
-				
-				Status
-			</th>
-			<th>Action</th>
-		</tr>
-		</thead>
-		<tbody>
-			
-			
-		</tbody>
-	</table>
-</div>
+							<div class="table-responsive">
+								<table class="table table-bordered data-table " width="100%">
+									<thead class="thead-light">
+										<tr>
+										<th>ID</th>
+										<th>
+											
+											Name
+										</th>
+										
+										<th>
+											
+											Email
+										</th>
+										{{-- <th>Country Code</th> --}}
+										<th>
+											
+											Phone
+										</th>
+										<th>
+											
+											State
+										</th>
+										<th>
+											
+											City
+										</th>
+										<th>
+											
+											Country
+										</th>
+										<th>
+											
+											Status
+										</th>
+										<th>Action</th>
+									</tr>
+									</thead>
+									<tbody>
+										
+										
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>

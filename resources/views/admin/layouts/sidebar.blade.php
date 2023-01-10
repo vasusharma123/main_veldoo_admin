@@ -176,8 +176,8 @@
 						<span class="hide-menu">{{ trans("admin.Push Notifications") }}</span>
 					</a>
 					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{route('notifications.create')}}">{{ trans("admin.Send Notification") }}</a></li>
-						<li><a href="{{url('admin/promotional-offer')}}">{{ trans("admin.Send Promotional Offer") }}</a></li>
+						<li><a href="{{route('push-notifications.create')}}">{{ trans("Send") }}</a></li>
+						<li><a href="{{route('push-notifications.index')}}">{{ trans("Listing") }}</a></li>
 					</ul>
 				</li>
 			
