@@ -32,6 +32,16 @@
 					</a>
 				</li>
 				<li> 
+					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
+						<i class="mdi mdi-arrange-send-backward"></i>
+						<span class="hide-menu">{{ __("Managers") }}</span>
+					</a>
+					<ul aria-expanded="false" class="collapse">
+						<li><a href="{{ route('managers.create') }}">{{ __("Add") }}</a></li>
+						<li><a href="{{ route('managers.index') }}">{{ __("Listing") }}</a></li>
+					</ul>
+				</li>
+				<li> 
 					<a class="waves-effect waves-dark" href="{{ route('company.rides') }}" aria-expanded="false">
 						<i class="mdi mdi-car-connected"></i>
 						<span class="hide-menu">{{ __('Rides') }}</span>

@@ -189,6 +189,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
 	Route::get('settings','CompanyController@settings')->name('company.settings');
+	Route::resource('managers','Company\ManagersController');
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
