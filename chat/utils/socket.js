@@ -880,6 +880,11 @@ class Socket{
 					console.log(`Error : There is no user id send from driver side`);
 				}
             });
+
+			socket.on("notify_all_drivers", async (datas) => {
+                let data = JSON.parse(datas);
+				this.io.emit(`notify_all_drivers_response`, datas); 
+            });
         });
 
     }
