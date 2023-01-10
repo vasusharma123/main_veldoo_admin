@@ -71,6 +71,12 @@ class UserController extends Controller
 
 	use Notifiable;
 	use SendsPasswordResetEmails;
+
+	protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+	protected $limit;
+
 	public function __construct(Request $request = null)
 	{
 		$this->limit = Config::get('limit_api');
@@ -78,10 +84,6 @@ class UserController extends Controller
 		if (!empty($request->step) && $request->step > 1) {
 			$this->middleware('auth:api')->only('register_or_update');
 		}
-
-		$this->successCode = 200;
-		$this->errorCode = 401;
-		$this->warningCode = 500;
 	}
 
 	public function common()
@@ -5321,7 +5323,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lat = $request->pick_lat;
 			$lon = $request->pick_lng;
 		}
-		$settings = \App\Setting::first();
+		$settings = Setting::first();
 		$settingValue = json_decode($settings['value']);
 		$driverlimit = $settingValue->driver_requests;
 		$driver_radius = $settingValue->radius;
@@ -5333,31 +5335,58 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					+ sin(radians(" . $lat . ")) 
 					* sin(radians(users.current_lat))) AS distance")
 		);
-		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
+		$query = $query->with(['ride' => function ($query1) {
+			$query1->where(['waiting' => 0]);
+			$query1->where(function ($query2) {
+				$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+			});
+		}])->with(['all_rides' => function ($query3) {
+			$query3->where(['status' => 1, 'waiting' => 1]);
+		}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
 		$drivers = $query->get()->toArray();
+
+		$rideObj = new Ride;
+		foreach ($drivers as $driver_key => $driver_value) {
+			if (!empty($driver_value['ride'])) {
+				if (!empty($driver_value['ride']['dest_lat'])) {
+					if ($driver_value['ride']['status'] == 1) {
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
+					}
+					$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
+				} else {
+					$drivers[$driver_key]['distance'] += 10;
+				}
+			}
+			if (!empty($driver_value['all_rides'])) {
+				foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
+					if (!empty($driver_value['ride']['dest_lat'])) {
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
+					} else {
+						$drivers[$driver_key]['distance'] += 15;
+					}
+				}
+			}
+		}
+	
+		usort($drivers, 'sortByDistance');
 
 		$driverids = array();
 
 		if (!empty($drivers)) {
-			foreach ($drivers as $driver) {
-				$driverids[] = $driver['id'];
+			for ($i=0 ; $i < $driverlimit; $i++) {
+				$driverids[] = $drivers[$i]['id'];
 			}
-		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
-		}
-		if (!empty($driverids)) {
-			$driverids = implode(",", $driverids);
 		} else {
 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
 		}
 
 		$ride->driver_id = null;
-		$ride->all_drivers = $driverids;
+		$ride->all_drivers = implode(",", $driverids);
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = Ride::query()->find($ride->id);
 
-		$driverids = explode(",", $driverids);
 		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';

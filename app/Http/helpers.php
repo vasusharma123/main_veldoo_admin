@@ -779,4 +779,8 @@ function bulk_firebase_android_notification($title = '', $msg = '', $token, $add
 	return true;
 }
 
+function sortByDistance($x, $y) {
+    return $x['distance'] - $y['distance'];
+}
+
 ?>
