@@ -1536,7 +1536,7 @@ class UserController extends Controller
 			$expiryMin = config('app.otp_expiry_minutes');
 			// OtpVerification
 			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp])->first();
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Invalid OTP'], $this->warningCode);
 			}
@@ -6660,7 +6660,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
-				->where('country_code', $request->country_code)->where('phone', $request->phone)->where('user_type', 1)->first();
+				->where('country_code', $request->country_code)->where('phone', ltrim($request->phone, "0"))->where('user_type', 1)->first();
 
 			//$userData=\App\UserData::whereRaw('json_contains(phone_number, \''.$request->phone.'\')')->first();
 
@@ -6928,16 +6928,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			}
 			if ($input['phone_number'] && !$input['email']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
 			} else if ($input['email'] && !$input['phone_number']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
 			} else {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->orWhere([['email', '=', $input['email']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->orWhere([['email', '=', $input['email']]])->first();
 			}
 			if (!empty($checkuserPhnEml)) {
 				return response()->json(['message' => 'This user email or phone already exist', 'error' => 'this user email or phone already exist'], $this->warningCode);
 			}
-			$input['phone'] = $request->phone_number;
+			$input['phone'] = ltrim($request->phone_number, "0");
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
 			$input['country_code'] = $request->country_code;

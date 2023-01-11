@@ -144,7 +144,7 @@ class CompanyController extends Controller
             $data['status'] = $request->status;
             $data['addresses'] = $request->street;
             $data['country_code'] = $request->country_code;
-            $data['phone'] = $request->phone;
+            $data['phone'] = ltrim($request->phone, "0");
             $user = User::create($data);
 
             //SAVE IMAGE

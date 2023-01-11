@@ -259,14 +259,14 @@ class UserController extends Controller
 			$input = $request->all();
 			if (Auth::user()->hasRole('Company') == true) {
 				//rider
-				$userData = \App\User::where('phone', $request->phone)->first();
+				$userData = User::where('phone', ltrim($request->phone, "0"))->first();
 				if (!empty($userData)) {
 					return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.This phone number already exists!'));
 				}
 				$user_type = 1;
 				$createdBy = Auth::user()->id;
 			} else {
-				$userData = \App\User::where('user_type', 2)->where('phone', ltrim($request->phone, "0"))->first();
+				$userData = User::where('user_type', 2)->where('phone', ltrim($request->phone, "0"))->first();
 				//driver
 				if (!empty($userData)) {
 					return redirect()->route("users.drivers")->with('warning', trans('admin.This phone number already exists!'));
@@ -951,7 +951,7 @@ public function register(){
 			$expiryMin = config('app.otp_expiry_minutes');
 					$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 					\App\OtpVerification::create(
-						['phone'=>$request->phone,
+						['phone'=> ltrim($request->phone, "0"),
 						'otp' => $otp,
 						'expiry'=>$endTime,
 						'country_code'=>$request->country_code
