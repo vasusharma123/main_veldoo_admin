@@ -134,14 +134,22 @@ $(document).ready(function(){
           toolbar : 'simple'
           })
 
- jQuery("#Regphones").intlTelInput({
+jQuery("#Regphones").intlTelInput({
 		initialCountry:"us",
 		separateDialCode: true,
 		utilsScript: "{{url('assets/js/utils.js')}}",
 		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
 			return "";
 		},
-    });  
+});  
+jQuery("#RegAlterenatePhones").intlTelInput({
+		initialCountry:"us",
+		separateDialCode: true,
+		utilsScript: "{{url('assets/js/utils.js')}}",
+		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+			return "";
+		},
+});  
 </script>
 		 @yield ('footer_scripts')
 	</body>

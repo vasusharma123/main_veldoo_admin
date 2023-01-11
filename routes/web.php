@@ -189,7 +189,9 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
 	Route::get('settings','CompanyController@settings')->name('company.settings');
+	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 });
+Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);

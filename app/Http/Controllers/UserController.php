@@ -97,6 +97,11 @@ class UserController extends Controller
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
 			Auth::user()->syncRoles('Company');	
 		}
+		elseif(Auth::user()->user_type==5)
+		{
+			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
+			Auth::user()->syncRoles('Company');	
+		}
 		return view('dashboards.'.Auth::user()->user_role)->with($data);
 	}
    

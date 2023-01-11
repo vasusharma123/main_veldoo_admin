@@ -30,7 +30,7 @@ class User extends Authenticatable implements HasMedia
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'first_name', 'last_name', 'email', 'image', 'location', 'lat', 'lng', 'user_type', 'status', 'zip', 'addresses', 'password', 'verify', 'device_type', 'device_token', 'fcm_token', 'state', 'country_code', 'phone', 'city', 'availability', 'country', 'step', 'earned_points', 'spent_points', 'created_by', 'street', 'second_country_code', 'second_phone_number', 'random_token'
+		'name', 'first_name', 'last_name', 'email', 'image', 'location', 'lat', 'lng', 'user_type', 'status', 'zip', 'addresses', 'password', 'verify', 'device_type', 'device_token', 'fcm_token', 'state', 'country_code', 'phone', 'city', 'availability', 'country', 'step', 'earned_points', 'spent_points', 'created_by', 'street', 'second_country_code', 'second_phone_number', 'random_token', 'company_id'
 	];
 
 	/**
@@ -289,7 +289,7 @@ class User extends Authenticatable implements HasMedia
 	public function getUserRoleAttribute()
 	{
 		$selected_user_type = (!empty($this->user_type))?$this->user_type:2;
-		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company"];
+		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company",5=>"company_manager"];
 		return $user_types[$selected_user_type];
 	}
 

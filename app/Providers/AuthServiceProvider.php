@@ -25,6 +25,14 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        Gate::define('isCompanyManager', function ($user) {
+			return $user->user_type == 5;
+		});
+
+        Gate::define('isCompany', function ($user) {
+			return $user->user_type == 4;
+		});
+        
 		Passport::routes();
 		
 		Passport::tokensExpireIn(now()->addDays(5));
