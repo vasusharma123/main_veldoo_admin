@@ -31,14 +31,26 @@
 						<i class="mdi mdi-gauge"></i><span class="hide-menu">{{ trans("admin.Dashboard") }}</span>
 					</a>
 				</li>
+				@can('isCompany')	
+					<li> 
+						<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
+							<i class="mdi mdi-arrange-send-backward"></i>
+							<span class="hide-menu">{{ __("Managers") }}</span>
+						</a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="{{ route('managers.create') }}">{{ __("Add") }}</a></li>
+							<li><a href="{{ route('managers.index') }}">{{ __("Listing") }}</a></li>
+						</ul>
+					</li>
+				@endcan
 				<li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ __("Managers") }}</span>
+						<span class="hide-menu">{{ __("Users") }}</span>
 					</a>
 					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('managers.create') }}">{{ __("Add") }}</a></li>
-						<li><a href="{{ route('managers.index') }}">{{ __("Listing") }}</a></li>
+						<li><a href="{{ route('company-users.create') }}">{{ __("Add") }}</a></li>
+						<li><a href="{{ route('company-users.index') }}">{{ __("Listing") }}</a></li>
 					</ul>
 				</li>
 				<li> 

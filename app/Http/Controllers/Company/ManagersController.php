@@ -31,21 +31,6 @@ class ManagersController extends Controller
         return view('company.managers.index')->with($data);
     }
 
-    public function show($id, Request $request)
-	{
-		$breadcrumb = array('title' => 'Rides', 'action' => 'Ride Details');
-		$data = [];
-		$where = array('rides.id' => $id,'company_id'=>Auth::user()->id);
-		$record = \App\Ride::select('rides.*', 'users.first_name', 'users.last_name', 'categories.name')->with(['company'])->leftjoin('users', 'users.id', '=', 'rides.user_id')->leftjoin('categories', 'rides.car_type', '=', 'categories.id')->where($where)->first();
-		if (empty($record)) {
-			return redirect()->route("company.rides")->with('warning', 'Record not found!');
-		}
-		$data['status'] = array(1 => 'Active', 0 => 'In-active');
-		$data['record'] = $record;
-		$data = array_merge($breadcrumb, $data);
-		return view("company.rides.show")->with($data);
-	}
-
     public function create(Request $request)
 	{
 		$breadcrumb = array('title' => 'Create Manager', 'action' => 'Create Manager');
@@ -65,6 +50,7 @@ class ManagersController extends Controller
         try 
         {
             $data = ['name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'user_type'=>5,'company_id'=>Auth::user()->id];
+            $data['created_by'] = Auth::user()->id;
             if ($request->phone) 
             {
                 $data['phone'] = $request->phone;

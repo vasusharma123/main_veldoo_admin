@@ -26,21 +26,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($managers as $key=>$manager)
+                                        @foreach ($users as $key=>$user)
                                             <tr>
-                                                <td>{{ $manager->id }}</td>
-                                                <td>{{ $manager->name }}</td>
-                                                <td>{{ $manager->email }}</td>
-                                                <td>{{ $manager->phone?"+".$manager->country_code.$manager->phone:'' }}</td>
-                                                <td>{{ date('Y-m-d',strtotime($manager->created_at)) }}</td>
+                                                <td>{{ $user->id }}</td>
+                                                <td>{{ $user->first_name.' '.$user->last_name }}</td>
+                                                <td>{{ $user->email }}</td>
+                                                <td>{{ $user->phone?"+".$user->country_code.$user->phone:'' }}</td>
+                                                <td>{{ date('Y-m-d',strtotime($user->created_at)) }}</td>
                                                 <td class=" dt-body-center text-center new-class">
                                                     <div class="btn-group dropright">
                                                         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-reference="parent">
                                                             Action
                                                         </button>
                                                         <div class="dropdown-menu" x-placement="left-start" style="position: absolute; transform: translate3d(-162px, 0px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                                            <a class="dropdown-item" href="{{ route('managers.edit',$manager->id) }}">Edit</a>
-                                                            <form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy',$manager->id) }}" method="POST">
+                                                            <a class="dropdown-item" href="{{ route('company-users.edit',$user->id) }}">Edit</a>
+                                                            <form onsubmit="return confirm('Are you sure?')" action="{{ route('company-users.destroy',$user->id) }}" method="POST">
                                                                 @method('delete')
                                                                 @csrf
                                                                 <button class="dropdown-item">Delete</button>
