@@ -5375,7 +5375,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		if (!empty($drivers)) {
 			for ($i=0 ; $i < $driverlimit; $i++) {
-				$driverids[] = $drivers[$i]['id'];
+				if(!empty($drivers[$i])){
+					$driverids[] = $drivers[$i]['id'];
+				}
 			}
 		} else {
 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
