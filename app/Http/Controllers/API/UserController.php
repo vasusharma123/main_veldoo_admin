@@ -6745,11 +6745,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						if ($request->master_driver == 1) {
 							$rides[0] = $ownrideswaiting;
 						} else {
-							$rides[0] = $ownrideswaiting;
-							$rides[1] = $globalRideswaiting;
-							$rides[2] = $globalridespending;
-							$rides[3] = $overallPendingRides;
-							$rides[4] = $othersFuturePendingRides;
+							$rides[0] = $globalRideswaiting;
+							$rides[1] = $globalridespending;
+							$rides[2] = $overallPendingRides;
+							$rides[3] = $othersFuturePendingRides;
 						}
 						foreach ($rides as $ridedata) {
 							if (!empty($ridedata)) {
