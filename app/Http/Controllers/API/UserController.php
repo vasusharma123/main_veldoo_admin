@@ -6761,7 +6761,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					} else {
 						$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) {
 							$query->where([['status', '=', 0]]);
+							$query->orWhere(function($query1){
+								$query1->where(['status' => 1, 'waiting' => 1]);
+							});
 						})->orderBy('ride_time', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+						
 					}
 				} elseif ($request->type == 2) {
 					if ($user->is_master == 1) {
