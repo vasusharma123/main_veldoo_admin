@@ -29,7 +29,7 @@ class RideController extends Controller
         }
         $ride = Ride::with(['user', 'driver', 'company_data'])->where('driver_id', $userObj->id)->where(function ($query) {
             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-        })->orderBy('id', 'DESC')->first();
+        })->orderBy('ride_time')->get();
         return $this->successResponse($ride, 'Get latest ride successfully');
     }
     /**
