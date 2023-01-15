@@ -5354,7 +5354,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 					$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
 				} else {
-					$drivers[$driver_key]['distance'] += 10;
+					$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
 				}
 			}
 			if (!empty($driver_value['all_rides'])) {
@@ -5363,7 +5363,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
 						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
 					} else {
-						$drivers[$driver_key]['distance'] += 15;
+						$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
 					}
 				}
 			}
