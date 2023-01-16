@@ -24,6 +24,7 @@
 /****	GLOBAL VARIABLE	***/
 Config::set('limit', 10);
 
+Route::get('log-viewer', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 ########		PUBLIC URL START		#########
 /* Route::get('/', function () {
    return 'No Home Yet';
