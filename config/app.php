@@ -181,7 +181,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 		Yajra\Datatables\DatatablesServiceProvider::class,
 		Jenssegers\Agent\AgentServiceProvider::class,
-
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
     ],
 
     /*

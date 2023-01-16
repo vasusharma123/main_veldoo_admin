@@ -7,7 +7,7 @@
         <!-- Bootstrap V5 -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Custom Style -->
-        <link href="{{ asset('company_assets/css/style.css')}}" rel="stylesheet">
+        <link href="{{ asset('company/assets/css/style.css')}}" rel="stylesheet">
         @yield('css')
     </head>
     <body>
@@ -18,7 +18,7 @@
         <!-- Bootstrap V5 JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Custom Script -->
-        <script src="{{ asset('company_assets/js/main.js')}}"></script>
+        <script src="{{ asset('company/assets/js/main.js')}}"></script>
         @yield('script')
     </body>
 </html>
