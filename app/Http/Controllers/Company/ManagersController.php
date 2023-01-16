@@ -25,7 +25,7 @@ class ManagersController extends Controller
      */
     public function index(Request $request)
     {
-        $data = array('title' => 'Managers', 'action' => 'Managers');
+        $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
         $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->id])->get();
         return view('company.managers.index')->with($data);
@@ -33,7 +33,7 @@ class ManagersController extends Controller
 
     public function create(Request $request)
 	{
-		$breadcrumb = array('title' => 'Create Manager', 'action' => 'Create Manager');
+		$breadcrumb = array('page_title' => 'Create Manager', 'action' => 'Create Manager');
 		$data = [];
 		$data = array_merge($breadcrumb, $data);
 		return view("company.managers.create")->with($data);
@@ -82,13 +82,14 @@ class ManagersController extends Controller
 
     public function edit(Request $request,$id)
 	{
-		$data = array('title' => 'Edit Manager', 'action' => 'Edit Manager');
+		$data = array('page_title' => 'Edit Manager', 'action' => 'Edit Manager');
 		$data['manager'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->id])->find($id);
 		return view("company.managers.edit")->with($data);
 	}
 
     public function update(Request $request,$id)
     {
+        // dd($request->all());
         $request->validate([
             'email' => 'email|required|unique:users,email,'.$id,
             'name' => 'required',
