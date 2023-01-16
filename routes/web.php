@@ -204,4 +204,4 @@ Route::group([ 'middleware' => 'auth'], function(){
 	// Route::post('/userCreate',  ['as'=>'userCreate','uses'=>'UserController@userCreate']);
 });
 
-Route::get('company_login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
+Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
