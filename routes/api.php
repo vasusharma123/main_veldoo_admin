@@ -136,7 +136,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 
 	Route::post('get_user_by_phone','user\ProfileController@getUserByPhone');
 	Route::get('my_profile','user\ProfileController@my_profile');
-	
+	Route::delete('delete_account', 'user\ProfileController@destroy');
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {
