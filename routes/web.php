@@ -125,8 +125,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	
 
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController','notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
+	Route::resources(['push-notifications'=>'PushNotificationController']);
 
-	
 	Route::get('daily-report','DailyReportController@index')->name('daily-report.index');
 	Route::get('report/vehicles','DailyReportController@vehicles')->name('daily-report.vehicles');
 	Route::post('report/vehicle_export','DailyReportController@vehicle_export')->name('daily-report.vehicle_export');
@@ -189,7 +189,9 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
 	Route::get('settings','CompanyController@settings')->name('company.settings');
+	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 });
+Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);
@@ -201,3 +203,5 @@ Route::get('/book-ride','RideManagementController@bookRide');
 Route::group([ 'middleware' => 'auth'], function(){
 	// Route::post('/userCreate',  ['as'=>'userCreate','uses'=>'UserController@userCreate']);
 });
+
+Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);

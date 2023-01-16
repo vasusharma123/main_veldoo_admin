@@ -251,10 +251,28 @@
 								<div class="col-md-6">
                                     <div class="form-group">
                                         <?php
-                                        echo Form::label('waiting_time', 'Driver Idle Time(In minutes)', ['class' => 'control-label']);
+                                        echo Form::label('driver_idle_time', 'Driver Idle Time(In minutes)', ['class' => 'control-label']);
                                         echo Form::number('driver_idle_time', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
                                         ?>
                                         <span class="subtitle">After ___ minutes of staying idle, the driver receives a notification alert.</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?php
+                                        echo Form::label('current_ride_distance_addition', 'Current ride distance addition (In miles)', ['class' => 'control-label']);
+                                        echo Form::number('current_ride_distance_addition', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
+                                        ?>
+                                        <span class="subtitle">While searching for driver, if ride have no destination location than add ___ miles</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?php
+                                        echo Form::label('waiting_ride_distance_addition', 'Waiting ride distance addition (In miles)', ['class' => 'control-label']);
+                                        echo Form::number('waiting_ride_distance_addition', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
+                                        ?>
+                                        <span class="subtitle">While searching for driver, if ride have no destination location of waiting ride than add ___ miles</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">

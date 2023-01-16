@@ -771,12 +771,18 @@ function bulk_firebase_android_notification($title = '', $msg = '', $token, $add
 	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
 	$result = curl_exec($ch);
 	curl_close($ch);
+	// DB::table('test_jobs')->insert(['data'=>json_encode($result)]);
 	if ($result === FALSE) {
 		die('Curl failed: ' . curl_error($ch));
 	} else {
+		// DB::table('test_jobs')->insert(['data'=>'success']);
 		$data = array('message' => 'success');
 	}
 	return true;
+}
+
+function sortByDistance($x, $y) {
+    return $x['distance'] - $y['distance'];
 }
 
 ?>

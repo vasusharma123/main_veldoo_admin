@@ -71,6 +71,12 @@ class UserController extends Controller
 
 	use Notifiable;
 	use SendsPasswordResetEmails;
+
+	protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+	protected $limit;
+
 	public function __construct(Request $request = null)
 	{
 		$this->limit = Config::get('limit_api');
@@ -78,10 +84,6 @@ class UserController extends Controller
 		if (!empty($request->step) && $request->step > 1) {
 			$this->middleware('auth:api')->only('register_or_update');
 		}
-
-		$this->successCode = 200;
-		$this->errorCode = 401;
-		$this->warningCode = 500;
 	}
 
 	public function common()
@@ -1534,7 +1536,7 @@ class UserController extends Controller
 			$expiryMin = config('app.otp_expiry_minutes');
 			// OtpVerification
 			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp])->first();
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Invalid OTP'], $this->warningCode);
 			}
@@ -5321,7 +5323,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lat = $request->pick_lat;
 			$lon = $request->pick_lng;
 		}
-		$settings = \App\Setting::first();
+		$settings = Setting::first();
 		$settingValue = json_decode($settings['value']);
 		$driverlimit = $settingValue->driver_requests;
 		$driver_radius = $settingValue->radius;
@@ -5333,31 +5335,60 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					+ sin(radians(" . $lat . ")) 
 					* sin(radians(users.current_lat))) AS distance")
 		);
-		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
+		$query = $query->with(['ride' => function ($query1) {
+			$query1->where(['waiting' => 0]);
+			$query1->where(function ($query2) {
+				$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+			});
+		}])->with(['all_rides' => function ($query3) {
+			$query3->where(['status' => 1, 'waiting' => 1]);
+		}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
 		$drivers = $query->get()->toArray();
+
+		$rideObj = new Ride;
+		foreach ($drivers as $driver_key => $driver_value) {
+			if (!empty($driver_value['ride'])) {
+				if (!empty($driver_value['ride']['dest_lat'])) {
+					if ($driver_value['ride']['status'] == 1) {
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
+					}
+					$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
+				} else {
+					$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
+				}
+			}
+			if (!empty($driver_value['all_rides'])) {
+				foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
+					if (!empty($driver_value['ride']['dest_lat'])) {
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
+					} else {
+						$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
+					}
+				}
+			}
+		}
+	
+		usort($drivers, 'sortByDistance');
 
 		$driverids = array();
 
 		if (!empty($drivers)) {
-			foreach ($drivers as $driver) {
-				$driverids[] = $driver['id'];
+			for ($i=0 ; $i < $driverlimit; $i++) {
+				if(!empty($drivers[$i])){
+					$driverids[] = $drivers[$i]['id'];
+				}
 			}
-		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
-		}
-		if (!empty($driverids)) {
-			$driverids = implode(",", $driverids);
 		} else {
 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
 		}
 
 		$ride->driver_id = null;
-		$ride->all_drivers = $driverids;
+		$ride->all_drivers = implode(",", $driverids);
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = Ride::query()->find($ride->id);
 
-		$driverids = explode(",", $driverids);
 		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
@@ -6629,7 +6660,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
-				->where('country_code', $request->country_code)->where('phone', $request->phone)->where('user_type', 1)->first();
+				->where('country_code', $request->country_code)->where('phone', ltrim($request->phone, "0"))->where('user_type', 1)->first();
 
 			//$userData=\App\UserData::whereRaw('json_contains(phone_number, \''.$request->phone.'\')')->first();
 
@@ -6714,11 +6745,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						if ($request->master_driver == 1) {
 							$rides[0] = $ownrideswaiting;
 						} else {
-							$rides[0] = $ownrideswaiting;
-							$rides[1] = $globalRideswaiting;
-							$rides[2] = $globalridespending;
-							$rides[3] = $overallPendingRides;
-							$rides[4] = $othersFuturePendingRides;
+							$rides[0] = $globalRideswaiting;
+							$rides[1] = $globalridespending;
+							$rides[2] = $overallPendingRides;
+							$rides[3] = $othersFuturePendingRides;
 						}
 						foreach ($rides as $ridedata) {
 							if (!empty($ridedata)) {
@@ -6731,7 +6761,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					} else {
 						$rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) {
 							$query->where([['status', '=', 0]]);
+							$query->orWhere(function($query1){
+								$query1->where(['status' => 1, 'waiting' => 1]);
+							});
 						})->orderBy('ride_time', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+						
 					}
 				} elseif ($request->type == 2) {
 					if ($user->is_master == 1) {
@@ -6897,16 +6931,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			}
 			if ($input['phone_number'] && !$input['email']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
 			} else if ($input['email'] && !$input['phone_number']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
 			} else {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', $input['phone_number']]])->orWhere([['email', '=', $input['email']]])->first();
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->orWhere([['email', '=', $input['email']]])->first();
 			}
 			if (!empty($checkuserPhnEml)) {
 				return response()->json(['message' => 'This user email or phone already exist', 'error' => 'this user email or phone already exist'], $this->warningCode);
 			}
-			$input['phone'] = $request->phone_number;
+			$input['phone'] = ltrim($request->phone_number, "0");
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
 			$input['country_code'] = $request->country_code;

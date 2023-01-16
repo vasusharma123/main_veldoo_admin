@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
+    protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
 
     public function __construct(Request $request = null)
     {
-        $this->successCode = 200;
-        $this->errorCode = 401;
-        $this->warningCode = 500;
     }
 
     public function my_profile(Request $request)
@@ -54,6 +54,21 @@ class ProfileController extends Controller
                 return response()->json(['success' => true, 'message' => 'User Detail', 'data' => $user], $this->successCode);
             } else {
                 return response()->json(['success' => false, 'message' => 'No user was found with the given phone number.'], $this->successCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
+    public function destroy(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if ($user) {
+                User::where(['id' => $user->id])->delete();
+                return response()->json(['success' => true, 'message' => 'Your account was successfully deleted.'], $this->successCode);
             }
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['message' => $exception->getMessage()], $this->warningCode);
