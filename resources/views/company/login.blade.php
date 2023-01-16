@@ -6,7 +6,7 @@
         <div class="container">
             <section class="sign_in_form_section">
                 <article class="form_top_logo">
-                    <img src="{{ asset('company_assets/imgs/logo.png')}}" alt="Brand Logo" class="img-fluid brand_img">
+                    <img src="{{ asset('company/assets/imgs/logo.png')}}" alt="Brand Logo" class="img-fluid brand_img">
                 </article>
                 <form method="post" action="{{ url('doLogin')}}" class="login_form">
                     @csrf
