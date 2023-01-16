@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Account</title>
+        <title>{{ env('APP_NAME') }} {{ isset($page_title)?' - '.$page_title:'' }}</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Bootstrap V5 -->
@@ -10,10 +10,17 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
         <!-- Custom Style -->
         <link href="{{ asset('company/assets/css/style.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" integrity="sha512-gxWow8Mo6q6pLa1XH/CcH8JyiSDEtiwJV78E+D+QP0EVasFs8wKXq16G8CLD4CJ2SnonHr4Lm/yY2fSI2+cbmw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .iti
+            {
+                display: block !important;
+                margin-bottom: 7px !important;
+            }
+        </style>
     </head>
     <body>
         <div class="all_content">
-           
             <main class="body_content ">
                 <div class="row m-0 w-100">
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-0">
@@ -27,7 +34,7 @@
                                             <img src="{{ asset('company/assets/imgs/avatar_user.png') }}" alt="User Avatar" class="img-fluid user_img">
                                         </div>
                                         <div class="user_name">
-                                            <h4 class="name">Rylle Kincaid</h4>
+                                            <h4 class="name">{{ Auth::user()->first_name.' '.Auth::user()->name.' '.Auth::user()->last_name }}</h4>
                                             <p class="occupation">Super Admin</p>
                                         </div>
                                     </div>
@@ -38,13 +45,15 @@
 
                                 <div class="sideBar_menu">
                                     <ul class="list-group list-group-flush background-transparent">
-                                        <li class="list-group-item"><a href="booking.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/redcar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
-                                        <li class="list-group-item"><a href="history.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/history.png') }}" class="img-fluid sideBar_icon_img me-3" alt="History"><span class="title_menu">History</span></a></li>
+                                        <li class="list-group-item" data-image="redcar"><a href="booking.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/redcar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
+                                        <li class="list-group-item" data-image="history"><a href="history.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/history.png') }}" class="img-fluid sideBar_icon_img me-3" alt="History"><span class="title_menu">History</span></a></li>
                                         @can('isCompany')	
-                                            <li class="list-group-item"><a href="{{ route('managers.index') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Managers"><span class="title_menu">{{ __('Managers') }}</span></a></li>
+                                            <li class="list-group-item Managers" data-image="accounts">
+                                                <a href="{{ route('managers.index') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Managers"><span class="title_menu">{{ __('Managers') }}</span></a>
+                                            </li>
                                         @endcan
-                                        <li class="list-group-item"><a href="user.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span></a></li>
-                                        <li class="list-group-item"><a href="help.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/help.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Help"><span class="title_menu">Help</span></a></li>
+                                        <li class="list-group-item" data-image="accounts"><a href="user.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span></a></li>
+                                        <li class="list-group-item" data-image="help"><a href="help.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/help.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Help"><span class="title_menu">Help</span></a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -69,7 +78,68 @@
         <!-- Bootstrap V5 JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Custom Script -->
-        <script src="{{ asset('assets/js/main.js') }}"></script>
+        <script src="{{ asset('company/assets/js/main.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js" integrity="sha512-+gShyB8GWoOiXNwOlBaYXdLTiZt10Iy6xjACGadpqMs20aJOoh+PJt3bwUVA6Cefe7yF7vblX6QwyXZiVwTWGg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput-jquery.min.js" integrity="sha512-9WaaZVHSw7oRWH7igzXvUExj6lHGuw6GzMKW7Ix7E+ELt/V14dxz0Pfwfe6eZlWOF5R6yhrSSezaVR7dys6vMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            $(function(){
+                @if (isset($page_title))
+                    $('.{{ $page_title }}').addClass('active');
+                @endif
+            });
+            jQuery("#Regphones").intlTelInput({
+                    initialCountry:"us",
+                    separateDialCode: true,
+                    utilsScript: "{{url('assets/js/utils.js')}}",
+                    customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                        return "";
+                    },
+            });  
 
+            var input = $('#Regphones').intlTelInput("setNumber", "+1");
+            input.on("countrychange", function() {
+                $(".country_code").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
+            });
+
+            jQuery("#RegAlterenatePhones").intlTelInput({
+                    initialCountry:"us",
+                    separateDialCode: true,
+                    utilsScript: "{{url('assets/js/utils.js')}}",
+                    customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                        return "";
+                    },
+            });  
+            
+            var input_1 = $('#RegAlterenatePhones').intlTelInput("setNumber", "+1");
+            input_1.on("countrychange", function() {
+                $(".second_country_code").val($("#RegAlterenatePhones").intlTelInput("getSelectedCountryData").dialCode);
+            });
+
+            jQuery("#Regphones_edit").intlTelInput({
+                    initialCountry:"us",
+                    separateDialCode: true,
+                    utilsScript: "{{url('assets/js/utils.js')}}",
+                    autoFormat: false,
+                    customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                        return "";
+                    },
+            });  
+            
+            var input_edit = $('#Regphones_edit').intlTelInput("setNumber", "+1");
+            input_edit.on("countrychange", function() {
+                $(".country_code_edit").val($("#Regphones_edit").intlTelInput("getSelectedCountryData").dialCode);
+            });
+
+            filters = {
+                searchText: ''
+            }
+            function renderBySearch(recipes, filters) {
+                var results = $.grep(recipes, function (object) {
+                    return object.name.toLowerCase().includes(filters.searchText.toLowerCase()) || object.phone.toLowerCase().includes(filters.searchText.toLowerCase()) || object.email.toLowerCase().includes(filters.searchText.toLowerCase());
+                });
+                return results;
+            }
+        </script>
+        @yield('footer_scripts')
     </body>
 </html>

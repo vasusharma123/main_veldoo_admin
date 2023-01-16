@@ -1,269 +1,145 @@
 @extends('company.layouts.app')
-
 @section('content')
-    <!-- Container fluid  -->
-    <!-- ============================================================== -->
-    <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        @include('admin.layouts.flash-message')
-                        <div class=" box" id="allDataUpdate">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Created Date</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($managers as $key=>$manager)
-                                            <tr>
-                                                <td>{{ $manager->id }}</td>
-                                                <td>{{ $manager->name }}</td>
-                                                <td>{{ $manager->email }}</td>
-                                                <td>{{ $manager->phone?"+".$manager->country_code.$manager->phone:'' }}</td>
-                                                <td>{{ date('Y-m-d',strtotime($manager->created_at)) }}</td>
-                                                <td class=" dt-body-center text-center new-class">
-                                                    <div class="btn-group dropright">
-                                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" data-reference="parent">
-                                                            Action
-                                                        </button>
-                                                        <div class="dropdown-menu" x-placement="left-start" style="position: absolute; transform: translate3d(-162px, 0px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                                            <a class="dropdown-item" href="{{ route('managers.edit',$manager->id) }}">Edit</a>
-                                                            <form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy',$manager->id) }}" method="POST">
-                                                                @method('delete')
-                                                                @csrf
-                                                                <button class="dropdown-item">Delete</button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+{{ Form::open(array('url' => route('managers.store'),'class'=>'form-horizontal form-material add_details_form','id'=>'store','enctype' => 'multipart/form-data')) }}
+    @csrf
+    <div class="row">
+        <div class="col-12">
+            <h2 class="board_title">Managers</h2>
+            @include('admin.layouts.flash-message')
+        </div>
+        <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12 col-xs-12">
+            <div class="search_list">
+                <div class="searc_input">
+                    <input type="search" class="form-control input_fields_search search_input" placeholder="Search">
+                    <i class="bi bi-search button_search"></i>
                 </div>
+                <div class="list_search_output">
+                    <ul class="list-group list-group-flush usersLiPar">
+                        @foreach ($managers as $key=>$manager)
+                            <li class="list-group-item usersLi" data-key="{{ $key }}">
+                                <a href="#"> 
+                                    <span class="point_list position-relative text-capitalize">
+                                        <input type="checkbox" name="selectedPoint" class="input_radio_selected">
+                                        {{ $manager->name }}
+                                    </span>
+                                </a> 
+                                <span class="action_button deleteButton" data-id="{{ $manager->id }}" style="cursor: pointer">
+                                    {{-- <span class="code_country position-relative">SA</span>  --}}
+                                    <i class="bi bi-trash3 dlt_list_btn"></i>
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                <!-- List Search End -->
+            </div>
+            <!-- Search List -->
+            <div class="details_box add_box">
+                <div class="boxHeader">
+                    <h2 class="board_title mb-0">Add Manager</h2>
+                    <button class="btn save_btn">Add</button>
+                </div>
+                {{-- <div class="form-group">
+                    <input type="text" class="form-control inside_input_field mb-2" placeholder="First Name" required />
+                </div> --}}
+                <div class="form-group">
+                    <input type="text" class="form-control inside_input_field mb-2" name="name" placeholder="Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="text" name="phone" id="Regphones" class="form-control inside_input_field mb-2" placeholder="Phone Number"/>
+                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control inside_input_field mb-2" name="email" placeholder="Email" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control inside_input_field mb-2" name="password" placeholder="Password" required />
+                </div>
+                {{-- <div class="form-group">
+                    <textarea class="form-control inside_input_field mb-2" required placeholder="Note" rows="5"></textarea>
+                </div> --}}
+            </div>
+            <div class="details_box edit_box" style="display: none">
+                <div class="boxHeader">
+                    <h2 class="board_title mb-0">Edit Manager</h2>
+                    <button class="btn save_btn" type="submit" form="updateForm">Update</button>
+                    <button class="btn save_btn add_new_manager_btn" type="button">Add</button>
+                </div>
+                {{-- <div class="form-group">
+                    <input type="text" class="form-control inside_input_field mb-2" placeholder="First Name" required />
+                </div> --}}
+                <div class="form-group">
+                    <input type="text" class="form-control inside_input_field mb-2" form="updateForm" name="name" placeholder="Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="text" name="phone" id="Regphones_edit" form="updateForm" class="form-control inside_input_field mb-2" placeholder="Phone Number"/>
+                    <input type="hidden" value="+1" class="country_code_edit" form="updateForm" id="country_code_edit" name="country_code" />
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control inside_input_field mb-2" form="updateForm" name="email" placeholder="Email" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control inside_input_field mb-2" form="updateForm" name="password" placeholder="Password"/>
+                    <span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
+                </div>
+                {{-- <div class="form-group">
+                    <textarea class="form-control inside_input_field mb-2" required placeholder="Note" rows="5"></textarea>
+                </div> --}}
             </div>
         </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
+        <!-- Left Side Board -->
+        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-12 col-xs-12">
+            <div class="map_views h-100">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d102152.55978232603!2d75.46373732010797!3d31.370071732694594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1673768174190!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+        <!-- Right Map Side-->
     </div>
+</form>
+<form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy','~') }}" id="deleteForm" method="POST">
+    @method('delete')
+    @csrf
+</form>
+<form action="{{ route('managers.update','~') }}" id="updateForm" method="POST">
+    @method('put')
+    @csrf
+</form>
 @endsection
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
 @section('footer_scripts')
-
-    <style>
-        .table-responsive {
-            overflow-x: scroll;
-        }
-
-        thead tr {
-            white-space: nowrap;
-        }
-
-        table.dataTable td.dataTables_empty {
-            text-align: center;
-        }
-    </style>
     <script type="text/javascript">
-        $("#min").datepicker({
-            dateFormat: 'dd/mm/yy'
+        users_fixed = JSON.parse('<?php echo ($managers) ?>');
+        users = JSON.parse('<?php echo ($managers) ?>');
+        $(document).on('click','.deleteButton',function(){
+            action = $('#deleteForm').attr('action');
+            action = action.replace('~',$(this).data('id'));
+            $('#deleteForm').attr('action',action);
+            $('#deleteForm').submit();
         });
-        $("#max").datepicker({
-            dateFormat: 'dd/mm/yy'
+        $(document).on('click','.add_new_manager_btn',function(){
+            $('.edit_box').hide();
+            $('.add_box').show();
         });
+        $(document).on('click','.usersLi',function(){
+            user = users[$(this).data('key')];
+            action = $('#updateForm').attr('action');
+            action = action.replace('~',user.id);
+            $('#updateForm').attr('action',action);
 
+            $('.edit_box').find("input[name='name']").val(user.name);
+            $('.edit_box').find("input[name='phone']").val(user.phone);
+            $('.edit_box').find("input[name='country_code']").val(user.country_code);
+            $('.edit_box').find("input[name='email']").val(user.email);
 
-        $(document).ready(function() {
-            $(function() {
-                var table = $('.data-table').DataTable({
-                    order: [
-                        [1, 'desc']
-                    ],
-                    processing: true,
-                    serverSide: true,
-                    ajax: "{{ route('company.rides') }}",
-                    'columnDefs': [{
-                            'targets': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                            'searchable': true,
-                            'orderable': true,
-                            'className': 'dt-body-center text-center new-class filterhead',
-
-                        },
-                        {
-                            'targets': [0],
-                            'searchable': false,
-                            'orderable': false
-
-                        }
-                    ],
-
-                    //   'order': [1, 'desc'],
-
-                    columns: [{
-                            data: 'checkboxes',
-                            name: 'checkboxes'
-                        },
-                        {
-                            data: 'id',
-                            name: 'id'
-                        },
-                        // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                        {
-                            data: 'date',
-                            name: 'date'
-                        },
-                        {
-                            data: 'driver',
-                            name: 'driver'
-                        },
-                        {
-                            data: 'car',
-                            name: 'car'
-                        },
-                        {
-                            data: 'guest',
-                            name: 'guest'
-                        },
-                        {
-                            data: 'pick_up',
-                            name: 'pick_up'
-                        },
-                        {
-                            data: 'drop_off',
-                            name: 'drop_off'
-                        },
-                        {
-                            data: 'distance',
-                            name: 'distance'
-                        },
-                        {
-                            data: 'ride_cost',
-                            name: 'ride_cost'
-                        },
-                        {
-                            data: 'status',
-                            name: 'status'
-                        },
-                        {
-                            data: 'payment',
-                            name: 'payment'
-                        },
-                        {
-                            data: 'action',
-                            name: 'action'
-                        }
-                    ],
-                    dom: 'Bfrtip',
-                    buttons: [{
-                            "extend": 'excel',
-                            "text": 'Excel',
-                            "titleAttr": 'Excel Export',
-                            "action": excelexportaction
-                        },
-                        'pageLength'
-                    ],
-                });
-                // Refilter the table
-                $('#min, #max').on('change', function() {
-                    table.draw();
-                });
+            input_edit = $('#Regphones_edit').intlTelInput("setNumber","+"+user.country_code+user.phone);
+            input_edit.on("countrychange", function() {
+                $(".country_code_edit").val($("#Regphones_edit").intlTelInput("getSelectedCountryData").dialCode);
             });
 
-            function excelexportaction() {
-                window.location.href = "{{ route('ride/export') }}";
-            }
-
-            // Extend dataTables search
-            $.fn.dataTableExt.afnFiltering.push(
-                function(settings, data, dataIndex) {
-                    var min = $('#min').val()
-                    var max = $('#max').val()
-                    var createdAt = data[2]; // Our date column in the table
-                    //createdAt=createdAt.split(" ");
-                    if (min != '' && max != '') {
-                        var startDate = moment(min, 'DD-MM-YYYY');
-                        var endDate = moment(max, 'DD-MM-YYYY');
-                    } else {
-                        var startDate = '';
-                        var endDate = '';
-                    }
-                    var diffDate = moment(createdAt, 'DD-MM-YYYY');
-                    // console.log(diffDate);
-                    console.log('start' + startDate);
-                    console.log('end' + endDate);
-                    if (
-                        (startDate === '' && endDate === '') ||
-                        (startDate === '' && diffDate <= endDate) ||
-                        (startDate <= diffDate && diffDate === '') ||
-                        (startDate <= diffDate && diffDate <= endDate)
-                    ) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
+            $('.edit_box').show();
+            $('.add_box').hide();
         });
-
-        $(document).on('click', '.delete_record', function() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.value) {
-                    var ride_id = $(this).attr('data-id');
-                    action = "{{ route('company.rides.destroy','~') }}";
-                    action = action.replace('~',ride_id);
-                    $.ajax({
-                        type: "delete",
-                        url: action,
-                        data: {
-                            "_token": "{{ csrf_token() }}"
-                        },
-                        success: function(data) {
-                            if (data.status) {
-                                Swal.fire({
-                                    title: 'Deleted',
-                                    text: data.message,
-                                    icon: 'success',
-                                    showConfirmButton: false
-                                });
-                                setTimeout(function() {
-                                    location.reload(true);
-                                }, 2000);
-                            } else {
-                                Swal.fire(
-                                    'Error',
-                                    data.message,
-                                    'error'
-                                )
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
         $(document).on('click', '#delete_record', function(e) {
             e.preventDefault();
             var selected_checkbox = [];
@@ -317,6 +193,33 @@
                     'error'
                 )
             }
-        })
+        });
+
+        $(document).on('keyup','.search_input',function(){
+            if ($(this).val()!="") 
+            {
+                filters.searchText = $(this).val();
+                filterUsers = renderBySearch(users_fixed, filters);
+            }
+            else
+            {
+                filterUsers = users_fixed;
+            }
+            div = "";
+            $.each(filterUsers, function (index, filterUser) {
+                div += `<li class="list-group-item usersLi" data-key="`+index+`">
+                                <a href="#"> 
+                                    <span class="point_list position-relative text-capitalize">
+                                        <input type="checkbox" name="selectedPoint" class="input_radio_selected">
+                                        `+filterUser.name+`
+                                    </span>
+                                </a> 
+                                <span class="action_button deleteButton" data-id=" `+filterUser.id+`" style="cursor: pointer">
+                                    <i class="bi bi-trash3 dlt_list_btn"></i>
+                                </span>
+                            </li>`;
+            });
+            $('.usersLiPar').html(div);
+        });
     </script>
 @stop
