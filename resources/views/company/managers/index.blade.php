@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+@extends('company.layouts.app')
 
 @section('content')
     <!-- Container fluid  -->
