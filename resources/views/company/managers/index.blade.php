@@ -199,7 +199,7 @@
             if ($(this).val()!="") 
             {
                 filters.searchText = $(this).val();
-                filterUsers = renderBySearch(users_fixed, filters);
+                filterUsers = renderBySearch(users_fixed, filters,'managers');
             }
             else
             {

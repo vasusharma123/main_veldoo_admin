@@ -52,7 +52,11 @@
                                                 <a href="{{ route('managers.index') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Managers"><span class="title_menu">{{ __('Managers') }}</span></a>
                                             </li>
                                         @endcan
-                                        <li class="list-group-item" data-image="accounts"><a href="user.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span></a></li>
+                                        <li class="list-group-item Users" data-image="accounts">
+                                            <a href="{{ route('company-users.index') }}">
+                                                <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span>
+                                            </a>
+                                        </li>
                                         <li class="list-group-item" data-image="help"><a href="help.html"><img src="{{ asset('company/assets/imgs/sideBarIcon/help.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Help"><span class="title_menu">Help</span></a></li>
                                     </ul>
                                 </div>
@@ -81,6 +85,7 @@
         <script src="{{ asset('company/assets/js/main.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js" integrity="sha512-+gShyB8GWoOiXNwOlBaYXdLTiZt10Iy6xjACGadpqMs20aJOoh+PJt3bwUVA6Cefe7yF7vblX6QwyXZiVwTWGg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput-jquery.min.js" integrity="sha512-9WaaZVHSw7oRWH7igzXvUExj6lHGuw6GzMKW7Ix7E+ELt/V14dxz0Pfwfe6eZlWOF5R6yhrSSezaVR7dys6vMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
         <script>
             $(function(){
                 @if (isset($page_title))
@@ -133,10 +138,20 @@
             filters = {
                 searchText: ''
             }
-            function renderBySearch(recipes, filters) {
-                var results = $.grep(recipes, function (object) {
-                    return object.name.toLowerCase().includes(filters.searchText.toLowerCase()) || object.phone.toLowerCase().includes(filters.searchText.toLowerCase()) || object.email.toLowerCase().includes(filters.searchText.toLowerCase());
-                });
+            function renderBySearch(recipes, filters,type) {
+                // console.log(recipes);
+                if(type=="users")
+                {
+                    var results = $.grep(recipes, function (object) {
+                        return object.phone.toLowerCase().includes(filters.searchText.toLowerCase()) || object.email.toLowerCase().includes(filters.searchText.toLowerCase()) || object.first_name.toLowerCase().includes(filters.searchText.toLowerCase()) || object.last_name.toLowerCase().includes(filters.searchText.toLowerCase());
+                    });
+                }
+                if(type=="managers")
+                {
+                    var results = $.grep(recipes, function (object) {
+                        return object.name.toLowerCase().includes(filters.searchText.toLowerCase()) || object.phone.toLowerCase().includes(filters.searchText.toLowerCase()) || object.email.toLowerCase().includes(filters.searchText.toLowerCase());
+                    });
+                }
                 return results;
             }
         </script>

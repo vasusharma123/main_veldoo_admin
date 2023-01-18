@@ -193,6 +193,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
+Route::post('company-users/check-user-info-btn','Company\UsersController@checkUserInfoBtn')->name('checkUserInfoBtn')->middleware(['auth','role_or_permission:Company']);
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);
