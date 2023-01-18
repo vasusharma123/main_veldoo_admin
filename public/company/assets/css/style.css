@@ -42,10 +42,23 @@ img{
     background: #555;
 }
 
+.login_user_page .img-fluid.brand_img {
+    max-width: 334.51px;
+}
+
 .input_fields{
     background: white;
     padding: 17px 30px;
     font-size: 26px;
+    color: black;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.login_user_page .input_fields {
+    background: white;
+    padding: 10px 30px;
+    font-size: 20px;
     color: black;
     border: 1px solid var(--input-border);
     border-radius: 10px;
@@ -97,7 +110,7 @@ img{
     font-size: 26px;
     font-family: var(--heebo-font);
     background: var(--second-color);
-    padding: 16px;
+    padding: 10px;
     width: 100%;
     color: white;
     text-transform: uppercase;
@@ -120,7 +133,7 @@ img{
     font-size: 26px;
     font-family: var(--heebo-font);
     background: var(--primary-color);
-    padding: 16px;
+    padding: 10px;
     width: 100%;
     text-transform: uppercase;
     color: white;
@@ -143,7 +156,7 @@ img{
     margin: 0px auto;
 }
 .sign_in_form_section .login_form {
-    padding: 50px 75px;
+    padding: 30px 55px;
     margin: auto;
     background: rgba(255,255,255,.3);
     backdrop-filter: blur(20px);
@@ -173,7 +186,7 @@ img{
 }
 .form_top_logo {
     text-align: center;
-    margin-bottom: 45px;
+    margin-bottom: 25px;
 }
 .login_user_page {
     width: 100%;
@@ -205,7 +218,7 @@ img{
     font-size: 36px;
     color: var(--second-color);
     font-family: var(--heebo-font);
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 .form-link, .form-link a {
     text-align: right;
@@ -221,7 +234,7 @@ img{
 .form-check-label {
     margin-top: 1px;
     color: #353535;
-    font-size: 20px;
+    font-size: 16px;
 }
 .sidebar_brand_img {
     max-width: 230px;
