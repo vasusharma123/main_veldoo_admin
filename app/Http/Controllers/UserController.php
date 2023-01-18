@@ -68,8 +68,8 @@ class UserController extends Controller
         if(auth()->attempt($whereData)){
             return redirect()->route('users.dashboard');
         } else{
-       		 Auth::logout();
-			return Redirect::to('admin')->withErrors(['message' => 'Please check your credentials and try again.']);
+			Auth::logout();
+			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
 
 	}
