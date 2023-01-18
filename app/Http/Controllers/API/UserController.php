@@ -6360,6 +6360,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->status = 2;
 			$ride->created_by = 2;
 			$ride->vehicle_id = $request->car_id;
+			$ride->is_personal_instant_ride = 1;
 			if (!empty($request->distance)) {
 				$ride->distance = $request->distance;
 			}
