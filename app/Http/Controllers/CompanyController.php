@@ -314,7 +314,7 @@ class CompanyController extends Controller
 	
     public function settings(Request $request)
     {
-        $data = array('title' => 'Settings', 'action' => 'Company Information');
+        $data = array('page_title' => 'Settings', 'action' => 'Settings');
 		return view("company.settings.index")->with($data);
     }
 }

@@ -1015,9 +1015,15 @@ public function register(){
 	}
 	
 	public function logout(Request $request){
+		// dd($request->all());
         Session::flush();
         Auth::logout();
-        return redirect()->route('adminLogin');
+		$route = "adminLogin";
+		if ($request->has('company')) 
+		{
+			$route = "company_login";
+		}
+        return redirect()->route($route);
 	}
 
 	/**
