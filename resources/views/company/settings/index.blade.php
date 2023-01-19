@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+@extends('company.layouts.app')
 @section('content')
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
@@ -11,83 +11,81 @@
 					<div class="card card-outline-info">
 						<div class="card-header">
 							@if(!empty($action))
-								<h4 class="m-b-0 text-white">{{ $action }}</h4>
+								<h4 class="m-b-0">{{ $action }}</h4>
 							@endif
 						</div>
 						<div class="card-body">
 							@include('admin.layouts.flash-message')
-							
-							{{ Form::open(array('url' => route('users.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
-								<div class="form-body">
-									<div class="row p-t-5">
-										<div class="col-md-6">
+							<ul class="nav nav-tabs" id="myTab" role="tablist">
+								<li class="nav-item" role="presentation">
+								  <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Information</button>
+								</li>
+								<li class="nav-item" role="presentation">
+								  <button class="nav-link text-dark" id="profile-tab" data-toggle="tab" data-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Admin Profile</button>
+								</li>
+							</ul>
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+									<div class="p-3">
+										<form action="">
 											<div class="row">
-												<div class="col-md-10">
+												<div class="col-4 mb-3">
 													<div class="form-group">
-														<?php
-														echo Form::label('image_tmp', 'Profile Picture',['class'=>'control-label']);
-														?>
-														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
-															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
-															<span class="input-group-addon btn btn-default btn-file" > 
-																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
-															<input type="hidden">
-															<?php
-															echo Form::file('image_tmp',['class'=>'form-control','onchange'=>'readURL(this);','required'=>true]);
-															?>
-															</span>
-															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
-														</div>
+														<label for="">Photo</label>
+														<input type="file" name="" class="form-control">
 													</div>
 												</div>
-												<div class="col-md-2">
-													<img id="previewimage" src="#" alt="" />
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Name</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Email</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Phone</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">State</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Street</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Zip Code</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Country</label>
+														<input type="text" name="" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-12 text-center">
+													<button class="save_btn btn">Update</button>
 												</div>
 											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('user_name', 'Username',['class'=>'control-label']);
-												echo Form::text('user_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('first_name', 'First Name',['class'=>'control-label']);
-												echo Form::text('first_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('last_name', 'Last Name',['class'=>'control-label']);
-												echo Form::text('last_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('email', 'Email',['class'=>'control-label']);
-												echo Form::text('email',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('password', 'Password',['class'=>'control-label']);
-												echo Form::password('password',['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('status', 'Status',['class'=>'control-label']);
-												echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),null,['class'=>'form-control custom-select','required'=>true]);
-												?>
-											</div>
-										</div>
+										</form>
 									</div>
 								</div>
-								<div class="form-actions">
-									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-									<button type="button" class="btn btn-inverse">Cancel</button>
-								</div>
-							 {{ Form::close() }}
+								<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+							</div>
 						</div>
 					</div>
 				</div>
