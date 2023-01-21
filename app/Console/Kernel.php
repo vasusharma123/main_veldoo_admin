@@ -48,6 +48,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('DriverActiveState:SecondReminder')->everyMinute();
         $schedule->command('MakeUnactiveDriver:Logout')->everyMinute();
         $schedule->command('SendRideNotificationToMaster:AssignedDriverNoResponse')->everyMinute();
+        $schedule->command('RideNotificationToUser:BeforeRideTime')->everyMinute();
 		// $schedule->command('ride_begin:notify')->everyFiveMinutes();
 
         $schedule->command('database:backup')->daily();
