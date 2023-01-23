@@ -58,11 +58,13 @@
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span>
                                             </a>
                                         </li>
-                                        <li class="list-group-item Users" data-image="Settings">
-                                            <a href="{{ route('company.settings') }}">
-                                                <img src="{{ asset('company/assets/imgs/sideBarIcon/setting.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Settings"><span class="title_menu">Settings</span>
-                                            </a>
-                                        </li>
+                                        @can('isCompany')	
+                                            <li class="list-group-item Settings" data-image="Settings">
+                                                <a href="{{ route('company.settings') }}">
+                                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/setting.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Settings"><span class="title_menu">Settings</span>
+                                                </a>
+                                            </li>
+                                        @endcan
                                         <li class="list-group-item" data-image="logout">
                                             <a href="{{ route('logout') }}?company=true">
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/logout.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Help"><span class="title_menu">Logout</span>
