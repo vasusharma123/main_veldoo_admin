@@ -9,6 +9,8 @@ use Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use DataTables;
+use App\Company;
+use Auth;
 
 class CompanyController extends Controller
 {
@@ -315,6 +317,112 @@ class CompanyController extends Controller
     public function settings(Request $request)
     {
         $data = array('page_title' => 'Settings', 'action' => 'Settings');
+        $data['company'] = Company::find(Auth::user()->company_id); 
 		return view("company.settings.index")->with($data);
+    }
+
+    public function updateCompanyInformation(Request $request)
+    {
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'email',
+            'phone' => 'required',
+            'country_code' => 'required',
+            'state' => 'required|min:3',
+            'city' => 'required|min:3',
+            'zip_code' => 'required|min:3',
+            'country' => 'required',
+
+        ]);
+        DB::beginTransaction();
+        try 
+        {
+            // dd($request->all());
+            $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code,'street'=>$request->street,'state'=>$request->state,'zip'=>$request->zip_code,'country'=>$request->country,'city'=>$request->city];  
+            $company = Company::find(Auth::user()->company_id);
+            if ($company) 
+            {
+                $company->fill($data);
+                $company->update();
+            }  
+            else
+            {
+                $company = new Company();
+                $company->fill($data);
+                $company->save();
+            }
+
+            if($request->hasFile('logo') && $request->file('logo')->isValid())
+            {
+                $imageName = 'logo-'.time().'.'.$request->logo->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->logo, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['logo'=>$image]);
+                $company->update();
+            }
+            if($request->hasFile('background_image') && $request->file('background_image')->isValid())
+            {
+                $imageName = 'background-image-'.time().'.'.$request->background_image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->background_image, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['background_image'=>$image]);
+                $company->update();
+            }
+
+            User::where('id',Auth::user()->id)->update(['company_id'=>$company->id]);
+            DB::commit();
+            return back()->with('success', 'Information updated!');
+        } catch (\Exception $exception) {
+            // dd($exception);
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
+    public function updatePersonalInformation(Request $request)
+    {
+        // dd($request->all());
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => 'email',
+            'phone' => 'required',
+
+        ]);
+        DB::beginTransaction();
+        try 
+        {
+            // dd($request->all());
+            $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
+            if ($request->password) 
+            {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user = User::find(Auth::user()->id);
+            $user->fill($data);
+            $user->update();
+
+            if($request->hasFile('image') && $request->file('image')->isValid())
+            {
+                $imageName = 'profile-image'.time().'.'.$request->image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'user/'.$user->id, $request->image, $imageName
+                );
+                $user = User::find($user->id);
+                $user->fill(['image'=>$image]);
+                $user->update();
+            }
+
+            DB::commit();
+            return back()->with('success', 'Information updated!');
+        } catch (\Exception $exception) {
+            // dd($exception);
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        }
     }
 }

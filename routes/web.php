@@ -189,7 +189,9 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::delete('ride/delete_multiple','Company\RidesController@delete_multiple')->name('company.rides.delete_multiple');
 	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
-	Route::get('settings','CompanyController@settings')->name('company.settings');
+	Route::post('settings/update-company-information','CompanyController@updateCompanyInformation')->name('company.updateCompanyInformation')->middleware('can:isCompany');
+	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation')->middleware('can:isCompany');
+	Route::get('settings','CompanyController@settings')->name('company.settings')->middleware('can:isCompany');
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);

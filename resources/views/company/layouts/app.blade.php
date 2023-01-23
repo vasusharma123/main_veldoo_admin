@@ -17,6 +17,16 @@
                 display: block !important;
                 margin-bottom: 7px !important;
             }
+            .login_user_page
+            {
+                min-height: 100% !important;
+            }
+            @if (Auth::user()->company->background_image)
+                .login_user_page
+                {
+                    background: url('{{ env('URL_PUBLIC').'/'.Auth::user()->company->background_image }}') !important;
+                }
+            @endif
         </style>
         @yield('css')
     </head>
@@ -27,16 +37,16 @@
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-0">
                         <aside class="sidebar">
                             <div class="sideBar_userinfo">
-                                <img src="{{ asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid sidebar_brand_img">
+                                <img src="{{  Auth::user()->company->logo?env('URL_PUBLIC').'/'.Auth::user()->company->logo:asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid sidebar_brand_img">
                                 <div class="user_information">
                                     <img src="{{ asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid mobileImg">
                                     <div class="userBox">
                                         <div class="avatarImg">
-                                            <img src="{{ asset('company/assets/imgs/avatar_user.png') }}" alt="User Avatar" class="img-fluid user_img">
+                                            <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('company/assets/imgs/avatar_user.png') }}" alt="User Avatar" class="img-fluid user_img">
                                         </div>
                                         <div class="user_name">
                                             <h4 class="name">{{ Auth::user()->first_name.' '.Auth::user()->name.' '.Auth::user()->last_name }}</h4>
-                                            <p class="occupation">Super Admin</p>
+                                            <p class="occupation">{{ Auth::user()->user_type==4?"Admin":'Manager' }}</p>
                                         </div>
                                     </div>
                                     <!-- UserBox -->
@@ -58,11 +68,13 @@
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="User"><span class="title_menu">User</span>
                                             </a>
                                         </li>
-                                        <li class="list-group-item Users" data-image="Settings">
-                                            <a href="{{ route('company.settings') }}">
-                                                <img src="{{ asset('company/assets/imgs/sideBarIcon/setting.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Settings"><span class="title_menu">Settings</span>
-                                            </a>
-                                        </li>
+                                        @can('isCompany')	
+                                            <li class="list-group-item Settings" data-image="Settings">
+                                                <a href="{{ route('company.settings') }}">
+                                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/setting.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Settings"><span class="title_menu">Settings</span>
+                                                </a>
+                                            </li>
+                                        @endcan
                                         <li class="list-group-item" data-image="logout">
                                             <a href="{{ route('logout') }}?company=true">
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/logout.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Help"><span class="title_menu">Logout</span>
