@@ -21,7 +21,7 @@
             {
                 min-height: 100% !important;
             }
-            @if (Auth::user()->company->background_image)
+            @if (Auth::user()->company && Auth::user()->company->background_image)
                 .login_user_page
                 {
                     background: url('{{ env('URL_PUBLIC').'/'.Auth::user()->company->background_image }}') !important;
@@ -37,9 +37,9 @@
                     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 p-0">
                         <aside class="sidebar">
                             <div class="sideBar_userinfo">
-                                <img src="{{  Auth::user()->company->logo?env('URL_PUBLIC').'/'.Auth::user()->company->logo:asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid sidebar_brand_img">
+                                <img src="{{ Auth::user()->company && Auth::user()->company->logo?env('URL_PUBLIC').'/'.Auth::user()->company->logo:asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid sidebar_brand_img">
                                 <div class="user_information">
-                                    <img src="{{ asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid mobileImg">
+                                    <img src="{{ Auth::user()->company && Auth::user()->company->logo?env('URL_PUBLIC').'/'.Auth::user()->company->logo:asset('company/assets/imgs/logo.png') }}" alt="Brand Logo" class="img-fluid mobileImg">
                                     <div class="userBox">
                                         <div class="avatarImg">
                                             <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('company/assets/imgs/avatar_user.png') }}" alt="User Avatar" class="img-fluid user_img">

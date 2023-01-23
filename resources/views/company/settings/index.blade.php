@@ -34,7 +34,7 @@
 													<div class="form-group">
 														<label for="">Logo</label>
 														<input type="file" name="logo" class="form-control">
-														@if ($company->logo)
+														@if (@$company->logo)
 															<img src="{{ env('URL_PUBLIC').'/'.$company->logo }}" width="200px" height="150px" alt="" srcset="">
 														@endif
 													</div>
@@ -43,7 +43,7 @@
 													<div class="form-group">
 														<label for="">Background Image</label>
 														<input type="file" name="background_image" class="form-control">
-														@if ($company->background_image)
+														@if (@$company->background_image)
 															<img src="{{ env('URL_PUBLIC').'/'.$company->background_image }}" width="200px" height="150px" alt="" srcset="">
 														@endif
 													</div>
