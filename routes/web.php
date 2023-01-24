@@ -193,6 +193,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation')->middleware('can:isCompany');
 	Route::get('settings','CompanyController@settings')->name('company.settings')->middleware('can:isCompany');
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
+	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
 Route::post('company-users/check-user-info-btn','Company\UsersController@checkUserInfoBtn')->name('checkUserInfoBtn')->middleware(['auth','role_or_permission:Company']);
