@@ -2052,7 +2052,7 @@ class UserController extends Controller
 			} else {
 				$ride->alert_notification_date_time = $request->ride_time;
 			}
-			$ride->alert_time = $request->alert_time??null;
+			$ride->alert_time = $request->alert_time ?? null;
 			if (!empty($request->pick_lat)) {
 				$ride->pick_lat = $request->pick_lat;
 			}
@@ -2081,7 +2081,33 @@ class UserController extends Controller
 			$ride->platform = Auth::user()->device_type;
 			//print_r($input); die;
 			$ride->save();
-			//	$ride= \App\Ride::create($input);
+
+			/* When a planned ride is created by any driver, send a notification to all master drivers about this */
+			$settings = Setting::first();
+			$settingValue = json_decode($settings['value']);
+
+			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			if (!empty($masterDriverIds)) {
+				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
+				$title = 'Ride is planned';
+				$message = 'A new ride is planned';
+				$ride['user_data'] = $user_data;
+				$ride['waiting_time'] = $settingValue->waiting_time;
+				$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
+				$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
+				if (!empty($ios_driver_tokens)) {
+					bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
+				}
+				$android_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'android'])->pluck('device_token')->toArray();
+				if (!empty($android_driver_tokens)) {
+					bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
+				}
+				$notification_data = [];
+				foreach ($masterDriverIds as $driverid) {
+					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+				}
+				Notification::insert($notification_data);
+			}
 
 			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
