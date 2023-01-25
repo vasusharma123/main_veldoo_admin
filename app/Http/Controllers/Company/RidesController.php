@@ -44,9 +44,6 @@ class RidesController extends Controller
         } else {
             $jsonResponse = $this->book_ride($request);
         }
-        $content = $jsonResponse->getContent();
-        $responseObj = json_decode($content, true);
-        $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
         return $jsonResponse;
     }
 
@@ -229,6 +226,7 @@ class RidesController extends Controller
             $ride->car_type = $request->car_type;
             $ride->created_by = Auth::user()->user_type;
             $ride->alert_time = 15;
+            $ride->company_id = Auth::user()->company_id;
             $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
             if (!empty($request->pick_lat)) {
                 $ride->pick_lat = $request->pick_lat;
@@ -256,7 +254,7 @@ class RidesController extends Controller
             $ride->platform = "web";
             $ride->save();
             DB::commit();
-            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully'),'user_data'=>$user], $this->successCode);
+            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully')], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);

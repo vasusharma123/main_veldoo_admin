@@ -1,6 +1,7 @@
 @extends('company.layouts.app')
 @section('css')
     <link rel="stylesheet" href="{{ asset('datetime/css/bootstrap-datetimepicker.css') }}">
+    <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
 @endsection
 @section('content')
     <form action="booking_done.html" method="post" class="add_details_form" id="booking_list_form">
@@ -43,11 +44,13 @@
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="User Avatar"
                                         class="img-fluid active_user">
                                 </div>
-                                <select class="form-control" name="user_id">
-                                   <option value="">-- Select User --</option>
-                                   @foreach($users as $user)
-                                   <option value="{{ $user->id }}">{{ $user->full_name }}{{ !empty($user->phone)?" (+".$user->country_code."-".$user->phone.")":""}}</option>
-                                   @endforeach
+                                <select class="form-control" name="user_id" id="users">
+                                    <option value="">-- Select User --</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">
+                                            {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 {{-- <div class="user_name">
                                     <h4 class="name active_username">Lilly Blossom</h4>
@@ -188,6 +191,7 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js" type="text/javascript"></script>
     <script src="{{ asset('datetime/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
     <script>
         var options = {
             strictBounds: true, // Only if you want to restrict, not bias
@@ -238,7 +242,7 @@
             var pickup_longitude = $("#pickup_longitude").val();
             var pickup_address = $("#pickupPoint").val();
             if (pickup_latitude == '' || pickup_longitude == '') {
-                swal("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
+                swal.fire("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
                 return false;
             }
             var dropoff_latitude = $("#dropoff_latitude").val();
@@ -256,7 +260,7 @@
 
             $(".distance_calculated_input").val(distance_calculated);
             if ($("#carType").val() == '') {
-                swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
+                swal.fire("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
             }
             var carType = $('#carType').val();
@@ -274,31 +278,48 @@
 
         $("#booking_list_form").submit(function(e) {
             e.preventDefault();
-            form_validate_res = calculate_route();
-            if (form_validate_res) {
-                $(document).find(".save_booking").attr('disabled', true);
-                $.ajax({
-                    url: "{{ route('company.ride_booking') }}",
-                    type: 'post',
-                    dataType: 'json',
-                    data: $('form#booking_list_form').serialize(),
-                    success: function(response) {
-                        if (response.status) {
-                            swal("{{ __('Success') }}", response.message, "success");
-                            setTimeout(function() {
-                                window.location.reload();
-                            }, 2000);
-                        } else if (response.status == 0) {
-                            swal("{{ __('Error') }}", response.message, "error");
-                            $(document).find(".save_booking").removeAttr('disabled');
-                        }
-                    },
-                    error(response) {
-                        swal("{{ __('Error') }}", response.message, "error");
-                        $(document).find(".save_booking").removeAttr('disabled');
+            Swal.fire({
+                title: "{{ __('Please Confirm')}}",
+                text: "{{ __('You want to book a ride!')}}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "{{__('Book Ride')}}"
+            }).then((result) => {
+                if (result.value) {
+                    form_validate_res = calculate_route();
+                    if (form_validate_res) {
+                        $(document).find(".save_booking").attr('disabled', true);
+                        $.ajax({
+                            url: "{{ route('company.ride_booking') }}",
+                            type: 'post',
+                            dataType: 'json',
+                            data: $('form#booking_list_form').serialize(),
+                            success: function(response) {
+                                if (response.status) {
+                                    swal.fire("{{ __('Success') }}", response.message,
+                                        "success");
+                                    setTimeout(function() {
+                                        window.location.reload();
+                                    }, 2000);
+                                } else if (response.status == 0) {
+                                    swal.fire("{{ __('Error') }}", response.message,
+                                    "error");
+                                    $(document).find(".save_booking").removeAttr('disabled');
+                                }
+                            },
+                            error(response) {
+                                swal.fire("{{ __('Error') }}", response.message, "error");
+                                $(document).find(".save_booking").removeAttr('disabled');
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
+        });
+        $(document).ready(function() {
+            $("#users").select2();
         });
     </script>
 @stop
