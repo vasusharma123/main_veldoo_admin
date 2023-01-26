@@ -263,4 +263,15 @@ class RidesController extends Controller
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
     }
+
+    public function history()
+    {
+        $data = array('page_title' => 'History', 'action' => 'History');
+        $now = Carbon::now();
+        $data['rides'] = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
+                            $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
+                        })->orderBy('rides.id','Desc')->with(['user','driver','vehicle'])->get();
+        // dd($data['rides']->toArray());
+        return view('company.rides.history')->with($data);
+    }
 }
