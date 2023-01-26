@@ -21,6 +21,10 @@ class RideController extends Controller
      * This function use to list of latest ride detail
      */
 
+    protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+
     public function latest_ride_detail(Request $request)
     {
         $userObj = Auth::user();
@@ -127,6 +131,14 @@ class RideController extends Controller
         $arrayData=array('data_count'=>$user_count,'total'=>$total_pages,'per_page'=>$limit,'current_page'=>$page,'data'=>$currentData);   
 
              return $this->successResponse($arrayData, 'Get ride list successfully');  
+    }
+
+    public function upcoming_rides_count(){
+        $userObj = Auth::user();
+        $current_time = Carbon::now()->toDateTimeString();
+        $after12Hours = Carbon::now()->addHours(12)->toDateTimeString();
+        $rides_count = Ride::whereIn('status', [0,1,2,4])->whereBetween('ride_time', [$current_time, $after12Hours])->count();
+        return response()->json(['message' => 'Count of upcoming rides in next 12 hrs', 'data' => ['rides_count' => $rides_count]], $this->successCode);
     }
 
 }

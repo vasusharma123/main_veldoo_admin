@@ -176,6 +176,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('user_invoice_status', 'UserController@getInvoiceUserStatus');
 		Route::get('all_drivers', 'UserController@all_drivers');
 		Route::get('still_active_notification_response', 'DriverActivityController@still_active_notification_response');
+		Route::get('rides/upcoming_rides_count', 'RideController@upcoming_rides_count');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
