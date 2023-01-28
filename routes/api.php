@@ -157,7 +157,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::get('get_promotions', 'UserController@getPromotion');
 		Route::post('get_promotions', 'UserController@getPromotion');
 		Route::post('get_user_by_phone', 'UserController@getUserByPhone');
-		Route::post('ride_list', 'UserController@RideList');
+		Route::post('ride_list', 'RideController@RideList');
 		Route::post('save_user_data', 'UserController@saveUserData');
 
 		Route::post('addLocation', 'UserController@addLocation');
