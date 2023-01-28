@@ -156,15 +156,19 @@ class RideController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
         }
+        DB::beginTransaction();
+
         $ride = Ride::find($request->ride_id);
         if ($ride->driver_id != $userObj->id) {
             return response()->json(['message' => "This ride doesn't belong to you"], $this->warningCode);
         }
 
-        DB::beginTransaction();
         $ride->driver_id = null;
-        $ride->driver_id = null;
+        $ride->status = 0;
+        $ride->all_drivers = 0;
         $ride->save();
+
+        RideHistory::where(['ride_id' => $ride->id])->delete();
 
         try {
             $settings = Setting::first();
