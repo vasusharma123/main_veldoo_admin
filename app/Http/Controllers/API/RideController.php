@@ -358,9 +358,10 @@ class RideController extends Controller
                         }
                         $rides = $newarray;
                     } else {
-                        $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) {
+                        $rides = Ride::whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) use ($userId) {
                             $query->where([['status', '=', 0]]);
-                            $query->orWhere(function ($query1) {
+                            $query->orWhere(function ($query1) use ($userId) {
+                                $query1->where('driver_id', $userId);
                                 $query1->where(['status' => 1, 'waiting' => 1]);
                             });
                         })->orderBy('ride_time', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
