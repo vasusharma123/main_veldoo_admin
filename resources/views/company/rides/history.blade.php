@@ -30,6 +30,11 @@
                                     {{-- <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span> --}}
                                 </li>
                             @endforeach
+                            @if (empty($rides[0]))
+                                <li class="list-group-item">
+                                    No rides found...
+                                </li>
+                            @endif
                         </ul>
                     </div>
                     <!-- List Search End -->
@@ -165,7 +170,7 @@
         {
             $('.googleMapMobile').remove();
         }
-        bookingsArray = JSON.parse('<?php echo ($rides) ?>');
+        bookingsArray = JSON.parse(`<?php echo ($rides) ?>`);
 
         map = new google.maps.Map(document.getElementById('googleMap'), {
             mapTypeId: google.maps.MapTypeId.ROADMAP,
