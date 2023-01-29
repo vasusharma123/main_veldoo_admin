@@ -26,7 +26,7 @@
                         <ul class="list-group list-group-flush">
                             @if (!empty($rides))
                                 @foreach ($rides as $ride_value)
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" data-ride_id="{{ $ride_value->id }}">
                                         <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
                                             class="img-fluid clock_img" alt="Clock Image">
                                         <span class="point_list position-relative">
@@ -554,6 +554,44 @@
                     }
                 });
             }
+        });
+
+        $(document).on('click', '.dlt_list_btn', function(e) {
+            e.preventDefault();
+            var selected_ride_id = $(this).parents('li.list-group-item').data('ride_id');
+            Swal.fire({
+                title: "{{ __('Please Confirm') }}",
+                text: "{{ __('You want to delete this ride!') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "{{ __('Yes, delete it') }}"
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: "{{ route('company.cancel_booking') }}",
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'ride_id': selected_ride_id
+                        },
+                        success: function(response) {
+                            if (response.status) {
+                                $(document).find("li.list-group-item[data-id='" + selectedBooking + "']").remove();
+                                $("#cancelBookingModal").modal('hide');
+                                Swal.fire("Success", response.message, "success");
+                            } else if (response.status == 0) {
+                                Swal.fire("{{ __('Error') }}", response.message, "error");
+                            }
+                        },
+                        error(response) {
+                            Swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    });
+                }
+            });
         });
     </script>
 @stop
