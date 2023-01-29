@@ -30,9 +30,9 @@ class RidesController extends Controller
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status')->where(['company_id' => Auth::user()->company_id])
-        ->where(function($query){
-            $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-        })->orderBy('rides.id')->get();
+                            ->where(function($query){
+                                $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->where('company_id','!=',null)->orderBy('rides.id')->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         return view('company.rides.index')->with($data);
@@ -275,8 +275,8 @@ class RidesController extends Controller
         $now = Carbon::now();
         $data['rides'] = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
                             $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
-                        })->orderBy('rides.created_at','Desc')->with(['user','driver','vehicle'])->get();
-        // dd($data['rides']->toArray());
+                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle'])->get();
+        // dd(json_encode($data['rides']));
         return view('company.rides.history')->with($data);
     }
 

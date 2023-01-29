@@ -133,6 +133,7 @@ class CompanyController extends Controller
 
         DB::beginTransaction();
         try {
+            // dd($request->all());
             $data = array();
             $data['name'] = $request->user_name;
             $data['email'] = $request->email;
@@ -148,19 +149,26 @@ class CompanyController extends Controller
             $data['country_code'] = $request->country_code;
             $data['phone'] = ltrim($request->phone, "0");
             $user = User::create($data);
-
-            //SAVE IMAGE
-
+            // dd($user);
+            // Company
+            $image = null;
             if (!empty($request->image)) {
                 $imageName = 'profile-image' . time() . '.' . $request->image->extension();
 
-                $user->image = Storage::disk('public')->putFileAs(
+                $image = Storage::disk('public')->putFileAs(
                     'user/' . $user->id,
                     $request->image,
                     $imageName
                 );
-                $user->save();
             }
+
+            $company = new Company();
+            $company->fill(['name'=>$request->name,'email'=>$request->email,'country_code'=>$request->country_code,'phone'=>$request->phone,'password'=>Hash::make($request->password),'image'=>$image,'country'=>$request->country,'state'=>$request->state,'city'=>$request->city,'street'=>$request->street,'zip'=>$request->zip]);
+            $company->save();
+            
+            $user->company_id = $company->id;
+            $user->image = $image;
+            $user->save();
 
             if (!empty($request->email)) {
                 // $m = Mail::send('admin.company.email', $data, function($message) use ($request) {
