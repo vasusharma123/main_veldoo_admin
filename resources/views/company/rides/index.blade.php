@@ -2,6 +2,15 @@
 @section('css')
     <link rel="stylesheet" href="{{ asset('datetime/css/bootstrap-datetimepicker.css') }}">
     <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
+    <style>
+        #googleMap {
+            background: #dfdfdf;
+            max-height: 100%;
+            border-radius: 10px;
+            height: 100%;
+            min-height: 400px;
+        }
+    </style>
 @endsection
 @section('content')
     <form action="booking_done.html" method="post" class="add_details_form" id="booking_list_form">
@@ -138,10 +147,7 @@
             <!-- Left Side Board -->
             <div class="col-xl-8 col-lg-7 col-md-6 col-sm-12 col-xs-12">
                 <div class="map_views mb-4 booking_side desktop_view">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d102152.55978232603!2d75.46373732010797!3d31.370071732694594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1673768174190!5m2!1sen!2sin"
-                        width="100%" height="433" style="border:0;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div id="googleMap" style="width:100%;" height="433"></div>
                 </div>
                 <div class="">
                     <div class="row m-0 w-100">
@@ -180,10 +186,7 @@
                 </div>
 
                 <div class="map_views mb-4 booking_side mobile_view">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d102152.55978232603!2d75.46373732010797!3d31.370071732694594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1673768174190!5m2!1sen!2sin"
-                        width="100%" height="433" style="border:0;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    {{-- <div id="googleMap" style="width:100%;" height="433"></div> --}}
                 </div>
             </div>
             <!-- Right Map Side-->
@@ -200,6 +203,16 @@
     <script src="{{ asset('datetime/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
     <script>
+        var directionsService;
+        var directionsDisplay;
+        var MapPoints = [];
+        var directionsDisplay;
+        var directionsService = new google.maps.DirectionsService();
+        var onLoadVar = 0;
+        var cur_lat = "";
+        var cur_lng = "";
+        var markers = [];
+
         var options = {
             strictBounds: true, // Only if you want to restrict, not bias
             // types: ["establishment"], // Whatever types you need
@@ -211,6 +224,7 @@
             // document.getElementById('city2').value = place.name;
             document.getElementById('pickup_latitude').value = place.geometry.location.lat();
             document.getElementById('pickup_longitude').value = place.geometry.location.lng();
+            calculate_route();
         });
 
         var dropoff_input = document.getElementById('dropoffPoint');
@@ -223,6 +237,7 @@
             // document.getElementById('city2').value = place.name;
             document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
             document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
+            calculate_route();
         });
 
         function measure_seating_capacity() {
@@ -244,28 +259,8 @@
             sideBySide: true,
         });
 
-        function calculate_route() {
-            var pickup_latitude = $("#pickup_latitude").val();
-            var pickup_longitude = $("#pickup_longitude").val();
-            var pickup_address = $("#pickupPoint").val();
-            if (pickup_latitude == '' || pickup_longitude == '') {
-                swal.fire("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
-                return false;
-            }
-            var dropoff_latitude = $("#dropoff_latitude").val();
-            var dropoff_longitude = $("#dropoff_longitude").val();
-            var dropoff_address = $("#dropoffPoint").val();
-            if (dropoff_latitude == '' || dropoff_longitude == '') {
-                var distance_calculated = 0;
-            } else {
-                srcLocation = new google.maps.LatLng(pickup_latitude, pickup_longitude);
-                dstLocation = new google.maps.LatLng(dropoff_latitude, dropoff_longitude);
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
-                var distance_calculated = Math.round(distance / 1000);
-            }
-
-
-            $(".distance_calculated_input").val(distance_calculated);
+        function calculate_amount() {
+            var distance_calculated = $("#distance_calculated_input").val();
             if ($("#carType").val() == '') {
                 swal.fire("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
@@ -280,8 +275,137 @@
                     100) / 100;
             }
             $(".price_calculated_input").val(price_calculation);
+        }
+
+        function calculate_route() {
+            var pickup_latitude = $("#pickup_latitude").val();
+            var pickup_longitude = $("#pickup_longitude").val();
+            var pickup_address = $("#pickupPoint").val();
+            if (pickup_latitude == '' || pickup_longitude == '') {
+                swal.fire("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
+                return false;
+            }
+            var dropoff_latitude = $("#dropoff_latitude").val();
+            var dropoff_longitude = $("#dropoff_longitude").val();
+            var dropoff_address = $("#dropoffPoint").val();
+            if (dropoff_latitude == '' || dropoff_longitude == '') {
+                dropoff_latitude = pickup_latitude;
+                dropoff_longitude = pickup_longitude;
+                dropoff_address = pickup_address;
+                var distance_calculated = 0;
+            } else {
+                srcLocation = new google.maps.LatLng(pickup_latitude, pickup_longitude);
+                dstLocation = new google.maps.LatLng(dropoff_latitude, dropoff_longitude);
+                var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
+                var distance_calculated = Math.round(distance / 1000);
+            }
+            $(".distance_calculated_input").val(distance_calculated);
+            calculate_amount();
+
+            MapPoints = [{
+                Latitude: pickup_latitude,
+                Longitude: pickup_longitude,
+                AddressLocation: pickup_address
+            }, {
+                Latitude: dropoff_latitude,
+                Longitude: dropoff_longitude,
+                AddressLocation: dropoff_address
+            }];
+            // console.log(MapPoints);
+            initializeMapReport(MapPoints);
             return true;
         }
+
+        function initializeMapReport(MapPoints) {
+            if (jQuery('#googleMap').length > 0) {
+                var locations = MapPoints;
+                directionsService = new google.maps.DirectionsService;
+                directionsDisplay = new google.maps.DirectionsRenderer;
+                map = new google.maps.Map(document.getElementById('googleMap'), {
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    scrollwheel: false,
+                    center: {
+                        lat: 46.8182,
+                        lng: 8.2275
+                    }, //Setting Initial Position
+                    zoom: 8
+                });
+
+                var infowindow = new google.maps.InfoWindow();
+                var bounds = new google.maps.LatLngBounds();
+                directionsDisplay = new google.maps.DirectionsRenderer({
+                    map: window.map,
+                    suppressMarkers: true
+                });
+                var request = {
+                    travelMode: google.maps.TravelMode.DRIVING
+                };
+                for (i = 0; i < locations.length; i++) {
+                    marker = new google.maps.Marker({
+                        position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
+                            .toString()),
+                        //position: new google.maps.LatLng(locations[i].address.lat, locations[i].address.lng),
+                        map: map
+                    });
+                    bounds.extend(marker.position);
+
+
+                    google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                        return function() {
+                            infowindow.setContent(locations[i]['AddressLocation']);
+                            infowindow.open(map, marker);
+                        }
+                    })(marker, i));
+                    // create request from locations array, 1st marker is origin
+                    if (i == 0) request.origin = marker.getPosition();
+                    // last marker is destination
+                    else if (i == locations.length - 1) request.destination = marker.getPosition();
+                    else {
+                        // any other markers are waypoints
+                        if (!request.waypoints) request.waypoints = [];
+                        request.waypoints.push({
+                            location: marker.getPosition(),
+                            stopover: true
+                        });
+                    }
+                    markers.push(marker);
+                }
+                // call directions service
+                if (locations.length) {
+                    directionsService.route(request, function(result, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            directionsDisplay.setDirections(result);
+                        }
+                    });
+                    map.fitBounds(bounds);
+                }
+                // if (onLoadVar==0) {
+                //     getLocation()
+                //     onLoadVar = 1;   
+                //     // alert(onLoadVar);
+                // }
+                // else
+                // {
+                //     map.setZoom(8);
+                // }
+                if ($("#dropoff_latitude").val() == "") {
+                    setTimeout(() => {
+                        map.setZoom(12);
+                    }, 500);
+                }
+
+            }
+        }
+
+        $(document).on('change', '#carType', function() {
+            calculate_amount();
+        })
+
+        function autocomplete_initialize() {
+            initializeMapReport(MapPoints);
+        }
+
+        google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
         $(document).on("click", ".save_booking", function(e) {
             e.preventDefault();
@@ -326,7 +450,7 @@
             }
         });
 
-        $(document).ready(function() {
+        $(window).on("load", function() {
             $("#users").select2();
             $(document).on('click', '.input_radio_selected', function() {
                 var ride_id = $(this).val();
@@ -357,11 +481,27 @@
                             $(".price_calculated_input").val(response.data.ride_detail
                                 .ride_cost);
                             $("#distance_calculated_input").val(response.data.ride_detail
-                                .distance_calculated_input);
+                                .distance);
                             $("#payment_type").val(response.data.ride_detail.payment_type);
                             $("#note").val(response.data.ride_detail.note);
                             $("#ride_time").val(response.data.ride_detail.ride_time);
-
+                            if (response.data.ride_detail.pick_lat) {
+                                MapPoints = [{
+                                    Latitude: response.data.ride_detail.pick_lat,
+                                    Longitude: response.data.ride_detail.pick_lng,
+                                    AddressLocation: response.data.ride_detail
+                                        .pickup_address
+                                }];
+                                if (response.data.ride_detail.dest_lat) {
+                                    MapPoints.push({
+                                        Latitude: response.data.ride_detail.dest_lat,
+                                        Longitude: response.data.ride_detail.dest_lng,
+                                        AddressLocation: response.data.ride_detail
+                                            .dest_address
+                                    });
+                                }
+                                initializeMapReport(MapPoints);
+                            }
                         } else if (response.status == 0) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
                         }
