@@ -17,12 +17,14 @@
                         <ul class="list-group list-group-flush">
                             @if (!empty($rides))
                                 @foreach ($rides as $ride_value)
-                                    <li class="list-group-item"><a href="#"><img
-                                                src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
-                                                class="img-fluid clock_img" alt="Clock Image"> <span
-                                                class="point_list position-relative"><input type="checkbox"
-                                                    name="selectedPoint"
-                                                    class="input_radio_selected">{{ date('D, d.M.Y H:i', strtotime($ride_value->ride_time)) }}</span></a>
+                                    <li class="list-group-item">
+                                        <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
+                                            class="img-fluid clock_img" alt="Clock Image">
+                                        <span class="point_list position-relative">
+                                            <input type="checkbox" name="selectedPoint" class="input_radio_selected"
+                                                value="{{ $ride_value->id }}">
+                                            {{ date('D, d.M.Y H:i', strtotime($ride_value->ride_time)) }}
+                                        </span>
                                         <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span>
                                     </li>
                                 @endforeach
@@ -36,6 +38,7 @@
                     <div class="boxHeader">
                         <h2 class="board_title mb-0">Booking Details</h2>
                         <button class="btn save_btn save_booking" type="submit">Save</button>
+                        <button class="btn save_btn edit_booking" type="submit" style="display:none">Update</button>
                     </div>
                     <div class="row">
                         <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
@@ -52,6 +55,7 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="ride_id" id="ride_id">
                                 {{-- <div class="user_name">
                                     <h4 class="name active_username">Lilly Blossom</h4>
                                 </div> --}}
@@ -72,7 +76,7 @@
                         <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
                             class="img-fluid clock_img setup_ab_clck" alt="Clock Image">
                         <input type="text" class="inside_input_field form-control date_value datetimepicker"
-                            name="ride_time" value="{{ date('D d-m-Y H:i') }}">
+                            name="ride_time" value="{{ date('D d-m-Y H:i') }}" id="ride_time">
                         <img src="{{ asset('company/assets/imgs/sideBarIcon/calendar.png') }}"
                             class="img-fluid setup_ab_cln" alt="Clock Image">
                     </div>
@@ -105,7 +109,8 @@
                                             <option value="{{ $vehicle_type->id }}"
                                                 data-basic_fee="{{ $vehicle_type->basic_fee }}"
                                                 data-price_per_km="{{ $vehicle_type->price_per_km }}"
-                                                data-seating_capacity="{{ $vehicle_type->seating_capacity }}">
+                                                data-seating_capacity="{{ $vehicle_type->seating_capacity }}"
+                                                data-text="{{ $vehicle_type->car_type }}">
                                                 {{ __($vehicle_type->car_type) }}</option>
                                         @endforeach
                                     @endif
@@ -117,9 +122,10 @@
                                 <label class="label_input_cash">CHF</label>
                                 <input type="text" name="ride_cost"
                                     class="form-control inside_input_field p-1 ps-4 text-center me-2 price_calculated_input"
-                                    value="200.0">
-                                <input type="hidden" name="distance" class="distance_calculated_input">
-                                <input type="hidden" name="payment_type" value="Cash">
+                                    value="0" readonly>
+                                <input type="hidden" name="distance" class="distance_calculated_input"
+                                    id="distance_calculated_input">
+                                <input type="hidden" name="payment_type" value="Cash" id="payment_type">
                                 <div class="payment_option d-flex align-items-center">
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png') }}" alt="userCount"
                                         class="img-fluid cash_count me-2"> <span>Cash</span>
@@ -141,7 +147,8 @@
                     <div class="row m-0 w-100">
                         <div class="col-lg-6 col-md-12 col-xs-12 mt-4">
                             <div class="form-group">
-                                <textarea class="form-control inside_input_field mb-2" placeholder="Note" name="note" rows="7"></textarea>
+                                <textarea class="form-control inside_input_field mb-2" placeholder="Note" name="note" rows="7"
+                                    id="note"></textarea>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-12 col-xs-12 all_driver_info d-none">
@@ -276,20 +283,20 @@
             return true;
         }
 
-        $("#booking_list_form").submit(function(e) {
+        $(document).on("click", ".save_booking", function(e) {
             e.preventDefault();
-            Swal.fire({
-                title: "{{ __('Please Confirm')}}",
-                text: "{{ __('You want to book a ride!')}}",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: "{{__('Book Ride')}}"
-            }).then((result) => {
-                if (result.value) {
-                    form_validate_res = calculate_route();
-                    if (form_validate_res) {
+            form_validate_res = calculate_route();
+            if (form_validate_res) {
+                Swal.fire({
+                    title: "{{ __('Please Confirm') }}",
+                    text: "{{ __('You want to book a ride!') }}",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: "{{ __('Book Ride') }}"
+                }).then((result) => {
+                    if (result.value) {
                         $(document).find(".save_booking").attr('disabled', true);
                         $.ajax({
                             url: "{{ route('company.ride_booking') }}",
@@ -305,7 +312,7 @@
                                     }, 2000);
                                 } else if (response.status == 0) {
                                     swal.fire("{{ __('Error') }}", response.message,
-                                    "error");
+                                        "error");
                                     $(document).find(".save_booking").removeAttr('disabled');
                                 }
                             },
@@ -315,11 +322,98 @@
                             }
                         });
                     }
-                }
-            });
+                });
+            }
         });
+
         $(document).ready(function() {
             $("#users").select2();
+            $(document).on('click', '.input_radio_selected', function() {
+                var ride_id = $(this).val();
+                document.getElementById("booking_list_form").reset();
+                measure_seating_capacity();
+                $(document).find(".save_booking").hide();
+                $(document).find(".edit_booking").show();
+                $.ajax({
+                    url: "{{ route('company.rides.edit') }}",
+                    type: 'get',
+                    data: {
+                        ride_id: ride_id
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            $("#ride_id").val(ride_id);
+                            $("#users").val(response.data.ride_detail.user_id).change();
+                            $("#pickupPoint").val(response.data.ride_detail.pickup_address);
+                            $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
+                            $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
+                            $("#dropoffPoint").val(response.data.ride_detail.dest_address);
+                            $("#dropoff_latitude").val(response.data.ride_detail.dest_lat);
+                            $("#dropoff_longitude").val(response.data.ride_detail.dest_lng);
+                            $("#carType option[data-text=" + response.data.ride_detail
+                                .car_type + "]").attr('selected', 'selected').change();
+                            $("#numberOfPassenger").val(response.data.ride_detail.passanger)
+                                .change();
+                            $(".price_calculated_input").val(response.data.ride_detail
+                                .ride_cost);
+                            $("#distance_calculated_input").val(response.data.ride_detail
+                                .distance_calculated_input);
+                            $("#payment_type").val(response.data.ride_detail.payment_type);
+                            $("#note").val(response.data.ride_detail.note);
+                            $("#ride_time").val(response.data.ride_detail.ride_time);
+
+                        } else if (response.status == 0) {
+                            swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    },
+                    error(response) {
+                        swal.fire("{{ __('Error') }}", response.message, "error");
+                    }
+                });
+            });
+        });
+
+        $(document).on("click", ".edit_booking", function(e) {
+            e.preventDefault();
+            form_validate_res = calculate_route();
+            if (form_validate_res) {
+                Swal.fire({
+                    title: "{{ __('Please Confirm') }}",
+                    text: "{{ __('You want to update this ride!') }}",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: "{{ __('Update Ride') }}"
+                }).then((result) => {
+                    if (result.value) {
+                        $(document).find(".edit_booking").attr('disabled', true);
+                        $.ajax({
+                            url: "{{ route('company.ride_booking_update') }}",
+                            type: 'post',
+                            dataType: 'json',
+                            data: $('form#booking_list_form').serialize(),
+                            success: function(response) {
+                                if (response.status) {
+                                    swal.fire("{{ __('Success') }}", response.message,
+                                        "success");
+                                    setTimeout(function() {
+                                        window.location.reload();
+                                    }, 2000);
+                                } else if (response.status == 0) {
+                                    swal.fire("{{ __('Error') }}", response.message,
+                                        "error");
+                                    $(document).find(".edit_booking").removeAttr('disabled');
+                                }
+                            },
+                            error(response) {
+                                swal.fire("{{ __('Error') }}", response.message, "error");
+                                $(document).find(".edit_booking").removeAttr('disabled');
+                            }
+                        });
+                    }
+                });
+            }
         });
     </script>
 @stop
