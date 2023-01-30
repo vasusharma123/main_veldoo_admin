@@ -50,18 +50,20 @@
                         <button class="btn save_btn edit_booking" type="submit" style="display:none">Update</button>
                     </div>
                     <div class="row">
-                        <div class="col-xl-8 col-lg-8 col-md-7 col-sm-12 col-xs-12">
+                        <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
+                        </div>
+
+                        <div class="col-xs-12">
                             <div class="userBox">
                                 <div class="avatarImg_user">
-                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="User Avatar"
-                                        class="img-fluid active_user">
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="User Avatar" class="img-fluid active_user">
                                 </div>
-                                <select class="form-control" name="user_id" id="users">
+                                <select class="form-control inside_input_field" name="user_id" id="users">
                                     <option value="">-- Select User --</option>
                                     @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">
-                                            {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
-                                        </option>
+                                    <option value="{{ $user->id }}">
+                                        {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                    </option>
                                     @endforeach
                                 </select>
                                 <input type="hidden" name="ride_id" id="ride_id">
@@ -70,16 +72,9 @@
                                 </div> --}}
                             </div>
                         </div>
-                        <div class="col-xl-4 col-lg-4 col-md-7 col-sm-12 col-xs-12">
-                            <div class="usercounting d-flex mt-2">
-                                <img src="{{ asset('company/assets/imgs/sideBarIcon/userCount.png') }}" alt="userCount"
-                                    class="img-fluid counting_user me-2">
-                                <select class="form-control inside_input_field p-0 px-1 text-center" id="numberOfPassenger"
-                                    name="passanger">
-                                </select>
-                            </div>
-                        </div>
+
                     </div>
+
                     <!-- Row For Name and Count User -->
                     <div class="form-group mt-3 position-relative">
                         <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
@@ -105,11 +100,11 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 align-self-center">
+                        <div class="col-lg-6 col-xs-12 align-self-center">
                             <div class="userBox mt-3">
                                 <div class="avatarImg_user">
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/bigcar.png') }}" alt="Car"
-                                        class="img-fluid car_images">
+                                        class="img-fluid car_images me-2">
                                 </div>
                                 <select class="form-control inside_input_field p-1 text-center" id="carType"
                                     name="car_type">
@@ -126,18 +121,33 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-xs-12 ps-lg-0">
-                            <div class="usercounting d-flex mt-3 position-relative">
-                                <label class="label_input_cash">CHF</label>
-                                <input type="text" name="ride_cost"
-                                    class="form-control inside_input_field p-1 ps-4 text-center me-2 price_calculated_input"
-                                    value="0" readonly>
-                                <input type="hidden" name="distance" class="distance_calculated_input"
-                                    id="distance_calculated_input">
-                                <input type="hidden" name="payment_type" value="Cash" id="payment_type">
+                        <div class="col-lg-6 col-xs-12  align-self-center">
+                            <div class="usercounting d-flex mt-3">
+                                <img src="{{ asset('company/assets/imgs/sideBarIcon/userCount.png') }}" alt="userCount" class="img-fluid counting_user me-2">
+                                <select class="form-control inside_input_field p-0 px-1 text-center" id="numberOfPassenger" name="passanger">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-xs-12 align-self-center">
+                            <div class="usercounting d-flex mt-3">
+                                <div class="avatarImg_user">
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png') }}" alt="userCount" class="img-fluid cash_count me-2">
+                                </div>
+                                <div class="position-relative">
+                                    <label class="label_input_cash">CHF</label>
+                                    <input type="text" name="ride_cost" class="form-control inside_input_field p-1 ps-4 text-center me-2 price_calculated_input" value="0" readonly>
+                                    <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
+                                    <input type="hidden" name="payment_type" value="Cash" id="payment_type">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-xs-12  align-self-center">
+                            <div class="usercounting d-flex mt-3">
                                 <div class="payment_option d-flex align-items-center">
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png') }}" alt="userCount"
-                                        class="img-fluid cash_count me-2"> <span>Cash</span>
+                                        class="img-fluid cash_count me-2"> 
+                                        <span >Cash</span>
                                 </div>
                             </div>
                         </div>

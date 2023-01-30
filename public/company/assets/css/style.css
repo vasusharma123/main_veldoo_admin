@@ -351,7 +351,7 @@ img{
     background: rgba(112, 127, 221, 0.05);
 }
 .list_search_output .list-group.list-group-flush {
-    max-height: 290px;
+    height: 290px;
     overflow: auto;
 }
 .list_search_output {
@@ -452,7 +452,7 @@ img{
     /* overflow: hidden; */
 }
 .counting_user{
-    max-width: 34px;
+    max-width: 30px;
     object-fit: contain;
 }
 .clock_img.setup_ab_clck {
@@ -470,22 +470,22 @@ img{
 }
 .form-control.date_value {
     padding-left: 40px;
-    font-weight: 400;
+    font-weight: 300;
 }
 .normal_font{
-    font-weight: 400;
+    font-weight: 300;
 }
 .userBox .car_images ,.cash_count {
-    max-width: 37px !important;
-    min-width: 37px;
-    max-height: 37px;
-    min-height: 37px;
+    max-width: 30px;
+    min-width: 30px;
+    max-height: 30px;
+    min-height: 30px;
 }
 .label_input_cash {
     position: absolute;
     left: 5px;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 300;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -568,7 +568,7 @@ img{
     transform: translateY(-50%);
 }
 .payment_option.d-flex.align-items-center span {
-    font-weight: 500;
+    font-weight: 300;
 }
 .list-group.list-group-flush.drive_info_list li {
     background: transparent;
