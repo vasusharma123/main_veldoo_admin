@@ -579,7 +579,7 @@
                         },
                         success: function(response) {
                             if (response.status) {
-                                $(document).find("li.list-group-item[data-id='" + selectedBooking + "']").remove();
+                                $(document).find("li.list-group-item[data-ride_id='" + selected_ride_id + "']").remove();
                                 $("#cancelBookingModal").modal('hide');
                                 Swal.fire("Success", response.message, "success");
                             } else if (response.status == 0) {
