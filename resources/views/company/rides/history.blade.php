@@ -24,7 +24,7 @@
                                     <a href="#">
                                         <img src="assets/imgs/sideBarIcon/clock.png" class="img-fluid clock_img" alt="Clock Image">
                                         <span class="point_list position-relative">
-                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ $ride->user?$ride->user->full_name:'N/A' }}, {{ date('d.m.Y',strtotime($ride->created_at)) }}
+                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ $ride->user?$ride->user->full_name:'' }}, {{ date('d.m.Y',strtotime($ride->created_at)) }}
                                         </span> {{ date('H:i',strtotime($ride->created_at)) }}
                                     </a> 
                                     {{-- <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span> --}}
@@ -189,7 +189,7 @@
                 $('.ride_user_image').show();
                 $('.ride_user_image').attr('src',booking.user.image_with_url);
             }
-            $('.ride_user_name').html('N/A');
+            $('.ride_user_name').html('');
             if (booking.user && booking.user.first_name) 
             {
                 $('.ride_user_name').html(booking.user.first_name+' '+booking.user.last_name);
@@ -202,7 +202,7 @@
                 $('.ride_user_end_location').html(booking.dest_address);
             }
             $('.ride_user_member').html(booking.passanger);
-            $('.ride_car_type').html('<option>N/A</option>');
+            $('.ride_car_type').html('<option></option>');
             if(booking.car_type)
             {
                 $('.ride_car_type').html('<option>'+booking.car_type+'</option>');
@@ -210,11 +210,11 @@
             ride_cost = booking.ride_cost;
             if(booking.ride_cost==null)
             {
-                ride_cost = "N/A";
+                ride_cost = "";
             }
             if(booking.ride_cost=="")
             {
-                ride_cost = "N/A";
+                ride_cost = "";
             }
             $('.ride_notes').hide();
             if(booking.note!=null)

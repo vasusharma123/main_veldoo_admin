@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-12">
             <h2 class="board_title">Managers</h2>
-            @include('admin.layouts.flash-message')
+            @include('company.company_flash_message')
         </div>
         <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12 col-xs-12">
             <div class="search_list">

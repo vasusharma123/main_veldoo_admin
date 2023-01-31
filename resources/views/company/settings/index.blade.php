@@ -15,7 +15,7 @@
 							@endif
 						</div>
 						<div class="card-body">
-							@include('admin.layouts.flash-message')
+							@include('company.company_flash_message')
 							<ul class="nav nav-tabs" id="myTab" role="tablist">
 								<li class="nav-item" role="presentation">
 								  <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Information</button>
@@ -57,13 +57,13 @@
 												<div class="col-4 mb-3">
 													<div class="form-group">
 														<label for="">Email</label>
-														<input type="email" name="email" value="{{ @$company->email }}" class="form-control" required>
+														<input type="email" name="email" value="{{ @$company->email }}" class="form-control">
 													</div>
 												</div>
 												<div class="col-4 mb-3">
 													<div class="form-group">
 														<label for="">Phone</label>
-														<input type="text" name="phone" value="{{ @$company->phone }}" id="RegAlterenatePhones" class="form-control" required>
+														<input type="text" name="phone" value="{{ @$company->phone }}" id="RegAlterenatePhones" class="form-control">
 														<input type="hidden" name="country_code" value="{{ @$company->country_code }}" class="second_country_code">
 													</div>
 												</div>
@@ -76,13 +76,13 @@
 												<div class="col-4 mb-3">
 													<div class="form-group">
 														<label for="">State</label>
-														<input type="text" name="state" value="{{ @$company->state }}" class="form-control" required>
+														<input type="text" name="state" value="{{ @$company->state }}" class="form-control">
 													</div>
 												</div>
 												<div class="col-4 mb-3">
 													<div class="form-group">
 														<label for="">Street</label>
-														<input type="text" name="street" value="{{ @$company->street }}" class="form-control" required>
+														<input type="text" name="street" value="{{ @$company->street }}" class="form-control">
 													</div>
 												</div>
 												<div class="col-4 mb-3">
