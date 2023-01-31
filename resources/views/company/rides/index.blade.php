@@ -229,32 +229,75 @@
         var cur_lng = "";
         var markers = [];
 
-        var options = {
-            strictBounds: true, // Only if you want to restrict, not bias
-            // types: ["establishment"], // Whatever types you need
-        };
-        var pickup_input = document.getElementById('pickupPoint');
-        var autocomplete_pickup = new google.maps.places.Autocomplete(pickup_input, options);
-        google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
-            var place = autocomplete_pickup.getPlace();
-            // document.getElementById('city2').value = place.name;
-            document.getElementById('pickup_latitude').value = place.geometry.location.lat();
-            document.getElementById('pickup_longitude').value = place.geometry.location.lng();
-            calculate_route();
-        });
+        function showPosition(position) {
+            if (position != false) {
+                var lat = cur_lat = position.coords.latitude;
+                var lng = cur_lng = position.coords.longitude;
+                pt = new google.maps.LatLng(lat, lng);
+                map.setCenter(pt);
+                map.setZoom(8);
+                $('#pickup_latitude').val(lat);
+                $('#pickup_longitude').val(lng);
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({
+                    'latLng': pt
+                }, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        $('#pickupPoint').val(results[0][
+                        'formatted_address']); //alert(results[0]['formatted_address']);
+                        new google.maps.Marker({
+                            position: pt,
+                            map,
+                            title: results[0]['formatted_address'],
+                        });
+                    };
+                });
 
-        var dropoff_input = document.getElementById('dropoffPoint');
-        var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input, options);
-        // autocomplete_dropoff.setComponentRestrictions({
-        // country: ["ch", "de"],
-        // });
-        google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
-            var place = autocomplete_dropoff.getPlace();
-            // document.getElementById('city2').value = place.name;
-            document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
-            document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
-            calculate_route();
-        });
+                var center = {
+                    lat: cur_lat,
+                    lng: cur_lng
+                };
+                var defaultBounds = {
+                    north: center.lat + 5,
+                    south: center.lat - 5,
+                    east: center.lng + 5,
+                    west: center.lng - 5,
+                };
+                var options = {
+                    bounds: defaultBounds,
+                    // fields: ["address_components"], // Or whatever fields you need
+                    strictBounds: true, // Only if you want to restrict, not bias
+                    // types: ["establishment"], // Whatever types you need
+                };
+            } else {
+                var options = {
+                    strictBounds: true, // Only if you want to restrict, not bias
+                    // types: ["establishment"], // Whatever types you need
+                };
+            }
+            var pickup_input = document.getElementById('pickupPoint');
+            var autocomplete_pickup = new google.maps.places.Autocomplete(pickup_input, options);
+            google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
+                var place = autocomplete_pickup.getPlace();
+                // document.getElementById('city2').value = place.name;
+                document.getElementById('pickup_latitude').value = place.geometry.location.lat();
+                document.getElementById('pickup_longitude').value = place.geometry.location.lng();
+                calculate_route();
+            });
+
+            var dropoff_input = document.getElementById('dropoffPoint');
+            var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input, options);
+            // autocomplete_dropoff.setComponentRestrictions({
+            // country: ["ch", "de"],
+            // });
+            google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
+                var place = autocomplete_dropoff.getPlace();
+                // document.getElementById('city2').value = place.name;
+                document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
+                document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
+                calculate_route();
+            });
+        }
 
         function measure_seating_capacity() {
             var seating_capacity = $('#carType > option:selected').data('seating_capacity');
@@ -413,11 +456,31 @@
             }
         }
 
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition,mapError);
+            } else {
+                swal.fire("{{ __('Error') }}", "{{ __('Geolocation is not supported by this browser.') }}", "error");
+            }
+        }
+
+        function mapError(err) {
+            console.log(err);
+            if (err.code==1) {
+                if (err.message=="User denied Geolocation") 
+                {
+                    swal.fire("{{ __('Error') }}", "{{ __('Please enable location permission in your browser') }}", "error");
+                }
+            }
+            showPosition(false);
+        }
+
         $(document).on('change', '#carType', function() {
             calculate_amount();
         })
 
         function autocomplete_initialize() {
+            getLocation();
             initializeMapReport(MapPoints);
         }
 
