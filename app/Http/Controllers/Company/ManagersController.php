@@ -25,15 +25,15 @@ class ManagersController extends Controller
      */
     public function index(Request $request)
     {
-        $data = array('title' => 'Managers', 'action' => 'Managers');
+        $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->id])->get();
+        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->get();
         return view('company.managers.index')->with($data);
     }
 
     public function create(Request $request)
 	{
-		$breadcrumb = array('title' => 'Create Manager', 'action' => 'Create Manager');
+		$breadcrumb = array('page_title' => 'Create Manager', 'action' => 'Create Manager');
 		$data = [];
 		$data = array_merge($breadcrumb, $data);
 		return view("company.managers.create")->with($data);
@@ -49,7 +49,7 @@ class ManagersController extends Controller
         DB::beginTransaction();
         try 
         {
-            $data = ['name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'user_type'=>5,'company_id'=>Auth::user()->id];
+            $data = ['name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'user_type'=>5,'company_id'=>Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
             if ($request->phone) 
             {
@@ -71,7 +71,7 @@ class ManagersController extends Controller
     {
         DB::beginTransaction();
         try {
-            User::where(['user_type'=>5,'company_id'=>Auth::user()->id,'id'=>$id])->delete();
+            User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id,'id'=>$id])->delete();
             DB::commit();
             return redirect()->route('managers.index')->with('success','Manager has been deleted');
         } catch (Exception $e) {
@@ -82,13 +82,14 @@ class ManagersController extends Controller
 
     public function edit(Request $request,$id)
 	{
-		$data = array('title' => 'Edit Manager', 'action' => 'Edit Manager');
-		$data['manager'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->id])->find($id);
+		$data = array('page_title' => 'Edit Manager', 'action' => 'Edit Manager');
+		$data['manager'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->find($id);
 		return view("company.managers.edit")->with($data);
 	}
 
     public function update(Request $request,$id)
     {
+        // dd($request->all());
         $request->validate([
             'email' => 'email|required|unique:users,email,'.$id,
             'name' => 'required',
@@ -108,7 +109,7 @@ class ManagersController extends Controller
                 $data['password'] = Hash::make($request->password);
             }
             // dd($data);
-            $manager = User::where(['user_type'=>5,'company_id'=>Auth::user()->id])->find($id);
+            $manager = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->find($id);
             $manager->fill($data);
             $manager->update();
             DB::commit();

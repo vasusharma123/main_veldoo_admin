@@ -42,10 +42,23 @@ img{
     background: #555;
 }
 
+.login_user_page .img-fluid.brand_img {
+    max-width: 334.51px;
+}
+
 .input_fields{
     background: white;
     padding: 17px 30px;
     font-size: 26px;
+    color: black;
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.login_user_page .input_fields {
+    background: white;
+    padding: 10px 30px;
+    font-size: 20px;
     color: black;
     border: 1px solid var(--input-border);
     border-radius: 10px;
@@ -97,7 +110,7 @@ img{
     font-size: 26px;
     font-family: var(--heebo-font);
     background: var(--second-color);
-    padding: 16px;
+    padding: 10px;
     width: 100%;
     color: white;
     text-transform: uppercase;
@@ -120,7 +133,7 @@ img{
     font-size: 26px;
     font-family: var(--heebo-font);
     background: var(--primary-color);
-    padding: 16px;
+    padding: 10px;
     width: 100%;
     text-transform: uppercase;
     color: white;
@@ -143,7 +156,7 @@ img{
     margin: 0px auto;
 }
 .sign_in_form_section .login_form {
-    padding: 50px 75px;
+    padding: 30px 55px;
     margin: auto;
     background: rgba(255,255,255,.3);
     backdrop-filter: blur(20px);
@@ -173,7 +186,7 @@ img{
 }
 .form_top_logo {
     text-align: center;
-    margin-bottom: 45px;
+    margin-bottom: 25px;
 }
 .login_user_page {
     width: 100%;
@@ -205,7 +218,7 @@ img{
     font-size: 36px;
     color: var(--second-color);
     font-family: var(--heebo-font);
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 }
 .form-link, .form-link a {
     text-align: right;
@@ -221,7 +234,7 @@ img{
 .form-check-label {
     margin-top: 1px;
     color: #353535;
-    font-size: 20px;
+    font-size: 16px;
 }
 .sidebar_brand_img {
     max-width: 230px;
@@ -338,7 +351,7 @@ img{
     background: rgba(112, 127, 221, 0.05);
 }
 .list_search_output .list-group.list-group-flush {
-    max-height: 290px;
+    height: 290px;
     overflow: auto;
 }
 .list_search_output {
@@ -436,10 +449,10 @@ img{
     max-width: 144px;
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 .counting_user{
-    max-width: 34px;
+    max-width: 30px;
     object-fit: contain;
 }
 .clock_img.setup_ab_clck {
@@ -457,22 +470,22 @@ img{
 }
 .form-control.date_value {
     padding-left: 40px;
-    font-weight: 400;
+    font-weight: 300;
 }
 .normal_font{
-    font-weight: 400;
+    font-weight: 300;
 }
 .userBox .car_images ,.cash_count {
-    max-width: 37px !important;
-    min-width: 37px;
-    max-height: 37px;
-    min-height: 37px;
+    max-width: 30px;
+    min-width: 30px;
+    max-height: 30px;
+    min-height: 30px;
 }
 .label_input_cash {
     position: absolute;
     left: 5px;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 300;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -555,7 +568,7 @@ img{
     transform: translateY(-50%);
 }
 .payment_option.d-flex.align-items-center span {
-    font-weight: 500;
+    font-weight: 300;
 }
 .list-group.list-group-flush.drive_info_list li {
     background: transparent;
@@ -674,9 +687,9 @@ li.list-group-item.running:after {
     .map_views.booking_side{
         margin-top: 20px;
     }
-    .desktop_view{
+    /* .desktop_view{
         display: none;
-    }
+    } */
     .mobile_view{
         display: block;
     }

@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+@extends('company.layouts.app')
 @section('content')
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
@@ -11,83 +11,147 @@
 					<div class="card card-outline-info">
 						<div class="card-header">
 							@if(!empty($action))
-								<h4 class="m-b-0 text-white">{{ $action }}</h4>
+								<h4 class="m-b-0">{{ $action }}</h4>
 							@endif
 						</div>
 						<div class="card-body">
 							@include('admin.layouts.flash-message')
-							
-							{{ Form::open(array('url' => route('users.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
-								<div class="form-body">
-									<div class="row p-t-5">
-										<div class="col-md-6">
+							<ul class="nav nav-tabs" id="myTab" role="tablist">
+								<li class="nav-item" role="presentation">
+								  <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Information</button>
+								</li>
+								<li class="nav-item" role="presentation">
+								  <button class="nav-link text-dark" id="profile-tab" data-toggle="tab" data-target="profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Admin Profile</button>
+								</li>
+							</ul>
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+									<div class="p-3">
+										<form method="POST" action="{{ route('company.updateCompanyInformation') }}" enctype="multipart/form-data">
+											@csrf
 											<div class="row">
-												<div class="col-md-10">
+												<div class="col-4 mb-3">
 													<div class="form-group">
-														<?php
-														echo Form::label('image_tmp', 'Profile Picture',['class'=>'control-label']);
-														?>
-														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
-															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
-															<span class="input-group-addon btn btn-default btn-file" > 
-																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
-															<input type="hidden">
-															<?php
-															echo Form::file('image_tmp',['class'=>'form-control','onchange'=>'readURL(this);','required'=>true]);
-															?>
-															</span>
-															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
-														</div>
+														<label for="">Logo</label>
+														<input type="file" name="logo" class="form-control">
+														@if (@$company->logo)
+															<img src="{{ env('URL_PUBLIC').'/'.$company->logo }}" width="200px" height="150px" alt="" srcset="">
+														@endif
 													</div>
 												</div>
-												<div class="col-md-2">
-													<img id="previewimage" src="#" alt="" />
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Background Image</label>
+														<input type="file" name="background_image" class="form-control">
+														@if (@$company->background_image)
+															<img src="{{ env('URL_PUBLIC').'/'.$company->background_image }}" width="200px" height="150px" alt="" srcset="">
+														@endif
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Name</label>
+														<input type="text" name="name" value="{{ @$company->name }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Email</label>
+														<input type="email" name="email" value="{{ @$company->email }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Phone</label>
+														<input type="text" name="phone" value="{{ @$company->phone }}" id="RegAlterenatePhones" class="form-control" required>
+														<input type="hidden" name="country_code" value="{{ @$company->country_code }}" class="second_country_code">
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">City</label>
+														<input type="text" name="city" value="{{ @$company->city }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">State</label>
+														<input type="text" name="state" value="{{ @$company->state }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Street</label>
+														<input type="text" name="street" value="{{ @$company->street }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Zip Code</label>
+														<input type="text" name="zip_code" value="{{ @$company->zip }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Country</label>
+														<input type="text" name="country" value="{{ @$company->country }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-12 text-center">
+													<button class="save_btn btn">Update</button>
 												</div>
 											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('user_name', 'Username',['class'=>'control-label']);
-												echo Form::text('user_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('first_name', 'First Name',['class'=>'control-label']);
-												echo Form::text('first_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('last_name', 'Last Name',['class'=>'control-label']);
-												echo Form::text('last_name',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('email', 'Email',['class'=>'control-label']);
-												echo Form::text('email',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('password', 'Password',['class'=>'control-label']);
-												echo Form::password('password',['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('status', 'Status',['class'=>'control-label']);
-												echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),null,['class'=>'form-control custom-select','required'=>true]);
-												?>
-											</div>
-										</div>
+										</form>
 									</div>
 								</div>
-								<div class="form-actions">
-									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-									<button type="button" class="btn btn-inverse">Cancel</button>
+								<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+									<div class="p-3">
+										<form action="{{ route('company.updatePersonalInformation') }}" method="POST" enctype="multipart/form-data">
+											@csrf
+											<div class="row">
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Profile Picture</label>
+														<input type="file" name="image" class="form-control">
+														@if (Auth::user()->image)
+															<img src="{{ env('URL_PUBLIC').'/'.Auth::user()->image }}" width="200px" height="150px" alt="" srcset="">
+														@endif
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Name</label>
+														<input type="text" name="name" value="{{ Auth::user()->name }}" class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Email</label>
+														<input type="email" name="email" value="{{ Auth::user()->email }}"  class="form-control" required>
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Phone</label>
+														<input type="text" name="phone" value="{{ Auth::user()->phone }}" id="Regphones" class="form-control" required>
+														<input type="hidden" name="country_code" value="{{ Auth::user()->country_code }}" class="country_code">
+													</div>
+												</div>
+												<div class="col-4 mb-3">
+													<div class="form-group">
+														<label for="">Password</label>
+														<input type="text" name="password" class="form-control">
+														<span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
+													</div>
+												</div>
+												<div class="col-12 text-center">
+													<button class="save_btn btn">Update</button>
+												</div>
+											</div>
+										</form>
+									</div>
 								</div>
-							 {{ Form::close() }}
+							</div>
 						</div>
 					</div>
 				</div>
@@ -120,5 +184,23 @@
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
+	$(document).on('click','.nav-link',function(){
+		$('.nav-link').removeClass('active');
+		$(this).addClass('active');
+		$('.tab-pane').removeClass('show active');
+		$('#'+$(this).data('target')).addClass('show active')
+	});
+	@if (@$company->phone)
+		input_edit = $('#RegAlterenatePhones').intlTelInput("setNumber","+{{ $company->country_code.$company->phone }}");
+		input_edit.on("countrychange", function() {
+			$(".second_country_code").val($("#RegAlterenatePhones").intlTelInput("getSelectedCountryData").dialCode);
+		});
+	@endif
+	@if (Auth::user()->name)
+		input_edit = $('#Regphones').intlTelInput("setNumber","+{{ Auth::user()->country_code.Auth::user()->phone }}");
+		input_edit.on("countrychange", function() {
+			$(".country_code").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
+		});
+	@endif
 	</script>
 @stop

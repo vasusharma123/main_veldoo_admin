@@ -36,8 +36,8 @@
                         </div>
                         <div class="form_action_btns">
                             <button type="submit" class="btn custom_btn">Log In</button>
-                            <a href="#" class="btn custom_red_btn">Business Log In</a>
-                            <a href="sign_up.html" class="btn custom_red_btn">Register Company</a>
+                            {{-- <a href="#" class="btn custom_red_btn">Business Log In</a>
+                            <a href="sign_up.html" class="btn custom_red_btn">Register Company</a> --}}
                         </div>
                     </div>
                     <!-- Form Input Fields -->

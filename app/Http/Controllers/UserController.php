@@ -68,8 +68,8 @@ class UserController extends Controller
         if(auth()->attempt($whereData)){
             return redirect()->route('users.dashboard');
         } else{
-       		 Auth::logout();
-			return Redirect::to('admin')->withErrors(['message' => 'Please check your credentials and try again.']);
+			Auth::logout();
+			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
 
 	}
@@ -1015,9 +1015,15 @@ public function register(){
 	}
 	
 	public function logout(Request $request){
+		// dd($request->all());
         Session::flush();
         Auth::logout();
-        return redirect()->route('adminLogin');
+		$route = "adminLogin";
+		if ($request->has('company')) 
+		{
+			$route = "company_login";
+		}
+        return redirect()->route($route);
 	}
 
 	/**

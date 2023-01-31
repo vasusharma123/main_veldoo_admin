@@ -189,10 +189,19 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::delete('ride/delete_multiple','Company\RidesController@delete_multiple')->name('company.rides.delete_multiple');
 	Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
-	Route::get('settings','CompanyController@settings')->name('company.settings');
+	Route::post('settings/update-company-information','CompanyController@updateCompanyInformation')->name('company.updateCompanyInformation')->middleware('can:isCompany');
+	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation')->middleware('can:isCompany');
+	Route::get('settings','CompanyController@settings')->name('company.settings')->middleware('can:isCompany');
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
+	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');
+	Route::get('/rides-history','Company\RidesController@history')->name('company.rides.history');
+	Route::get('/edit','Company\RidesController@edit')->name('company.rides.edit');
+	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
+	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
+	
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
+Route::post('company-users/check-user-info-btn','Company\UsersController@checkUserInfoBtn')->name('checkUserInfoBtn')->middleware(['auth','role_or_permission:Company']);
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company|Administrator'], function(){
 		Route::resources(['users'=>'UserController']);

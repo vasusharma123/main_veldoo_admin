@@ -37,7 +37,6 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('page', 'PageController@page');
 	Route::post('subjects', 'CategoryController@subjectsList');
 	Route::post('check_user_by_phone', 'UserController@checkRegisteredUser');
-	Route::get('settings', 'UserController@settings');
 	Route::get('rideAssignstoNext', 'UserController@rideAssignstoNext');
 	Route::get('expense/types', 'ExpenseController@types');
 });
@@ -157,7 +156,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::get('get_promotions', 'UserController@getPromotion');
 		Route::post('get_promotions', 'UserController@getPromotion');
 		Route::post('get_user_by_phone', 'UserController@getUserByPhone');
-		Route::post('ride_list', 'UserController@RideList');
+		Route::post('ride_list', 'RideController@RideList');
 		Route::post('save_user_data', 'UserController@saveUserData');
 
 		Route::post('addLocation', 'UserController@addLocation');
@@ -176,6 +175,8 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('user_invoice_status', 'UserController@getInvoiceUserStatus');
 		Route::get('all_drivers', 'UserController@all_drivers');
 		Route::get('still_active_notification_response', 'DriverActivityController@still_active_notification_response');
+		Route::get('rides/upcoming_rides_count', 'RideController@upcoming_rides_count');
+		Route::post('rides/unassign_current_ride', 'RideController@unassign_current_ride');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
@@ -200,6 +201,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'user_web'], function () {
 	Route::post('create_ride_driver', 'UserWebController@create_ride_driver');
 });
 Route::group(['namespace' => 'API','middleware' => ['auth:api','driver_still_active']], function () {
+	Route::get('settings', 'UserController@settings');
 	Route::post('expense/add', 'ExpenseController@add');
 	Route::post('expense/list', 'ExpenseController@list');
 	Route::get('expense/my_rides', 'ExpenseController@my_rides');

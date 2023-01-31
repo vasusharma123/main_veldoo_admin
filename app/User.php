@@ -306,4 +306,14 @@ class User extends Authenticatable implements HasMedia
 		})->count();
 		return $count_of_assign_rides ? 1 : 0;
 	}
+
+	/**
+	 * Get the company associated with the User
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 */
+	public function company()
+	{
+		return $this->belongsTo(Company::class, 'company_id');
+	}
 }

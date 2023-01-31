@@ -26,9 +26,14 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        $data = array('title' => 'Users', 'action' => 'Users');
-        $company = Auth::user();
-        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->get();
+        $data = array('page_title' => 'Users', 'action' => 'Users');
+        $user = Auth::user();
+        $company_id = $user->id;
+        if ($user->user_type==5) 
+        {
+            $company_id = $user->company_id; 
+        }
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>$company_id])->get();
         return view('company.company-users.index')->with($data);
     }
 
@@ -37,6 +42,43 @@ class UsersController extends Controller
 		$data = array('title' => 'Create User', 'action' => 'Create User');
 		return view("company.company-users.create")->with($data);
 	}
+
+    public function checkUserInfoBtn(Request $request)
+    {
+        $request->validate([
+            'country_code' => 'required',
+            'phone' => 'required',
+        ]);
+        DB::beginTransaction();
+        try 
+        {
+            $data['country_code'] = $request->country_code;
+            $data['phone'] = $request->phone;
+            $data['user_type'] = 1;
+
+            $user = Auth::user();
+            $company_id = $user->id;
+            if ($user->user_type==5) 
+            {
+                $company_id = $user->company_id; 
+            }
+
+            $user = User::where($data)->first();
+            if ($user) 
+            {
+                $user->fill(['company_id'=>$company_id]);
+                $user->update();
+                $request->session()->flash('status', 'User successfully created!');
+                DB::commit();
+                return response()->json(['status'=>1]);
+            }
+            DB::commit();
+            return response()->json(['status'=>2]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status'=>0]);
+        }
+    }
     
     public function store(Request $request)
     {
@@ -58,7 +100,13 @@ class UsersController extends Controller
         {
             $data = collect($request->all())->forget(['_token','image_tmp','password','second_phone_number','second_country_code'])->toArray();
             $data['user_type'] = 1;
-            $data['company_id'] = Auth::user()->company_id;
+            $user = Auth::user();
+            $company_id = $user->id;
+            if ($user->user_type==5) 
+            {
+                $company_id = $user->company_id; 
+            }
+            $data['company_id'] = $company_id;
             $data['created_by'] = Auth::user()->id;
             if ($request->password) 
             {

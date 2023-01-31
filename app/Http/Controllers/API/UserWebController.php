@@ -176,7 +176,7 @@ class UserWebController extends Controller
                 $ride->payment_type = $request->payment_type;
             }
             $ride->ride_type = 3;
-            $ride->created_by = $user->id;
+            $ride->created_by = 1;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
