@@ -885,6 +885,15 @@ class Socket{
                 let data = JSON.parse(datas);
 				this.io.emit(`notify_all_drivers_response`, datas); 
             });
+
+			socket.on("recently_login", async (datas) => {
+                let data = JSON.parse(datas);
+                if (data.user_id) {
+					this.io.emit(`log_me_out_${data.user_id}`, datas); 
+                } else {
+					console.log(`Error : There is no id send`);
+				}
+            });
         });
 
     }
