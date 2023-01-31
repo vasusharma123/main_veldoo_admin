@@ -687,9 +687,9 @@ li.list-group-item.running:after {
     .map_views.booking_side{
         margin-top: 20px;
     }
-    .desktop_view{
+    /* .desktop_view{
         display: none;
-    }
+    } */
     .mobile_view{
         display: block;
     }

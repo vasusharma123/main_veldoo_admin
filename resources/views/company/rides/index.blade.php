@@ -76,7 +76,7 @@
                     </div>
 
                     <!-- Row For Name and Count User -->
-                    <div class="form-group mt-3 position-relative">
+                    <div class="form-group mt-3 mb-3 position-relative">
                         <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}"
                             class="img-fluid clock_img setup_ab_clck" alt="Clock Image">
                         <input type="text" class="inside_input_field form-control date_value datetimepicker"
@@ -85,18 +85,24 @@
                             class="img-fluid setup_ab_cln" alt="Clock Image">
                     </div>
                     <!-- Row Name -->
-                    <div class="form-group mt-2 position-relative">
-                        <input type="text" class="inside_input_field form-control normal_font" name="pickup_address"
-                            id="pickupPoint" value="" placeholder="{{ __('From') }}" required>
-                        <input type="hidden" id="pickup_latitude" name="pick_lat">
-                        <input type="hidden" id="pickup_longitude" name="pick_lng">
+                    <div class="input-group mb-3">
+                            <input type="text" class="inside_input_field form-control normal_font" name="pickup_address"
+                                id="pickupPoint" value="" placeholder="{{ __('From') }}" required>
+                            <input type="hidden" id="pickup_latitude" name="pick_lat">
+                            <input type="hidden" id="pickup_longitude" name="pick_lng">
+                            <span class="input-group-text">
+                            <button type="button" class="btn-close pickupPointCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </span>
                     </div>
                     <!-- Row For Area -->
-                    <div class="form-group mt-2 position-relative">
+                    <div class="input-group mb-3">
                         <input type="text" class="inside_input_field form-control normal_font" name="dest_address"
                             id="dropoffPoint" value="" placeholder="{{ __('To') }}">
                         <input type="hidden" id="dropoff_latitude" name="dest_lat">
                         <input type="hidden" id="dropoff_longitude" name="dest_lng">
+                        <span class="input-group-text">
+                            <button type="button" class="btn-close dropoffPointCloseBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </span>
                     </div>
 
                     <div class="row">
@@ -124,7 +130,7 @@
                         <div class="col-lg-6 col-xs-12  align-self-center">
                             <div class="usercounting d-flex mt-3">
                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/userCount.png') }}" alt="userCount" class="img-fluid counting_user me-2">
-                                <select class="form-control inside_input_field p-0 px-1 text-center" id="numberOfPassenger" name="passanger">
+                                <select class="form-control inside_input_field p-1 text-center" id="numberOfPassenger" name="passanger">
                                 </select>
                             </div>
                         </div>
@@ -133,7 +139,7 @@
                                 <div class="avatarImg_user">
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png') }}" alt="userCount" class="img-fluid cash_count me-2">
                                 </div>
-                                <div class="position-relative">
+                                <div class="position-relative w-100">
                                     <label class="label_input_cash">CHF</label>
                                     <input type="text" name="ride_cost" class="form-control inside_input_field p-1 ps-4 text-center me-2 price_calculated_input" value="0" readonly>
                                     <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
@@ -603,5 +609,32 @@
                 }
             });
         });
+
+        $(document).on('click','.pickupPointCloseBtn',function(){
+            $('#pickupPoint').val('');
+            $('#pickup_latitude').val('');
+            $('#pickup_longitude').val('');
+            $(".distance_calculated_input").val("");
+            initializeMapReport([]);
+            calculate_amount();
+        });
+
+       $(document).on('click','.dropoffPointCloseBtn',function(){
+            $('#dropoffPoint').val('');
+            $('#dropoff_latitude').val('');
+            $('#dropoff_longitude').val('');
+            $(".distance_calculated_input").val("");
+            calculate_amount();
+            if($('#pickup_latitude').val()!="")
+            {
+                initializeMapReport([{
+                    Latitude: $('#pickup_latitude').val(),
+                    Longitude: $('#pickup_longitude').val(),
+                    AddressLocation: $('#pickupPoint').val()
+                }]);
+            } else {
+                initializeMapReport([]);
+            }
+       });
     </script>
 @stop
