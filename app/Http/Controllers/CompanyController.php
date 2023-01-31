@@ -162,8 +162,9 @@ class CompanyController extends Controller
                 );
             }
 
+            $companyData = ['name'=>$request->user_name,'email'=>$request->email,'country_code'=>$request->country_code,'phone'=>$request->phone,'password'=>Hash::make($request->password),'image'=>$image,'country'=>$request->country,'state'=>$request->state,'city'=>$request->city,'street'=>$request->street,'zip'=>$request->zip];
             $company = new Company();
-            $company->fill(['name'=>$request->name,'email'=>$request->email,'country_code'=>$request->country_code,'phone'=>$request->phone,'password'=>Hash::make($request->password),'image'=>$image,'country'=>$request->country,'state'=>$request->state,'city'=>$request->city,'street'=>$request->street,'zip'=>$request->zip]);
+            $company->fill($companyData);
             $company->save();
             
             $user->company_id = $company->id;
@@ -333,10 +334,10 @@ class CompanyController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'email',
-            'phone' => 'required',
-            'country_code' => 'required',
-            'state' => 'required|min:3',
+            // 'email' => 'email',
+            // 'phone' => 'required',
+            // 'country_code' => 'required',
+            // 'state' => 'required|min:3',
             'city' => 'required|min:3',
             'zip_code' => 'required|min:3',
             'country' => 'required',

@@ -27,13 +27,7 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $data = array('page_title' => 'Users', 'action' => 'Users');
-        $user = Auth::user();
-        $company_id = $user->id;
-        if ($user->user_type==5) 
-        {
-            $company_id = $user->company_id; 
-        }
-        $data['users'] = User::where(['user_type'=>1,'company_id'=>$company_id])->get();
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->get();
         return view('company.company-users.index')->with($data);
     }
 
@@ -55,18 +49,11 @@ class UsersController extends Controller
             $data['country_code'] = $request->country_code;
             $data['phone'] = $request->phone;
             $data['user_type'] = 1;
-
             $user = Auth::user();
-            $company_id = $user->id;
-            if ($user->user_type==5) 
-            {
-                $company_id = $user->company_id; 
-            }
-
             $user = User::where($data)->first();
             if ($user) 
             {
-                $user->fill(['company_id'=>$company_id]);
+                $user->fill(['company_id'=>Auth::user()->company_id]);
                 $user->update();
                 $request->session()->flash('status', 'User successfully created!');
                 DB::commit();
@@ -87,13 +74,7 @@ class UsersController extends Controller
             'first_name' => 'required',
             'last_name' => 'required',
             'phone' => 'required',
-            // 'country' => 'required',
-            // 'state' => 'required',
-            // 'city' => 'required',
-            // 'street' => 'required',
-            // 'zip_code' => 'required',
             'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            // 'password' => 'required',
         ]);
         DB::beginTransaction();
         try 
@@ -101,12 +82,7 @@ class UsersController extends Controller
             $data = collect($request->all())->forget(['_token','image_tmp','password','second_phone_number','second_country_code'])->toArray();
             $data['user_type'] = 1;
             $user = Auth::user();
-            $company_id = $user->id;
-            if ($user->user_type==5) 
-            {
-                $company_id = $user->company_id; 
-            }
-            $data['company_id'] = $company_id;
+            $data['company_id'] = Auth::user()->company_id;
             $data['created_by'] = Auth::user()->id;
             if ($request->password) 
             {
@@ -135,6 +111,7 @@ class UsersController extends Controller
             DB::commit();
             return redirect()->route('company-users.index')->with('success','User successfully created');
         } catch (Exception $e) {
+            // dd($e);
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
         }

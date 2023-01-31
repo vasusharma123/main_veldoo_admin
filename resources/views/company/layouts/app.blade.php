@@ -27,6 +27,17 @@
                     background: url('{{ env('URL_PUBLIC').'/'.Auth::user()->company->background_image }}') !important;
                 }
             @endif
+            .userBox .avatarImg::after {
+                content: '';
+                position: absolute;
+                top: 6px;
+                left: 0;
+                background: url(../imgs/crown.png);
+                width: 20px;
+                height: 20px;
+                background-repeat: no-repeat;
+                visibility: hidden;
+            }
         </style>
         @yield('css')
     </head>
@@ -56,7 +67,7 @@
 
                                 <div class="sideBar_menu">
                                     <ul class="list-group list-group-flush background-transparent">
-                                        <li class="list-group-item" data-image="redcar"><a href="{{ route('company.rides') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/redcar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
+                                        <li class="list-group-item Rides" data-image="redcar"><a href="{{ route('company.rides') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/redcar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
                                         <li class="list-group-item History" data-image="history">
                                             <a href="{{ route('company.rides.history') }}">
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/history.png') }}" class="img-fluid sideBar_icon_img me-3" alt="History"><span class="title_menu">History</span>
@@ -64,7 +75,7 @@
                                         </li>
                                         @can('isCompany')	
                                             <li class="list-group-item Managers" data-image="accounts">
-                                                <a href="{{ route('managers.index') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Managers"><span class="title_menu">{{ __('Managers') }}</span></a>
+                                                <a href="{{ route('managers.index') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/manager.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Managers"><span class="title_menu">{{ __('Managers') }}</span></a>
                                             </li>
                                         @endcan
                                         <li class="list-group-item Users" data-image="accounts">

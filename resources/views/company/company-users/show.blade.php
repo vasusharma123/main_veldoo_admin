@@ -17,7 +17,7 @@
                         @endif
                     </div>
                     <div class="card-body">
-                        @include('admin.layouts.flash-message')
+                        @include('company.company_flash_message')
                         <div class="col-md-6">
                             <div class="table-responsive">
                                 <table class="table table-bordered">
