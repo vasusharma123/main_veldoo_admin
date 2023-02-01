@@ -60,6 +60,8 @@
                     </div>
                     <div class="form-group">
                         <input type="email" class="form-control inside_input_field mb-2" name="email" placeholder="Email" required />
+                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0" />
+                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0" />
                     </div>
                 </div>
                 {{-- <div class="form-group">
@@ -141,11 +143,18 @@
                 success: function(data){
                     if (data.status==1) 
                     {
-                        location.reload();
+                        alert('User already exists.');
+                        $('.check_user_info').hide();
+                        $('.user_info').find('input[name="first_name"]').val(data.user.first_name);
+                        $('.user_info').find('input[name="last_name"]').val(data.user.last_name);
+                        $('.user_info').find('input[name="email"]').val(data.user.email);
+                        $('.user_info').find('input[name="user_status"]').val(1);
+                        $('.user_info').show();
                     }
                     if (data.status==2) 
                     {
-                        alert('User not found. please fill additional information');
+                        // alert('User not found. please fill additional information');
+                        $('.user_info').find('input[name="user_status"]').val(0);
                         $('.check_user_info').hide();
                         $('.user_info').show();
                     }
