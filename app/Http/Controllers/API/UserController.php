@@ -2077,6 +2077,7 @@ class UserController extends Controller
 				$ride->distance = $request->distance;
 			}
 			$ride->created_by = 2;
+			$ride->creator_id = Auth::user()->id;
 			$ride->status = 0;
 			$ride->platform = Auth::user()->device_type;
 			//print_r($input); die;
@@ -4997,6 +4998,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$ride->ride_type = 3;
 		$ride->created_by = 1;
+		$ride->creator_id = Auth::user()->id;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -5325,6 +5327,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
+		$ride->creator_id = Auth::user()->id;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -5820,6 +5823,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->pickup_address = $request->start_location;
 			$ride->ride_type = 1;
 			$ride->created_by = 1;
+			$ride->creator_id = Auth::user()->id;
 			$ride->user_id = Auth::user()->id;
 			$ride->platform = Auth::user()->device_type;
 			if (!empty($request->driver_id)) {
@@ -6385,6 +6389,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->ride_type = 3;
 			$ride->status = 2;
 			$ride->created_by = 2;
+			$ride->creator_id = Auth::user()->id;
 			$ride->vehicle_id = $request->car_id;
 			$ride->is_personal_instant_ride = 1;
 			if (!empty($request->distance)) {

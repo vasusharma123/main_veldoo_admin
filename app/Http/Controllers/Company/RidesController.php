@@ -96,6 +96,7 @@ class RidesController extends Controller
             }
             $ride->ride_type = 3;
             $ride->created_by = Auth::user()->user_type;
+            $ride->creator_id = Auth::user()->id;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -151,7 +152,7 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::query()->find($ride->id);
+            $ride_data = Ride::find($ride->id);
 
             $driverids = explode(",", $driverids);
             $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
@@ -230,6 +231,7 @@ class RidesController extends Controller
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
             $ride->created_by = Auth::user()->user_type;
+            $ride->creator_id = Auth::user()->id;
             $ride->alert_time = 15;
             $ride->company_id = Auth::user()->company_id;
             $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
