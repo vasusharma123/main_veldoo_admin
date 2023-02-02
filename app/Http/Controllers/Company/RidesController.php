@@ -547,5 +547,15 @@ class RidesController extends Controller
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
+
+    public function ride_driver_detail(Request $request){
+        $ride_detail = Ride::with(['driver', 'vehicle'])->find($request->ride_id);
+        if($ride_detail->driver){
+            $driver_detail = view('company.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
+        } else {
+            $driver_detail = null;
+        }
+        return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
+    }
     
 }

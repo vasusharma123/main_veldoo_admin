@@ -48,6 +48,7 @@
                         <h2 class="board_title mb-0">Booking Details</h2>
                         <button class="btn save_btn save_booking" type="submit">Save</button>
                         <button class="btn save_btn edit_booking" type="submit" style="display:none">Update</button>
+                        <button class="btn save_btn cancel_ride" type="button" style="display:none">Cancel</button>
                     </div>
                     <div class="row">
                         <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
@@ -173,7 +174,7 @@
                                     id="note"></textarea>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-12 col-xs-12 all_driver_info d-none">
+                        <div class="col-lg-6 col-md-12 col-xs-12 all_driver_info" style="display: none">
                             <h2 class="board_title booking">Driver Details</h2>
                             <p class="infomation_update done">Booking</p>
                             <div class="userBox mt-3">
@@ -228,6 +229,7 @@
         var cur_lat = "";
         var cur_lng = "";
         var markers = [];
+        var selected_ride_id = "";
 
         function showPosition(position) {
             if (position != false) {
@@ -533,10 +535,10 @@
             $("#users").select2();
             $(document).on('click', '.input_radio_selected', function() {
                 var ride_id = $(this).val();
+                selected_ride_id = ride_id;
                 document.getElementById("booking_list_form").reset();
                 measure_seating_capacity();
                 $(document).find(".save_booking").hide();
-                $(document).find(".edit_booking").show();
                 $.ajax({
                     url: "{{ route('company.rides.edit') }}",
                     type: 'get',
@@ -581,6 +583,14 @@
                                 }
                                 initializeMapReport(MapPoints);
                             }
+                            driver_detail_update(ride_id);
+                            if(response.data.ride_detail.status == 0){
+                                $(document).find(".cancel_ride").hide();
+                                $(document).find(".edit_booking").show();
+                            } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
+                                $(document).find(".edit_booking").hide();
+                                $(document).find(".cancel_ride").show();
+                            }
                         } else if (response.status == 0) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
                         }
@@ -591,6 +601,31 @@
                 });
             });
         });
+
+        function driver_detail_update(ride_id){
+            $.ajax({
+                    url: "{{ route('company.rides.driver_detail') }}",
+                    type: 'get',
+                    data: {
+                        ride_id: ride_id
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            if(response.data.driver_detail){
+                                $(document).find(".all_driver_info").html(response.data.driver_detail)
+                                $(document).find(".all_driver_info").show();
+                            } else {
+                                $(document).find(".all_driver_info").hide();
+                            }
+                        } else if (response.status == 0) {
+                            swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    },
+                    error(response) {
+                        swal.fire("{{ __('Error') }}", response.message, "error");
+                    }
+                });
+        }
 
         $(document).on("click", ".edit_booking", function(e) {
             e.preventDefault();
@@ -635,9 +670,7 @@
             }
         });
 
-        $(document).on('click', '.dlt_list_btn', function(e) {
-            e.preventDefault();
-            var selected_ride_id = $(this).parents('li.list-group-item').data('ride_id');
+        function delete_cancel_ride(ride_id){
             Swal.fire({
                 title: "{{ __('Please Confirm') }}",
                 text: "{{ __('You want to delete this ride!') }}",
@@ -654,11 +687,11 @@
                         dataType: 'json',
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            'ride_id': selected_ride_id
+                            'ride_id': ride_id
                         },
                         success: function(response) {
                             if (response.status) {
-                                $(document).find("li.list-group-item[data-ride_id='" + selected_ride_id + "']").remove();
+                                $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                 $("#cancelBookingModal").modal('hide');
                                 Swal.fire("Success", response.message, "success");
                             } else if (response.status == 0) {
@@ -671,7 +704,19 @@
                     });
                 }
             });
+        }
+
+        $(document).on('click', '.dlt_list_btn', function(e) {
+            e.preventDefault();
+            var ride_id = $(this).parents('li.list-group-item').data('ride_id');
+            delete_cancel_ride(ride_id);
         });
+
+        $(document).on('click', '.cancel_ride', function(e) {
+            e.preventDefault();
+            delete_cancel_ride(selected_ride_id);
+        });
+        
 
         $(document).on('click','.pickupPointCloseBtn',function(){
             $('#pickupPoint').val('');
