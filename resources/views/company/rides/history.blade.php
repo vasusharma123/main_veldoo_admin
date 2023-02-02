@@ -122,7 +122,7 @@
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-12 col-xs-12">
-                            <p class="infomation_update done">Booking</p>
+                            <div class="ride_status"></div>
                             <div class="userBox mt-3 ride_driver_details">
                                 <div class="avatarImg_diver position-relative">
                                     <img src="assets/imgs/sideBarIcon/driver.png" alt="Driver" class="img-fluid DriverImage rounded-circle ride_driver_image">
@@ -348,9 +348,44 @@
                 }, 1000);
             }
             // end map
-
-
-
+            ride_status = ""
+            if(booking.status == -2)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Cancelled</p>`;
+            }
+            else if(booking.status == -1)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Rejected</p>`;
+            }
+            else if(booking.status == 1)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Accepted</p>`;
+            }
+            else if(booking.status == 2)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Started</p>`;
+            }
+            else if(booking.status == 4)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Driver Reached</p>`;
+            }
+            else if(booking.status == 3)
+            {
+                ride_status = `<p class="infomation_update done">Completed</p>`;
+            }
+            else if(booking.status == -3)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Cancelled by you</p>`;
+            }
+            else if(booking.status == 0)
+            {
+                ride_status = `<p class="infomation_update done bg-warning">Pending</p>`;
+            }
+            else if(Date.parse(booking.ride_time) < Date.parse(Date()))
+            {
+                ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
+            }
+            $('.ride_status').html(ride_status);
             $('.all_driver_info').show();
             $('.details_box').show();
         });

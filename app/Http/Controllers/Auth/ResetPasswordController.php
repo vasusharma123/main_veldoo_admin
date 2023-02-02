@@ -44,9 +44,14 @@ class ResetPasswordController extends Controller
 		if($user->user_type==2 || $user->user_type==1){
 			session()->flash('success',  __('Password reset successfully'));
 			$this->redirectTo = route('password.success');
-		} else {
-			session()->flash('success',  __('Password reset successful'));
-			$this->redirectTo = route('adminLogin');
-		}
+		} elseif($user->user_type==4 || $user->user_type==5) {
+            session()->flash('success',  __('Password reset successful'));
+            $this->redirectTo = route('company_login');
+        }
+        else
+        {
+            session()->flash('success',  __('Password reset successful'));
+            $this->redirectTo = route('adminLogin');
+        }
 	}
 }
