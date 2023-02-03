@@ -45,10 +45,10 @@
                 <!-- Search List -->
                 <div class="details_box">
                     <div class="boxHeader">
-                        <h2 class="board_title mb-0">Booking Details</h2>
-                        <button class="btn save_btn save_booking" type="submit">Save</button>
-                        <button class="btn save_btn edit_booking" type="submit" style="display:none">Update</button>
-                        <button class="btn save_btn cancel_ride" type="button" style="display:none">Cancel</button>
+                        <h2 class="board_title mb-0">{{ __('Booking Details')}}</h2>
+                        <button class="btn save_btn save_booking" type="submit">{{ __('Book')}}</button>
+                        <button class="btn save_btn edit_booking" type="submit" style="display:none">{{ __('Update')}}</button>
+                        <button class="btn save_btn cancel_ride" type="button" style="display:none">{{ __('Cancel')}}</button>
                     </div>
                     <div class="row">
                         <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
