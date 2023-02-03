@@ -67,7 +67,7 @@
 
                                 <div class="sideBar_menu">
                                     <ul class="list-group list-group-flush background-transparent">
-                                        <li class="list-group-item Rides" data-image="redcar"><a href="{{ route('company.rides') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/redcar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
+                                        <li class="list-group-item Rides" data-image="redcar"><a href="{{ route('company.rides') }}"><img src="{{ asset('company/assets/imgs/sideBarIcon/redCar.png') }}" class="img-fluid sideBar_icon_img me-3" alt="Booking"><span class="title_menu">Booking</span></a></li>
                                         <li class="list-group-item History" data-image="history">
                                             <a href="{{ route('company.rides.history') }}">
                                                 <img src="{{ asset('company/assets/imgs/sideBarIcon/history.png') }}" class="img-fluid sideBar_icon_img me-3" alt="History"><span class="title_menu">History</span>
