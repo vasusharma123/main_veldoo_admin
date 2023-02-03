@@ -741,44 +741,20 @@ class Socket{
                 });
             });
 			socket.on('master-driver-update', async (datas) => {
-				
-						console.log('master-driver-rides');
-						console.log('datas '+datas);
-						//response.send('food fix socket working');
-               let data = JSON.parse( datas );
-				
+				let data = JSON.parse(datas);
 				var ride_id = data.ride_id;
-				
-				/* if (data.type=='') {
-                    this.io.to(socketid).emit(`user-message-response-error`,`Type required`); 
+				if (data.ride_id == '') {
+					this.io.to(socketid).emit(`user-message-response-error`, `Driver Id required`);
 					return false;
-                } */
-				if (data.ride_id=='') {
-                    this.io.to(socketid).emit(`user-message-response-error`,`Driver Id required`); 
-					return false;
-                }
-				
-			var master_drivers = await helper.masterDriverList();
-				
-				master_drivers.forEach(async(driverid,index) => {
-					
-					console.log("foreach "+index);
-					console.log("driverid "+driverid['id']);
-					
-						 console.log("async works ");
-  					 var driverdata = await helper.DriverData(driverid['id']);
-  					// var userdata = await helper.DriverData(ridedatanew[0]['user_id']);
-					var driverdatanew = JSON.parse(JSON.stringify(driverdata));
-					console.log("driverdatanew 0 "+driverdatanew[0]); 
-					var driversocketid = driverdatanew[0]['socket_id'];
-					console.log("driversocketid "+driversocketid);
-					//ridedata[0]['user_data'] = userdata[0]; 
-			//ridedata = JSON.stringify(ridedata);
+				}
 				var ridedata = await helper.RideData(ride_id);
-			console.log("ridedata "+ridedata);
-			
+				io.emit(`ride-update-response`, ridedata);
+				var master_drivers = await helper.masterDriverList();
+				master_drivers.forEach(async (driverid, index) => {
+					var driverdata = await helper.DriverData(driverid['id']);
+					var driverdatanew = JSON.parse(JSON.stringify(driverdata));
+					var driversocketid = driverdatanew[0]['socket_id'];
 					this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
-					
 				});
 			});
 
