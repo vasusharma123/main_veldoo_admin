@@ -30,6 +30,17 @@ class Ride extends Model
 	{
 		return $this->hasOne(User::class, 'id', 'user_id');
 	}
+
+	/**
+	 * Get the created_by that owns the Ride
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function created_by()
+	{
+		return $this->belongsTo(User::class, 'creator_id');
+	}
+
 	public function driver()
 	{
 		return $this->hasOne('App\User', 'id', 'driver_id');

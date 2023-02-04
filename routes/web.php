@@ -197,6 +197,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::get('/rides-history','Company\RidesController@history')->name('company.rides.history');
 	Route::get('rides/edit','Company\RidesController@edit')->name('company.rides.edit');
 	Route::get('rides/driver_detail','Company\RidesController@ride_driver_detail')->name('company.rides.driver_detail');
+	Route::post('rides/detail/{id}','Company\RidesController@ride_detail')->name('company.ride_detail');
 	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
 	

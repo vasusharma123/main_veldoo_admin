@@ -73,7 +73,7 @@
             </div>
             <div class="details_box edit_box" style="display: none">
                 <div class="boxHeader">
-                    <h2 class="board_title mb-0">Edit Manager</h2>
+                    <h2 class="board_title mb-0 mr-2">Edit User</h2>
                     <button class="btn save_btn" type="submit" form="updateForm">Update</button>
                     <button class="btn save_btn add_new_manager_btn" type="button">Add</button>
                 </div>
