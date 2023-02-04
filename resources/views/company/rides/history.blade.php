@@ -41,10 +41,15 @@
                 </div>
                 <!-- Search List -->
                 <div class="details_box" style="display: none">
-                    <div class="boxHeader">
+                    <div class="boxHeader mb-3">
                         <h2 class="board_title mb-0">Booking Details</h2>
                     </div>
                     <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
+                            <div class="createdBy">
+                                <h6>Created By: Kapil</h6> 
+                            </div>
+                        </div>
                         <div class="col-xl-8 col-lg-8 col-md-7 col-sm-8 col-12">
                             <div class="userBox">
                                 <div class="avatarImg_user">
@@ -156,7 +161,9 @@
 @endsection
 @section('footer_scripts')
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script>
+        var socket = io("{{env('SOCKET_URL')}}");
         var map;
         var MapPoints = [];
         var directionsDisplay;
@@ -385,9 +392,49 @@
             {
                 ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
             }
+
+            $('.createdBy').hide();
+            if(booking.created_by!="")
+            {
+                $('.createdBy').html("<h6>Created By: "+booking.created_by.name+"</h6>");
+                $('.createdBy').show();
+            }
+
             $('.ride_status').html(ride_status);
             $('.all_driver_info').show();
             $('.details_box').show();
         });
+        socket.on('ride-update-response', function(response) {
+            if(response && response[0] && response[0].id){
+                if(selected_ride_id == response[0].id){
+                    driver_detail_update(selected_ride_id);
+                }
+            }
+        });
+        // console.log(bookingsArray);
+        // driver_detail_update(2386);
+        function driver_detail_update(id) 
+        {
+            route = "{{ route('company.ride_detail','~') }}";
+            route = route.replace('~',id);
+            $.ajax({
+                url: route,
+                type: 'POST',
+                data: {
+                   _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    for (let i = 0; i < bookingsArray.length; i++) {
+                        if (bookingsArray[i].id=id) 
+                        {
+                            bookingsArray[i] = response.data;
+                        }
+                    }
+                },
+                error(response) {
+                    swal.fire("{{ __('Error') }}", response.message, "error");
+                }
+            });
+        }
     </script>
 @endsection
