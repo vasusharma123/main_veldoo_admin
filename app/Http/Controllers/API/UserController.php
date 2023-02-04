@@ -2047,6 +2047,7 @@ class UserController extends Controller
 			$ride->note = $request->note;
 			$ride->ride_type = 1;
 			$ride->car_type = $request->car_type;
+			$ride->driver_id = $request->driver_id ?? null;
 			if (!empty($request->alert_time)) {
 				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
 			} else {
@@ -5352,68 +5353,74 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lat = $request->pick_lat;
 			$lon = $request->pick_lng;
 		}
-		$settings = Setting::first();
-		$settingValue = json_decode($settings['value']);
-		$driverlimit = $settingValue->driver_requests;
-		$driver_radius = $settingValue->radius;
-		$query = User::select(
-			"users.*",
-			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-					* cos(radians(users.current_lat)) 
-					* cos(radians(users.current_lng) - radians(" . $lon . ")) 
-					+ sin(radians(" . $lat . ")) 
-					* sin(radians(users.current_lat))) AS distance")
-		);
-		$query = $query->with(['ride' => function ($query1) {
-			$query1->where(['waiting' => 0]);
-			$query1->where(function ($query2) {
-				$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-			});
-		}])->with(['all_rides' => function ($query3) {
-			$query3->where(['status' => 1, 'waiting' => 1]);
-		}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
-		$drivers = $query->get()->toArray();
-
-		$rideObj = new Ride;
-		foreach ($drivers as $driver_key => $driver_value) {
-			if (!empty($driver_value['ride'])) {
-				if (!empty($driver_value['ride']['dest_lat'])) {
-					if ($driver_value['ride']['status'] == 1) {
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
-					}
-					$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
-				} else {
-					$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
-				}
-			}
-			if (!empty($driver_value['all_rides'])) {
-				foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
-					if (!empty($driver_value['ride']['dest_lat'])) {
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
-					} else {
-						$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
-					}
-				}
-			}
-		}
-	
-		usort($drivers, 'sortByDistance');
-
 		$driverids = array();
 
-		if (!empty($drivers)) {
-			for ($i=0 ; $i < $driverlimit; $i++) {
-				if(!empty($drivers[$i])){
-					$driverids[] = $drivers[$i]['id'];
+		if(!empty($request->driver_id)){
+			$ride->driver_id = $request->driver_id;
+			$driverids[] = $request->driver_id;
+		} else {
+			$settings = Setting::first();
+			$settingValue = json_decode($settings['value']);
+			$driverlimit = $settingValue->driver_requests;
+			$driver_radius = $settingValue->radius;
+			$query = User::select(
+				"users.*",
+				DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
+						* cos(radians(users.current_lat)) 
+						* cos(radians(users.current_lng) - radians(" . $lon . ")) 
+						+ sin(radians(" . $lat . ")) 
+						* sin(radians(users.current_lat))) AS distance")
+			);
+			$query = $query->with(['ride' => function ($query1) {
+				$query1->where(['waiting' => 0]);
+				$query1->where(function ($query2) {
+					$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+				});
+			}])->with(['all_rides' => function ($query3) {
+				$query3->where(['status' => 1, 'waiting' => 1]);
+			}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
+			$drivers = $query->get()->toArray();
+	
+			$rideObj = new Ride;
+			foreach ($drivers as $driver_key => $driver_value) {
+				if (!empty($driver_value['ride'])) {
+					if (!empty($driver_value['ride']['dest_lat'])) {
+						if ($driver_value['ride']['status'] == 1) {
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
+						}
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
+					} else {
+						$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
+					}
+				}
+				if (!empty($driver_value['all_rides'])) {
+					foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
+						if (!empty($driver_value['ride']['dest_lat'])) {
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
+						} else {
+							$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
+						}
+					}
 				}
 			}
-		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+		
+			usort($drivers, 'sortByDistance');
+	
+			if (!empty($drivers)) {
+				for ($i=0 ; $i < $driverlimit; $i++) {
+					if(!empty($drivers[$i])){
+						$driverids[] = $drivers[$i]['id'];
+					}
+				}
+			} else {
+				return response()->json(['message' => "No Driver Found"], $this->warningCode);
+			}
+	
+			$ride->driver_id = null;
+			$ride->all_drivers = implode(",", $driverids);
 		}
-
-		$ride->driver_id = null;
-		$ride->all_drivers = implode(",", $driverids);
+		
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = Ride::query()->find($ride->id);
@@ -5442,18 +5449,22 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			Notification::insert($notification_data);
 			RideHistory::insert($ridehistory_data);
 		}
-		$overallDriversCount = User::select(
-			"users.*",
-			DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
-				* cos(radians(users.current_lat))
-				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
-				+ sin(radians(" . $ride->pick_lat . "))
-				* sin(radians(users.current_lat))) AS distance")
-		)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
 		$rideData = Ride::find($ride->id);
-		$rideData->notification_sent = 1;
-		if (count($overallDriversCount) <= count($drivers)) {
-			$rideData->alert_send = 1;
+		if(!empty($request->driver_id)){
+			$rideData->driver_id = null;
+		} else {
+			$overallDriversCount = User::select(
+				"users.*",
+				DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
+					* cos(radians(users.current_lat))
+					* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
+					+ sin(radians(" . $ride->pick_lat . "))
+					* sin(radians(users.current_lat))) AS distance")
+			)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
+			$rideData->notification_sent = 1;
+			if (count($overallDriversCount) <= count($drivers)) {
+				$rideData->alert_send = 1;
+			}
 		}
 		$rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
 		$rideData->save();
