@@ -224,14 +224,6 @@
     <script>
         var socket = io("{{env('SOCKET_URL')}}");
 
-        socket.on('ride-update-response', function(response) {
-            console.log(response);
-            console.log(response.id);
-        });
-
-    </script>
-
-    <script>
         var directionsService;
         var directionsDisplay;
         var MapPoints = [];
@@ -638,6 +630,14 @@
                     }
                 });
         }
+
+        socket.on('ride-update-response', function(response) {
+            if(response && response[0] && response[0].id){
+                if(selected_ride_id == response[0].id){
+                    driver_detail_update(selected_ride_id);
+                }
+            }
+        });
 
         $(document).on("click", ".edit_booking", function(e) {
             e.preventDefault();
