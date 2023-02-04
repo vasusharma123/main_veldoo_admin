@@ -219,7 +219,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js" type="text/javascript"></script>
     <script src="{{ asset('datetime/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
     <script>
         var socket = io("{{env('SOCKET_URL')}}");
 
