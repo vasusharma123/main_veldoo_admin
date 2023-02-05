@@ -20,7 +20,7 @@
                     <div class="list_search_output mt-0" style="height: 311px">
                         <ul class="list-group list-group-flush">
                             @foreach ($rides as $key=>$ride)
-                                <li class="list-group-item rideDetails" data-key="{{ $key }}">
+                                <li class="list-group-item rideDetails_{{ $ride->id }}" data-key="{{ $key }}" data-id="{{ $ride->id }}">
                                     <a href="#">
                                         <img src="assets/imgs/sideBarIcon/clock.png" class="img-fluid clock_img" alt="Clock Image">
                                         <span class="point_list position-relative">
@@ -435,6 +435,8 @@
                     swal.fire("{{ __('Error') }}", response.message, "error");
                 }
             });
+
+            $('.rideDetails_'+id).click();
         }
     </script>
 @endsection
