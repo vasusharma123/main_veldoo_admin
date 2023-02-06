@@ -442,7 +442,12 @@
                 if (locations.length) {
                     directionsService.route(request, function(result, status) {
                         if (status == google.maps.DirectionsStatus.OK) {
-                            directionsDisplay.setDirections(result);
+                            // console.log(result.routes[0].legs[0].distance.value);
+                            distance = result.routes[0].legs[0].distance.value/1000;
+                            distance = Math.ceil(distance);
+                            // alert(distance);
+                            $('#distance_calculated_input').val(distance);
+                            // directionsDisplay.setDirections(result);
                         }
                     });
                     map.fitBounds(bounds);
