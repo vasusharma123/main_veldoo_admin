@@ -767,7 +767,7 @@
             $('#pickupPoint').val('');
             $('#pickup_latitude').val('');
             $('#pickup_longitude').val('');
-            $(".distance_calculated_input").val("");
+            $(".distance_calculated_input").val(0);
             initializeMapReport([]);
             calculate_amount();
         });
@@ -776,7 +776,7 @@
             $('#dropoffPoint').val('');
             $('#dropoff_latitude').val('');
             $('#dropoff_longitude').val('');
-            $(".distance_calculated_input").val("");
+            $(".distance_calculated_input").val(0);
             calculate_amount();
             if($('#pickup_latitude').val()!="")
             {
