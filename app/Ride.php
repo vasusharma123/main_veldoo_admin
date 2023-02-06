@@ -279,5 +279,10 @@ class Ride extends Model
 			cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
 		return $angle * $earthRadius;
 	}
+
+	public function creator()
+	{
+		return $this->belongsTo(User::class, 'creator_id');
+	}
 	  
 }

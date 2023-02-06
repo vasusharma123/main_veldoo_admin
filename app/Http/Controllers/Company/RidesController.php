@@ -561,7 +561,7 @@ class RidesController extends Controller
 	}
 
     public function ride_driver_detail(Request $request){
-        $ride_detail = Ride::with(['driver', 'vehicle'])->find($request->ride_id);
+        $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);
         if($ride_detail->driver){
             $driver_detail = view('company.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
         } else {

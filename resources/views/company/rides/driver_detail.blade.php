@@ -1,3 +1,20 @@
+@if (!empty($ride_detail->creator->first_name))
+<h2 class="board_title booking">Created By</h2>
+<div class="userBox mb-3">
+    <div class="avatarImg_diver position-relative">
+        @if (!empty($ride_detail->creator->image))
+        <img src="{{ url('storage/' . $ride_detail->creator->image) }}" alt="Created By" class="img-fluid DriverImage rounded-circle">
+        @else
+        <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="Driver" class="img-fluid DriverImage rounded-circle">
+        @endif
+    </div>
+    <div class="user_name">
+        <h4 class="name active_driverImage">{{ $ride_detail->creator->full_name ?? '' }}</h4>
+    </div>
+</div>
+@endif
+
+
 <h2 class="board_title booking">Driver Details</h2>
 @if ($ride_detail->status == -2)
     <p class="infomation_update done bg-danger">Cancelled</p>
@@ -22,10 +39,9 @@
     <div class="userBox mt-3">
         <div class="avatarImg_diver position-relative">
             @if (!empty($ride_detail->driver->image))
-                <img src="{{ url('storage/' . $ride_detail->driver->image) }}" alt="Driver"
-                    class="img-fluid DriverImage rounded-circle">
+                <img src="{{ url('storage/' . $ride_detail->driver->image) }}" alt="Driver" class="img-fluid DriverImage rounded-circle">
             @else
-                <img src="{{ asset('no-images.png') }}" alt="Driver" class="img-fluid DriverImage rounded-circle">
+                <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="Driver" class="img-fluid DriverImage rounded-circle">
             @endif
             @if ($ride_detail->driver->is_available)
                 <span class="driver_status online"></span>

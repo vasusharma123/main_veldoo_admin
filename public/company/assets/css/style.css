@@ -502,12 +502,12 @@ img{
 }
 .userBox .active_driverImage {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
 }
 .userBox .number {
     margin: 0;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     
 }
 .infomation_update.done {
@@ -612,6 +612,14 @@ li.list-group-item.running:after {
 }
 .list-group.list-group-flush.drive_info_list li:last-child{
     margin-bottom: 0px;
+}
+
+input[readonly], textarea[readonly], select[readonly] {
+    cursor: not-allowed;
+}
+
+input[disabled], textarea[disabled], select[disabled] {
+    cursor: not-allowed;
 }
 /* MD Size */
 @media (max-width: 1196px){

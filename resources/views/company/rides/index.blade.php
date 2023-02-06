@@ -10,6 +10,9 @@
             height: 100%;
             min-height: 400px;
         }
+        .form-control:disabled {
+            background-color: white;
+        }
     </style>
 @endsection
 @section('content')
@@ -552,7 +555,11 @@
                     success: function(response) {
                         if (response.status) {
                             $("#ride_id").val(ride_id);
-                            $("#users").val(response.data.ride_detail.user_id).change();
+                            if(response.data.ride_detail.user_id == 0){
+                                $("#users").val("").change();
+                            } else {
+                                $("#users").val(response.data.ride_detail.user_id).change();
+                            }
                             $("#pickupPoint").val(response.data.ride_detail.pickup_address);
                             $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
                             $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
@@ -589,11 +596,29 @@
                             }
                             driver_detail_update(ride_id);
                             if(response.data.ride_detail.status == 0){
+                                $("#users").removeAttr("disabled");
+                                $("#ride_time").removeAttr("readonly");
+                                $("#pickupPoint").removeAttr("disabled");
+                                $("#dropoffPoint").removeAttr("disabled");
+                                $(".pickupPointCloseBtn").removeAttr("disabled");
+                                $(".dropoffPointCloseBtn").removeAttr("disabled");
+                                $("#carType").removeAttr("disabled");
+                                $("#numberOfPassenger").removeAttr("disabled");
+                                $("#note").removeAttr("readonly");
                                 $(document).find(".cancel_ride").hide();
                                 $(document).find(".edit_booking").show();
                             } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
                                 $(document).find(".edit_booking").hide();
                                 $(document).find(".cancel_ride").show();
+                                $("#users").attr("disabled",true);
+                                $("#ride_time").attr("readonly",true);
+                                $("#pickupPoint").attr("disabled",true);
+                                $("#dropoffPoint").attr("disabled",true);
+                                $(".pickupPointCloseBtn").attr("disabled",true);
+                                $(".dropoffPointCloseBtn").attr("disabled",true);
+                                $("#carType").attr("disabled",true);
+                                $("#numberOfPassenger").attr("disabled",true);
+                                $("#note").attr("readonly",true);
                             }
                         } else if (response.status == 0) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
@@ -634,7 +659,8 @@
         socket.on('ride-update-response', function(response) {
             if(response && response[0] && response[0].id){
                 if(selected_ride_id == response[0].id){
-                    driver_detail_update(selected_ride_id);
+                    $(".input_radio_selected[value='"+selected_ride_id+"']").trigger("click");
+                    // driver_detail_update(selected_ride_id);
                 }
             }
         });
@@ -704,8 +730,10 @@
                         success: function(response) {
                             if (response.status) {
                                 $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
-                                $("#cancelBookingModal").modal('hide');
                                 Swal.fire("Success", response.message, "success");
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 2000);
                             } else if (response.status == 0) {
                                 Swal.fire("{{ __('Error') }}", response.message, "error");
                             }
