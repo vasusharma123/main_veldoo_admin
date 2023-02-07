@@ -213,14 +213,19 @@ class Ride extends Model
 		return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
 	}
 
+	public function car_data()
+	{
+		return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+	}
+
 	public function company()
 	{
-		return $this->belongsTo(User::class, 'company_id', 'id');
+		return $this->belongsTo(Company::class, 'company_id', 'id');
 	}
 
 	public function company_data()
 	{
-		return $this->belongsTo(User::class, 'company_id', 'id');
+		return $this->belongsTo(Company::class, 'company_id', 'id');
 	}
 
 	public function accept_ride_sms_notify($user, $choosed_vehicle)
