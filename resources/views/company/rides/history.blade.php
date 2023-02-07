@@ -56,28 +56,28 @@
                                     <img src="assets/imgs/sideBarIcon/lilly.png" alt="User Avatar" class="img-fluid active_user ride_user_image">
                                 </div>
                                 <div class="user_name">
-                                    <h4 class="name active_username ride_user_name">Lilly Blossom</h4>
+                                    <h4 class="name active_username ride_user_name font-weight-400">Lilly Blossom</h4>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-4 col-md-7 col-sm-4 col-5">
                             <div class="usercounting d-flex mt-2">
                                 <img src="assets/imgs/sideBarIcon/userCount.png" alt="userCount" class="img-fluid counting_user me-2">
-                                <p class="ride_user_member form-control inside_input_field p-0 px-1" style="margin-bottom:0px;text-align:left">1-3</p>
+                                <p class="ride_user_member form-control inside_input_field p-0 px-1 font-weight-400" style="margin-bottom:0px;text-align:left">1-3</p>
                             </div>
                         </div>
                     </div>
                     <!-- Row For Name and Count User -->
                     <div class="form-group mt-3 position-relative">
                         <img src="assets/imgs/sideBarIcon/clock.png" class="img-fluid clock_img setup_ab_clck" alt="Clock Image">
-                        <input type="text" class="inside_input_field form-control date_value ride_user_date" value="10.01.2023  19:45">
+                        <input type="text" class="inside_input_field form-control date_value ride_user_date font-weight-400" style="font-size: 16px !important" value="10.01.2023  19:45">
                         {{-- <img src="assets/imgs/sideBarIcon/calendar.png" class="img-fluid setup_ab_cln" alt="Clock Image"> --}}
                     </div>
                     <!-- Row Name -->
                     <div class="form-group mt-2 position-relative ">
                         <ul class="list-group list-group-flush drive_info_list">
-                            <li class="list-group-item running ride_user_start_location">Schaffhausen</li>
-                            <li class="list-group-item stop_process ride_user_end_location">Zurich</li>
+                            <li class="list-group-item running ride_user_start_location font-weight-400" style="font-size: 16px !important">Schaffhausen</li>
+                            <li class="list-group-item stop_process ride_user_end_location  font-weight-400"  style="font-size: 16px !important">Zurich</li>
                         </ul>
                     </div>
                     
@@ -87,7 +87,7 @@
                                 <div class="avatarImg_user">
                                     <img src="assets/imgs/sideBarIcon/bigcar.png" alt="Car" class="img-fluid car_images">
                                 </div>
-                                <select class="form-control inside_input_field p-1 ride_car_type">
+                                <select class="form-control inside_input_field p-1 ride_car_type font-weight-400">
                                     <option value="Business">Business</option>
                                     <option value="Small">Small</option>
                                 </select>
@@ -95,11 +95,11 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-6 col-6 ps-lg-0">
                             <div class="usercounting d-flex mt-3 position-relative">
-                                <label class="label_input_cash">CHF</label>
-                                <input type="text" class="form-control inside_input_field p-1 ps-4 me-2 ride_car_price" style="padding-left: 30px !important" value="200.0">
+                                <label class="label_input_cash font-weight-400">CHF</label>
+                                <input type="text" class="form-control font-weight-400 inside_input_field p-1 ps-4 me-2 ride_car_price" style="padding-left: 30px !important" value="200.0">
                                 
                                 <div class="payment_option d-flex align-items-center">
-                                    <img src="assets/imgs/sideBarIcon/cash.png" alt="userCount" class="img-fluid cash_count me-2"> <span class="ride_payment_type">Cash</span>
+                                    <img src="assets/imgs/sideBarIcon/cash.png" alt="userCount" class="img-fluid cash_count me-2"> <span class="ride_payment_type font-weight-400">Cash</span>
                                 </div>
                             </div>
                         </div>
@@ -123,19 +123,19 @@
                         <div class="col-lg-6 col-md-12 col-xs-12">
                             
                             <div class="form-group">
-                                <textarea class="form-control inside_input_field mb-2 ride_notes" required  rows="2">Note</textarea>
+                                <textarea class="form-control inside_input_field mb-2 ride_notes font-weight-400" required style="font-size: 16px !important;" rows="2">Note</textarea>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-12 col-xs-12">
-                            <div class="ride_status"></div>
+                            <div class="ride_status font-weight-400"></div>
                             <div class="userBox mt-3 ride_driver_details">
                                 <div class="avatarImg_diver position-relative">
                                     <img src="assets/imgs/sideBarIcon/driver.png" alt="Driver" class="img-fluid DriverImage rounded-circle ride_driver_image">
-                                    <span class="driver_status"></span>
+                                    <span class="driver_status font-weight-400"></span>
                                 </div>
                                 <div class="user_name">
-                                    <h4 class="name active_driverImage ride_driver_name">Karl</h4>
-                                    <p class="number ride_driver_phone">+41 79 1111 111</p>
+                                    <h4 class="name active_driverImage ride_driver_name font-weight-400">Karl</h4>
+                                    <p class="number ride_driver_phone font-weight-400">+41 79 1111 111</p>
                                 </div>
                             </div>
                             <div class="userBox mt-3 ride_car_details">
@@ -143,8 +143,8 @@
                                     <img src="assets/imgs/sideBarIcon/car_small.png" alt="car" class="img-fluid DriverImage ride_car_image">
                                 </div>
                                 <div class="user_name">
-                                    <h4 class="name active_driverImage ride_car_name">Mercedes V class</h4>
-                                    <p class="number ride_car_number">SH 50288</p>
+                                    <h4 class="name active_driverImage ride_car_name font-weight-400">Mercedes V class</h4>
+                                    <p class="number ride_car_number font-weight-400">SH 50288</p>
                                 </div>
                             </div>
                         </div>
@@ -394,9 +394,17 @@
             }
 
             $('.createdBy').hide();
-            if(booking.created_by!="")
+            if(booking.creator!="")
             {
-                $('.createdBy').html("<h6>Created By: "+booking.created_by.name+"</h6>");
+                creator_type = "";
+                if (booking.creator.user_type=="4") {
+                    creator_type = " (Company)";
+                } 
+                else if(booking.creator.user_type=="5") 
+                {
+                    creator_type = " (Manager)";
+                }
+                $('.createdBy').html("<h6>Created By: "+booking.creator.name+creator_type+"</h6>");
                 $('.createdBy').show();
             }
 

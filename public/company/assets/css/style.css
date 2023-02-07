@@ -11,7 +11,15 @@
     --poppins-font : 'Poppins', sans-serif;
     --lato-font : 'Lato', sans-serif;
 }
-
+.font-weight-400
+{
+    font-size: 20px !important;
+    font-weight: 400 !important;
+}
+.font-weight-500
+{
+    font-weight: 500 !important;
+}
 *,html,body{
     margin: 0px;
     padding: 0px;
