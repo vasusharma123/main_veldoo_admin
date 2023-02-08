@@ -18,12 +18,12 @@ class Ride extends Model
 
 	protected $appends = [
 		'stop_over',
-		'created_at_modified',
+		'ride_time_modified',
 	];
 
-	public function getCreatedAtModifiedAttribute()
+	public function getRideTimeModifiedAttribute()
 	{
-		return date('D d.m.Y H:i',strtotime($this->created_at));//10.01.2023 19:45
+		return date('D d.m.Y H:i',strtotime($this->ride_time));//10.01.2023 19:45
 	}
 
 	public function user()
