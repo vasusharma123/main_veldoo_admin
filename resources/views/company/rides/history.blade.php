@@ -24,8 +24,8 @@
                                     <a href="#">
                                         <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}" class="img-fluid clock_img" alt="Clock Image">
                                         <span class="point_list position-relative">
-                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ date('D',strtotime($ride->created_at)) }}, {{ date('d.m.Y',strtotime($ride->created_at)) }}
-                                        </span> {{ date('H:i',strtotime($ride->created_at)) }}
+                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }}
+                                        </span> {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </a> 
                                     {{-- <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span> --}}
                                 </li>
@@ -259,7 +259,7 @@
 
             $('.ride_payment_type').html(booking.payment_type);
             $('.ride_car_price').val(ride_cost);
-            $('.ride_user_date').val(booking.created_at_modified);
+            $('.ride_user_date').val(booking.ride_time_modified);
 
             // map
 
@@ -394,7 +394,7 @@
             }
 
             $('.createdBy').hide();
-            if(booking.creator!="")
+            if(booking.creator)
             {
                 creator_type = "";
                 if (booking.creator.user_type=="4") {
