@@ -205,9 +205,9 @@
                     </div>
                 </div>
 
-                <div class="map_views mb-4 booking_side mobile_view">
-                    {{-- <div id="googleMap" style="width:100%;" height="433"></div> --}}
-                </div>
+                {{-- <div class="map_views mb-4 booking_side mobile_view">
+                    <div id="googleMap" style="width:100%;" height="433"></div>
+                </div> --}}
             </div>
             <!-- Right Map Side-->
         </div>
