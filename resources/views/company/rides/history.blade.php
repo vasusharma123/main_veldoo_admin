@@ -398,7 +398,7 @@
             {
                 creator_type = "";
                 if (booking.creator.user_type=="4") {
-                    creator_type = " (Company)";
+                    creator_type = " (Admin)";
                 } 
                 else if(booking.creator.user_type=="5") 
                 {

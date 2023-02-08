@@ -367,7 +367,7 @@
                 var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
                 var distance_calculated = Math.round(distance / 1000);
             }
-            $(".distance_calculated_input").val(distance_calculated);
+            // $(".distance_calculated_input").val(distance_calculated);
             calculate_amount();
 
             MapPoints = [{

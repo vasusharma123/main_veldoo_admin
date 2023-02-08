@@ -139,9 +139,10 @@ class UsersController extends Controller
 
     public function destroy($id)
     {
+        // dd($id);
         DB::beginTransaction();
         try {
-            User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id,'id'=>$id])->delete();
+            User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id,'id'=>$id])->update(['company_id'=>null]);
             DB::commit();
             return redirect()->route('company-users.index')->with('success','User has been deleted');
         } catch (Exception $e) {
