@@ -165,6 +165,7 @@
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
         var markers = [];
+        var selected_ride_id = "";
         if ($(window).width() < 767)
         {
             $('.googleMapDesktop').remove();
@@ -183,6 +184,7 @@
         });
         $(document).on('click','.rideDetails',function(){
             booking = bookingsArray[$(this).data('key')];
+            selected_ride_id = $(this).data('id');
             $('.rideDetails').removeClass('selected');
             $(this).addClass('selected');
             // console.log(bookingsArray);
