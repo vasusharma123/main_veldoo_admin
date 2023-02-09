@@ -360,15 +360,14 @@
                 dropoff_latitude = pickup_latitude;
                 dropoff_longitude = pickup_longitude;
                 dropoff_address = pickup_address;
-                var distance_calculated = 0;
+                // var distance_calculated = 0;
             } else {
                 srcLocation = new google.maps.LatLng(pickup_latitude, pickup_longitude);
                 dstLocation = new google.maps.LatLng(dropoff_latitude, dropoff_longitude);
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
-                var distance_calculated = Math.round(distance / 1000);
+                // var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
+                // var distance_calculated = Math.round(distance / 1000);
             }
             // $(".distance_calculated_input").val(distance_calculated);
-            calculate_amount();
 
             MapPoints = [{
                 Latitude: pickup_latitude,
@@ -447,6 +446,7 @@
                             distance = Math.ceil(distance);
                             // alert(distance);
                             $('#distance_calculated_input').val(distance);
+                            calculate_amount();
                             // directionsDisplay.setDirections(result);
                         }
                     });
