@@ -264,7 +264,7 @@ class CompanyController extends Controller
 		$request->validate($rules);
 		$input = $request->all();
 		
-		unset($input['_method'],$input['_token'],$input['image_tmp']);
+		unset($input['_method'],$input['_token'],$input['image_tmp'],$input['reset_password']);
 		
 		$path = 'users/'.$haveUser->id.'/profile/';
 		$pathDB = 'public/users/'.$haveUser->id.'/profile/';

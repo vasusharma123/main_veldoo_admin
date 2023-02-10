@@ -17,94 +17,98 @@
 						<div class="card-body">
 							@include('company.company_flash_message')
 							<ul class="nav nav-tabs" id="myTab" role="tablist">
+								@can('isCompany')
+									<li class="nav-item" role="presentation">
+										<button class="nav-link active" id="home-tab" data-toggle="tab" data-target="home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Information</button>
+									</li>
+								@endcan
 								<li class="nav-item" role="presentation">
-								  <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="home" type="button" role="tab" aria-controls="home" aria-selected="true">Company Information</button>
-								</li>
-								<li class="nav-item" role="presentation">
-								  <button class="nav-link text-dark" id="profile-tab" data-toggle="tab" data-target="profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Admin Profile</button>
+								  <button class="nav-link text-dark {{ Auth::user()->user_type==5?'active':'' }}" id="profile-tab" data-toggle="tab" data-target="profile" type="button" role="tab" aria-controls="profile" aria-selected="false">{{ Auth::user()->user_type==5?'':'Admin ' }}Profile</button>
 								</li>
 							</ul>
 							<div class="tab-content" id="myTabContent">
-								<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-									<div class="p-3">
-										<form method="POST" action="{{ route('company.updateCompanyInformation') }}" enctype="multipart/form-data">
-											@csrf
-											<div class="row">
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Logo</label>
-														<input type="file" name="logo" class="form-control">
-														@if (@$company->logo)
-															<img src="{{ env('URL_PUBLIC').'/'.$company->logo }}" width="200px" height="150px" alt="" srcset="">
-														@endif
+								@can('isCompany')
+									<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+										<div class="p-3">
+											<form method="POST" action="{{ route('company.updateCompanyInformation') }}" enctype="multipart/form-data">
+												@csrf
+												<div class="row">
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Logo</label>
+															<input type="file" name="logo" class="form-control">
+															@if (@$company->logo)
+																<img src="{{ env('URL_PUBLIC').'/'.$company->logo }}" width="200px" height="150px" alt="" srcset="">
+															@endif
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Background Image</label>
+															<input type="file" name="background_image" class="form-control">
+															@if (@$company->background_image)
+																<img src="{{ env('URL_PUBLIC').'/'.$company->background_image }}" width="200px" height="150px" alt="" srcset="">
+															@endif
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Name</label>
+															<input type="text" name="name" value="{{ @$company->name }}" class="form-control" required>
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Email</label>
+															<input type="email" name="email" value="{{ @$company->email }}" class="form-control">
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Phone</label>
+															<input type="text" name="phone" value="{{ @$company->phone }}" id="RegAlterenatePhones" class="form-control">
+															<input type="hidden" name="country_code" value="{{ @$company->country_code }}" class="second_country_code">
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">City</label>
+															<input type="text" name="city" value="{{ @$company->city }}" class="form-control" required>
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">State</label>
+															<input type="text" name="state" value="{{ @$company->state }}" class="form-control">
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Street</label>
+															<input type="text" name="street" value="{{ @$company->street }}" class="form-control">
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Zip Code</label>
+															<input type="text" name="zip_code" value="{{ @$company->zip }}" class="form-control" required>
+														</div>
+													</div>
+													<div class="col-4 mb-3">
+														<div class="form-group">
+															<label for="">Country</label>
+															<input type="text" name="country" value="{{ @$company->country }}" class="form-control" required>
+														</div>
+													</div>
+													<div class="col-12 text-center">
+														<button class="save_btn btn">Update</button>
 													</div>
 												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Background Image</label>
-														<input type="file" name="background_image" class="form-control">
-														@if (@$company->background_image)
-															<img src="{{ env('URL_PUBLIC').'/'.$company->background_image }}" width="200px" height="150px" alt="" srcset="">
-														@endif
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Name</label>
-														<input type="text" name="name" value="{{ @$company->name }}" class="form-control" required>
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Email</label>
-														<input type="email" name="email" value="{{ @$company->email }}" class="form-control">
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Phone</label>
-														<input type="text" name="phone" value="{{ @$company->phone }}" id="RegAlterenatePhones" class="form-control">
-														<input type="hidden" name="country_code" value="{{ @$company->country_code }}" class="second_country_code">
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">City</label>
-														<input type="text" name="city" value="{{ @$company->city }}" class="form-control" required>
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">State</label>
-														<input type="text" name="state" value="{{ @$company->state }}" class="form-control">
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Street</label>
-														<input type="text" name="street" value="{{ @$company->street }}" class="form-control">
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Zip Code</label>
-														<input type="text" name="zip_code" value="{{ @$company->zip }}" class="form-control" required>
-													</div>
-												</div>
-												<div class="col-4 mb-3">
-													<div class="form-group">
-														<label for="">Country</label>
-														<input type="text" name="country" value="{{ @$company->country }}" class="form-control" required>
-													</div>
-												</div>
-												<div class="col-12 text-center">
-													<button class="save_btn btn">Update</button>
-												</div>
-											</div>
-										</form>
+											</form>
+										</div>
 									</div>
-								</div>
-								<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+								@endcan
+								<div class="tab-pane fade {{ Auth::user()->user_type==5?'show active':'' }}" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 									<div class="p-3">
 										<form action="{{ route('company.updatePersonalInformation') }}" method="POST" enctype="multipart/form-data">
 											@csrf
