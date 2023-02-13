@@ -405,7 +405,12 @@
                     suppressMarkers: true
                 });
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true,
+                    // avoidHighways: true,
+                    // avoidTolls: true,
                 };
                 for (i = 0; i < locations.length; i++) {
                     marker = new google.maps.Marker({
@@ -441,13 +446,14 @@
                 if (locations.length) {
                     directionsService.route(request, function(result, status) {
                         if (status == google.maps.DirectionsStatus.OK) {
-                            // console.log(result.routes[0].legs[0].distance.value);
-                            distance = result.routes[0].legs[0].distance.value/1000;
+
+                            directionsDisplay.setDirections(result);
+                            shortestRouteIndex = setShortestRoute(result);
+                            directionsDisplay.setRouteIndex(shortestRouteIndex);
+                            distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
                             distance = Math.ceil(distance);
-                            // alert(distance);
                             $('#distance_calculated_input').val(distance);
                             calculate_amount();
-                            // directionsDisplay.setDirections(result);
                         }
                     });
                     map.fitBounds(bounds);
@@ -468,6 +474,16 @@
                 }
 
             }
+        }
+
+        function setShortestRoute(response) 
+        {
+            // console.log(response);
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
 
         function getLocation() {
