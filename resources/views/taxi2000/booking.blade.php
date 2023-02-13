@@ -852,26 +852,14 @@
 
             srcLocation = new google.maps.LatLng(pickup_latitude, pickup_longitude);
             dstLocation = new google.maps.LatLng(dropoff_latitude, dropoff_longitude);
-            var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
-            var distance_calculated = Math.round(distance / 1000);
-            $(".distance_calculated").text(distance_calculated + " KM");
-            $(".distance_calculated_input").val(distance_calculated);
+            // var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
+            // var distance_calculated = Math.round(distance / 1000);
+            // $(".distance_calculated").text(distance_calculated + " KM");
+            // $(".distance_calculated_input").val(distance_calculated);
             if ($("#carType").val() == '') {
                 swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
             }
-            var carType = $('#carType').val();
-            var vehicle_basic_fee = $('#carType > option:selected').data('basic_fee');
-            var vehicle_price_per_km = $('#carType > option:selected').data('price_per_km');
-            if (distance_calculated == 0) {
-                var price_calculation = 0;
-            } else {
-                var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km)) *
-                    100) / 100;
-            }
-            $(".price_calculated").text(price_calculation +
-                " CHF");
-            $(".price_calculated_input").val(price_calculation);
             MapPoints = [{
                 Latitude: pickup_latitude,
                 Longitude: pickup_longitude,
@@ -916,7 +904,12 @@
                     suppressMarkers: true
                 });
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true,
+                    // avoidHighways: true,
+                    // avoidTolls: true,
                 };
                 for (i = 0; i < locations.length; i++) {
                     marker = new google.maps.Marker({
@@ -951,8 +944,29 @@
                 // call directions service
                 if (locations.length) {
                     directionsService.route(request, function(result, status) {
+                        // console.log(result);
                         if (status == google.maps.DirectionsStatus.OK) {
                             directionsDisplay.setDirections(result);
+                            shortestRouteIndex = setShortestRoute(result);
+                            directionsDisplay.setRouteIndex(shortestRouteIndex);
+                            distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
+                            distance = Math.ceil(distance);
+                            $(".distance_calculated").text(distance + " KM");
+                            $(".distance_calculated_input").val(distance);
+
+
+                            var carType = $('#carType').val();
+                            var vehicle_basic_fee = $('#carType > option:selected').data('basic_fee');
+                            var vehicle_price_per_km = $('#carType > option:selected').data('price_per_km');
+                            if (distance == 0) {
+                                var price_calculation = 0;
+                            } else {
+                                var price_calculation = Math.round((vehicle_basic_fee + (distance * vehicle_price_per_km)) *
+                                    100) / 100;
+                            }
+                            $(".price_calculated").text(price_calculation +
+                                " CHF");
+                            $(".price_calculated_input").val(price_calculation);
                         }
                     });
                     map.fitBounds(bounds);
@@ -974,6 +988,16 @@
                 }
                
             }
+        }
+
+        function setShortestRoute(response) 
+        {
+            // console.log(response);
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
 
         $(document).on('click', '.book_online_now', function(e) {
