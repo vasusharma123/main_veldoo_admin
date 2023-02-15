@@ -18,6 +18,7 @@ use App\RideHistory;
 use App;
 use App\SMSTemplate;
 use App\Setting;
+use Log;
 
 class PageController extends Controller
 {
@@ -413,8 +414,9 @@ if($_REQUEST['cm'] == 2)
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		Log::info("here1");
 		if($responseObj['status'] == 1){
-		
+			Log::info("here2");
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			$SMSTemplate = SMSTemplate::find(2);
