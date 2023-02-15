@@ -191,11 +191,11 @@ img{
     width: 100%;
     min-height: 100vh;
     background: url('../imgs/login_bg.png');
-    background-size: cover;
+    background-size: cover !important;
     background-position: center;
     padding: 50px 15px;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
 }
 .all_details_boxes{
     background: rgba(234, 235, 239, 0.75);

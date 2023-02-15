@@ -1,4 +1,11 @@
 @extends('layouts.company')
+@section('css')
+<style>
+    .login_user_page {
+        align-items: center;
+    }
+</style>
+@endsection
 @section('content')
 <div class="all_content">
       
