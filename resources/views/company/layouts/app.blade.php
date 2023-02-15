@@ -100,7 +100,7 @@
                     </div>
                     <!-- Sidebar End -->
                     <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 p-0">
-                        <div class="login_user_page right_content inside_dashboard_user">
+                        <div class="login_user_page right_content inside_dashboard_user" style="background-size: cover !important">
                             <div class="container-fluid all_details_boxes">
                               @yield('content')
                             </div>

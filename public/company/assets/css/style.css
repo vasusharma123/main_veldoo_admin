@@ -191,7 +191,7 @@ img{
     width: 100%;
     min-height: 100vh;
     background: url('../imgs/login_bg.png');
-    background-size: cover !important;
+    background-size: cover;
     background-position: center;
     padding: 50px 15px;
     display: flex;
