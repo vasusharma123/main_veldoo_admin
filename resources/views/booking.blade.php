@@ -578,7 +578,8 @@
         var MapPoints = [];
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
-        var onLoadVar = 0;
+        // var onLoadVar = 0;
+        var getDistanceFromGoogleAPI = 0;
         var cur_lat = "";
         var cur_lng = "";
         var markers = [];
@@ -798,6 +799,7 @@
         }
 
         function autocomplete_initialize() {
+            getLocation();
             initializeMapReport(MapPoints);
             //             map = new google.maps.Map(document.getElementById('googleMap'), {
             //     center: new google.maps.LatLng(48.1293954,12.556663),//Setting Initial Position
@@ -861,7 +863,7 @@
                 swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
             }
-            // var carType = $('#carType').val();
+            var carType = $('#carType').val();
             // var vehicle_basic_fee = $('#carType > option:selected').data('basic_fee');
             // var vehicle_price_per_km = $('#carType > option:selected').data('price_per_km');
             // if (distance_calculated == 0) {
@@ -883,6 +885,7 @@
                 AddressLocation: dropoff_address
             }];
             // console.log(MapPoints);
+            getDistanceFromGoogleAPI = 0;
             initializeMapReport(MapPoints);
             $("#booking_pickup_address").val(pickup_address);
             $("#booking_pickup_latitude").val(pickup_latitude);
@@ -981,26 +984,27 @@
                             $(".price_calculated").text(price_calculation +
                                 " CHF");
                             $(".price_calculated_input").val(price_calculation);
+                            getDistanceFromGoogleAPI = 1;
                         }
                     });
                     map.fitBounds(bounds);
                 }
-                if (onLoadVar==0) {
-                    getLocation()
-                    onLoadVar = 1;   
-                    // alert(onLoadVar);
-                }
-                else
-                {
-                    map.setZoom(8);
-                }
+                // if (onLoadVar==0) {
+                //     getLocation()
+                //     onLoadVar = 1;   
+                //     // alert(onLoadVar);
+                // }
+                // else
+                // {
+                //     map.setZoom(8);
+                // }
                 if ($("#dropoff_latitude").val()=="") 
                 {
                     setTimeout(() => {
                         map.setZoom(12);
                     }, 500);
                 }
-               
+
             }
         }
 
@@ -1013,10 +1017,19 @@
             return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
 
+        function submit_booking_form(){
+            if(getDistanceFromGoogleAPI){
+                $("#booking_list_form").submit();
+            } else {
+                setTimeout(submit_booking_form, 500);
+            }
+            
+        }
+
         $(document).on('click', '.book_online_now', function(e) {
             e.preventDefault();
             if (calculate_route()) {
-                $("#booking_list_form").submit();
+                submit_booking_form();
             }
         });
 
