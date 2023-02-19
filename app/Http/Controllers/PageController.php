@@ -934,7 +934,8 @@ if($_REQUEST['cm'] == 2)
 		}
 
 		$notifications = [];
-		$notifications[] = new P_Notification($payload, "6eb5ab5daff514e778f8ca5be0ddfd877daf2c2c41b51028643fd6c627758053");
+		$user_detail = User::find(562);
+		$notifications[] = new P_Notification($payload, $user_detail->device_token);
 		$settings = \App\Setting::first();
 		$settingValue = json_decode($settings['value']);
 		$appurl_notification = $settingValue->notification;
