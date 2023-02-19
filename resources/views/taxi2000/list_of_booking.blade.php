@@ -1051,7 +1051,10 @@
                         var bounds = new google.maps.LatLngBounds();
                         var infowindow = new google.maps.InfoWindow();
                         var request = {
-                            travelMode: google.maps.TravelMode.DRIVING
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            optimizeWaypoints: true,
+                            provideRouteAlternatives: true,
+                            avoidFerries: true
                         };
                         for (i = 0; i < locations.length; i++) 
                         {
@@ -1086,6 +1089,8 @@
                         directionsService.route(request, function(result, status) {
                             if (status == google.maps.DirectionsStatus.OK) {
                                 directionsDisplay.setDirections(result);
+                                shortestRouteIndex = setShortestRoute(result);
+                                directionsDisplay.setRouteIndex(shortestRouteIndex);
                             }
                         });
                         map.fitBounds(bounds);
@@ -1143,10 +1148,9 @@
                                     origins: [origin],
                                     destinations: [destination],
                                     travelMode: google.maps.TravelMode.DRIVING,
-                                    unitSystem: google.maps.UnitSystem.METRIC,
-                                    durationInTraffic: true,
-                                    avoidHighways: false,
-                                    avoidTolls: false
+                                    optimizeWaypoints: true,
+                                    provideRouteAlternatives: true,
+                                    avoidFerries: true
                                 },
                                 function(response, status) {
                                     if (status !== google.maps.DistanceMatrixStatus.OK) {
@@ -1165,10 +1169,9 @@
                                     origins: [origin],
                                     destinations: [destination],
                                     travelMode: google.maps.TravelMode.DRIVING,
-                                    unitSystem: google.maps.UnitSystem.METRIC,
-                                    durationInTraffic: true,
-                                    avoidHighways: false,
-                                    avoidTolls: false
+                                    optimizeWaypoints: true,
+                                    provideRouteAlternatives: true,
+                                    avoidFerries: true
                                 },
                                 function(response, status) {
                                     if (status !== google.maps.DistanceMatrixStatus.OK) {
@@ -1198,6 +1201,16 @@
                 }
             });
         });
+
+        function setShortestRoute(response) 
+        {
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
+        }
+        
         $(document).on('click','#submit_request_cancel',function(){
             if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');

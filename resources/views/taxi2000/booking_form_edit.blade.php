@@ -603,7 +603,10 @@
                     suppressMarkers: true
                 });
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true
                 };
                 for (i = 0; i < locations.length; i++) {
                     marker = new google.maps.Marker({
@@ -637,6 +640,8 @@
                 directionsService.route(request, function(result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
                         directionsDisplay.setDirections(result);
+                        shortestRouteIndex = setShortestRoute(result);
+                        directionsDisplay.setRouteIndex(shortestRouteIndex);
                     }
                 });
                 map.fitBounds(bounds);
@@ -651,6 +656,16 @@
             Longitude: "{{ $input['dropoff_longitude'] }}",
             AddressLocation: "{{ $input['dropoff_address'] }}"
         }];
+
+        function setShortestRoute(response) 
+        {
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
+        }
+        
         initializeMapReport(MapPoints);
 
         function onSubmitOtp(token) 

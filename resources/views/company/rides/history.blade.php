@@ -309,7 +309,10 @@
                 var bounds = new google.maps.LatLngBounds();
                 var infowindow = new google.maps.InfoWindow();
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true
                 };
                 for (i = 0; i < locations.length; i++) 
                 {
@@ -344,6 +347,8 @@
                 directionsService.route(request, function(result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
                         directionsDisplay.setDirections(result);
+                        shortestRouteIndex = setShortestRoute(result);
+                        directionsDisplay.setRouteIndex(shortestRouteIndex);
                     }
                 });
                 map.fitBounds(bounds);
@@ -414,6 +419,16 @@
             $('.all_driver_info').show();
             $('.details_box').show();
         });
+
+        function setShortestRoute(response) 
+        {
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
+        }
+        
         socket.on('ride-update-response', function(response) {
             if(response && response[0] && response[0].id){
                 if(selected_ride_id == response[0].id){
