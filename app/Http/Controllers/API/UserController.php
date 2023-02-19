@@ -5354,13 +5354,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lon = $request->pick_lng;
 		}
 		$driverids = array();
+		$settings = Setting::first();
+		$settingValue = json_decode($settings['value']);
 
 		if(!empty($request->driver_id)){
 			$ride->driver_id = $request->driver_id;
 			$driverids[] = $request->driver_id;
 		} else {
-			$settings = Setting::first();
-			$settingValue = json_decode($settings['value']);
 			$driverlimit = $settingValue->driver_requests;
 			$driver_radius = $settingValue->radius;
 			$query = User::select(
