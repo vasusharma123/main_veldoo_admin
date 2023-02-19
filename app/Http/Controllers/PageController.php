@@ -19,6 +19,12 @@ use App;
 use App\SMSTemplate;
 use App\Setting;
 use Log;
+use Pushok\AuthProvider;
+use Pushok\Client;
+use Pushok\Notification as P_Notification;
+use Pushok\Payload;
+use Pushok\Payload\Alert;
+use Edujugon\PushNotification\PushNotification;
 
 class PageController extends Controller
 {
@@ -897,6 +903,52 @@ if($_REQUEST['cm'] == 2)
 			return redirect()->back();
 		}
 		return redirect()->route($request->route);
+	}
+
+	public function test_notification()
+	{
+		$options = [
+			'key_id' => env('IOS_KEY_ID'), // The Key ID obtained from Apple developer account
+			'team_id' => env('IOS_TEAM_ID'), // The Team ID obtained from Apple developer account
+			'app_bundle_id' => env('IOS_APP_BUNDLE_ID_DRIVER'), // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
+			'private_key_secret' => null // Private key secret
+		];
+
+		$authProvider = AuthProvider\Token::create($options);
+
+		$alert = Alert::create()->setTitle("Test title");
+		$alert = $alert->setBody("Test Body Description");
+
+		$payload = Payload::create()->setAlert($alert);
+
+		//set notification sound to default
+		$payload->setSound('example.caf');
+		$payload->setContentAvailability(true);
+		$payload->setMutableContent(true);
+		//add custom value to your notification, needs to be customized
+		$ride_detail = Ride::first();
+		$additional = ['type' => 1, 'ride_id' => $ride_detail->id, 'ride_data' => $ride_detail];
+		foreach ($additional as $key => $value) {
+			$payload->setCustomValue($key, $value);
+		}
+
+		$notifications = [];
+		$notifications[] = new P_Notification($payload, "6eb5ab5daff514e778f8ca5be0ddfd877daf2c2c41b51028643fd6c627758053");
+		$settings = \App\Setting::first();
+		$settingValue = json_decode($settings['value']);
+		$appurl_notification = $settingValue->notification;
+		if ($appurl_notification == 1) {
+			$client = new Client($authProvider, $production = true);
+		} else if ($appurl_notification == 0) {
+			$client = new Client($authProvider, $production = false);
+		} else {
+			$client = new Client($authProvider, $production = true);
+		}
+		$client->addNotifications($notifications);
+
+		$responses = $client->push();
+		print_r($responses);
 	}
 	
 }

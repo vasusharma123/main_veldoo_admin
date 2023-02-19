@@ -25,6 +25,7 @@
 Config::set('limit', 10);
 
 Route::get('log-viewer', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
+Route::get('/test_notification',  ['as'=>'test_notification','uses'=>'PageController@test_notification']);
 ########		PUBLIC URL START		#########
 /* Route::get('/', function () {
    return 'No Home Yet';
