@@ -25,4 +25,16 @@ class Company extends Model
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    protected $appends = [
+		'image_with_url'
+	];
+
+    public function getImageWithUrlAttribute(){
+		if(!empty($this->logo)){
+			return env('URL_PUBLIC').'/'.$this->logo;
+		}
+		return $this->logo;
+	}
+
 }

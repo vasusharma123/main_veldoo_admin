@@ -10,6 +10,9 @@
             height: 100%;
             min-height: 400px;
         }
+        .form-control:disabled {
+            background-color: white;
+        }
     </style>
 @endsection
 @section('content')
@@ -45,9 +48,10 @@
                 <!-- Search List -->
                 <div class="details_box">
                     <div class="boxHeader">
-                        <h2 class="board_title mb-0">Booking Details</h2>
-                        <button class="btn save_btn save_booking" type="submit">Save</button>
-                        <button class="btn save_btn edit_booking" type="submit" style="display:none">Update</button>
+                        <h2 class="board_title mb-0">{{ __('Booking Details')}}</h2>
+                        <button class="btn save_btn save_booking" type="submit">{{ __('Book')}}</button>
+                        <button class="btn save_btn edit_booking" type="submit" style="display:none">{{ __('Update')}}</button>
+                        <button class="btn save_btn cancel_ride" type="button" style="display:none">{{ __('Cancel')}}</button>
                     </div>
                     <div class="row">
                         <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
@@ -173,7 +177,7 @@
                                     id="note"></textarea>
                             </div>
                         </div>
-                        <div class="col-lg-6 col-md-12 col-xs-12 all_driver_info d-none">
+                        <div class="col-lg-6 col-md-12 col-xs-12 all_driver_info" style="display: none">
                             <h2 class="board_title booking">Driver Details</h2>
                             <p class="infomation_update done">Booking</p>
                             <div class="userBox mt-3">
@@ -201,9 +205,9 @@
                     </div>
                 </div>
 
-                <div class="map_views mb-4 booking_side mobile_view">
-                    {{-- <div id="googleMap" style="width:100%;" height="433"></div> --}}
-                </div>
+                {{-- <div class="map_views mb-4 booking_side mobile_view">
+                    <div id="googleMap" style="width:100%;" height="433"></div>
+                </div> --}}
             </div>
             <!-- Right Map Side-->
         </div>
@@ -218,7 +222,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js" type="text/javascript"></script>
     <script src="{{ asset('datetime/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+
     <script>
+        var socket = io("{{env('SOCKET_URL')}}");
+
         var directionsService;
         var directionsDisplay;
         var MapPoints = [];
@@ -228,33 +236,77 @@
         var cur_lat = "";
         var cur_lng = "";
         var markers = [];
+        var selected_ride_id = "";
 
-        var options = {
-            strictBounds: true, // Only if you want to restrict, not bias
-            // types: ["establishment"], // Whatever types you need
-        };
-        var pickup_input = document.getElementById('pickupPoint');
-        var autocomplete_pickup = new google.maps.places.Autocomplete(pickup_input, options);
-        google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
-            var place = autocomplete_pickup.getPlace();
-            // document.getElementById('city2').value = place.name;
-            document.getElementById('pickup_latitude').value = place.geometry.location.lat();
-            document.getElementById('pickup_longitude').value = place.geometry.location.lng();
-            calculate_route();
-        });
+        function showPosition(position) {
+            if (position != false) {
+                var lat = cur_lat = position.coords.latitude;
+                var lng = cur_lng = position.coords.longitude;
+                pt = new google.maps.LatLng(lat, lng);
+                map.setCenter(pt);
+                map.setZoom(8);
+                $('#pickup_latitude').val(lat);
+                $('#pickup_longitude').val(lng);
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({
+                    'latLng': pt
+                }, function(results, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        $('#pickupPoint').val(results[0][
+                        'formatted_address']); //alert(results[0]['formatted_address']);
+                        new google.maps.Marker({
+                            position: pt,
+                            map,
+                            title: results[0]['formatted_address'],
+                        });
+                    };
+                });
 
-        var dropoff_input = document.getElementById('dropoffPoint');
-        var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input, options);
-        // autocomplete_dropoff.setComponentRestrictions({
-        // country: ["ch", "de"],
-        // });
-        google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
-            var place = autocomplete_dropoff.getPlace();
-            // document.getElementById('city2').value = place.name;
-            document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
-            document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
-            calculate_route();
-        });
+                var center = {
+                    lat: cur_lat,
+                    lng: cur_lng
+                };
+                var defaultBounds = {
+                    north: center.lat + 5,
+                    south: center.lat - 5,
+                    east: center.lng + 5,
+                    west: center.lng - 5,
+                };
+                var options = {
+                    bounds: defaultBounds,
+                    // fields: ["address_components"], // Or whatever fields you need
+                    strictBounds: true, // Only if you want to restrict, not bias
+                    // types: ["establishment"], // Whatever types you need
+                };
+            } else {
+                var options = {
+                    strictBounds: true, // Only if you want to restrict, not bias
+                    // types: ["establishment"], // Whatever types you need
+                };
+            }
+            var pickup_input = document.getElementById('pickupPoint');
+            var autocomplete_pickup = new google.maps.places.Autocomplete(pickup_input, options);
+            google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
+                var place = autocomplete_pickup.getPlace();
+                // document.getElementById('city2').value = place.name;
+                document.getElementById('pickup_latitude').value = place.geometry.location.lat();
+                document.getElementById('pickup_longitude').value = place.geometry.location.lng();
+                calculate_route();
+            });
+
+            var dropoff_input = document.getElementById('dropoffPoint');
+            var autocomplete_dropoff = new google.maps.places.Autocomplete(dropoff_input, options);
+            // autocomplete_dropoff.setComponentRestrictions({
+            // country: ["ch", "de"],
+            // });
+            google.maps.event.addListener(autocomplete_dropoff, 'place_changed', function() {
+                var place = autocomplete_dropoff.getPlace();
+                // document.getElementById('city2').value = place.name;
+                document.getElementById('dropoff_latitude').value = place.geometry.location.lat();
+                document.getElementById('dropoff_longitude').value = place.geometry.location.lng();
+                calculate_route();
+            });
+        }
 
         function measure_seating_capacity() {
             var seating_capacity = $('#carType > option:selected').data('seating_capacity');
@@ -308,15 +360,14 @@
                 dropoff_latitude = pickup_latitude;
                 dropoff_longitude = pickup_longitude;
                 dropoff_address = pickup_address;
-                var distance_calculated = 0;
+                // var distance_calculated = 0;
             } else {
                 srcLocation = new google.maps.LatLng(pickup_latitude, pickup_longitude);
                 dstLocation = new google.maps.LatLng(dropoff_latitude, dropoff_longitude);
-                var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
-                var distance_calculated = Math.round(distance / 1000);
+                // var distance = google.maps.geometry.spherical.computeDistanceBetween(srcLocation, dstLocation);
+                // var distance_calculated = Math.round(distance / 1000);
             }
-            $(".distance_calculated_input").val(distance_calculated);
-            calculate_amount();
+            // $(".distance_calculated_input").val(distance_calculated);
 
             MapPoints = [{
                 Latitude: pickup_latitude,
@@ -354,7 +405,12 @@
                     suppressMarkers: true
                 });
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true,
+                    // avoidHighways: true,
+                    // avoidTolls: true,
                 };
                 for (i = 0; i < locations.length; i++) {
                     marker = new google.maps.Marker({
@@ -390,7 +446,14 @@
                 if (locations.length) {
                     directionsService.route(request, function(result, status) {
                         if (status == google.maps.DirectionsStatus.OK) {
+
                             directionsDisplay.setDirections(result);
+                            shortestRouteIndex = setShortestRoute(result);
+                            directionsDisplay.setRouteIndex(shortestRouteIndex);
+                            distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
+                            distance = Math.ceil(distance);
+                            $('#distance_calculated_input').val(distance);
+                            calculate_amount();
                         }
                     });
                     map.fitBounds(bounds);
@@ -413,11 +476,41 @@
             }
         }
 
+        function setShortestRoute(response) 
+        {
+            // console.log(response);
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition,mapError);
+            } else {
+                swal.fire("{{ __('Error') }}", "{{ __('Geolocation is not supported by this browser.') }}", "error");
+            }
+        }
+
+        function mapError(err) {
+            console.log(err);
+            if (err.code==1) {
+                if (err.message=="User denied Geolocation") 
+                {
+                    swal.fire("{{ __('Error') }}", "{{ __('Please enable location permission in your browser') }}", "error");
+                }
+            }
+            showPosition(false);
+        }
+
         $(document).on('change', '#carType', function() {
             calculate_amount();
         })
 
         function autocomplete_initialize() {
+            getLocation();
             initializeMapReport(MapPoints);
         }
 
@@ -470,10 +563,10 @@
             $("#users").select2();
             $(document).on('click', '.input_radio_selected', function() {
                 var ride_id = $(this).val();
+                selected_ride_id = ride_id;
                 document.getElementById("booking_list_form").reset();
                 measure_seating_capacity();
                 $(document).find(".save_booking").hide();
-                $(document).find(".edit_booking").show();
                 $.ajax({
                     url: "{{ route('company.rides.edit') }}",
                     type: 'get',
@@ -483,7 +576,11 @@
                     success: function(response) {
                         if (response.status) {
                             $("#ride_id").val(ride_id);
-                            $("#users").val(response.data.ride_detail.user_id).change();
+                            if(response.data.ride_detail.user_id == 0){
+                                $("#users").val("").change();
+                            } else {
+                                $("#users").val(response.data.ride_detail.user_id).change();
+                            }
                             $("#pickupPoint").val(response.data.ride_detail.pickup_address);
                             $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
                             $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
@@ -518,6 +615,32 @@
                                 }
                                 initializeMapReport(MapPoints);
                             }
+                            driver_detail_update(ride_id);
+                            if(response.data.ride_detail.status == 0){
+                                $("#users").removeAttr("disabled");
+                                $("#ride_time").removeAttr("readonly");
+                                $("#pickupPoint").removeAttr("disabled");
+                                $("#dropoffPoint").removeAttr("disabled");
+                                $(".pickupPointCloseBtn").removeAttr("disabled");
+                                $(".dropoffPointCloseBtn").removeAttr("disabled");
+                                $("#carType").removeAttr("disabled");
+                                $("#numberOfPassenger").removeAttr("disabled");
+                                $("#note").removeAttr("readonly");
+                                $(document).find(".cancel_ride").hide();
+                                $(document).find(".edit_booking").show();
+                            } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
+                                $(document).find(".edit_booking").hide();
+                                $(document).find(".cancel_ride").show();
+                                $("#users").attr("disabled",true);
+                                $("#ride_time").attr("readonly",true);
+                                $("#pickupPoint").attr("disabled",true);
+                                $("#dropoffPoint").attr("disabled",true);
+                                $(".pickupPointCloseBtn").attr("disabled",true);
+                                $(".dropoffPointCloseBtn").attr("disabled",true);
+                                $("#carType").attr("disabled",true);
+                                $("#numberOfPassenger").attr("disabled",true);
+                                $("#note").attr("readonly",true);
+                            }
                         } else if (response.status == 0) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
                         }
@@ -527,6 +650,40 @@
                     }
                 });
             });
+        });
+
+        function driver_detail_update(ride_id){
+            $.ajax({
+                    url: "{{ route('company.rides.driver_detail') }}",
+                    type: 'get',
+                    data: {
+                        ride_id: ride_id
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            if(response.data.driver_detail){
+                                $(document).find(".all_driver_info").html(response.data.driver_detail)
+                                $(document).find(".all_driver_info").show();
+                            } else {
+                                $(document).find(".all_driver_info").hide();
+                            }
+                        } else if (response.status == 0) {
+                            swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    },
+                    error(response) {
+                        swal.fire("{{ __('Error') }}", response.message, "error");
+                    }
+                });
+        }
+
+        socket.on('ride-update-response', function(response) {
+            if(response && response[0] && response[0].id){
+                if(selected_ride_id == response[0].id){
+                    $(".input_radio_selected[value='"+selected_ride_id+"']").trigger("click");
+                    // driver_detail_update(selected_ride_id);
+                }
+            }
         });
 
         $(document).on("click", ".edit_booking", function(e) {
@@ -572,9 +729,7 @@
             }
         });
 
-        $(document).on('click', '.dlt_list_btn', function(e) {
-            e.preventDefault();
-            var selected_ride_id = $(this).parents('li.list-group-item').data('ride_id');
+        function delete_cancel_ride(ride_id){
             Swal.fire({
                 title: "{{ __('Please Confirm') }}",
                 text: "{{ __('You want to delete this ride!') }}",
@@ -591,13 +746,15 @@
                         dataType: 'json',
                         data: {
                             "_token": "{{ csrf_token() }}",
-                            'ride_id': selected_ride_id
+                            'ride_id': ride_id
                         },
                         success: function(response) {
                             if (response.status) {
-                                $(document).find("li.list-group-item[data-ride_id='" + selected_ride_id + "']").remove();
-                                $("#cancelBookingModal").modal('hide');
+                                $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                 Swal.fire("Success", response.message, "success");
+                                setTimeout(function() {
+                                    window.location.reload();
+                                }, 2000);
                             } else if (response.status == 0) {
                                 Swal.fire("{{ __('Error') }}", response.message, "error");
                             }
@@ -608,13 +765,25 @@
                     });
                 }
             });
+        }
+
+        $(document).on('click', '.dlt_list_btn', function(e) {
+            e.preventDefault();
+            var ride_id = $(this).parents('li.list-group-item').data('ride_id');
+            delete_cancel_ride(ride_id);
         });
+
+        $(document).on('click', '.cancel_ride', function(e) {
+            e.preventDefault();
+            delete_cancel_ride(selected_ride_id);
+        });
+        
 
         $(document).on('click','.pickupPointCloseBtn',function(){
             $('#pickupPoint').val('');
             $('#pickup_latitude').val('');
             $('#pickup_longitude').val('');
-            $(".distance_calculated_input").val("");
+            $(".distance_calculated_input").val(0);
             initializeMapReport([]);
             calculate_amount();
         });
@@ -623,7 +792,7 @@
             $('#dropoffPoint').val('');
             $('#dropoff_latitude').val('');
             $('#dropoff_longitude').val('');
-            $(".distance_calculated_input").val("");
+            $(".distance_calculated_input").val(0);
             calculate_amount();
             if($('#pickup_latitude').val()!="")
             {

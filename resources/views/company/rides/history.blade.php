@@ -17,15 +17,15 @@
             <div class="col-xl-5 col-lg-6 col-md-7 col-sm-12 col-xs-12">
                 <div class="search_list">
                 <!-- Add Search here -->
-                    <div class="list_search_output mt-0" style="height: 311px">
+                    <div class="list_search_output mt-0">
                         <ul class="list-group list-group-flush">
                             @foreach ($rides as $key=>$ride)
-                                <li class="list-group-item rideDetails" data-key="{{ $key }}">
+                                <li class="list-group-item rideDetails rideDetails_{{ $ride->id }}" data-key="{{ $key }}" data-id="{{ $ride->id }}">
                                     <a href="#">
-                                        <img src="assets/imgs/sideBarIcon/clock.png" class="img-fluid clock_img" alt="Clock Image">
+                                        <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png') }}" class="img-fluid clock_img" alt="Clock Image">
                                         <span class="point_list position-relative">
-                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ $ride->user?$ride->user->full_name:'N/A' }}, {{ date('d.m.Y',strtotime($ride->created_at)) }}
-                                        </span> {{ date('H:i',strtotime($ride->created_at)) }}
+                                            <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }}
+                                        </span> {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </a> 
                                     {{-- <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span> --}}
                                 </li>
@@ -41,38 +41,43 @@
                 </div>
                 <!-- Search List -->
                 <div class="details_box" style="display: none">
-                    <div class="boxHeader">
+                    <div class="boxHeader mb-3">
                         <h2 class="board_title mb-0">Booking Details</h2>
                     </div>
                     <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
+                            <div class="name active_username createdBy">
+                                <div>Created By: Kapil</div> 
+                            </div>
+                        </div>
                         <div class="col-xl-8 col-lg-8 col-md-7 col-sm-8 col-12">
                             <div class="userBox">
                                 <div class="avatarImg_user">
-                                    <img src="assets/imgs/sideBarIcon/lilly.png" alt="User Avatar" class="img-fluid active_user ride_user_image">
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}" alt="User Avatar" class="img-fluid active_user ride_user_image">
                                 </div>
                                 <div class="user_name">
-                                    <h4 class="name active_username ride_user_name">Lilly Blossom</h4>
+                                    <div class="name active_username ride_user_name">Lilly Blossom</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-4 col-md-7 col-sm-4 col-5">
                             <div class="usercounting d-flex mt-2">
-                                <img src="assets/imgs/sideBarIcon/userCount.png" alt="userCount" class="img-fluid counting_user me-2">
+                                <img src="{{ asset('company/assets/imgs/sideBarIcon/userCount.png')}}" alt="userCount" class="img-fluid counting_user me-2">
                                 <p class="ride_user_member form-control inside_input_field p-0 px-1" style="margin-bottom:0px;text-align:left">1-3</p>
                             </div>
                         </div>
                     </div>
                     <!-- Row For Name and Count User -->
                     <div class="form-group mt-3 position-relative">
-                        <img src="assets/imgs/sideBarIcon/clock.png" class="img-fluid clock_img setup_ab_clck" alt="Clock Image">
+                        <img src="{{ asset('company/assets/imgs/sideBarIcon/clock.png')}}" class="img-fluid clock_img setup_ab_clck" alt="Clock Image">
                         <input type="text" class="inside_input_field form-control date_value ride_user_date" value="10.01.2023  19:45">
                         {{-- <img src="assets/imgs/sideBarIcon/calendar.png" class="img-fluid setup_ab_cln" alt="Clock Image"> --}}
                     </div>
                     <!-- Row Name -->
                     <div class="form-group mt-2 position-relative ">
                         <ul class="list-group list-group-flush drive_info_list">
-                            <li class="list-group-item running ride_user_start_location">Schaffhausen</li>
-                            <li class="list-group-item stop_process ride_user_end_location">Zurich</li>
+                            <li class="list-group-item running ride_user_start_location" >Schaffhausen</li>
+                            <li class="list-group-item stop_process ride_user_end_location" >Zurich</li>
                         </ul>
                     </div>
                     
@@ -80,7 +85,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-12 col-6 col-6 align-self-center">
                             <div class="userBox mt-3">
                                 <div class="avatarImg_user">
-                                    <img src="assets/imgs/sideBarIcon/bigcar.png" alt="Car" class="img-fluid car_images">
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/bigcar.png')}}" alt="Car" class="img-fluid car_images">
                                 </div>
                                 <select class="form-control inside_input_field p-1 ride_car_type">
                                     <option value="Business">Business</option>
@@ -90,11 +95,11 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-6 col-6 ps-lg-0">
                             <div class="usercounting d-flex mt-3 position-relative">
-                                <label class="label_input_cash">CHF</label>
+                                <label class="label_input_cash ">CHF</label>
                                 <input type="text" class="form-control inside_input_field p-1 ps-4 me-2 ride_car_price" style="padding-left: 30px !important" value="200.0">
                                 
                                 <div class="payment_option d-flex align-items-center">
-                                    <img src="assets/imgs/sideBarIcon/cash.png" alt="userCount" class="img-fluid cash_count me-2"> <span class="ride_payment_type">Cash</span>
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png')}}" alt="userCount" class="img-fluid cash_count me-2 "> <span class="ride_payment_type fw-normal name active_username">Cash</span>
                                 </div>
                             </div>
                         </div>
@@ -118,15 +123,15 @@
                         <div class="col-lg-6 col-md-12 col-xs-12">
                             
                             <div class="form-group">
-                                <textarea class="form-control inside_input_field mb-2 ride_notes" required  rows="2">Note</textarea>
+                                <textarea class="form-control inside_input_field mb-2 ride_notes" required rows="2">Note</textarea>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-12 col-xs-12">
-                            <p class="infomation_update done">Booking</p>
+                            <div class="ride_status"></div>
                             <div class="userBox mt-3 ride_driver_details">
                                 <div class="avatarImg_diver position-relative">
-                                    <img src="assets/imgs/sideBarIcon/driver.png" alt="Driver" class="img-fluid DriverImage rounded-circle ride_driver_image">
-                                    <span class="driver_status"></span>
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/accounts.png')}}" alt="Driver" class="img-fluid DriverImage rounded-circle ride_driver_image">
+                                    <span class="driver_status "></span>
                                 </div>
                                 <div class="user_name">
                                     <h4 class="name active_driverImage ride_driver_name">Karl</h4>
@@ -135,19 +140,15 @@
                             </div>
                             <div class="userBox mt-3 ride_car_details">
                                 <div class="avatarImg_diver">
-                                    <img src="assets/imgs/sideBarIcon/car_small.png" alt="car" class="img-fluid DriverImage ride_car_image">
+                                    <img src="{{ asset('company/assets/imgs/sideBarIcon/car_small.png')}}" alt="car" class="img-fluid DriverImage ride_car_image">
                                 </div>
                                 <div class="user_name">
-                                    <h4 class="name active_driverImage ride_car_name">Mercedes V class</h4>
-                                    <p class="number ride_car_number">SH 50288</p>
+                                    <h4 class="name active_driverImage ride_car_name ">Mercedes V class</h4>
+                                    <p class="number ride_car_number ">SH 50288</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="map_views mb-4 booking_side mobile_view">
-                    <div id="googleMap" class="googleMapMobile"></div>
                 </div>
             </div>
             <!-- Right Map Side-->
@@ -156,12 +157,15 @@
 @endsection
 @section('footer_scripts')
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script>
+        var socket = io("{{env('SOCKET_URL')}}");
         var map;
         var MapPoints = [];
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
         var markers = [];
+        var selected_ride_id = "";
         if ($(window).width() < 767)
         {
             $('.googleMapDesktop').remove();
@@ -180,16 +184,21 @@
         });
         $(document).on('click','.rideDetails',function(){
             booking = bookingsArray[$(this).data('key')];
+            selected_ride_id = $(this).data('id');
             $('.rideDetails').removeClass('selected');
             $(this).addClass('selected');
             // console.log(bookingsArray);
             $('.ride_user_image').hide();
-            if (booking.user && booking.user.image_with_url) 
+            if (booking.user) 
             {
                 $('.ride_user_image').show();
-                $('.ride_user_image').attr('src',booking.user.image_with_url);
+                if(booking.user.image_with_url){
+                    $('.ride_user_image').attr('src',booking.user.image_with_url);
+                } else {
+                    $('.ride_user_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
+                }
             }
-            $('.ride_user_name').html('N/A');
+            $('.ride_user_name').html('');
             if (booking.user && booking.user.first_name) 
             {
                 $('.ride_user_name').html(booking.user.first_name+' '+booking.user.last_name);
@@ -202,7 +211,7 @@
                 $('.ride_user_end_location').html(booking.dest_address);
             }
             $('.ride_user_member').html(booking.passanger);
-            $('.ride_car_type').html('<option>N/A</option>');
+            $('.ride_car_type').html('<option></option>');
             if(booking.car_type)
             {
                 $('.ride_car_type').html('<option>'+booking.car_type+'</option>');
@@ -210,11 +219,11 @@
             ride_cost = booking.ride_cost;
             if(booking.ride_cost==null)
             {
-                ride_cost = "N/A";
+                ride_cost = "";
             }
             if(booking.ride_cost=="")
             {
-                ride_cost = "N/A";
+                ride_cost = "";
             }
             $('.ride_notes').hide();
             if(booking.note!=null)
@@ -225,11 +234,11 @@
             $('.ride_driver_details').hide();
             if (booking.driver!=null) 
             {
-                $('.ride_driver_image').hide();
                 if (booking.driver.image_with_url) 
                 {
-                    $('.ride_driver_image').show();
                     $('.ride_driver_image').attr('src',booking.driver.image_with_url);
+                } else {
+                    $('.ride_driver_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
                 }
                 $('.ride_driver_name').html(booking.driver.first_name+' '+booking.driver.last_name);
                 $('.ride_driver_phone').html(`+${booking.driver.country_code} ${booking.driver.phone}`);
@@ -252,7 +261,7 @@
 
             $('.ride_payment_type').html(booking.payment_type);
             $('.ride_car_price').val(ride_cost);
-            $('.ride_user_date').val(booking.created_at);
+            $('.ride_user_date').val(booking.ride_time_modified);
 
             // map
 
@@ -300,7 +309,10 @@
                 var bounds = new google.maps.LatLngBounds();
                 var infowindow = new google.maps.InfoWindow();
                 var request = {
-                    travelMode: google.maps.TravelMode.DRIVING
+                    travelMode: google.maps.TravelMode.DRIVING,
+                    optimizeWaypoints: true,
+                    provideRouteAlternatives: true,
+                    avoidFerries: true
                 };
                 for (i = 0; i < locations.length; i++) 
                 {
@@ -335,6 +347,8 @@
                 directionsService.route(request, function(result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
                         directionsDisplay.setDirections(result);
+                        shortestRouteIndex = setShortestRoute(result);
+                        directionsDisplay.setRouteIndex(shortestRouteIndex);
                     }
                 });
                 map.fitBounds(bounds);
@@ -348,11 +362,106 @@
                 }, 1000);
             }
             // end map
+            ride_status = ""
+            if(booking.status == -2)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Cancelled</p>`;
+            }
+            else if(booking.status == -1)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Rejected</p>`;
+            }
+            else if(booking.status == 1)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Accepted</p>`;
+            }
+            else if(booking.status == 2)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Started</p>`;
+            }
+            else if(booking.status == 4)
+            {
+                ride_status = `<p class="infomation_update done bg-info">Driver Reached</p>`;
+            }
+            else if(booking.status == 3)
+            {
+                ride_status = `<p class="infomation_update done">Completed</p>`;
+            }
+            else if(booking.status == -3)
+            {
+                ride_status = `<p class="infomation_update done bg-danger">Cancelled by you</p>`;
+            }
+            else if(booking.status == 0)
+            {
+                ride_status = `<p class="infomation_update done bg-warning">Pending</p>`;
+            }
+            else if(Date.parse(booking.ride_time) < Date.parse(Date()))
+            {
+                ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
+            }
 
+            $('.createdBy').hide();
+            if(booking.creator)
+            {
+                creator_type = "";
+                if (booking.creator.user_type=="4") {
+                    creator_type = " (Admin)";
+                } 
+                else if(booking.creator.user_type=="5") 
+                {
+                    creator_type = " (Manager)";
+                }
+                $('.createdBy').html("<div>Created By: "+booking.creator.name+creator_type+"</div>");
+                $('.createdBy').show();
+            }
 
-
+            $('.ride_status').html(ride_status);
             $('.all_driver_info').show();
             $('.details_box').show();
         });
+
+        function setShortestRoute(response) 
+        {
+            shortestRouteArr = [];
+            $.each(response.routes, function( index, route ) {
+                shortestRouteArr.push(Math.ceil(parseFloat(route.legs[0].distance.value/1000)));
+            });
+            return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
+        }
+        
+        socket.on('ride-update-response', function(response) {
+            if(response && response[0] && response[0].id){
+                if(selected_ride_id == response[0].id){
+                    driver_detail_update(selected_ride_id);
+                }
+            }
+        });
+        // console.log(bookingsArray);
+        // driver_detail_update(2386);
+        function driver_detail_update(id) 
+        {
+            route = "{{ route('company.ride_detail','~') }}";
+            route = route.replace('~',id);
+            $.ajax({
+                url: route,
+                type: 'POST',
+                data: {
+                   _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    for (let i = 0; i < bookingsArray.length; i++) {
+                        if (bookingsArray[i].id=id) 
+                        {
+                            bookingsArray[i] = response.data;
+                        }
+                    }
+                },
+                error(response) {
+                    swal.fire("{{ __('Error') }}", response.message, "error");
+                }
+            });
+
+            $('.rideDetails_'+id).click();
+        }
     </script>
 @endsection

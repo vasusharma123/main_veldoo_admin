@@ -26,7 +26,7 @@
 							@endif
 						</div>
 						<div class="card-body">
-							@include('admin.layouts.flash-message')
+							@include('company.company_flash_message')
 							{{ Form::open(array('url' => route('company-users.update',$user->id),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
 							@csrf
 							@method('put')

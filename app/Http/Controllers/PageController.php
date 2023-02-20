@@ -18,6 +18,13 @@ use App\RideHistory;
 use App;
 use App\SMSTemplate;
 use App\Setting;
+use Log;
+use Pushok\AuthProvider;
+use Pushok\Client;
+use Pushok\Notification as P_Notification;
+use Pushok\Payload;
+use Pushok\Payload\Alert;
+use Edujugon\PushNotification\PushNotification;
 
 class PageController extends Controller
 {
@@ -413,8 +420,9 @@ if($_REQUEST['cm'] == 2)
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		Log::info("here1");
 		if($responseObj['status'] == 1){
-		
+			Log::info("here2");
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			$SMSTemplate = SMSTemplate::find(2);
@@ -709,7 +717,7 @@ if($_REQUEST['cm'] == 2)
 				// 	$ride->cancel_reason = $request->cancel_reason;
 				// }
 				$ride->save();
-				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image'])->find($ride_id);
+				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride_id);
 
 				$settings = Setting::first();
 				$settingValue = json_decode($settings['value']);
@@ -895,6 +903,53 @@ if($_REQUEST['cm'] == 2)
 			return redirect()->back();
 		}
 		return redirect()->route($request->route);
+	}
+
+	public function test_notification()
+	{
+		$options = [
+			'key_id' => env('IOS_KEY_ID'), // The Key ID obtained from Apple developer account
+			'team_id' => env('IOS_TEAM_ID'), // The Team ID obtained from Apple developer account
+			'app_bundle_id' => env('IOS_APP_BUNDLE_ID_DRIVER'), // com.orem.Modo-Provider The bundle ID for app obtained from Apple developer account
+			'private_key_path' => public_path('/ios/AuthKey_T5U8YFRV99.p8'), // Path to private key
+			'private_key_secret' => null // Private key secret
+		];
+
+		$authProvider = AuthProvider\Token::create($options);
+
+		$alert = Alert::create()->setTitle("Test title");
+		$alert = $alert->setBody("Test Body Description");
+
+		$payload = Payload::create()->setAlert($alert);
+
+		//set notification sound to default
+		$payload->setSound('example.caf');
+		$payload->setContentAvailability(true);
+		$payload->setMutableContent(true);
+		//add custom value to your notification, needs to be customized
+		$ride_detail = Ride::first();
+		$additional = ['type' => 1, 'ride_id' => $ride_detail->id, 'ride_data' => $ride_detail];
+		foreach ($additional as $key => $value) {
+			$payload->setCustomValue($key, $value);
+		}
+
+		$notifications = [];
+		$user_detail = User::find(562);
+		$notifications[] = new P_Notification($payload, $user_detail->device_token);
+		$settings = \App\Setting::first();
+		$settingValue = json_decode($settings['value']);
+		$appurl_notification = $settingValue->notification;
+		if ($appurl_notification == 1) {
+			$client = new Client($authProvider, $production = true);
+		} else if ($appurl_notification == 0) {
+			$client = new Client($authProvider, $production = false);
+		} else {
+			$client = new Client($authProvider, $production = true);
+		}
+		$client->addNotifications($notifications);
+
+		$responses = $client->push();
+		print_r($responses);
 	}
 	
 }

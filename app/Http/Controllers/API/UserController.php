@@ -2047,6 +2047,7 @@ class UserController extends Controller
 			$ride->note = $request->note;
 			$ride->ride_type = 1;
 			$ride->car_type = $request->car_type;
+			$ride->driver_id = $request->driver_id ?? null;
 			if (!empty($request->alert_time)) {
 				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
 			} else {
@@ -2077,6 +2078,7 @@ class UserController extends Controller
 				$ride->distance = $request->distance;
 			}
 			$ride->created_by = 2;
+			$ride->creator_id = Auth::user()->id;
 			$ride->status = 0;
 			$ride->platform = Auth::user()->device_type;
 			//print_r($input); die;
@@ -3517,7 +3519,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride->save();
 
-			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image'])->find($request->ride_id);
+			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($request->ride_id);
 
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
@@ -4997,6 +4999,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$ride->ride_type = 3;
 		$ride->created_by = 1;
+		$ride->creator_id = Auth::user()->id;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -5325,6 +5328,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
+		$ride->creator_id = Auth::user()->id;
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -5349,68 +5353,74 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lat = $request->pick_lat;
 			$lon = $request->pick_lng;
 		}
+		$driverids = array();
 		$settings = Setting::first();
 		$settingValue = json_decode($settings['value']);
-		$driverlimit = $settingValue->driver_requests;
-		$driver_radius = $settingValue->radius;
-		$query = User::select(
-			"users.*",
-			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-					* cos(radians(users.current_lat)) 
-					* cos(radians(users.current_lng) - radians(" . $lon . ")) 
-					+ sin(radians(" . $lat . ")) 
-					* sin(radians(users.current_lat))) AS distance")
-		);
-		$query = $query->with(['ride' => function ($query1) {
-			$query1->where(['waiting' => 0]);
-			$query1->where(function ($query2) {
-				$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-			});
-		}])->with(['all_rides' => function ($query3) {
-			$query3->where(['status' => 1, 'waiting' => 1]);
-		}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
-		$drivers = $query->get()->toArray();
 
-		$rideObj = new Ride;
-		foreach ($drivers as $driver_key => $driver_value) {
-			if (!empty($driver_value['ride'])) {
-				if (!empty($driver_value['ride']['dest_lat'])) {
-					if ($driver_value['ride']['status'] == 1) {
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
-					}
-					$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
-				} else {
-					$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
-				}
-			}
-			if (!empty($driver_value['all_rides'])) {
-				foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
-					if (!empty($driver_value['ride']['dest_lat'])) {
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
-						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
-					} else {
-						$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
-					}
-				}
-			}
-		}
-	
-		usort($drivers, 'sortByDistance');
-
-		$driverids = array();
-
-		if (!empty($drivers)) {
-			for ($i=0 ; $i < $driverlimit; $i++) {
-				if(!empty($drivers[$i])){
-					$driverids[] = $drivers[$i]['id'];
-				}
-			}
+		if(!empty($request->driver_id)){
+			$ride->driver_id = $request->driver_id;
+			$driverids[] = $request->driver_id;
 		} else {
-			return response()->json(['message' => "No Driver Found"], $this->warningCode);
+			$driverlimit = $settingValue->driver_requests;
+			$driver_radius = $settingValue->radius;
+			$query = User::select(
+				"users.*",
+				DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
+						* cos(radians(users.current_lat)) 
+						* cos(radians(users.current_lng) - radians(" . $lon . ")) 
+						+ sin(radians(" . $lat . ")) 
+						* sin(radians(users.current_lat))) AS distance")
+			);
+			$query = $query->with(['ride' => function ($query1) {
+				$query1->where(['waiting' => 0]);
+				$query1->where(function ($query2) {
+					$query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+				});
+			}])->with(['all_rides' => function ($query3) {
+				$query3->where(['status' => 1, 'waiting' => 1]);
+			}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
+			$drivers = $query->get()->toArray();
+	
+			$rideObj = new Ride;
+			foreach ($drivers as $driver_key => $driver_value) {
+				if (!empty($driver_value['ride'])) {
+					if (!empty($driver_value['ride']['dest_lat'])) {
+						if ($driver_value['ride']['status'] == 1) {
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
+						}
+						$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
+					} else {
+						$drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
+					}
+				}
+				if (!empty($driver_value['all_rides'])) {
+					foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
+						if (!empty($driver_value['ride']['dest_lat'])) {
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
+							$drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
+						} else {
+							$drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
+						}
+					}
+				}
+			}
+		
+			usort($drivers, 'sortByDistance');
+	
+			if (!empty($drivers)) {
+				for ($i=0 ; $i < $driverlimit; $i++) {
+					if(!empty($drivers[$i])){
+						$driverids[] = $drivers[$i]['id'];
+					}
+				}
+			} else {
+				return response()->json(['message' => "No Driver Found"], $this->warningCode);
+			}
+	
+			$ride->driver_id = null;
+			$ride->all_drivers = implode(",", $driverids);
 		}
-
-		$ride->driver_id = null;
-		$ride->all_drivers = implode(",", $driverids);
+		
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = Ride::query()->find($ride->id);
@@ -5439,18 +5449,22 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			Notification::insert($notification_data);
 			RideHistory::insert($ridehistory_data);
 		}
-		$overallDriversCount = User::select(
-			"users.*",
-			DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
-				* cos(radians(users.current_lat))
-				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
-				+ sin(radians(" . $ride->pick_lat . "))
-				* sin(radians(users.current_lat))) AS distance")
-		)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
 		$rideData = Ride::find($ride->id);
-		$rideData->notification_sent = 1;
-		if (count($overallDriversCount) <= count($drivers)) {
-			$rideData->alert_send = 1;
+		if(!empty($request->driver_id)){
+			$rideData->driver_id = null;
+		} else {
+			$overallDriversCount = User::select(
+				"users.*",
+				DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
+					* cos(radians(users.current_lat))
+					* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
+					+ sin(radians(" . $ride->pick_lat . "))
+					* sin(radians(users.current_lat))) AS distance")
+			)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
+			$rideData->notification_sent = 1;
+			if (count($overallDriversCount) <= count($drivers)) {
+				$rideData->alert_send = 1;
+			}
 		}
 		$rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
 		$rideData->save();
@@ -5820,6 +5834,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->pickup_address = $request->start_location;
 			$ride->ride_type = 1;
 			$ride->created_by = 1;
+			$ride->creator_id = Auth::user()->id;
 			$ride->user_id = Auth::user()->id;
 			$ride->platform = Auth::user()->device_type;
 			if (!empty($request->driver_id)) {
@@ -6198,7 +6213,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideHistoryDetail->status = "1";
 						$rideHistoryDetail->save();
 					}
-					$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image'])->find($request->ride_id);
+					$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($request->ride_id);
 					$userdata = User::find($ride_detail['user_id']);
 					if (!empty($userdata)) {
 						$ride_detail->driver->car_data = $ride_detail->driver->car_data;
@@ -6385,6 +6400,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->ride_type = 3;
 			$ride->status = 2;
 			$ride->created_by = 2;
+			$ride->creator_id = Auth::user()->id;
 			$ride->vehicle_id = $request->car_id;
 			$ride->is_personal_instant_ride = 1;
 			if (!empty($request->distance)) {

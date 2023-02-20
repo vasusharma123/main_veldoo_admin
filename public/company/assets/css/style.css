@@ -11,16 +11,12 @@
     --poppins-font : 'Poppins', sans-serif;
     --lato-font : 'Lato', sans-serif;
 }
-
 *,html,body{
     margin: 0px;
     padding: 0px;
 }
 body{
     font-family: var(--heebo-font);
-}
-img{
-    width: 100%;
 }
 /* width */
 ::-webkit-scrollbar {
@@ -74,7 +70,7 @@ img{
     background: white;
     border: 1px solid #A6ABC8;
     border-radius: 5px;
-    color: black;
+    color: #323538;
     font-weight: 300;
     font-family: var(--heebo-font);
     font-size: 16px;
@@ -196,7 +192,7 @@ img{
     background-position: center;
     padding: 50px 15px;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
 }
 .all_details_boxes{
     background: rgba(234, 235, 239, 0.75);
@@ -237,7 +233,7 @@ img{
     font-size: 16px;
 }
 .sidebar_brand_img {
-    max-width: 230px;
+    max-height: 150px;
     margin-bottom: 68px;
 }
 .userBox {
@@ -445,7 +441,7 @@ img{
     margin-right: 15px;
 }
 .name.active_username {
-    font-size: 22px;
+    font-size: 18px;
     max-width: 144px;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -502,12 +498,12 @@ img{
 }
 .userBox .active_driverImage {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
 }
 .userBox .number {
     margin: 0;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 400;
     
 }
 .infomation_update.done {
@@ -557,13 +553,13 @@ img{
     border: none;
     pointer-events: none;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 400;
 }
 .add_details_form.done .label_input_cash {
     position: absolute;
     left: -8px;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 400;
     top: 50%;
     transform: translateY(-50%);
 }
@@ -573,7 +569,7 @@ img{
 .list-group.list-group-flush.drive_info_list li {
     background: transparent;
     border: none;
-    font-weight: 500;
+    font-weight: 400;
     font-size: 18px;
     margin-bottom: 15px;
     padding-left: 40px;
@@ -612,6 +608,14 @@ li.list-group-item.running:after {
 }
 .list-group.list-group-flush.drive_info_list li:last-child{
     margin-bottom: 0px;
+}
+
+input[readonly], textarea[readonly], select[readonly] {
+    cursor: not-allowed;
+}
+
+input[disabled], textarea[disabled], select[disabled] {
+    cursor: not-allowed;
 }
 /* MD Size */
 @media (max-width: 1196px){

@@ -66,6 +66,9 @@ class UserController extends Controller
 		$input = $request->all();
 		$whereData = array('email' => $input['email'], 'password' => $input['password']);
         if(auth()->attempt($whereData)){
+			if (in_array(Auth::user()->user_type,[4,5])) {
+				return redirect()->route('company.rides');
+			}
             return redirect()->route('users.dashboard');
         } else{
 			Auth::logout();

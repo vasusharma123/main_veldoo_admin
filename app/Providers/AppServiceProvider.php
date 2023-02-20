@@ -45,13 +45,16 @@ class AppServiceProvider extends ServiceProvider
 			$setting =  array();
 			$configuration =  Setting::firstOrNew(['key' => '_configuration'])->value;
 			$setting = json_decode($configuration,true);
-			$action = app('request')->route()->getAction();
-			$controller = class_basename($action['controller']);
-			list($controller, $action) = explode('@', $controller);
-			$data['controller'] = $controller;
-			$data['method'] = $action;
-			$data['currentUser'] = $record;
-			$data['body_class'] = Helper::clean($controller).' '.Helper::clean($action);
+			if(app('request')->route())
+			{
+				$action = app('request')->route()->getAction();
+				$controller = class_basename($action['controller']);
+				list($controller, $action) = explode('@', $controller);
+				$data['controller'] = $controller;
+				$data['method'] = $action;
+				$data['currentUser'] = $record;
+				$data['body_class'] = Helper::clean($controller).' '.Helper::clean($action);
+			}
 			$data['setting'] = $setting;
 			$view->with($data);
 		});

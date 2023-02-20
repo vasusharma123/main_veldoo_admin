@@ -96,6 +96,7 @@ class RidesController extends Controller
             }
             $ride->ride_type = 3;
             $ride->created_by = Auth::user()->user_type;
+            $ride->creator_id = Auth::user()->id;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -151,7 +152,7 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::query()->find($ride->id);
+            $ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride->id);
 
             $driverids = explode(",", $driverids);
             $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
@@ -230,6 +231,7 @@ class RidesController extends Controller
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
             $ride->created_by = Auth::user()->user_type;
+            $ride->creator_id = Auth::user()->id;
             $ride->alert_time = 15;
             $ride->company_id = Auth::user()->company_id;
             $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
@@ -275,9 +277,19 @@ class RidesController extends Controller
         $now = Carbon::now();
         $data['rides'] = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
                             $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
-                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle'])->get();
-        // dd(json_encode($data['rides']));
+                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->get();
+        // dd(($data['rides']));
         return view('company.rides.history')->with($data);
+    }
+
+    public function ride_detail($id)
+    {
+        $now = Carbon::now();
+        $ride = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
+                            $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
+                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','created_by'])->find($id);
+        // $ride->status = 2;
+        return response()->json(['status'=>1,'data'=>$ride]);
     }
 
     public function edit(Request $request)
@@ -382,7 +394,7 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::query()->find($ride->id);
+            $ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride->id);
 
             $driverids = explode(",", $driverids);
             $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
@@ -511,7 +523,7 @@ class RidesController extends Controller
 				// 	$ride->cancel_reason = $request->cancel_reason;
 				// }
 				$ride->save();
-				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image'])->find($ride_id);
+				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride_id);
 
 				$settings = Setting::first();
 				$settingValue = json_decode($settings['value']);
@@ -547,5 +559,15 @@ class RidesController extends Controller
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
+
+    public function ride_driver_detail(Request $request){
+        $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);
+        if($ride_detail->driver){
+            $driver_detail = view('company.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
+        } else {
+            $driver_detail = null;
+        }
+        return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
+    }
     
 }

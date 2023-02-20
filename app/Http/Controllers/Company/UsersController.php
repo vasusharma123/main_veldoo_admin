@@ -27,13 +27,8 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $data = array('page_title' => 'Users', 'action' => 'Users');
-        $user = Auth::user();
-        $company_id = $user->id;
-        if ($user->user_type==5) 
-        {
-            $company_id = $user->company_id; 
-        }
-        $data['users'] = User::where(['user_type'=>1,'company_id'=>$company_id])->get();
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->get();
+        // dd($data['users']->toArray());
         return view('company.company-users.index')->with($data);
     }
 
@@ -53,24 +48,17 @@ class UsersController extends Controller
         try 
         {
             $data['country_code'] = $request->country_code;
-            $data['phone'] = $request->phone;
+            $data['phone'] = str_replace(' ','',$request->phone);
             $data['user_type'] = 1;
-
             $user = Auth::user();
-            $company_id = $user->id;
-            if ($user->user_type==5) 
-            {
-                $company_id = $user->company_id; 
-            }
-
             $user = User::where($data)->first();
             if ($user) 
             {
-                $user->fill(['company_id'=>$company_id]);
-                $user->update();
-                $request->session()->flash('status', 'User successfully created!');
+                // $user->fill(['company_id'=>Auth::user()->company_id]);
+                // $user->update();
+                // $request->session()->flash('status', 'User successfully created!');
                 DB::commit();
-                return response()->json(['status'=>1]);
+                return response()->json(['status'=>1,'user'=>$user]);
             }
             DB::commit();
             return response()->json(['status'=>2]);
@@ -82,39 +70,47 @@ class UsersController extends Controller
     
     public function store(Request $request)
     {
-        $request->validate([
-            'email' => 'email|required|unique:users',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
-            // 'country' => 'required',
-            // 'state' => 'required',
-            // 'city' => 'required',
-            // 'street' => 'required',
-            // 'zip_code' => 'required',
-            'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            // 'password' => 'required',
-        ]);
+        // dd($request->all());
+        if ($request->user_status==1) 
+        {
+            $data['country_code'] = $request->country_code;
+            $data['phone'] = str_replace(' ','',$request->phone);
+            $data['user_type'] = 1;
+            $user = User::where($data)->first();
+            if ($user) 
+            {
+                $user->fill(['company_id'=>Auth::user()->company_id,'first_name'=>$request->first_name,'last_name'=>$request->last_name,'email'=>$request->email]);
+                $user->update();
+            }
+            return redirect()->route('company-users.index')->with('success','User successfully updated');
+        }
+        else
+        {
+            $request->validate([
+                'email' => 'email|required|unique:users',
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+        }
+        
         DB::beginTransaction();
         try 
         {
             $data = collect($request->all())->forget(['_token','image_tmp','password','second_phone_number','second_country_code'])->toArray();
             $data['user_type'] = 1;
             $user = Auth::user();
-            $company_id = $user->id;
-            if ($user->user_type==5) 
-            {
-                $company_id = $user->company_id; 
-            }
-            $data['company_id'] = $company_id;
+            $data['company_id'] = Auth::user()->company_id;
             $data['created_by'] = Auth::user()->id;
+            $data['phone'] = str_replace(' ','',$request->phone);
             if ($request->password) 
             {
                 $data['password'] = Hash::make($request->password);
             }
             if ($request->second_phone_number) 
             {
-                $data['second_phone_number'] = $request->second_phone_number;
+                $data['second_phone_number'] = str_replace(' ','',$request->second_phone_number);
                 $data['second_country_code'] = $request->second_country_code;
             }
 
@@ -135,6 +131,7 @@ class UsersController extends Controller
             DB::commit();
             return redirect()->route('company-users.index')->with('success','User successfully created');
         } catch (Exception $e) {
+            // dd($e);
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
         }
@@ -142,9 +139,10 @@ class UsersController extends Controller
 
     public function destroy($id)
     {
+        // dd($id);
         DB::beginTransaction();
         try {
-            User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id,'id'=>$id])->delete();
+            User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id,'id'=>$id])->update(['company_id'=>null]);
             DB::commit();
             return redirect()->route('company-users.index')->with('success','User has been deleted');
         } catch (Exception $e) {
@@ -185,9 +183,10 @@ class UsersController extends Controller
             {
                 $data['password'] = Hash::make($request->password);
             }
+            $data['phone'] = str_replace(' ','',$request->phone);
             if ($request->second_phone_number) 
             {
-                $data['second_phone_number'] = $request->second_phone_number;
+                $data['second_phone_number'] = str_replace(' ','',$request->second_phone_number);
                 $data['second_country_code'] = $request->second_country_code;
             }
             if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid())

@@ -18,12 +18,19 @@ class Ride extends Model
 
 	protected $appends = [
 		'stop_over',
+		'ride_time_modified',
 	];
+
+	public function getRideTimeModifiedAttribute()
+	{
+		return date('D d.m.Y H:i',strtotime($this->ride_time));//10.01.2023 19:45
+	}
 
 	public function user()
 	{
 		return $this->hasOne(User::class, 'id', 'user_id');
 	}
+
 	public function driver()
 	{
 		return $this->hasOne('App\User', 'id', 'driver_id');
@@ -196,14 +203,19 @@ class Ride extends Model
 		return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
 	}
 
+	public function car_data()
+	{
+		return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+	}
+
 	public function company()
 	{
-		return $this->belongsTo(User::class, 'company_id', 'id');
+		return $this->belongsTo(Company::class, 'company_id', 'id');
 	}
 
 	public function company_data()
 	{
-		return $this->belongsTo(User::class, 'company_id', 'id');
+		return $this->belongsTo(Company::class, 'company_id', 'id');
 	}
 
 	public function accept_ride_sms_notify($user, $choosed_vehicle)
@@ -261,6 +273,11 @@ class Ride extends Model
 		$angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
 			cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
 		return $angle * $earthRadius;
+	}
+
+	public function creator()
+	{
+		return $this->belongsTo(User::class, 'creator_id');
 	}
 	  
 }

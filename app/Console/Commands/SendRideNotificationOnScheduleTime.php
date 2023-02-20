@@ -63,14 +63,44 @@ class SendRideNotificationOnScheduleTime extends Command
                         + sin(radians(" . $ride->pick_lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where(['user_type' => 2 , 'availability' => 1])->whereNotNull('device_token')->where('device_token', '!=', '')->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where(['user_type' => 2 , 'availability' => 1])->whereNotNull('device_token')->where('device_token', '!=', '')->orderBy('distance', 'asc');
                 $drivers = $query->get()->toArray();
 
                 $driverids = array();
 
                 if (!empty($drivers)) {
+                    $rideObj = new Ride;
+                    foreach ($drivers as $driver_key => $driver_value) {
+                        if (!empty($driver_value['ride'])) {
+                            if (!empty($driver_value['ride']['dest_lat'])) {
+                                if ($driver_value['ride']['status'] == 1) {
+                                    $drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng']);
+                                }
+                                $drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['ride']['pick_lat'], $driver_value['ride']['pick_lng'], $driver_value['ride']['dest_lat'], $driver_value['ride']['dest_lng']);
+                            } else {
+                                $drivers[$driver_key]['distance'] += $settingValue->current_ride_distance_addition??10;
+                            }
+                        }
+                        if (!empty($driver_value['all_rides'])) {
+                            foreach ($driver_value['all_rides'] as $waiting_ride_key => $waiting_ride_value) {
+                                if (!empty($driver_value['ride']['dest_lat'])) {
+                                    $drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($driver_value['current_lat'], $driver_value['current_lng'], $waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng']);
+                                    $drivers[$driver_key]['distance'] += $rideObj->haversineGreatCircleDistance($waiting_ride_value['pick_lat'], $waiting_ride_value['pick_lng'], $waiting_ride_value['dest_lat'], $waiting_ride_value['dest_lng']);
+                                } else {
+                                    $drivers[$driver_key]['distance'] += $settingValue->waiting_ride_distance_addition??15;
+                                }
+                            }
+                        }
+                    }
+                
+                    usort($drivers, 'sortByDistance');
+
                     foreach ($drivers as $driver) {
-                        $driverids[] = $driver['id'];
+                        for ($i = 0; $i < $driverlimit; $i++) {
+                            if (!empty($drivers[$i])) {
+                                $driverids[] = $driver['id'];
+                            }
+                        }
                     }
                     $ride->all_drivers = implode(",", $driverids);
                     $ride->save();

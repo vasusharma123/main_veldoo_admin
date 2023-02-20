@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-12">
             <h2 class="board_title">Users</h2>
-            @include('admin.layouts.flash-message')
+            @include('company.company_flash_message')
         </div>
         <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12 col-xs-12">
             <div class="search_list">
@@ -60,6 +60,8 @@
                     </div>
                     <div class="form-group">
                         <input type="email" class="form-control inside_input_field mb-2" name="email" placeholder="Email" required />
+                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0" />
+                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0" />
                     </div>
                 </div>
                 {{-- <div class="form-group">
@@ -71,7 +73,7 @@
             </div>
             <div class="details_box edit_box" style="display: none">
                 <div class="boxHeader">
-                    <h2 class="board_title mb-0">Edit Manager</h2>
+                    <h2 class="board_title mb-0 mr-2">Edit User</h2>
                     <button class="btn save_btn" type="submit" form="updateForm">Update</button>
                     <button class="btn save_btn add_new_manager_btn" type="button">Add</button>
                 </div>
@@ -141,11 +143,18 @@
                 success: function(data){
                     if (data.status==1) 
                     {
-                        location.reload();
+                        alert('User already exists.');
+                        $('.check_user_info').hide();
+                        $('.user_info').find('input[name="first_name"]').val(data.user.first_name);
+                        $('.user_info').find('input[name="last_name"]').val(data.user.last_name);
+                        $('.user_info').find('input[name="email"]').val(data.user.email);
+                        $('.user_info').find('input[name="user_status"]').val(1);
+                        $('.user_info').show();
                     }
                     if (data.status==2) 
                     {
-                        alert('User not found. please fill additional information');
+                        // alert('User not found. please fill additional information');
+                        $('.user_info').find('input[name="user_status"]').val(0);
                         $('.check_user_info').hide();
                         $('.user_info').show();
                     }
