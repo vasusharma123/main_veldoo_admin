@@ -30,6 +30,7 @@ class RideController extends Controller
     protected $errorCode = 401;
     protected $warningCode = 500;
     protected $limit;
+    protected $calendar_rides_limit = 20;
 
     public function __construct(Request $request = null)
 	{
@@ -474,6 +475,111 @@ class RideController extends Controller
                 } else {
                     return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $rides], $this->successCode);
                 }
+            } else {
+                return response()->json(['message' => 'Record Not found'], $this->warningCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
+    public function calendarViewRides(Request $request)
+    {
+        try {
+            $rules = [
+                'type' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+            }
+            $userId = Auth::user()->id;
+            $user = User::find($userId);
+            if (!empty($request->date)) {
+                $startDate = $request->date . " 00:00:00";
+            } else {
+                $startDate = Carbon::today()->format('Y-m-d H:i:s');
+            }
+            if (!empty($user)) {
+                if ($request->type == 1) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where(function ($query) use ($user) {
+                                $query->where(['status' => -4])->orWhere(['status' => 0]);
+                                $query->orWhere(function ($query1) use ($user) {
+                                    $query1->whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query2) {
+                                        $query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    });
+                                });
+                            })
+                            ->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    } else {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where([['status', '=', 0]]);
+                                $query->orWhere(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->where(['status' => 1, 'waiting' => 1]);
+                                });
+                            })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    }
+                } elseif ($request->type == 2) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where('status', 3)->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    } else {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where('status', 3)->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    }
+                } elseif ($request->type == 3) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where(function ($query) {
+                                $query->whereIn('status', [-2]);
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    } else {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->whereIn('status', [-2]);
+                                });
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    }
+                } else if ($request->type == 4) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    } else {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                            })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    }
+                } else if ($request->type == 5) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    } else {
+                        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->orWhere('status', 0);
+                                $query->orWhere('driver_id', $userId);
+                            })
+                            ->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
+                    }
+                }
+                return response()->json(['success' => true, 'message' => 'Rides List', 'data' => $rides], $this->successCode);
             } else {
                 return response()->json(['message' => 'Record Not found'], $this->warningCode);
             }

@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\DriverStayActiveNotification;
 use App\Setting;
 use App\User;
+use App\Notification;
 
 class DriverActiveStateSecondReminder extends Command
 {
@@ -59,6 +60,10 @@ class DriverActiveStateSecondReminder extends Command
                 bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
             }
             DriverStayActiveNotification::whereIn('driver_id', $unactive_driver_ids)->update(['is_logout_alert_sent' => 1, 'last_activity_time' => Carbon::now()]);
+            foreach ($unactive_driver_ids as $driverid) {
+                $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 13, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+            }
+            Notification::insert($notification_data);
         }
     }
 }
