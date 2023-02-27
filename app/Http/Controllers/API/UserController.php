@@ -3456,7 +3456,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 7;
 					$ride->status = 4;
 					if ($ride->platform == 'web' && (!empty($userdata))) {
-						// $ride->driver_reach_sms_notify($userdata);
+						$ride->driver_reach_sms_notify($userdata);
 					}
 				}
 				if ($request->status == 3) {
