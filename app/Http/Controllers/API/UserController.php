@@ -2037,52 +2037,61 @@ class UserController extends Controller
 			if ($validator->fails()) {
 				return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 			}
-
-			$ride = new Ride();
-
-			$ride->user_id = $request->user_id;
-			$ride->pickup_address = $request->pickup_location;
-			$ride->dest_address = $request->drop_off_location;
-			$ride->passanger = $request->passanger;
-			$ride->note = $request->note;
-			$ride->ride_type = 1;
-			$ride->car_type = $request->car_type;
-			$ride->driver_id = $request->driver_id ?? null;
-			if (!empty($request->alert_time)) {
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
-			} else {
-				$ride->alert_notification_date_time = $request->ride_time;
-			}
-			$ride->alert_time = $request->alert_time ?? null;
-			if (!empty($request->pick_lat)) {
-				$ride->pick_lat = $request->pick_lat;
-			}
-			if (!empty($request->pick_lng)) {
-				$ride->pick_lng = $request->pick_lng;
-			}
-			if (!empty($request->dest_lat)) {
-				$ride->dest_lat = $request->dest_lat;
-			}
-			if (!empty($request->dest_lng)) {
-				$ride->dest_lng = $request->dest_lng;
-			}
-			if (!empty($request->payment_type)) {
-				$ride->payment_type = $request->payment_type;
+			$all_rides_dates = [$request->ride_time];
+			if (!empty($request->additional_dates)) {
+				$ride_only_time = date('H:i:s', strtotime($request->ride_time));
+				foreach ($request->additional_dates as $additional_date) {
+					$all_rides_dates[] = $additional_date . " " . $ride_only_time;
+				}
+				$all_rides_dates = array_unique($all_rides_dates);
 			}
 
-			if (!empty($request->ride_cost)) {
-				$ride->ride_cost = $request->ride_cost;
+			foreach ($all_rides_dates as $ride_date_time) {
+				$ride = new Ride();
+
+				$ride->user_id = $request->user_id;
+				$ride->pickup_address = $request->pickup_location;
+				$ride->dest_address = $request->drop_off_location;
+				$ride->passanger = $request->passanger;
+				$ride->note = $request->note;
+				$ride->ride_type = 1;
+				$ride->car_type = $request->car_type;
+				$ride->driver_id = $request->driver_id ?? null;
+				if (!empty($request->alert_time)) {
+					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($ride_date_time)));
+				} else {
+					$ride->alert_notification_date_time = $ride_date_time;
+				}
+				$ride->alert_time = $request->alert_time ?? null;
+				if (!empty($request->pick_lat)) {
+					$ride->pick_lat = $request->pick_lat;
+				}
+				if (!empty($request->pick_lng)) {
+					$ride->pick_lng = $request->pick_lng;
+				}
+				if (!empty($request->dest_lat)) {
+					$ride->dest_lat = $request->dest_lat;
+				}
+				if (!empty($request->dest_lng)) {
+					$ride->dest_lng = $request->dest_lng;
+				}
+				if (!empty($request->payment_type)) {
+					$ride->payment_type = $request->payment_type;
+				}
+
+				if (!empty($request->ride_cost)) {
+					$ride->ride_cost = $request->ride_cost;
+				}
+				$ride->ride_time = $ride_date_time;
+				if (!empty($request->distance)) {
+					$ride->distance = $request->distance;
+				}
+				$ride->created_by = 2;
+				$ride->creator_id = Auth::user()->id;
+				$ride->status = 0;
+				$ride->platform = Auth::user()->device_type;
+				$ride->save();
 			}
-			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
-			if (!empty($request->distance)) {
-				$ride->distance = $request->distance;
-			}
-			$ride->created_by = 2;
-			$ride->creator_id = Auth::user()->id;
-			$ride->status = 0;
-			$ride->platform = Auth::user()->device_type;
-			//print_r($input); die;
-			$ride->save();
 
 			/* When a planned ride is created by any driver, send a notification to all master drivers about this */
 			$settings = Setting::first();
@@ -2113,7 +2122,6 @@ class UserController extends Controller
 
 			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -6256,11 +6264,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
 					// $rideHistory->saveData(['ride_id'=>$request->ride_id,'driver_id'=>Auth::user()->id]);
 					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
-					if ($rideHistoryDetail->status == "0") {
-						return response()->json(['message' => "Ride already Rejected"], $this->warningCode);
+					if (!empty($rideHistoryDetail)) {
+						if ($rideHistoryDetail->status == "0") {
+							return response()->json(['message' => "Ride already Rejected"], $this->warningCode);
+						}
+						$rideHistoryDetail->status = "0";
+						$rideHistoryDetail->save();
 					}
-					$rideHistoryDetail->status = "0";
-					$rideHistoryDetail->save();
 					if ($ride->status == 0) {
 						$lastSendNotificationDrivers = explode(',', $ride->all_drivers);
 						if (!empty($lastSendNotificationDrivers)) {
