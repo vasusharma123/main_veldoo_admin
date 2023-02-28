@@ -590,4 +590,26 @@ class RideController extends Controller
         }
     }
 
+    public function delete(Request $request)
+    {
+        $rules = [
+            'ride_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+        }
+        try {
+            $user = Auth::user()->id;
+            $result = Ride::where('id', $request->ride_id)->delete();
+            if ($result > 0) {
+                return response()->json(['success' => true, 'message' => 'Ride deleted successfully.'], $this->successCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
 }
