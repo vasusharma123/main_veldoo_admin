@@ -179,7 +179,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('rides/unassign_current_ride', 'RideController@unassign_current_ride');
 		Route::post('calendarViewRides', 'RideController@calendarViewRides');
 		Route::post('ride/delete', 'RideController@delete');
-		
+		Route::post('calendarViewRidesDateBase', 'RideController@calendarViewRidesDateBase');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
