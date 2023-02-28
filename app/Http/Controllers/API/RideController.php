@@ -601,10 +601,8 @@ class RideController extends Controller
         }
         try {
             $user = Auth::user()->id;
-            $result = Ride::where('id', $request->ride_id)->delete();
-            if ($result > 0) {
-                return response()->json(['success' => true, 'message' => 'Ride deleted successfully.'], $this->successCode);
-            }
+            Ride::where('id', $request->ride_id)->delete();
+            return response()->json(['success' => true, 'message' => 'Ride deleted successfully.'], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['message' => $exception->getMessage()], $this->warningCode);
         } catch (\Exception $exception) {
