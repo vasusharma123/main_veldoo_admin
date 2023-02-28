@@ -359,6 +359,7 @@ class UserController extends Controller
 				$user['device_token'] = $request->device_token;
 			}
 			$user['updated_at'] = Carbon::now();
+			$user['app_installed'] = 1;
 			$user->save();
 			/* if($user->status == 0){
 				return response()->json(['message'=>'Your account is disabled', 'user'=>'', 'token'=>''], $this->warningCode);
@@ -3456,7 +3457,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 7;
 					$ride->status = 4;
 					if ($ride->platform == 'web' && (!empty($userdata))) {
-						$ride->driver_reach_sms_notify($userdata);
+						// $ride->driver_reach_sms_notify($userdata);
+						$this->sendSMS("+".$userdata->country_code, ltrim($userdata->phone, "0"), "Your driver is here to pick you up");
 					}
 				}
 				if ($request->status == 3) {
