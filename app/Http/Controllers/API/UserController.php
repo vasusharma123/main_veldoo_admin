@@ -5930,9 +5930,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->ride_type = 1;
 		}
 		$ride->save();
-		$ride_data = Ride::find($request->ride_id);
-		if (isset($request->user_id)) {
-			$ride_data['user_data'] = User::find($request->user_id);
+
+		$ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($request->ride_id);
+		if (!empty($ride_data->user_id)) {
+			$ride_data['user_data'] = User::find($ride_data->user_id);
 		} else {
 			$ride_data['user_data'] = null;
 		}
