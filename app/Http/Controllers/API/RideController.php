@@ -691,75 +691,84 @@ class RideController extends Controller
                                 $getDates = array_unique($getDates->toArray());
                                 foreach ($getDates as $getDate) {
                                     $ride_list = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', "=", $getDate)
+                                        ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                            $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                        })
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
-                                $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $getDate)->orderBy('ride_time')->first();
+                                $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $getDate)
+                                    ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                        $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    })->orderBy('ride_time')->first();
                                 $next_available_ride_date = (!empty($rideDetail)) ? $rideDetail->ride_date : "";
                             }
-                            $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $startDate)->orderBy('ride_time', 'desc')->first();
+                            $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $startDate)
+                                ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                })->orderBy('ride_time', 'desc')->first();
                             $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                         } else {
                             $getDates = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                ->where(function ($query) use ($userId) {
-                                    $query->orWhere('status', 0);
-                                    $query->orWhere('driver_id', $userId);
+                                ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                 })
                                 ->whereDate('rides.ride_time', '>=', $startDate)->take($this->calendar_rides_limit)->orderBy('ride_time')->pluck('ride_date');
                             if (!empty($getDates && count($getDates) > 0)) {
                                 $getDates = array_unique($getDates->toArray());
                                 foreach ($getDates as $getDate) {
                                     $ride_list = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', "=", $getDate)
-                                        ->where(function ($query) use ($userId) {
-                                            $query->orWhere('status', 0);
-                                            $query->orWhere('driver_id', $userId);
+                                        ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                            $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                         })
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
                                 $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                    ->where(function ($query) use ($userId) {
-                                        $query->orWhere('status', 0);
-                                        $query->orWhere('driver_id', $userId);
+                                    ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                        $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                     })
                                     ->whereDate('rides.ride_time', '>', $getDate)->orderBy('ride_time')->first();
                                 $next_available_ride_date = (!empty($rideDetail)) ? $rideDetail->ride_date : "";
                             }
                             $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                ->where(function ($query) use ($userId) {
-                                    $query->orWhere('status', 0);
-                                    $query->orWhere('driver_id', $userId);
+                                ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                 })
                                 ->whereDate('rides.ride_time', '<', $startDate)->orderBy('ride_time', 'desc')->first();
                             $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                         }
                     } else {
                         if ($user->is_master == 1) {
-                            $getDates = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<=', $startDate)->take($this->calendar_rides_limit)->orderBy('ride_time', 'desc')->pluck('ride_date');
+                            $getDates = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<=', $startDate)
+                                ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                })->take($this->calendar_rides_limit)->orderBy('ride_time', 'desc')->pluck('ride_date');
                             if (!empty($getDates && count($getDates) > 0)) {
                                 $getDates = array_unique($getDates->toArray());
                                 sort($getDates);
                                 foreach ($getDates as $getDate) {
                                     $ride_list = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', "=", $getDate)
-                                        ->orderBy('ride_time', 'asc')->get();
+                                        ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                            $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                        })->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
-                                $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $getDate)->orderBy('ride_time', 'desc')->first();
+                                $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $getDates[0])
+                                    ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                        $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    })->orderBy('ride_time', 'desc')->first();
                                 $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                             }
-                            $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $startDate)->orderBy('ride_time')->first();
+                            $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $startDate)
+                                ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                })->orderBy('ride_time')->first();
                             $next_available_ride_date = (!empty($rideDetail)) ? $rideDetail->ride_date : "";
                         } else {
                             $getDates = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                ->where(function ($query) use ($userId) {
-                                    $query->orWhere('status', 0);
-                                    $query->orWhere('driver_id', $userId);
+                                ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                 })
                                 ->whereDate('rides.ride_time', '<=', $startDate)->take($this->calendar_rides_limit)->orderBy('ride_time', 'desc')->pluck('ride_date');
                             if (!empty($getDates && count($getDates) > 0)) {
@@ -767,44 +776,27 @@ class RideController extends Controller
                                 sort($getDates);
                                 foreach ($getDates as $getDate) {
                                     $ride_list = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', "=", $getDate)
-                                        ->where(function ($query) use ($userId) {
-                                            $query->orWhere('status', 0);
-                                            $query->orWhere('driver_id', $userId);
+                                        ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                            $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                         })
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
                                 $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                    ->where(function ($query) use ($userId) {
-                                        $query->orWhere('status', 0);
-                                        $query->orWhere('driver_id', $userId);
+                                    ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                        $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                     })
-                                    ->whereDate('rides.ride_time', '<', $getDate)->orderBy('ride_time', 'desc')->first();
+                                    ->whereDate('rides.ride_time', '<', $getDates[0])->orderBy('ride_time', 'desc')->first();
                                 $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                             }
                             $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
-                                ->where(function ($query) use ($userId) {
-                                    $query->orWhere('status', 0);
-                                    $query->orWhere('driver_id', $userId);
+                                ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                    $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
                                 })
                                 ->whereDate('rides.ride_time', '>', $startDate)->orderBy('ride_time')->first();
                             $next_available_ride_date = (!empty($rideDetail)) ? $rideDetail->ride_date : "";
                         }
                     }
-
-                    // if ($user->is_master == 1) {
-                    //     $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
-                    //         ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
-                    //             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                    //         })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
-                    // } else {
-                    //     $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->whereDate('rides.ride_time', '>=', $startDate)
-                    //         ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
-                    //             $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-                    //         })->orderBy('ride_time', 'asc')->paginate($this->calendar_rides_limit);
-                    // }
                 } else if ($request->type == 5) {
                     if ($startDate >= $todayDate) {
                         if ($user->is_master == 1) {
@@ -816,8 +808,6 @@ class RideController extends Controller
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
                                 $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $getDate)->orderBy('ride_time')->first();
                                 $next_available_ride_date = (!empty($rideDetail)) ? $rideDetail->ride_date : "";
                             }
@@ -841,8 +831,6 @@ class RideController extends Controller
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
                                 $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
                                     ->where(function ($query) use ($userId) {
                                         $query->orWhere('status', 0);
@@ -870,9 +858,7 @@ class RideController extends Controller
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
-                                $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $getDate)->orderBy('ride_time', 'desc')->first();
+                                $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '<', $getDates[0])->orderBy('ride_time', 'desc')->first();
                                 $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                             }
                             $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')->whereDate('rides.ride_time', '>', $startDate)->orderBy('ride_time')->first();
@@ -896,14 +882,12 @@ class RideController extends Controller
                                         ->orderBy('ride_time', 'asc')->get();
                                     $rides[] = ["date" => $getDate, "rides" => $ride_list];
                                 }
-                            }
-                            if ($getDate) {
                                 $previousRideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
                                     ->where(function ($query) use ($userId) {
                                         $query->orWhere('status', 0);
                                         $query->orWhere('driver_id', $userId);
                                     })
-                                    ->whereDate('rides.ride_time', '<', $getDate)->orderBy('ride_time', 'desc')->first();
+                                    ->whereDate('rides.ride_time', '<', $getDates[0])->orderBy('ride_time', 'desc')->first();
                                 $previous_available_ride_date = (!empty($previousRideDetail)) ? $previousRideDetail->ride_date : "";
                             }
                             $rideDetail = Ride::selectRaw('DATE(ride_time) AS ride_date')
