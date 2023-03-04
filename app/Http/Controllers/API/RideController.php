@@ -1348,20 +1348,34 @@ class RideController extends Controller
             $previous_available_ride = 0;
             $next_available_ride = 0;
             $take = $this->calendar_rides_limit;
-            if (!empty($request->page) && $request->page > 0) {
+            if (!empty($request->page) && $request->page > 1) {
                 $skip = ($request->page-1) * $this->calendar_rides_limit;
                 $nextskip = ($request->page) * $this->calendar_rides_limit;
+                $prevSkip = ($request->page-2) * $this->calendar_rides_limit;
                 $compareVariable = ">=";
+                $nextCompareVariable = ">=";
+                $prevCompareVariable = ">=";
                 $ride_order = "asc";
             } else if (!empty($request->page) && $request->page < 0) {
                 $skip = (abs($request->page)-1) * $this->calendar_rides_limit;
-                $nextskip = (abs($request->page)) * $this->calendar_rides_limit;
+                $prevSkip = (abs($request->page)) * $this->calendar_rides_limit;
                 $compareVariable = "<";
+                $prevCompareVariable = "<";
                 $ride_order = "desc";
+                if($request->page == -1){
+                    $nextskip = 0;
+                    $nextCompareVariable = ">=";
+                } else {
+                    $nextskip = (abs($request->page)-2) * $this->calendar_rides_limit;
+                    $nextCompareVariable = "<";
+                }
             } else {
                 $skip = 0;
                 $nextskip = $this->calendar_rides_limit;
+                $prevSkip = 0;
                 $compareVariable = ">=";
+                $nextCompareVariable = ">=";
+                $prevCompareVariable = "<";
                 $ride_order = "asc";
             }
             
@@ -1954,12 +1968,12 @@ class RideController extends Controller
                         if (!empty($request->page) && $request->page < 0) {
                             $rides = array_reverse($rides->toArray());
                         }
-                        $futureRides = Ride::whereDate('rides.ride_time', ">=", $startDate)
-                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
-                        $next_available_ride = $futureRides ? 1 : 0;
-                        $pastRides = Ride::whereDate('rides.ride_time', "<", $startDate)
-                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->count();
-                        $previous_available_ride = $pastRides ? 1 : 0;
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
                         $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])
                             ->whereDate('rides.ride_time', $compareVariable, $startDate)
@@ -1968,19 +1982,19 @@ class RideController extends Controller
                                 $query->orWhere('driver_id', $userId);
                             })
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
-                        $futureRides = Ride::whereDate('rides.ride_time', ">=", $startDate)
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
                                 $query->orWhere('status', 0);
                                 $query->orWhere('driver_id', $userId);
                             })
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
                         $next_available_ride = $futureRides ? 1 : 0;
-                        $pastRides = Ride::whereDate('rides.ride_time', "<", $startDate)
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
                                 $query->orWhere('status', 0);
                                 $query->orWhere('driver_id', $userId);
                             })
-                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
                         $previous_available_ride = $pastRides ? 1 : 0;
                         if (!empty($request->page) && $request->page < 0) {
                             $rides = array_reverse($rides->toArray());
