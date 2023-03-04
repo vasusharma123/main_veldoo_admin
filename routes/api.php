@@ -180,6 +180,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('calendarViewRides', 'RideController@calendarViewRides');
 		Route::post('ride/delete', 'RideController@delete');
 		Route::post('calendarViewRidesDateBase', 'RideController@calendarViewRidesDateBase');
+		Route::post('calendarViewRidesUpDown', 'RideController@calendarViewRidesUpDown');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
