@@ -162,6 +162,7 @@
         var socket = io("{{env('SOCKET_URL')}}");
         var map;
         var MapPoints = [];
+        var booking = [];
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
         var markers = [];
@@ -182,12 +183,31 @@
             center: { lat: 46.8182, lng: 8.2275 },//Setting Initial Position
             zoom: 8
         });
-        $(document).on('click','.rideDetails',function(){
-            booking = bookingsArray[$(this).data('key')];
+
+        $(document).on('click','.rideDetails',async function(){
+            // booking = bookingsArray[$(this).data('key')];
             selected_ride_id = $(this).data('id');
+            // console.log(selected_ride_id);
+            route = "{{ route('company.ride_detail','~') }}";
+            route = route.replace('~',selected_ride_id);
+            await $.ajax({
+                url: route,
+                type: 'POST',
+                data: {
+                   _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    booking = response.data;
+                },
+                error(response) {
+                    swal.fire("{{ __('Error') }}", response.message, "error");
+                }
+            });
+            // console.log(booking);
+
+
             $('.rideDetails').removeClass('selected');
             $(this).addClass('selected');
-            // console.log(bookingsArray);
             $('.ride_user_image').hide();
             if (booking.user) 
             {
@@ -267,12 +287,15 @@
 
             if (booking.dest_lat=="") 
             {
-                for (let i = 0; i < markers.length; i++) {
-                    markers[i].setMap(null);
-                }
+                // alert('dest null');
+                // console.log(markers);
+                
                 if (directionsDisplay != null) {
                     directionsDisplay.setMap(null);
                     directionsDisplay = null;
+                }
+                for (let i = 0; i < markers.length; i++) {
+                    markers[i].setMap(null);
                 }
                 pt = new google.maps.LatLng(booking.pick_lat, booking.pick_lng);
                 map.setCenter(pt);
@@ -281,6 +304,7 @@
                     position: pt,
                     map: map
                 });   
+                markers.push(marker);
             }
             else
             {
@@ -288,6 +312,7 @@
                     directionsDisplay.setMap(null);
                     directionsDisplay = null;
                 }
+                // console.log(markers);
                 for (let i = 0; i < markers.length; i++) {
                     markers[i].setMap(null);
                 }
@@ -432,36 +457,37 @@
         socket.on('ride-update-response', function(response) {
             if(response && response[0] && response[0].id){
                 if(selected_ride_id == response[0].id){
-                    driver_detail_update(selected_ride_id);
+                    // driver_detail_update(selected_ride_id);
+                    $('.rideDetails_'+selected_ride_id).click();
                 }
             }
         });
         // console.log(bookingsArray);
         // driver_detail_update(2386);
-        function driver_detail_update(id) 
-        {
-            route = "{{ route('company.ride_detail','~') }}";
-            route = route.replace('~',id);
-            $.ajax({
-                url: route,
-                type: 'POST',
-                data: {
-                   _token: "{{ csrf_token() }}"
-                },
-                success: function(response) {
-                    for (let i = 0; i < bookingsArray.length; i++) {
-                        if (bookingsArray[i].id=id) 
-                        {
-                            bookingsArray[i] = response.data;
-                        }
-                    }
-                },
-                error(response) {
-                    swal.fire("{{ __('Error') }}", response.message, "error");
-                }
-            });
+        // function driver_detail_update(id) 
+        // {
+        //     route = "{{ route('company.ride_detail','~') }}";
+        //     route = route.replace('~',id);
+        //     $.ajax({
+        //         url: route,
+        //         type: 'POST',
+        //         data: {
+        //            _token: "{{ csrf_token() }}"
+        //         },
+        //         success: function(response) {
+        //             for (let i = 0; i < bookingsArray.length; i++) {
+        //                 if (bookingsArray[i].id=id) 
+        //                 {
+        //                     bookingsArray[i] = response.data;
+        //                 }
+        //             }
+        //         },
+        //         error(response) {
+        //             swal.fire("{{ __('Error') }}", response.message, "error");
+        //         }
+        //     });
 
-            $('.rideDetails_'+id).click();
-        }
+        //     $('.rideDetails_'+id).click();
+        // }
     </script>
 @endsection
