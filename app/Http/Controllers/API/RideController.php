@@ -293,7 +293,8 @@ class RideController extends Controller
             $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime(Carbon::now()->toDateTimeString())));
             $rideData->save();
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Ride rejected successfully', 'data' => $ride], $this->successCode);
+            $ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($request->ride_id);
+            return response()->json(['success' => true, 'message' => 'Ride rejected successfully', 'data' => $ride_detail], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['message' => $exception->getMessage()], 401);
