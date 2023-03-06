@@ -2038,13 +2038,15 @@ class UserController extends Controller
 			if ($validator->fails()) {
 				return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 			}
-			$all_rides_dates = [$request->ride_time];
+			$all_rides_dates = [];
 			if (!empty($request->additional_dates)) {
 				$ride_only_time = date('H:i:s', strtotime($request->ride_time));
 				foreach ($request->additional_dates as $additional_date) {
 					$all_rides_dates[] = $additional_date . " " . $ride_only_time;
 				}
 				$all_rides_dates = array_unique($all_rides_dates);
+			} else {
+				$all_rides_dates = [$request->ride_time];
 			}
 
 			foreach ($all_rides_dates as $ride_date_time) {
@@ -5105,202 +5107,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
 	}
-
-	// 	public function createRideDriver(Request $request,rideHistory $rideHistory)
-	// 	{
-	// 		$rules = [
-	// 			'pickup_location' => 'required',
-	// 			//'drop_location' => 'required',
-	// 		];
-
-	// 		$validator = Validator::make($request->all(), $rules);
-	// 		if ($validator->fails()) {
-	// 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-	// 		}
-	// 		$ride = new Ride();
-	// 		$ride->pickup_address = $request->pickup_location;
-	// 		if (!empty($request->drop_location)) {
-	// 			$ride->dest_address = $request->drop_location;
-	// 		}
-	// 		if (!empty($request->pick_lat)) {
-	// 			$ride->pick_lat = $request->pick_lat;
-	// 		}
-	// 		if (!empty($request->pick_lng)) {
-	// 			$ride->pick_lng = $request->pick_lng;
-	// 		}
-	// 		if (!empty($request->dest_lat)) {
-	// 			$ride->dest_lat = $request->dest_lat;
-	// 		}
-	// 		if (!empty($request->dest_lng)) {
-	// 			$ride->dest_lng = $request->dest_lng;
-	// 		}
-	// 		if (!empty($request->passanger)) {
-	// 			$ride->passanger = $request->passanger;
-	// 		}
-	// 		if (!empty($request->payment_type)) {
-	// 			$ride->payment_type = $request->payment_type;
-	// 		}
-	// 		// $ride->request_time = date('H:i');
-	// 		$ride->ride_type = 3;
-	// 		$ride->created_by = 2;
-	// 		if (!empty($request->ride_time)) {
-	// 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
-	// 		} else {
-	// 			$ride->ride_time = date("Y-m-d H:i:s");
-	// 		}
-	// 		if (!empty($request->ride_cost)) {
-	// 			$ride->ride_cost = $request->ride_cost;
-	// 		}
-	// 		if (!empty($request->user_id)) {
-	// 			$ride->user_id = $request->user_id;
-	// 		}
-	// 		if (!empty($request->note)) {
-	// 			$ride->note = $request->note;
-	// 		}
-	// 		if (!empty($request->car_type)) {
-	// 			$ride->car_type = $request->car_type;
-	// 		}
-	// 		if (!empty($request->distance)) {
-	// 			$ride->distance = $request->distance;
-	// 		}
-	// 		if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
-	// 			$lat = $request->pick_lat;
-	// 			$lon = $request->pick_lng;
-	// 		}
-	// 		$settings = \App\Setting::first();
-	// 		$settingValue = json_decode($settings['value']);
-	// 		$driverlimit = $settingValue->driver_requests;
-	// 		$driver_radius = $settingValue->radius;
-	// 		$query = User::select(
-	// 			"users.*",
-	// 			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-	//                     * cos(radians(users.current_lat)) 
-	//                     * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-	//                     + sin(radians(" . $lat . ")) 
-	//                     * sin(radians(users.current_lat))) AS distance")
-	// 		);
-	// 		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
-	// 		//$query->where('user_type', '=',2)->orderBy('distance','asc');
-	// 		$drivers = $query->get()->toArray();
-
-
-	// 		$driverids = array();
-
-	// 		if (!empty($drivers)) {
-	// 			foreach ($drivers as $driver) {
-
-
-	// 				$driverids[] = $driver['id'];
-	// 				$socket_id = $driver['socket_id'];
-
-	/* ?>
-			<script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
-			<script src="https://code.jquery.com/jquery-latest.min.js"></script>
-			<script>
-			var socket = io();
-			socket.emit("backend-ride-data-response",'data');
-			</script>
-			<?php */
-	// 				/* $url= "http://3.140.176.203/socket.php?socket_id=$socket_id&driver_id=$driver_id&show=1";
-
-	// $ch = curl_init($url);
-	// curl_setopt($ch, CURLOPT_HEADER, true);    // we want headers
-	// curl_setopt($ch, CURLOPT_NOBODY, true);    // we don't need body
-	// curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-	// curl_setopt($ch, CURLOPT_TIMEOUT,10);
-	// $output = curl_exec($ch);
-	// $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	// curl_close($ch);
-
-	// echo 'HTTP code: ' . $httpcode; */
-
-	// 				//$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
-	// 				//file_get_contents("");	
-	// 			}
-	// 		} else {
-	// 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
-	// 		}
-	// 		if (!empty($driverids)) {
-	// 			$driverids = implode(",", $driverids);
-	// 		} else {
-	// 			return response()->json(['message' => "No Driver Found"], $this->warningCode);
-	// 		}
-
-	// 		$ride->driver_id = null;
-	// 		$ride->all_drivers = $driverids;
-
-	// 		$ride->save();
-	// 		$rideid = $ride->id;
-	// 		$ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
-	// 		if (!empty($ride_data['ride_cost'])) {
-	// 			$ride_data['price'] = $ride_data['ride_cost'];
-	// 		}
-
-	// 		/*  $curl_handle=curl_init();
-	//   curl_setopt($curl_handle,CURLOPT_URL,"http://3.140.176.203/cron/notification?driverids=$driverids&ride_id=$rideid");
-	//   curl_setopt($curl_handle,CURLOPT_CONNECTTIMEOUT,2);
-	//   curl_setopt($curl_handle,CURLOPT_RETURNTRANSFER,1);
-	//   $buffer = curl_exec($curl_handle);
-	//   curl_close($curl_handle); */
-
-	// 		$driverids = explode(",", $driverids);
-	// 		/* echo "ride data :";
-	// 		print_r($ride_data); die; */
-
-	// 		//print_r($driverids);
-	// 		foreach ($driverids as $driverid) {
-	// 			$driver_id = $driverid;
-	// 			$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->where('id', $ride_data['user_id'])->first();
-
-	// 			$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'device_token', 'device_type', 'country_code', 'phone', 'user_type')->where('id', $driverid)->first();
-	// 			$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->first();
-	// 			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['id'])->first();
-	// 			$driver_data['car_data'] = $car_data;
-	// 			$title = 'New Booking';
-	// 			$message = 'You Received new booking';
-
-
-	// 			$deviceToken = $driver_data['device_token'];
-	// 			$type = 1;
-	// 			$ride_data['user_data'] = $user_data;
-	// 			$settings = \App\Setting::first();
-	// 			$settingValue = json_decode($settings['value']);
-	// 			$ride_data['waiting_time'] = $settingValue->waiting_time;
-
-	// 			$additional = ['type' => $type, 'ride_id' => $rideid, 'ride_data' => $ride_data];
-
-
-	// 			$deviceType = $driver_data['device_type'];
-	// 			if ($deviceType == 'android') {
-
-	// 				send_notification($title, $message, $deviceToken, '', $additional, true, false, $deviceType, []);
-	// 				$notification = new Notification();
-	// 				$notification->title = $title;
-	// 				$notification->description = $message;
-	// 				$notification->type = $type;
-	// 				$notification->user_id = $driver_data['id'];
-	// 				$notification->save();
-	// 			}
-	// 			if ($deviceType == 'ios') {
-
-	// 				$user_type = $driver_data['user_type'];
-
-
-	// 				ios_notification($title, $message, $deviceToken, $additional, $sound = 'default', $user_type);
-	// 				$notification = new Notification();
-	// 				$notification->title = $title;
-	// 				$notification->description = $message;
-	// 				$notification->type = $type;
-	// 				$notification->user_id = $driver_data['id'];
-	// 				$notification->save();
-	// 			}
-	// 		}
-
-	//          $rideHistory->saveData(['ride_id'=>$rideid,'driver_id'=>$driver_data['id'],'status'=>'2']);
-
-	// 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
-	// 	}
-
 
 	public function createRideDriver(Request $request, rideHistory $rideHistory)
 	{
