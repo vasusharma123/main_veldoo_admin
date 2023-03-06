@@ -104,7 +104,7 @@
 												echo Form::label('phone', 'Phone',['class'=>'control-label']);
 												echo Form::text('phone',null,['class'=>'form-control','required'=>true,'id'=>'Regphones']);
 												?>
-												<input type="hidden" value="+1" id="test1" name="country_code" />
+												<input type="hidden" value="1" id="test1" name="country_code" />
 												@error('phone')
 															<span class="invalid-feedback" role="alert">
 																<strong>{{ $message }}</strong>
@@ -174,11 +174,14 @@
 		}
 	}
 
-	$('.flag-container').click(function(){
-		var data = $('.selected-dial-code').html();
-		$("#test1").val(data);
+	// $('.flag-container').click(function(){
+	// 	var data = $('.selected-dial-code').html();
+	// 	$("#test1").val(data);
+	// });
+	var input = $('#Regphones').intlTelInput("setNumber", "+1");
+	input.on("countrychange", function() {
+		$("#test1").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
 	});
-     
 $(document).ready(function(){
 	 $("#Regphones").removeAttr('placeholder');
     setTimeout(function(){  
