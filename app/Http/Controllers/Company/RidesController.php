@@ -287,7 +287,7 @@ class RidesController extends Controller
         $now = Carbon::now();
         $ride = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
                             $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
-                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','created_by'])->find($id);
+                        })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->find($id);
         // $ride->status = 2;
         return response()->json(['status'=>1,'data'=>$ride]);
     }
