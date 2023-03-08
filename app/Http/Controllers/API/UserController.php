@@ -6494,9 +6494,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			if (!empty($usercount)) {
 				foreach ($users as $user_key => $userDat) {
-					$users[$user_key]->full_name = $userDat->first_name . ' ' . $userDat->last_name;
-					$avgrating = DB::table('ratings')->where('to_id', $userDat->id)->avg('rating');
-					$users[$user_key]->avg_rating = round($avgrating, 2);
+					$users[$user_key]->full_name = $userDat->full_name;
+					$users[$user_key]->avg_rating = $userDat->avg_rating;
+					$users[$user_key]->app_installed = (!empty($userDat->password))?1:0;
 				}
 			} else {
 				return response()->json(['success' => true, 'message' => 'No records found', 'data' => $users], $this->successCode);
