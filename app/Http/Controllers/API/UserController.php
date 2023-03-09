@@ -3591,7 +3591,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		$rules = [
 			'ride_id' => 'required',
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -3599,71 +3598,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
 		try {
-
-			$ride = Ride::query()->where([['id', '=', $_REQUEST['ride_id']]])->first();
-
-			$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->where('id', $ride['user_id'])->first();
-
-
-			//$driver_data= User::query()->where([['id', '=', $ride['driver_id']]])->first();
-			$driver_id = $ride['driver_id'];
-			$searchForValue = ',';
-
-			if (strpos($driver_id, $searchForValue) !== false) {
-				$driver_id = "";
-			}
-			$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone')->where('id', $driver_id)->first();
-
-
-			$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->orderBy('id', 'desc')->first();
-			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
-			if (!empty($driver_data)) {
-				$ride['driver_data'] = $driver_data;
-			} else {
-				$ride['driver_data'] = new \stdClass();
-			}
-			if (!empty($car_data)) {
-				$driver_data['car_data'] = $car_data;
-			} else {
-				$driver_data['car_data'] = new \stdClass();
-			}
-			$ride['user_data'] = $user_data;
+			$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($request->ride_id);
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
-			$ride['waiting_time'] = $settingValue->waiting_time;
-
-
-			if (!empty($ride)) {
-				if (!empty($ride['ride_cost'])) {
-					$ride['price'] = $ride['ride_cost'];
-				}
-				/* $driverData= User::query()->where([['id', '=', $ride['driver_id']]])->first();
-				if($ride['status'] == 1)
-				{
-					$lat1 = $ride['pick_lat'];
-            $long1 = $ride['pick_lng'];
-            $lat2 = $driverData['current_lat'];
-            $long2 = $driverData['current_lng'];
-			$distance = $this->getdistancebyDirection($lat1,$long1,$lat2,$long2);
-			if(!empty($distance))
-			{
-				//$ride->distance = round($distance['distance'],2);
-				$ride['duration'] = $distance['duration'];
-			}
-				}
-			$ride['driver_data'] = $driverData;
-			$ride['driver_data']['rating'] = '';
-			$vehicle_detail= Vehicle::query()->where([['user_id', '=', $ride['driver_id']]])->first();
-			$ride['driver_data']['vehicle_info'] = $vehicle_detail; */
+			$ride_detail['waiting_time'] = $settingValue->waiting_time;
+			if (!empty($ride_detail)) {
+				return response()->json(['message' => 'Ride Detail Got Successfully', 'data' => $ride_detail], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Ride Not found'], $this->warningCode);
 			}
-
-
-
-			return response()->json(['message' => 'Ride Detail Got Successfully', 'data' => $ride], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
