@@ -688,7 +688,7 @@
                                             <ul class="list-group SelectedDateList">
                                                 @if ($user)
                                                     @forelse ($rides as $key=>$ride)
-                                                        <li class="list-group-item bookingList" style="cursor:pointer" data-id="{{ $ride->id }}">
+                                                        <li class="list-group-item bookingList bookingList_{{ $ride->id }}" style="cursor:pointer" data-id="{{ $ride->id }}">
                                                             <div class="row">
                                                                 <div class="col-2 mr-0 pr-0" style="max-width: 35px;">
                                                                     <img src="https://cdn-icons-png.flaticon.com/512/4120/4120023.png" class="img-clock w-100 img-responsive" alt="img clock">
@@ -834,7 +834,9 @@
     </script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>																																																						
     <script src="{{ URL::asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script>
+        var socket = io("{{env('SOCKET_URL')}}");
         var map;
         var MapPoints = [];
         var directionsDisplay;
@@ -989,26 +991,41 @@
             $('.'+timerClass).hide();
         }
 
-        @if ($user)
-            bookingsArray = JSON.parse('<?php echo ($rides) ?>');
-        @else
-            bookingsArray = [];
-        @endif
 
         function checkText(text) {
             return (text=="" || text==null? 'Not Available' : text);
         }
 
         var selectedBooking = "";
-        $(document).on('click','.bookingList',function(){
+        var element = [];
+        $(document).on('click','.bookingList',async function(){
             selectedBooking = $(this).data('id');
             $('.bookingList').removeClass('active-background');
             $(this).addClass('active-background');
-            bookingsArray.forEach(element => {
+            route = "{{ route('booking_details_taxi2000','~') }}";
+            route = route.replace('~',selectedBooking);
+            await $.ajax({
+                url: route,
+                type: 'GET',
+                data: {
+                   _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    element = response;
+                },
+                error(response) {
+                    console.log(response);
+                }
+            });
+            // bookingsArray.forEach(element => {
                 if (selectedBooking==element.id) 
                 {
                     if (element.dest_lat=="") 
                     {
+                        if (directionsDisplay != null) {
+                            directionsDisplay.setMap(null);
+                            directionsDisplay = null;
+                        }
                         for (let i = 0; i < markers.length; i++) {
                             markers[i].setMap(null);
                         }
@@ -1023,6 +1040,7 @@
                             position: pt,
                             map: map
                         });   
+                        markers.push(marker);
                     }
                     else
                     {
@@ -1199,7 +1217,16 @@
                     }
                     $('.map_area_price').show();
                 }
-            });
+            // });
+        });
+
+        socket.on('ride-update-response', function(response) {
+            if(response && response[0] && response[0].id){
+                if(selected_ride_id == response[0].id){
+                    // driver_detail_update(selected_ride_id);
+                    $('.bookingList_'+selected_ride_id).click();
+                }
+            }
         });
 
         function setShortestRoute(response) 
