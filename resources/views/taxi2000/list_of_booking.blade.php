@@ -1222,9 +1222,9 @@
 
         socket.on('ride-update-response', function(response) {
             if(response && response[0] && response[0].id){
-                if(selected_ride_id == response[0].id){
-                    // driver_detail_update(selected_ride_id);
-                    $('.bookingList_'+selected_ride_id).click();
+                if(selectedBooking == response[0].id){
+                    // driver_detail_update(selectedBooking);
+                    $('.bookingList_'+selectedBooking).click();
                 }
             }
         });
