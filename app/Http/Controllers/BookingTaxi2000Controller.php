@@ -337,7 +337,7 @@ if($_REQUEST['cm'] == 2)
 				{
 					OtpVerification::updateOrCreate(
 						['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-						['otp' => $otp, 'expiry' => $endTime]
+						['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 					);
 				}
 				else
@@ -349,7 +349,7 @@ if($_REQUEST['cm'] == 2)
 			{
 				OtpVerification::updateOrCreate(
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-					['otp' => $otp, 'expiry' => $endTime]
+					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 				);
 			}
 			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking");
@@ -594,7 +594,7 @@ if($_REQUEST['cm'] == 2)
 				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 				OtpVerification::updateOrCreate(
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-					['otp' => $otp, 'expiry' => $endTime]
+					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 				);
 				return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 			} else {
@@ -741,7 +741,7 @@ if($_REQUEST['cm'] == 2)
 
 			OtpVerification::updateOrCreate(
 				['country_code' => $request->country_code, 'phone' => $request->phone],
-				['otp' => $otp, 'expiry' => $endTime]
+				['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 			);
 			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {

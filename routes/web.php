@@ -80,7 +80,7 @@ Route::group(['middleware' => 'guest'], function(){
     Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
     Route::get('/register',  ['as'=>'companyRegister','uses'=>'UserController@register']);
-    Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
+    // Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
      Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
 	 Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
 	Route::get('/password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
