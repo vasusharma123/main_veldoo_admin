@@ -125,6 +125,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('driver/create','UserController@createDriver');
 	
 	Route::get('driver/{id}','UserController@showDriver')->name('showDriver');
+	Route::post('driver/delete','DriverController@destroy')->name('admin.driver.delete');
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
 	
 

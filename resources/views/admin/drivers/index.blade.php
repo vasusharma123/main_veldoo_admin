@@ -383,22 +383,28 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 				var user_id = $(this).attr('data-id');
 				$.ajax({
 					type: "post",
-					url: "{{ url('admin/company/delete') }}",
+					url: "{{ route('admin.driver.delete') }}",
 					data: {
 						"_token": "{{ csrf_token() }}",
 						"user_id": user_id
 					},
 					success: function(data) {
-						if (data) {
+						if (data.status) {
 							Swal.fire({
 								title: 'Deleted',
-								text: "Driver has been deleted.",
+								text: data.message,
 								icon: 'success',
 								showConfirmButton: false
 							});
 							setTimeout(function() {
 								location.reload(true);
 							}, 2000);
+						} else {
+							Swal.fire(
+								'Error',
+								data.message,
+								'error'
+							)
 						}
 					}
 				});
