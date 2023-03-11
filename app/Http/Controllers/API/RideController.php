@@ -30,7 +30,7 @@ class RideController extends Controller
     protected $errorCode = 401;
     protected $warningCode = 500;
     protected $limit;
-    protected $calendar_rides_limit = 40;
+    protected $calendar_rides_limit = 80;
 
     public function __construct(Request $request = null)
 	{
