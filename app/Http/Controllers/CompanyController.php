@@ -263,7 +263,9 @@ class CompanyController extends Controller
 		}
 		$request->validate($rules);
 		$input = $request->all();
-		
+		if(!empty($request->reset_password)){
+            $input['password'] = Hash::make($request->password);
+        }
 		unset($input['_method'],$input['_token'],$input['image_tmp'],$input['reset_password']);
 		
 		$path = 'users/'.$haveUser->id.'/profile/';
@@ -280,8 +282,7 @@ class CompanyController extends Controller
 				'user/'.$haveUser->id, $request->image_tmp, $imageName
 			);
 		}
-		
-		User::where('id', $id)->update($input);
+        User::where('id', $id)->update($input);
 		
 		return back()->with('success', __('Record updated!'));
     }
