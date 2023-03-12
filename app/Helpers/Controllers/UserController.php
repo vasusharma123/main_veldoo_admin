@@ -762,34 +762,34 @@ public function register(){
 
 }
 
-	public function doRegister(Request $request){
-			$rules = [
-				'email' => 'required|email|unique:users',
-				'password' => 'required|min:6',
-				'confirm_password' => 'required|min:6',
-				'phone'=>'required',
-				'country_code'=>'required',
-				'first_name'=>'required',
-				'last_name'=>'required'
-			];
-			$request->validate($rules);
-			$input = $request->all();
-			$input['password']=Hash::make($request->input('password'));
-			$input['user_type']=4;
-			$otp = rand(1000,9999);
-			$user=User::create($input);
-			$expiryMin = config('app.otp_expiry_minutes');
-					$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-					\App\OtpVerification::create(
-						['phone'=>$request->phone,
-						'otp' => $otp,
-						'expiry'=>$endTime,
-						'country_code'=>$request->country_code
-						]
-					);
+	// public function doRegister(Request $request){
+	// 		$rules = [
+	// 			'email' => 'required|email|unique:users',
+	// 			'password' => 'required|min:6',
+	// 			'confirm_password' => 'required|min:6',
+	// 			'phone'=>'required',
+	// 			'country_code'=>'required',
+	// 			'first_name'=>'required',
+	// 			'last_name'=>'required'
+	// 		];
+	// 		$request->validate($rules);
+	// 		$input = $request->all();
+	// 		$input['password']=Hash::make($request->input('password'));
+	// 		$input['user_type']=4;
+	// 		$otp = rand(1000,9999);
+	// 		$user=User::create($input);
+	// 		$expiryMin = config('app.otp_expiry_minutes');
+	// 				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+	// 				\App\OtpVerification::create(
+	// 					['phone'=>$request->phone,
+	// 					'otp' => $otp,
+	// 					'expiry'=>$endTime,
+	// 					'country_code'=>$request->country_code
+	// 					]
+	// 				);
 				
-			return redirect()->to(url('verify/'.$request->email));
-	}
+	// 		return redirect()->to(url('verify/'.$request->email));
+	// }
 
 	public function verify($email){
 	$breadcrumb = array('title'=>'Home','action'=>'Register');
@@ -800,19 +800,19 @@ public function register(){
 	}
 
 
-	public function verifyOtp(Request $request){
-	$rules = [
-				'otp' => 'required'
-			];
-			$request->validate($rules);
-			$input = $request->all();
-			$user=\App\User::where('email',$request->email)->first();
-			$otpVerification=\App\OtpVerification::where('country_code',$user->country_code)->where('phone',$user->phone)->where('otp',$request->otp)->first();
-			if(!empty($otpVerification)){
-				Auth::login($user);
-			return redirect()->route('users.dashboard');
-			}
-	}
+	// public function verifyOtp(Request $request){
+	// $rules = [
+	// 			'otp' => 'required'
+	// 		];
+	// 		$request->validate($rules);
+	// 		$input = $request->all();
+	// 		$user=\App\User::where('email',$request->email)->first();
+	// 		$otpVerification=\App\OtpVerification::where('country_code',$user->country_code)->where('phone',$user->phone)->where('otp',$request->otp)->first();
+	// 		if(!empty($otpVerification)){
+	// 			Auth::login($user);
+	// 		return redirect()->route('users.dashboard');
+	// 		}
+	// }
 	
 
 	public function updateLatLong(Request $request){

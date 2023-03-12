@@ -128,193 +128,193 @@ class UserController extends Controller
 	}
 
 	#USER REGISTER & UPDATE
-	public function register_or_update(Request $request)
-	{
+	// public function register_or_update(Request $request)
+	// {
 
-		#trans('api.step_required')
-		if (empty($request->step)) {
-			return response()->json(['message' => 'Step required'], $this->errorCode);
-		}
+	// 	#trans('api.step_required')
+	// 	if (empty($request->step)) {
+	// 		return response()->json(['message' => 'Step required'], $this->errorCode);
+	// 	}
 
-		$rules = [];
-		if ($request->step == 1 || $request->step == 3) {
-			$rules['country_code'] = 'required|integer';
-			$rules['phone'] = 'required';
-			if ($request->step == 1) {
-				$rules['password'] = 'required';
-				$rules['user_type'] = 'required|integer';
-			}
-			$rules['first_name'] = 'required';
-			$rules['last_name'] = 'required';
-			$rules['email'] = 'required|email';
-			//$rules['city'] = 'required';
-		}
+	// 	$rules = [];
+	// 	if ($request->step == 1 || $request->step == 3) {
+	// 		$rules['country_code'] = 'required|integer';
+	// 		$rules['phone'] = 'required';
+	// 		if ($request->step == 1) {
+	// 			$rules['password'] = 'required';
+	// 			$rules['user_type'] = 'required|integer';
+	// 		}
+	// 		$rules['first_name'] = 'required';
+	// 		$rules['last_name'] = 'required';
+	// 		$rules['email'] = 'required|email';
+	// 		//$rules['city'] = 'required';
+	// 	}
 
-		if ($request->step == 2) {
-			$rules['otp'] = 'required|integer';
-		}
+	// 	if ($request->step == 2) {
+	// 		$rules['otp'] = 'required|integer';
+	// 	}
 
-		$validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => 'Required data missed', 'error' => $validator->errors()], $this->warningCode);
-		}
+	// 	$validator = Validator::make($request->all(), $rules);
+	// 	if ($validator->fails()) {
+	// 		return response()->json(['message' => 'Required data missed', 'error' => $validator->errors()], $this->warningCode);
+	// 	}
 
-		if ($request->step == 1 || $request->step == 3) {
+	// 	if ($request->step == 1 || $request->step == 3) {
 
-			$userQuery = User::where(['country_code' => $request->country_code, 'phone' => $request->phone]);
-			if (!empty($request->email)) {
+	// 		$userQuery = User::where(['country_code' => $request->country_code, 'phone' => $request->phone]);
+	// 		if (!empty($request->email)) {
 
-				$userQuery2 = User::where(['email' => $request->email]);
-				$isUserEmail = $userQuery2->first();
-			}
+	// 			$userQuery2 = User::where(['email' => $request->email]);
+	// 			$isUserEmail = $userQuery2->first();
+	// 		}
 
-			$isUser = $userQuery->first();
+	// 		$isUser = $userQuery->first();
 
-			/* print_r($isUser->toArray());
-			print_r(Auth::user()->toArray());
-			exit; */
+	// 		/* print_r($isUser->toArray());
+	// 		print_r(Auth::user()->toArray());
+	// 		exit; */
 
-			if (!empty($isUser)) {
-				if ($request->step == 3) {
-					if ($isUser->country_code . $isUser->phone != Auth::user()->country_code . Auth::user()->phone) {
-						return response()->json(['message' => 'Phone number already exists', 'data' => $isUser], $this->warningCode);
-					}
-				} else {
-					return response()->json(['message' => 'Phone number already exists', 'data' => $isUser], $this->warningCode);
-				}
-			}
-			if (!empty($isUserEmail)) {
-				if ($request->step == 3) {
-					if ($isUserEmail->email != Auth::user()->email) {
-						return response()->json(['message' => 'Email already exists', 'data' => $isUserEmail], $this->warningCode);
-					}
-				} else {
-					return response()->json(['message' => 'Email already exists', 'data' => $isUserEmail], $this->warningCode);
-				}
-			}
-		}
+	// 		if (!empty($isUser)) {
+	// 			if ($request->step == 3) {
+	// 				if ($isUser->country_code . $isUser->phone != Auth::user()->country_code . Auth::user()->phone) {
+	// 					return response()->json(['message' => 'Phone number already exists', 'data' => $isUser], $this->warningCode);
+	// 				}
+	// 			} else {
+	// 				return response()->json(['message' => 'Phone number already exists', 'data' => $isUser], $this->warningCode);
+	// 			}
+	// 		}
+	// 		if (!empty($isUserEmail)) {
+	// 			if ($request->step == 3) {
+	// 				if ($isUserEmail->email != Auth::user()->email) {
+	// 					return response()->json(['message' => 'Email already exists', 'data' => $isUserEmail], $this->warningCode);
+	// 				}
+	// 			} else {
+	// 				return response()->json(['message' => 'Email already exists', 'data' => $isUserEmail], $this->warningCode);
+	// 			}
+	// 		}
+	// 	}
 
-		if ($request->step == 2) {
+	// 	if ($request->step == 2) {
 
-			$expiryMin = config('app.otp_expiry_minutes');
-			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['email' => Auth::user()->email, 'otp' => $request->otp])->first();
+	// 		$expiryMin = config('app.otp_expiry_minutes');
+	// 		$now = Carbon::now();
+	// 		$haveOtp = OtpVerification::where(['email' => Auth::user()->email, 'otp' => $request->otp])->first();
 
-			if (empty($haveOtp)) {
-				return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
-			}
+	// 		if (empty($haveOtp)) {
+	// 			return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
+	// 		}
 
-			if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
-				return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
-			}
+	// 		if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
+	// 			return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
+	// 		}
 
-			$haveOtp->delete();
+	// 		$haveOtp->delete();
 
-			$userData = User::where('id', Auth::user()->id)->first();
-			$userData->step = $request->step;
+	// 		$userData = User::where('id', Auth::user()->id)->first();
+	// 		$userData->step = $request->step;
 
-			$userData->verify = 1;
-			$userData->save();
+	// 		$userData->verify = 1;
+	// 		$userData->save();
 
-			return response()->json(['message' => 'Verified'], $this->successCode);
-		}
+	// 		return response()->json(['message' => 'Verified'], $this->successCode);
+	// 	}
 
-		$input = $request->all();
+	// 	$input = $request->all();
 
-		try {
+	// 	try {
 
-			/* if(!empty($input['email'])){
-				$input['user_name'] = $input['email'];
-			} */
+	// 		/* if(!empty($input['email'])){
+	// 			$input['user_name'] = $input['email'];
+	// 		} */
 
-			if (Auth::check()) {
+	// 		if (Auth::check()) {
 
-				$user_id = Auth::user()->id;
+	// 			$user_id = Auth::user()->id;
 
-				if ($request->hasFile('image') && $request->file('image')->isValid()) {
+	// 			if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
-					$imageName = Auth::user()->image;
-					if (!empty($imageName)) {
-						Storage::disk('public')->delete("$imageName");
-					}
+	// 				$imageName = Auth::user()->image;
+	// 				if (!empty($imageName)) {
+	// 					Storage::disk('public')->delete("$imageName");
+	// 				}
 
-					$input['image'] = Storage::disk('public')->putFileAs(
-						'user/' . $user_id,
-						$request->file('image'),
-						'profile-image.' . $input['image']->extension()
-					);
-				}
+	// 				$input['image'] = Storage::disk('public')->putFileAs(
+	// 					'user/' . $user_id,
+	// 					$request->file('image'),
+	// 					'profile-image.' . $input['image']->extension()
+	// 				);
+	// 			}
 
-				$userData = User::where('id', $user_id)->first();
+	// 			$userData = User::where('id', $user_id)->first();
 
-				foreach ($input as $key => $value) {
-					$userData->$key = $value;
-				}
-				if (!empty($request->device_type)) {
-					$userData->device_type = $request->device_type;
-				}
-				if (!empty($request->device_token)) {
-					$userData->device_token = $request->device_token;
-				}
-				$userData->save();
-				$token = '';
-			} else {
+	// 			foreach ($input as $key => $value) {
+	// 				$userData->$key = $value;
+	// 			}
+	// 			if (!empty($request->device_type)) {
+	// 				$userData->device_type = $request->device_type;
+	// 			}
+	// 			if (!empty($request->device_token)) {
+	// 				$userData->device_token = $request->device_token;
+	// 			}
+	// 			$userData->save();
+	// 			$token = '';
+	// 		} else {
 
-				$user = User::create($input);
-				$user->AauthAcessToken()->delete();
-				$token = $user->createToken('auth')->accessToken;
-				if (!empty($request->device_type)) {
-					$user->device_type = $request->device_type;
-				}
-				if (!empty($request->device_token)) {
-					$user->device_token = $request->device_token;
-				}
-				$user->save();
+	// 			$user = User::create($input);
+	// 			$user->AauthAcessToken()->delete();
+	// 			$token = $user->createToken('auth')->accessToken;
+	// 			if (!empty($request->device_type)) {
+	// 				$user->device_type = $request->device_type;
+	// 			}
+	// 			if (!empty($request->device_token)) {
+	// 				$user->device_token = $request->device_token;
+	// 			}
+	// 			$user->save();
 
-				$user_id = $user->id;
+	// 			$user_id = $user->id;
 
-				if ($request->hasFile('image') && $request->file('image')->isValid()) {
+	// 			if ($request->hasFile('image') && $request->file('image')->isValid()) {
 
-					$input['image'] = Storage::disk('public')->putFileAs(
-						'user/' . $user_id,
-						$request->file('image'),
-						'profile-image.' . $input['image']->extension()
-					);
-				}
+	// 				$input['image'] = Storage::disk('public')->putFileAs(
+	// 					'user/' . $user_id,
+	// 					$request->file('image'),
+	// 					'profile-image.' . $input['image']->extension()
+	// 				);
+	// 			}
 
-				#SEND OTP
-				$otp = rand(1000, 9999);
-				$data = array('name' => $otp);
-				$m = Mail::send('mail', $data, function ($message) use ($request) {
-					$message->to($request->email, 'OTP')->subject('OTP Verification Code');
+	// 			#SEND OTP
+	// 			$otp = rand(1000, 9999);
+	// 			$data = array('name' => $otp);
+	// 			$m = Mail::send('mail', $data, function ($message) use ($request) {
+	// 				$message->to($request->email, 'OTP')->subject('OTP Verification Code');
 
-					if (!empty($request->from)) {
-						$message->from($request->from, 'FoodFix');
-					}
-				});
-				$expiryMin = config('app.otp_expiry_minutes');
-				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-				OtpVerification::updateOrCreate(
-					['email' => $request->email],
-					['otp' => $otp, 'expiry' => $endTime]
-				);
+	// 				if (!empty($request->from)) {
+	// 					$message->from($request->from, 'FoodFix');
+	// 				}
+	// 			});
+	// 			$expiryMin = config('app.otp_expiry_minutes');
+	// 			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+	// 			OtpVerification::updateOrCreate(
+	// 				['email' => $request->email],
+	// 				['otp' => $otp, 'expiry' => $endTime]
+	// 			);
 
 
-				$userData = $this->getRafrenceUser($user_id);
+	// 			$userData = $this->getRafrenceUser($user_id);
 
-				return response()->json(['message' => 'The verification code has been sent to your email address', 'user' => $userData, 'token' => $token, 'otp' => $otp], $this->successCode);
-			}
+	// 			return response()->json(['message' => 'The verification code has been sent to your email address', 'user' => $userData, 'token' => $token, 'otp' => $otp], $this->successCode);
+	// 		}
 
-			$userData = $this->getRafrenceUser($user_id);
+	// 		$userData = $this->getRafrenceUser($user_id);
 
-			return response()->json(['message' => 'Success', 'user' => $userData, 'token' => $token], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
-			return response()->json(['message' => $exception->getMessage()], 401);
-		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], 401);
-		}
-	}
+	// 		return response()->json(['message' => 'Success', 'user' => $userData, 'token' => $token], $this->successCode);
+	// 	} catch (\Illuminate\Database\QueryException $exception) {
+	// 		$errorCode = $exception->errorInfo[1];
+	// 		return response()->json(['message' => $exception->getMessage()], 401);
+	// 	} catch (\Exception $exception) {
+	// 		return response()->json(['message' => $exception->getMessage()], 401);
+	// 	}
+	// }
 
 	#USER LOGIN
 	public function login(Request $request)
@@ -445,57 +445,57 @@ class UserController extends Controller
 			return response()->json(['success' => false, 'message' => 'Details are incorrect, please try again'], $this->successCode);
 		}
 	}
-	public function driverVerifyOtp(Request $request)
-	{
+	// public function driverVerifyOtp(Request $request)
+	// {
 
-		$rules = [
-			'country_code' => 'required',
-			'phone' => 'required',
-			'otp' => 'required',
-		];
+	// 	$rules = [
+	// 		'country_code' => 'required',
+	// 		'phone' => 'required',
+	// 		'otp' => 'required',
+	// 	];
 
-		$validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-		}
+	// 	$validator = Validator::make($request->all(), $rules);
+	// 	if ($validator->fails()) {
+	// 		return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+	// 	}
 
-		$expiryMin = config('app.otp_expiry_minutes');
-		$now = Carbon::now();
-		$haveOtp = OtpVerification::where(['phone' => $request->phone, 'otp' => $request->otp])->first();
+	// 	$expiryMin = config('app.otp_expiry_minutes');
+	// 	$now = Carbon::now();
+	// 	$haveOtp = OtpVerification::where(['phone' => $request->phone, 'otp' => $request->otp])->first();
 
-		if (empty($haveOtp)) {
-			return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
-		}
+	// 	if (empty($haveOtp)) {
+	// 		return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
+	// 	}
 
-		if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
-			return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
-		}
+	// 	if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
+	// 		return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
+	// 	}
 
-		$haveOtp->delete();
-		$userData = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2])->first();
+	// 	$haveOtp->delete();
+	// 	$userData = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2])->first();
 
-		//$userData = User::where('phone', $request->phone)->first();
-		Auth::login($userData);
-		if (!empty($request->fcm_token)) {
+	// 	//$userData = User::where('phone', $request->phone)->first();
+	// 	Auth::login($userData);
+	// 	if (!empty($request->fcm_token)) {
 
-			$userData->fcm_token = $request->fcm_token;
-		}
-		if (!empty($request->device_type)) {
-			$userData->device_type = $request->device_type;
-		}
-		if (!empty($request->device_token)) {
-			$userData->device_token = $request->device_token;
-		}
-		$userData->verify = 1;
-		$userData->updated_at = Carbon::now();
-		$userData->save();
-		$token =  $userData->createToken('auth')->accessToken;
-		$user = $this->getRafrenceUser($userData->id);
+	// 		$userData->fcm_token = $request->fcm_token;
+	// 	}
+	// 	if (!empty($request->device_type)) {
+	// 		$userData->device_type = $request->device_type;
+	// 	}
+	// 	if (!empty($request->device_token)) {
+	// 		$userData->device_token = $request->device_token;
+	// 	}
+	// 	$userData->verify = 1;
+	// 	$userData->updated_at = Carbon::now();
+	// 	$userData->save();
+	// 	$token =  $userData->createToken('auth')->accessToken;
+	// 	$user = $this->getRafrenceUser($userData->id);
 
-		return response()->json(['message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
+	// 	return response()->json(['message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
 
-		//return response()->json(['message' => 'Verified'], $this->successCode);
-	}
+	// 	//return response()->json(['message' => 'Verified'], $this->successCode);
+	// }
 	public function verifyOtp(Request $request)
 	{
 
@@ -1311,70 +1311,70 @@ class UserController extends Controller
 			return response()->json(['message' => $exception->getMessage()], 401);
 		}
 	}
-	public function phoneVerify(Request $request)
-	{
-		$user = Auth::user();
-		$rules = [
-			'phone' => 'required',
-			'country_code' => 'required',
-		];
+	// public function phoneVerify(Request $request)
+	// {
+	// 	$user = Auth::user();
+	// 	$rules = [
+	// 		'phone' => 'required',
+	// 		'country_code' => 'required',
+	// 	];
 
-		$validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-		}
+	// 	$validator = Validator::make($request->all(), $rules);
+	// 	if ($validator->fails()) {
+	// 		return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+	// 	}
 
-		$isphone = User::where(['phone' => $request->phone])->first();
-		/* if(empty($isphone)){
-			return response()->json(['message'=>'Your phone is not registered.'], $this->warningCode);
+	// 	$isphone = User::where(['phone' => $request->phone])->first();
+	// 	/* if(empty($isphone)){
+	// 		return response()->json(['message'=>'Your phone is not registered.'], $this->warningCode);
 			
-		} */
-		if (!empty($isphone) && $isphone['verify'] == 1) {
-			return response()->json(['message' => 'Your phone number already verified.'], $this->warningCode);
-		}
-		try {
+	// 	} */
+	// 	if (!empty($isphone) && $isphone['verify'] == 1) {
+	// 		return response()->json(['message' => 'Your phone number already verified.'], $this->warningCode);
+	// 	}
+	// 	try {
 
-			if (!empty($request->country_code)) {
-				$user->country_code = $request->country_code;
-			}
-			if (!empty($request->phone)) {
-				$user->phone = $request->phone;
-			}
-			#SEND OTP
-			$otp = rand(1000, 9999);
+	// 		if (!empty($request->country_code)) {
+	// 			$user->country_code = $request->country_code;
+	// 		}
+	// 		if (!empty($request->phone)) {
+	// 			$user->phone = $request->phone;
+	// 		}
+	// 		#SEND OTP
+	// 		$otp = rand(1000, 9999);
 
-			$expiryMin = config('app.otp_expiry_minutes');
-			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-			/* OtpVerification::updateOrCreate(
-					['phone'=>$request->phone],
-					['otp' => $otp,'expiry'=>$endTime]
-				); */
-			$otpverify = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone])->first();
+	// 		$expiryMin = config('app.otp_expiry_minutes');
+	// 		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+	// 		/* OtpVerification::updateOrCreate(
+	// 				['phone'=>$request->phone],
+	// 				['otp' => $otp,'expiry'=>$endTime]
+	// 			); */
+	// 		$otpverify = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $request->phone])->first();
 
 
-			if (!empty($otpverify)) {
-				$otpverify->otp = $otp;
-				$otpverify->expiry = $endTime;
-			} else {
-				$otpverify = new OtpVerification();
-				$otpverify->phone = $request->phone;
-				$otpverify->country_code = $request->country_code;
-				$otpverify->otp = $otp;
-				$otpverify->expiry = $endTime;
-			}
-			$otpverify->save();
-			//print_r($user); die;
-			$user->save();
-			$userdata = $this->getRafrenceUser($user->id);
+	// 		if (!empty($otpverify)) {
+	// 			$otpverify->otp = $otp;
+	// 			$otpverify->expiry = $endTime;
+	// 		} else {
+	// 			$otpverify = new OtpVerification();
+	// 			$otpverify->phone = $request->phone;
+	// 			$otpverify->country_code = $request->country_code;
+	// 			$otpverify->otp = $otp;
+	// 			$otpverify->expiry = $endTime;
+	// 		}
+	// 		$otpverify->save();
+	// 		//print_r($user); die;
+	// 		$user->save();
+	// 		$userdata = $this->getRafrenceUser($user->id);
 
-			return response()->json(['message' => 'Success', 'user' => $userdata, 'otp' => $otp], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
-			return response()->json(['message' => $exception->getMessage()], 401);
-		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], 401);
-		}
-	}
+	// 		return response()->json(['message' => 'Success', 'user' => $userdata, 'otp' => $otp], $this->successCode);
+	// 	} catch (\Illuminate\Database\QueryException $exception) {
+	// 		$errorCode = $exception->errorInfo[1];
+	// 		return response()->json(['message' => $exception->getMessage()], 401);
+	// 	} catch (\Exception $exception) {
+	// 		return response()->json(['message' => $exception->getMessage()], 401);
+	// 	}
+	// }
 	#CONTACT TO ADMIN
 	public function adminContact(Request $request)
 	{

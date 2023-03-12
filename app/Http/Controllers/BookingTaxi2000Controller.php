@@ -337,7 +337,7 @@ if($_REQUEST['cm'] == 2)
 				{
 					OtpVerification::updateOrCreate(
 						['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-						['otp' => $otp, 'expiry' => $endTime]
+						['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 					);
 				}
 				else
@@ -349,7 +349,7 @@ if($_REQUEST['cm'] == 2)
 			{
 				OtpVerification::updateOrCreate(
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-					['otp' => $otp, 'expiry' => $endTime]
+					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 				);
 			}
 			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this password to complete your booking");
@@ -501,6 +501,87 @@ if($_REQUEST['cm'] == 2)
 		return view('taxi2000.list_of_booking',$data);
 	}
 
+	public function booking_details($id)
+	{
+		$ride = Ride::where(['platform' => 'web'])->where(function ($query) {
+			$query->where('status', '!=', 3)->where('status', '!=', -3)->where('status', '!=', -2);
+		})->with(['driver', 'vehicle'])->find($id);
+		
+		$ride->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
+		$ride->create_date = date('D d-m-Y H:i',strtotime($ride->created_at));
+		$driver_ids = explode(',', $ride->driver_id);
+		if (count($driver_ids) > 1 && $ride->status != 1)
+		{
+			$ride->driver_name = "Not Available";
+		}
+		else
+		{
+			$ride->driver_name = $ride->driver ? wordwrap($ride->driver->first_name, 10, "\n", true) : '';
+		}
+		$ride_type = "Not Available";
+		if ($ride->ride_type == 1)
+		{
+			$ride_type = "Ride Schedule";
+		}
+		elseif($ride->ride_type == 2)
+		{
+			$ride_type = "Ride Now";
+		}
+		elseif($ride->ride_type == 3)
+		{
+			$ride_type = "Instant Ride";
+		}
+		elseif($ride->ride_type == 4)
+		{
+			$ride_type = "Ride Sharing";
+		}
+		$ride->ride_type = $ride_type;
+
+		$ride_status = "";
+		$ride_status_latest = "";
+		if ($ride->status == -2) {
+			$ride_status = "Cancelled";
+			$ride_status_latest = "Ride Cancelled";
+		} elseif ($ride->status == -1) {
+			$ride_status_latest = "Ride Rejected";
+			$ride_status = "Rejected";
+		} elseif ($ride->status == 1) {
+			$ride_status_latest = "Driver will arrive in #time#";
+			$ride_status = "Accepted";
+		} elseif ($ride->status == 2) {
+			$ride_status_latest = "Ride in progress and will completed in #time#";
+			$ride_status = "Started";
+		} elseif ($ride->status == 4) {
+			$ride_status_latest = "Driver has arrived";
+			$ride_status = "Driver Reached";
+		} elseif ($ride->status == 3) {
+			$ride_status_latest = "Ride Completed";
+			$ride_status = "Completed";
+		} elseif ($ride->status == -3) {
+			$ride_status_latest = "Ride Cancelled By You";
+			$ride_status = "Cancelled";
+		} elseif ($ride->status == 0) {
+			$ride_status_latest = "Pending";
+			$ride_status = "Pending";
+		} elseif ($ride->status == -4) {
+			$ride_status_latest = "Pending";
+			$ride_status = "Pending";
+		} elseif ($ride->ride_status > date('Y-m-d H:i:s')) {
+			$ride_status_latest = "Upcoming Ride";
+			$ride_status = "Upcoming";
+		} else if (!$ride->driver) {
+			$ride_status_latest = "Pending";
+			$ride_status = "Pending";
+			$ride->status = 0;
+		}
+		// dd($ride);					
+		$ride->ride_status = $ride_status;
+		$ride->ride_status_latest = $ride_status_latest;
+		$ride->user_name = ($ride->user ? $ride->user->first_name : 'Not Available').' '.($ride->user ? $ride->user->last_name : '');
+
+		return $ride;
+	}
+
 	public function send_otp_for_my_bookings(Request $request)
 	{
 		try {
@@ -513,7 +594,7 @@ if($_REQUEST['cm'] == 2)
 				$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 				OtpVerification::updateOrCreate(
 					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-					['otp' => $otp, 'expiry' => $endTime]
+					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 				);
 				return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 			} else {
@@ -660,7 +741,7 @@ if($_REQUEST['cm'] == 2)
 
 			OtpVerification::updateOrCreate(
 				['country_code' => $request->country_code, 'phone' => $request->phone],
-				['otp' => $otp, 'expiry' => $endTime]
+				['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
 			);
 			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
 		} catch (\Illuminate\Database\QueryException $exception) {

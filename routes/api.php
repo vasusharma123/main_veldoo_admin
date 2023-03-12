@@ -21,7 +21,7 @@ Config::set('limit_api', 20);
 #GUEST GROUP
 Route::group(['namespace' => 'API'], function(){
 	Route::get('notifytest', 'UserController@notifytest');
-	Route::post('register_or_update', 'UserController@register_or_update');
+	// Route::post('register_or_update', 'UserController@register_or_update');
 	Route::post('register', 'UserController@register');
 	Route::post('login', 'UserController@login');
 	Route::post('driverLogin', 'UserController@driverLogin');
@@ -76,12 +76,11 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('addVehicle', 'UserController@addVehicle'); 
 	Route::post('updateVehicle', 'UserController@updateVehicle'); 
 	Route::post('rideStatusChange', 'UserController@rideStatusChange'); 
-	Route::post('rideDetail', 'UserController@rideDetail'); 
 	Route::post('scheduleRide', 'UserController@scheduleRide'); 
 	//Route::post('shareRide', 'UserController@shareRide'); 
 	Route::post('driverDetail', 'UserController@driverDetail'); 
 	Route::post('customerDetail', 'UserController@customerDetail'); 
-	Route::post('phoneVerify', 'UserController@phoneVerify'); 
+	// Route::post('phoneVerify', 'UserController@phoneVerify'); 
 	Route::post('update_profile', 'UserController@update_profile'); 
 	Route::post('add_cart', 'UserController@addCart');
 	Route::post('add_booking', 'UserController@addBooking');

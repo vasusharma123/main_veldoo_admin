@@ -89,7 +89,7 @@
                                         <input class="form-control " id="Regphones" required=""
                                             value="{{ '+' . $record->country_code . ' ' . $record->phone }}" name="phone"
                                             type="text">
-                                        <input type="hidden" value="{{ '+' . $record->country_code }}" id="test1"
+                                        <input type="hidden" value="{{ $record->country_code }}" id="test1"
                                             placeholder="" name="country_code" />
                                     </div>
 
@@ -162,10 +162,15 @@
             }
         }
 
-        $('.flag-container').click(function() {
-            var data = $('.selected-dial-code').html();
-            $("#test1").val(data);
-        });
+        // $('.flag-container').click(function() {
+        //     var data = $('.selected-dial-code').html();
+        //     $("#test1").val(data);
+        // });
+
+        var input = $('#Regphones').intlTelInput("setNumber", "{{ '+'.(str_replace('+','',$record->country_code)).$record->phone }}");
+		input.on("countrychange", function() {
+			$("#test1").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
+		});
 
         $(document).ready(function() {
             $(document).on('keyup', "#Regphones", function() {

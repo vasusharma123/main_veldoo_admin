@@ -978,19 +978,19 @@ public function register(){
 	}
 
 
-	public function verifyOtp(Request $request){
-	$rules = [
-				'otp' => 'required'
-			];
-			$request->validate($rules);
-			$input = $request->all();
-			$user=\App\User::where('email',$request->email)->first();
-			$otpVerification=\App\OtpVerification::where('country_code',$user->country_code)->where('phone',$user->phone)->where('otp',$request->otp)->first();
-			if(!empty($otpVerification)){
-				Auth::login($user);
-			return redirect()->route('users.dashboard');
-			}
-	}
+	// public function verifyOtp(Request $request){
+	// $rules = [
+	// 			'otp' => 'required'
+	// 		];
+	// 		$request->validate($rules);
+	// 		$input = $request->all();
+	// 		$user=\App\User::where('email',$request->email)->first();
+	// 		$otpVerification=\App\OtpVerification::where('country_code',$user->country_code)->where('phone',$user->phone)->where('otp',$request->otp)->first();
+	// 		if(!empty($otpVerification)){
+	// 			Auth::login($user);
+	// 		return redirect()->route('users.dashboard');
+	// 		}
+	// }
 	
 
 	public function updateLatLong(Request $request){
