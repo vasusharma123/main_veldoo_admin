@@ -208,6 +208,11 @@ class Ride extends Model
 		return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
 	}
 
+	public function vehicle_category()
+	{
+		return $this->hasOne(Price::class, 'car_type', 'car_type');
+	}
+
 	public function company()
 	{
 		return $this->belongsTo(Company::class, 'company_id', 'id');
