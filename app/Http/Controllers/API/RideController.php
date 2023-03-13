@@ -322,22 +322,22 @@ class RideController extends Controller
                     if ($user->is_master == 1) {
                         $ownrideswaiting = Ride::where(['driver_id' => $userId, 'waiting' => 1])->where(function ($query) {
                             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $globalRideswaiting = Ride::whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query) {
                             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
-                        $globalridespending = Ride::where(['status' => -4])->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        $globalridespending = Ride::where(['status' => -4])->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $overallPendingRides = Ride::where(['status' => 0])->where(function ($query) use ($user) {
                             $query->whereNull('driver_id')
                             ->orWhere(['driver_id' => $user->id]);
-                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $othersFuturePendingRides = Ride::where(['status' => 0])->where(function ($query) use ($user) {
                             $query->where('driver_id', '!=', $user->id);
-                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'asc')->orderBy('status', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $rides = array();
                         $newarray = array();
@@ -366,17 +366,17 @@ class RideController extends Controller
                                 $query1->where('driver_id', $userId);
                                 $query1->where(['status' => 1, 'waiting' => 1]);
                             });
-                        })->orderBy('ride_time', 'asc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->orderBy('ride_time', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                     }
                 } elseif ($request->type == 2) {
                     if ($user->is_master == 1) {
                         if ($request->master_driver == 1) {
-                            $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                            $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                         } else {
-                            $rides = Ride::where('status', 3)->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                            $rides = Ride::where('status', 3)->whereDate('rides.ride_time', '>=', $todayDate)->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                         }
                     } else {
-                        $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where('status', 3)->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                     }
                 } elseif ($request->type == 3) {
                     if ($user->is_master == 1) {
@@ -390,14 +390,14 @@ class RideController extends Controller
                                     $query->orWhere(function ($query1) {
                                         $query1->where(['status' => -3]);
                                     });
-                                })->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                                })->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                         } else {
                             $rides = Ride::whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) {
                                 $query->whereIn('status', [-2]);
                                 $query->orWhere(function ($query1) {
                                     $query1->where(['status' => -3]);
                                 });
-                            })->with('user', 'driver', 'company_data')->paginate($this->limit);
+                            })->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                         }
                     } else {
                         //$rides=Ride::where('driver_id',$userId)->orWhere([['status', '=', -1]])->orWhere([['status', '=', -2]])->orWhere([['status', '=', -3]])->orderBy('id', 'desc')->with('user')->paginate($this->limit);
@@ -410,17 +410,17 @@ class RideController extends Controller
                                 $query->orWhere(function ($query1) {
                                     $query1->where(['status' => -3]);
                                 });
-                            })->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                            })->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                     }
                 } else if ($request->type == 4) {
                     if ($user->is_master == 1) {
                         $myOngoingRides = Ride::where(['driver_id' => $userId, 'waiting' => 0])->where(function ($query) {
                             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                        })->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $overallOngoingRides = Ride::whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
                             $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                        })->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
 
                         $rides = array();
                         $newarray = array();
@@ -440,17 +440,17 @@ class RideController extends Controller
                     } else {
                         $rides = Ride::where('driver_id', $userId)->whereDate('rides.ride_time', '>=', $todayDate)->where(function ($query) {
                             $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-                        })->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->paginate($this->limit);
+                        })->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
                     }
                 } elseif ($request->type == 5) {
                     if ($user->is_master == 1) {
                         if ($request->master_driver == 1) {
-                            $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', 0], ['ride_type', '>', 1]])->whereRaw('FIND_IN_SET(?,driver_id)', [$userId])->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->limit(1)->paginate(1);
+                            $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', 0], ['ride_type', '>', 1]])->whereRaw('FIND_IN_SET(?,driver_id)', [$userId])->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->limit(1)->paginate(1);
                         } else {
-                            $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', -4], ['ride_type', '>', 1]])->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->limit(1)->paginate(1);
+                            $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', -4], ['ride_type', '>', 1]])->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->limit(1)->paginate(1);
                         }
                     } else {
-                        $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', 0], ['ride_type', '>', 1]])->whereRaw('FIND_IN_SET(?,driver_id)', [$userId])->orderBy('ride_time', 'desc')->with('user', 'driver', 'company_data')->limit(1)->paginate(1);
+                        $rides = Ride::query()->whereDate('rides.ride_time', '>=', $todayDate)->where([['status', '=', 0], ['ride_type', '>', 1]])->whereRaw('FIND_IN_SET(?,driver_id)', [$userId])->orderBy('ride_time', 'desc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->limit(1)->paginate(1);
                     }
                 }
                 if (!empty($rides)) {
