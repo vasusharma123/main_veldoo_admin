@@ -5693,32 +5693,40 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function waitingstatuschange(Request $request)
 	{
+		$userDetail = Auth::user();
+
 		$rules = [
 			'ride_id' => 'required',
 			'waiting' => 'required',
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$input = $request->all();
-		$ride = Ride::query()->where([['id', '=', $_REQUEST['ride_id']]])->first();
-		if ($request->waiting == 0) {
-			$ride->waiting = 0;
+
+		$ride = Ride::find($request->ride_id);
+		if ($ride) {
+			if ($ride->driver_id == $userDetail->id) {
+
+				if ($request->waiting == 0) {
+					$ride->waiting = 0;
+				}
+				if ($request->waiting == 1) {
+					$ride->waiting = 1;
+				}
+
+				$ride->save();
+				$ride_data = Ride::find($request->ride_id);
+				return response()->json(['success' => true, 'message' => 'Waiting status Updated successfully.', 'data' => $ride_data], $this->successCode);
+			} else {
+				return response()->json(['message' => "This ride doesn't belong to you."], $this->warningCode);
+			}
+		} else {
+			return response()->json(['message' => 'No such ride exists.'], $this->warningCode);
 		}
-		if ($request->waiting == 1) {
-			$ride->waiting = 1;
-		}
-
-
-
-		$ride->save();
-		$rideid = $ride->id;
-		$ride_data = Ride::query()->where([['id', '=', $rideid]])->first();
-		return response()->json(['success' => true, 'message' => 'Waiting status Updated successfully.', 'data' => $ride_data], $this->successCode);
 	}
+
 	public function rideForSharing(Request $request)
 	{
 		/*$rules = [
