@@ -53,6 +53,7 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
             $settings = Setting::first();
             $settingValue = json_decode($settings['value']);
             foreach ($rides as $ride) {
+                $driverId = $ride->driver_id;
                 $ride->all_drivers = $ride->driver_id;
                 $ride->save();
                 $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
@@ -68,8 +69,8 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
                         bulk_firebase_android_notification($title, $message, [$ride->driver->device_token], $additional);
                     }
                 }
-                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $ride->driver_id, 'additional_data' => json_encode($additional)]);
-                RideHistory::insert(['ride_id' => $ride->id, 'driver_id' => $ride->driver_id, 'status' => '2']);
+                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverId, 'additional_data' => json_encode($additional)]);
+                RideHistory::insert(['ride_id' => $ride->id, 'driver_id' => $driverId, 'status' => '2']);
                 $rideData = Ride::find($ride->id);
                 $rideData->driver_id = null;
                 $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->alert_notification_date_time)));
