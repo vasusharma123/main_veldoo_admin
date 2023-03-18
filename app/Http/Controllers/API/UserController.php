@@ -5626,14 +5626,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			DB::beginTransaction();
 			$ride = Ride::find($request->ride_id);
 
-			if ($ride->status == 1 || $ride->status == 2 || $ride->status == 4) {
-				return response()->json(['message' => "Ride already accepted"], $this->warningCode);
-			}
-
-			if ($ride->status == 3) {
-				return response()->json(['message' => "Ride already completed"], $this->warningCode);
-			}
-
 			if (!empty($request->start_location)) {
 				$ride->pickup_address = $request->start_location;
 			}
