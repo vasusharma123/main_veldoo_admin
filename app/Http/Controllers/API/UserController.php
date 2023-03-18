@@ -5660,7 +5660,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->alert_time = $request->alert_time;
 					$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
 				} else {
-					$alert_notification_date_time = $ride->ride_time;
+					$alert_notification_date_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 				}
 			}
 

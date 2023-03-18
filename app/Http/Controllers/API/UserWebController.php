@@ -63,11 +63,19 @@ class UserWebController extends Controller
             $ride->note = $request->note;
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
-            // if (!empty($request->alert_time)) {
-                // $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
-            // }
-            $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
-            $ride->alert_time = $request->alert_time;
+            if (!empty($request->ride_time)) {
+				$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+				if (!empty($request->alert_time)) {
+					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+				} else {
+					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
+				}
+			} else {
+                $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");
+                $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
+            }
+            
+            $ride->alert_time = $request->alert_time??0;
             if (!empty($request->pick_lat)) {
                 $ride->pick_lat = $request->pick_lat;
             }
@@ -87,7 +95,7 @@ class UserWebController extends Controller
             if (!empty($request->ride_cost)) {
                 $ride->ride_cost = $request->ride_cost;
             }
-            $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
             }
@@ -314,6 +322,10 @@ class UserWebController extends Controller
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
             $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
+            if ((!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
+				$ride->notification_sent = 0;
+				$ride->alert_send = 0;
+			}
             if (!empty($request->pick_lat)) {
                 $ride->pick_lat = $request->pick_lat;
             }
