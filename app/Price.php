@@ -17,7 +17,8 @@ class Price extends Model
     'basic_fee',
     'seating_capacity',
     'alert_time',
-    'status'
+    'status',
+    'service_provider_id',
   ];
 
 

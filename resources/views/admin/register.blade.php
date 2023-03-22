@@ -45,15 +45,20 @@
 							<div class="col-xs-12">
 							<input class="form-control" name="phone" type="text" placeholder="Phone Number" id="phone"> 
 							</div>
-						 </div>
-						<div class="form-group">
+                        </div>
+                        <div class="form-group ">
+                            <div class="col-xs-12">
+                                <input class="form-control" name="site_name" type="text" placeholder="Site Name">
+							</div>
+                        </div>
+						{{-- <div class="form-group">
                             <div class="col-xs-12">
                                 <input class="form-control" name="password" type="password" placeholder="Password" id="password"> </div>
                         </div>
 						<div class="form-group">
                             <div class="col-xs-12">
                                 <input class="form-control" name="confirm_password" type="password" placeholder="Confirm Password"> </div>
-                        </div>
+                        </div> --}}
                        
                         <div class="form-group text-center m-t-20">
                             <div class="col-xs-12">
@@ -80,10 +85,10 @@
             rules: {
                 first_name: "required",
                 last_name: "required",
-                 email:{
+                email:{
 					required: true,
                     email: true
-					},
+                },
                 phone: "required",
                 password: "required",
                 confirm_password: {
@@ -98,15 +103,21 @@
         });
 	});
 </script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/js/intlTelInput.min.js"></script>
  <script>
     // Vanilla Javascript
-    var input = document.querySelector("#country_code");
-    window.intlTelInput(input,({
-      // options here
-    }));
+    // var input = document.querySelector("#country_code");
+    // window.intlTelInput(input,({
+    //   // options here
+    // }));
 
     $(document).ready(function() {
+        $('#phone').intlTelInput({});
+        $("#phone").on("countrychange", function() {
+            var countryCode = $('.iti__selected-flag').attr('title');
+            var countryCode = countryCode.replace(/[^0-9]/g, '')
+            $('#country_code').val(countryCode);
+        });
         $('.iti__flag-container').click(function() { 
           var countryCode = $('.iti__selected-flag').attr('title');
           var countryCode = countryCode.replace(/[^0-9]/g,'')

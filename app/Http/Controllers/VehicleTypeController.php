@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Price;
 use DataTables;
+use Auth;
 
 class VehicleTypeController extends Controller
 {
@@ -33,8 +34,7 @@ class VehicleTypeController extends Controller
 
         if ($request->ajax()) {
 
-            $data = Price::select(['id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status'])
-            ->orderBy('id', 'DESC')->get();
+            $data = Price::select(['id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status'])->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
             // print_r($data);die;
             return Datatables::of($data)
                 ->addIndexColumn()

@@ -14,6 +14,8 @@ use App\DriverChooseCar;
 use App\User;
 use App\Exports\VehicleExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Auth;
+
 class VehicleController extends Controller
 {
   
@@ -41,8 +43,7 @@ class VehicleController extends Controller
         $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
         if ($request->ajax()) {
-            $data = Vehicle::with(['last_driver_choosen', 'carType'])
-            ->orderBy('id', 'DESC')->get();
+            $data = Vehicle::with(['last_driver_choosen', 'carType'])->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {

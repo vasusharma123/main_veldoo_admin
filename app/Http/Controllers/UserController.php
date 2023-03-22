@@ -544,7 +544,7 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$record = (object)[];
-		$configuration =  Setting::firstOrNew(['key' => '_configuration'])->value;
+		$configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
 		$data['record'] = json_decode($configuration);
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.settings')->with($data);
@@ -932,32 +932,34 @@ class UserController extends Controller
 
     }
 
-public function register(){
+	public function register(){
 		$breadcrumb = array('title'=>'Home','action'=>'Register');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		return view('admin.register')->with($data);
-
-}
+	}
 
 	public function doRegister(Request $request){
-			$rules = [
-				'email' => 'required|email|unique:users',
-				'password' => 'required|min:6',
-				'confirm_password' => 'required|min:6',
-				'phone'=>'required',
-				'country_code'=>'required',
-				'first_name'=>'required',
-				'last_name'=>'required'
-			];
-			$request->validate($rules);
-			$input = $request->all();
-			$input['password']=Hash::make($request->input('password'));
-			$input['user_type']=4;
-			$otp = rand(1000,9999);
-			$user=User::create($input);
-			$expiryMin = config('app.otp_expiry_minutes');
-					$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+		dd($request->all());
+		$rules = [
+			'email' => 'required|email|unique:users,user_type,3',
+			// 'password' => 'required|min:6',
+			// 'confirm_password' => 'required|min:6',
+			'phone'=>'required',
+			'country_code'=>'required',
+			'site_name'=>'required',
+			'first_name'=>'required',
+			'last_name'=>'required'
+		];
+		$request->validate($rules);
+		$input = $request->all();
+		dd($request->all());
+		$input['password']=Hash::make($request->input('password'));
+		$input['user_type']=4;
+		$otp = rand(1000,9999);
+		$user=User::create($input);
+		$expiryMin = config('app.otp_expiry_minutes');
+		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 					\App\OtpVerification::create(
 						['phone'=> ltrim($request->phone, "0"),
 						'otp' => $otp,
