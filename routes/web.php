@@ -20,7 +20,6 @@
     return "Cache is cleared";
 });
 
-
 /****	GLOBAL VARIABLE	***/
 Config::set('limit', 10);
 
@@ -81,8 +80,9 @@ Route::group(['middleware' => 'guest'], function(){
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
     Route::get('/register',  ['as'=>'companyRegister','uses'=>'UserController@register']);
     Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
-     Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
-	 Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
+	Route::get('/service-provider/verify/{token}',  ['as'=>'serviceProviderVerify','uses'=>'UserController@serviceProviderVerify']);
+	Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
+	Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
 	Route::get('/password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 	Route::post('/password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 	Route::get('/password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');

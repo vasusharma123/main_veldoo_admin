@@ -9,6 +9,7 @@ use App\UserData;
 use App\Category;
 use App\Setting;
 use App\Voucher;
+use Str;
 use Session;
 use Config;
 use Illuminate\Http\Request;
@@ -940,9 +941,9 @@ class UserController extends Controller
 	}
 
 	public function doRegister(Request $request){
-		dd($request->all());
+		
 		$rules = [
-			'email' => 'required|email|unique:users,user_type,3',
+			'email' => 'required|email|unique:users',
 			// 'password' => 'required|min:6',
 			// 'confirm_password' => 'required|min:6',
 			'phone'=>'required',
@@ -953,30 +954,142 @@ class UserController extends Controller
 		];
 		$request->validate($rules);
 		$input = $request->all();
-		dd($request->all());
-		$input['password']=Hash::make($request->input('password'));
-		$input['user_type']=4;
-		$otp = rand(1000,9999);
-		$user=User::create($input);
-		$expiryMin = config('app.otp_expiry_minutes');
-		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-					\App\OtpVerification::create(
-						['phone'=> ltrim($request->phone, "0"),
-						'otp' => $otp,
-						'expiry'=>$endTime,
-						'country_code'=>$request->country_code
-						]
-					);
-				
-			return redirect()->to(url('verify/'.$request->email));
+		$serviceProvider = new User();
+		$serviceProvider->fill([
+			'email'=>$request->email,
+			'first_name'=>$request->first_name,
+			'last_name'=>$request->last_name,
+			'name'=>$request->first_name.' '.$request->last_name,
+			'country_code'=>$request->country_code,
+			'phone'=>$request->phone,
+			'user_type'=>3,
+		]);
+		$serviceProvider->save();
+		$token = Str::random(64).'-'.$serviceProvider->id;
+		$serviceProvider->is_email_verified_token = $token;
+		$serviceProvider->update();
+
+		$settingValue = [
+			"admin_logo"=> "",
+			"radius"=> "50",
+			"site_name"=> $request->site_name,
+			"first_x_free_users"=> "1",
+			"admin_free_subscription_days"=> "1",
+			"copyright"=> $request->site_name,
+			"admin_primary_color"=> "#000000",
+			"ad_interval"=> "2",
+			"topic_title_limit"=> "2",
+			"admin_background"=> "",
+			"admin_favicon"=> "",
+			"admin_sidebar_logo"=> "",
+			"_token"=> "",
+			"facebook_link"=> "",
+			"twitter_link"=> "",
+			"instagram_link"=> "",
+			"paypal_email"=> "",
+			"admin_commission"=> "21",
+			"base_delivery_price"=> "21",
+			"base_delivery_distance"=> "21",
+			"tax"=> "21",
+			"credit_card_fee"=> "21",
+			"stripe_mode"=> "",
+			"stripe_test_secret_key"=> "",
+			"stripe_test_publish_key"=> "",
+			"ride_type"=> "1",
+			"pickup_address"=> "sec 10 chandigarh",
+			"dest_address"=> "sec 12 chandigarh",
+			"additional_notes"=> "test",
+			"notification"=> 0,
+			"number_of_drivers_get_notification"=> "1",
+			"currency_symbol"=> "CHF",
+			"currency_name"=> "Franken",
+			"interval_time"=> "1",
+			"driver_requests"=> "3",
+			"waiting_time"=> "30",
+			"pickup_distance"=> "1",
+			"join_radius"=> "5",
+			"first_request_send"=> "2",
+			"driver_idle_time"=> "60",
+			"current_ride_distance_addition"=> "10",
+			"waiting_ride_distance_addition"=> "15"
+		];
+		$setting = new Setting();
+		$setting->fill(['key' => '_configuration','service_provider_id'=>$serviceProvider->id,'value'=>json_encode($settingValue)]);
+		$setting->save();
+		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
+		Mail::send('email.emailVerificationEmail', ['token' => $token], function($message) use($request){
+			$message->to($request->email);
+			$message->subject('Email Verification Mail');
+		});
+		return redirect()->route('adminLogin')->with('success', 'You need to confirm your account. We have sent you an activation code, please check your email.');
+	}
+
+
+	public function serviceProviderVerify($token)
+	{
+		// dd($token);
+		$verifyUser = User::where('is_email_verified_token', $token)->first();
+        if(!is_null($verifyUser) ){
+
+			$password = Str::random(8);
+			$password = Str::random(8);
+			$verifyUser->is_email_verified = 1;
+			$verifyUser->is_email_verified_token = "";
+			$verifyUser->password = Hash::make($password);
+			$verifyUser->update();
+
+
+			$driver = new User();
+			$driver->fill([
+				'email'=>'driver_'.$verifyUser->email,
+				'first_name'=>$verifyUser->first_name,
+				'last_name'=>$verifyUser->last_name,
+				'country_code'=>$verifyUser->country_code,
+				'phone'=>$verifyUser->phone,
+				'is_master'=>1,
+				'user_type'=>2,
+				'password'=>Hash::make($password),
+			]);
+			$driver->save();
+
+			$user = new User();
+			$user->fill([
+				'email'=>'user_'.$verifyUser->email,
+				'first_name'=>$verifyUser->first_name,
+				'last_name'=>$verifyUser->last_name,
+				'country_code'=>$verifyUser->country_code,
+				'phone'=>$verifyUser->phone,
+				'user_type'=>1,
+				'verify'=>1,
+				'password'=>Hash::make($password),
+			]);
+			$user->save();
+
+			$data['user'] = $user;
+			$data['driver'] = $driver;
+			$data['serviceProvider'] = $verifyUser;
+			$data['password'] = $password;
+			// dd($data);
+			$message = "Your e-mail is verified. We sent a mail with your login details.";
+			Mail::send('email.sendLoginDetailsToServiceProvider', ['data' => $data], function($message) use($verifyUser){
+				$message->to($verifyUser->email);
+				$message->subject('Welcome Mail');
+			});
+			return redirect()->route('adminLogin')->with('success', $message);
+        }
+		else
+		{
+			$message = 'Sorry your email cannot be identified.';
+			return redirect()->route('adminLogin')->with('error', $message);
+		}
 	}
 
 	public function verify($email){
-	$breadcrumb = array('title'=>'Home','action'=>'Register');
-			$data = [];
-			$data['email']=$email;
-			$data = array_merge($breadcrumb,$data);
-			return view('admin.verify')->with($data);
+		$breadcrumb = array('title'=>'Home','action'=>'Register');
+		$data = [];
+		$data['email']=$email;
+		$data = array_merge($breadcrumb,$data);
+		return view('admin.verify')->with($data);
 	}
 
 

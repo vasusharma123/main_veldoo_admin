@@ -40,6 +40,7 @@
                             <div class="col-xs-12">
                                 <input class="form-control" name="email" type="text" placeholder="Email"> </div>
                         </div>
+						<input class="form-control" type="hidden" placeholder="Country Code" id="country_code_box"> 
 						<input class="form-control" name="country_code" type="hidden" placeholder="Country Code" id="country_code"> 
 						<div class="form-group">
 							<div class="col-xs-12">
@@ -78,53 +79,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
 <link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
-    <script type="text/javascript">
-   $(document).ready(function () {
-	$('#registerform').validate({
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#registerform').validate({
             rules: {
                 first_name: "required",
                 last_name: "required",
                 email:{
-					required: true,
+                    required: true,
                     email: true
                 },
                 phone: "required",
-                password: "required",
-                confirm_password: {
-					required:true,
-                    equalTo: "#password"
-                }
-            },
-            messages: {
-                password: " Enter Password",
-                confirmpassword: " Enter Confirm Password Same as Password"
+                country_code: "required",
+                site_name: "required",
             }
         });
-	});
+
+        $(document).on('submit','#registerform',function(e){
+            // e.preventDefault();
+            var countryCode = $('.iti__selected-flag').attr('title');
+            var countryCode = countryCode.replace(/[^0-9]/g,'');
+            $('#country_code').val(countryCode);
+        });
+    });
 </script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/16.0.8/js/intlTelInput.min.js"></script>
  <script>
     // Vanilla Javascript
-    // var input = document.querySelector("#country_code");
-    // window.intlTelInput(input,({
-    //   // options here
-    // }));
+    var input = document.querySelector("#country_code_box");
+    window.intlTelInput(input,({
+      // options here
+    }));
 
-    $(document).ready(function() {
-        $('#phone').intlTelInput({});
-        $("#phone").on("countrychange", function() {
-            var countryCode = $('.iti__selected-flag').attr('title');
-            var countryCode = countryCode.replace(/[^0-9]/g, '')
-            $('#country_code').val(countryCode);
-        });
-        $('.iti__flag-container').click(function() { 
-          var countryCode = $('.iti__selected-flag').attr('title');
-          var countryCode = countryCode.replace(/[^0-9]/g,'')
-          $('#country_code').val("");
-          $('#country_code').val(countryCode);
-		 
-          $('#phone').val($('#phone').val());
-       });
-    });
+    // $(document).ready(function() {
+    //     $('.iti__flag-container').click(function() { 
+    //         var countryCode = $('.iti__selected-flag').attr('title');
+    //         var countryCode = countryCode.replace(/[^0-9]/g,'')
+    //         $('#country_code').val("");
+    //         $('#country_code').val(countryCode);
+            
+    //         $('#phone').val($('#phone').val());
+    //     });
+    // });
   </script>
