@@ -29,6 +29,8 @@ use DataTables;
 use App\DriverStayActiveNotification;
 use App\DriverChooseCar;
 use Exception;
+use App\Price;
+use App\Vehicle;
 
 class UserController extends Controller
 {
@@ -1032,7 +1034,6 @@ class UserController extends Controller
         if(!is_null($verifyUser) ){
 
 			$password = Str::random(8);
-			$password = Str::random(8);
 			$verifyUser->is_email_verified = 1;
 			$verifyUser->is_email_verified_token = "";
 			$verifyUser->password = Hash::make($password);
@@ -1052,6 +1053,7 @@ class UserController extends Controller
 			]);
 			$driver->save();
 
+			//customer
 			$user = new User();
 			$user->fill([
 				'email'=>'user_'.$verifyUser->email,
@@ -1064,6 +1066,42 @@ class UserController extends Controller
 				'password'=>Hash::make($password),
 			]);
 			$user->save();
+
+			//vehicle-type
+			$vehicleType = new Price();
+			$vehicleType->fill([
+								'car_type'=>'Regular',
+								'price_per_km'=>'3.6',
+								'basic_fee'=>'6',
+								'seating_capacity'=>'4',
+								'alert_time'=>'15',
+								'status'=>'1',
+								'sort'=>'0',
+								'service_provider_id'=>$verifyUser->id,
+							]);
+			$vehicleType->save();
+
+			//vehicle
+			$vehicle = new Vehicle();
+			$vehicle->fill([
+								'user_id'=>$driver->id,
+								'category_id'=>$vehicleType->id,
+								'year'=>date('Y'),
+								'model'=>'Volkswagen',
+								'color'=>'Orange',
+								'insurance_company'=>'',
+								'certificate_number'=>'',
+								'policy_number'=>'',
+								'issue_date'=>'',
+								'expiry_date'=>'',
+								'driving_license'=>'',
+								'vehicle_rc'=>'',
+								'vehicle_image'=>'',
+								'vehicle_number_plate'=>Str::random(6),
+								'mileage'=>'',
+								'service_provider_id'=>$verifyUser->id,
+							]);
+			$vehicle->save();
 
 			$data['user'] = $user;
 			$data['driver'] = $driver;
