@@ -14,7 +14,7 @@ class AddServiceProviderIdToSettingsTable extends Migration
     public function up()
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->integer('service_provider_id')->nullable();
+            $table->bigInteger('service_provider_id')->nullable();
         });
     }
 

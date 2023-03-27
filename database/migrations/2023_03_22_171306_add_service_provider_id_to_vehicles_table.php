@@ -14,7 +14,7 @@ class AddServiceProviderIdToVehiclesTable extends Migration
     public function up()
     {
         Schema::table('vehicles', function (Blueprint $table) {
-            $table->integer('service_provider_id')->nullable();
+            $table->bigInteger('service_provider_id')->nullable();
         });
     }
 

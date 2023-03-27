@@ -163,7 +163,7 @@ class UserController extends Controller
 
          if ($request->ajax()) {
             
-            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)->orderBy('id','DESC')->get();
+            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)->where('service_provider_id',Auth::user()->id)->orderBy('id','DESC')->get();
             
             return Datatables::of($data)
                             ->addIndexColumn()
@@ -711,7 +711,7 @@ class UserController extends Controller
         */
 
 		if ($request->ajax()) {
-			$data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->orderBy('id', 'DESC')->get();
+			$data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 
 			return Datatables::of($data)
 				->addIndexColumn()
@@ -1050,6 +1050,7 @@ class UserController extends Controller
 				'is_master'=>1,
 				'user_type'=>2,
 				'password'=>Hash::make($password),
+				'service_provider_id'=>$verifyUser->id,
 			]);
 			$driver->save();
 
@@ -1064,6 +1065,7 @@ class UserController extends Controller
 				'user_type'=>1,
 				'verify'=>1,
 				'password'=>Hash::make($password),
+				'service_provider_id'=>$verifyUser->id,
 			]);
 			$user->save();
 

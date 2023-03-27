@@ -16,6 +16,7 @@ class AddIsEmailVerifiedToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->integer('is_email_verified')->default(0);
             $table->text('is_email_verified_token')->nullable();
+            $table->bigInteger('service_provider_id')->nullable();
         });
     }
 
@@ -29,6 +30,7 @@ class AddIsEmailVerifiedToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('is_email_verified');
             $table->dropColumn('is_email_verified_token');
+            $table->dropColumn('service_provider_id');
         });
     }
 }
