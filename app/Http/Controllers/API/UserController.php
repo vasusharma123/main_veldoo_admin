@@ -5698,6 +5698,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$ride->alert_notification_date_time = $alert_notification_date_time;
 				$ride->notification_sent = 0;
 				$ride->alert_send = 0;
+				$ride->status = 0;
 			}
 			$ride->save();
 			DB::commit();
