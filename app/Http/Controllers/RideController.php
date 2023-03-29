@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\RideExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
+use Auth;
 
 class RideController extends Controller
 {
@@ -35,6 +36,7 @@ class RideController extends Controller
                     $join->on('vehicles.category_id', '=', 'prices.id')->where('prices.deleted_at', null);
                 })
                 ->leftJoin('payment_methods', 'payment_methods.id', 'rides.payment_type')
+                ->where('rides.service_provider_id',Auth::user()->id)
                 ->orderBy('rides.id', 'DESC');
 
             return Datatables::of($data)

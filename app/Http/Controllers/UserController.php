@@ -87,21 +87,21 @@ class UserController extends Controller
 
 		if(Auth::user()->user_type==3)
 		{
-			$data['booking_count'] = Ride::count();
-			$data['rider_count'] = User::where('user_type',1)->count();
-			$data['driver_count'] = User::where('user_type',2)->count();
-			$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->count();
-			$data['companies_registered']=\App\User::where('user_type',4)->count();
-			$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->count();
-			$data['upcoming_booking_count']=Ride::whereDate('ride_time','>',Carbon::today())->count();
-			$data['revenue']=Ride::where('status',3)->sum('price');
-			$data['company_users']=User::where('user_type',1)->where('created_by','>',0)->count();
+			$data['booking_count'] = Ride::where('service_provider_id',Auth::user()->id)->count();
+			$data['rider_count'] = User::where('user_type',1)->where('service_provider_id',Auth::user()->id)->count();
+			$data['driver_count'] = User::where('user_type',2)->where('service_provider_id',Auth::user()->id)->count();
+			$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
+			$data['companies_registered']=User::where('user_type',4)->where('service_provider_id',Auth::user()->id)->count();
+			$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
+			$data['upcoming_booking_count']=Ride::whereDate('ride_time','>',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
+			$data['revenue']=Ride::where('status',3)->where('service_provider_id',Auth::user()->id)->sum('price');
+			$data['company_users']=User::where('user_type',1)->where('service_provider_id',Auth::user()->id)->where('created_by','>',0)->count();
 			Auth::user()->syncRoles('Administrator');
 		}
 		elseif(Auth::user()->user_type==4)
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
-			Auth::user()->syncRoles('Company');	
+			Auth::user()->syncRoles('Company'); 
 		}
 		elseif(Auth::user()->user_type==5)
 		{
@@ -163,7 +163,9 @@ class UserController extends Controller
 
          if ($request->ajax()) {
             
-            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)->where('service_provider_id',Auth::user()->id)->orderBy('id','DESC')->get();
+            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)
+			// ->where('service_provider_id',Auth::user()->id)
+			->orderBy('id','DESC')->get();
             
             return Datatables::of($data)
                             ->addIndexColumn()

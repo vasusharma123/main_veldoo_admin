@@ -32,14 +32,13 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-         $data = array();
+        $data = array();
         $data = array('title'=>'Company','action'=>'List Companies');
        
 
         if ($request->ajax()) {
             
-            $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->orderBy('id','DESC')->get();
-            
+            $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->where('service_provider_id',Auth::user()->id)->orderBy('id','DESC')->get();
             return Datatables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function ($row) {
@@ -100,8 +99,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-         $breadcrumb = array('title'=>'Company','action'=>'Add Company');
-		
+        $breadcrumb = array('title'=>'Company','action'=>'Add Company');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.company.create')->with($data);
@@ -148,6 +146,7 @@ class CompanyController extends Controller
             $data['addresses'] = $request->street;
             $data['country_code'] = $request->country_code;
             $data['phone'] = ltrim($request->phone, "0");
+            $data['service_provider_id'] = Auth::user()->id;
             $user = User::create($data);
             // dd($user);
             // Company
@@ -233,7 +232,9 @@ class CompanyController extends Controller
         $breadcrumb = array('title'=>'Company','action'=>'Edit Company');
 		$data = [];
         $where = array('id' => $id,'user_type'=>4);
-        $record = User::where($where)->first();
+        $record = User::where($where)
+                    ->where('service_provider_id',Auth::user()->id)
+                    ->first();
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
 		}
@@ -295,9 +296,8 @@ class CompanyController extends Controller
      */
     public function destroy(Request $request)
     {
-        $price = User::where('id',$request->user_id)->delete();
+        $price = User::where('id',$request->user_id)->where('service_provider_id',Auth::user()->id)->delete();
         // $price->delete();
-
         
         echo json_encode(true);
         exit();

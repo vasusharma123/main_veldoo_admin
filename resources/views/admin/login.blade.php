@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-group text-center m-t-20">
                             <div class="col-xs-12">
-                                <a href="{{url('register')}}" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Register AS Company</a>
+                                <a href="{{url('register')}}" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Register</a>
                             </div>
                         </div>
                     {{ Form::close() }}

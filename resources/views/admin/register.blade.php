@@ -25,7 +25,7 @@
 					@include('admin.layouts.flash-message')
 					
 					{{ Form::open(array('url' => 'doRegister','class'=>'form-horizontal form-material','id'=>'registerform')) }}
-                        <h3 class="box-title m-b-20">Company Sign Up</h3>
+                        <h3 class="box-title m-b-20">Sign Up</h3>
 						<div class="form-group ">
                             <div class="col-xs-12">
                                 <input class="form-control" name="first_name" type="text" placeholder="First Name">
@@ -64,6 +64,11 @@
                         <div class="form-group text-center m-t-20">
                             <div class="col-xs-12">
                                 <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Register</button>
+                            </div>
+                        </div>
+                        <div class="form-group text-center m-t-20">
+                            <div class="col-xs-12">
+                                <a href="{{ route('adminLogin') }}" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="button">Login</a>
                             </div>
                         </div>
                     {{ Form::close() }}

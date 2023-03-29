@@ -14,17 +14,20 @@ class AddDefaultServiceProviderSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->whereIn('user_type',[1,2,4,5])->update([
+        DB::table('users')->whereNull('service_provider_id')->whereIn('user_type',[1,2,4,5])->update([
             'service_provider_id' => 1
         ]);
 
-        DB::table('settings')->update([
+        DB::table('settings')->whereNull('service_provider_id')->update([
             'service_provider_id' => 1
         ]);
-        DB::table('vehicles')->update([
+        DB::table('vehicles')->whereNull('service_provider_id')->update([
             'service_provider_id' => 1
         ]);
-        DB::table('prices')->update([
+        DB::table('prices')->whereNull('service_provider_id')->update([
+            'service_provider_id' => 1
+        ]);
+        DB::table('rides')->whereNull('service_provider_id')->update([
             'service_provider_id' => 1
         ]);
     }
