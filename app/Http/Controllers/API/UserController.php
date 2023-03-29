@@ -5694,10 +5694,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$ride->ride_type = 1;
 			}
 
-			if ((!empty($alert_notification_date_time)) && $alert_notification_date_time >= Carbon::now()->format("Y-m-d H:i:s")) {
+			if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 				$ride->alert_notification_date_time = $alert_notification_date_time;
 				$ride->notification_sent = 0;
 				$ride->alert_send = 0;
+				$ride->status = 0;
 			}
 			$ride->save();
 			DB::commit();

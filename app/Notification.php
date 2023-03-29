@@ -10,30 +10,16 @@ class Notification extends Model
         'title', 'description', 'type', 'user_id', 'status', 'additional_data', 'created_at', 'updated_at'
     ];
 
+    protected $appends = ['created_at_unix_timestamp'];
+
     public static function saveData($inputArr){
         // print_r($inputArr);die;
         return self::create($inputArr);
     }
 
-   /*  protected $fillable = [
-        'user_id','user_id_op','operation_id','title','description','type','other','status','timestamp'
-    ];
-
-
-
-    protected $casts = [
-        'user_id' => 'integer',
-        'user_id_op' => 'integer',
-    ];
-	
-    public function getUserIdAttribute($value)
-	{
-		return (int)$value;
-	}
-    public function getUserIdOpAttribute($value)
-	{
-		return (int)$value;
-	} */
+    public function getCreatedAtUnixTimestampAttribute(){
+        return $this->created_at->getTimestamp();
+    }
 
     public function getAdditionalDataAttribute($additional_data){
         if(!empty($additional_data)){

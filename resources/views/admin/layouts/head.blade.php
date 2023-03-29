@@ -80,7 +80,7 @@
 		.table tr td strong{
 			font-weight:500;
 		}
-		.container-fluid {min-height: 700px;}
+		/* .container-fluid {min-height: 700px;} */
 		select#user {
     width: 100% !important;
 }
