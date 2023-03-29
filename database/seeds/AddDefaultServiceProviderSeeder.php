@@ -14,20 +14,37 @@ class AddDefaultServiceProviderSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->whereNull('service_provider_id')->whereIn('user_type',[1,2,4,5])->update([
+        DB::table('users')->whereIn('user_type',[2,4,5])
+        ->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })
+        ->update([
             'service_provider_id' => 1
         ]);
 
-        DB::table('settings')->whereNull('service_provider_id')->update([
+        DB::table('settings')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
             'service_provider_id' => 1
         ]);
-        DB::table('vehicles')->whereNull('service_provider_id')->update([
+        DB::table('vehicles')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
             'service_provider_id' => 1
         ]);
-        DB::table('prices')->whereNull('service_provider_id')->update([
+        DB::table('prices')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
             'service_provider_id' => 1
         ]);
-        DB::table('rides')->whereNull('service_provider_id')->update([
+        DB::table('rides')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
             'service_provider_id' => 1
         ]);
     }
