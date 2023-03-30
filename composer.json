@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "doctrine/dbal": "^2.6",
         "edamov/pushok": "^0.10.4",
         "edujugon/push-notification": "^4.1",
         "fideloper/proxy": "^4.0",
