@@ -6579,10 +6579,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		try {
 			$rules = [
-				'first_name' => 'required',
-				//'image'=>'required',
-				'country_code' => 'required',
-				'phone_number' => 'required',
+				'phone_number' => 'required_without_all:first_name,last_name,email',
+				// 'first_name' => 'required',
+				// 'country_code' => 'required',
+				// 'phone_number' => 'required',
 			];
 			$validator = Validator::make($request->all(), $rules);
 			if ($validator->fails()) {
@@ -6598,32 +6598,45 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			if ($input['phone_number'] && !$input['email']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
-			} else if ($input['email'] && !$input['phone_number']) {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->first();
-			} else {
-				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->orWhere([['email', '=', $input['email']]])->first();
+			if (!empty($input['phone_number']) && (!isset($input['email']) || empty($input['email']))) {
+				$checkuserPhnEml =  \App\User::where([['country_code', '=', $input['country_code']], ['phone', '=', ltrim($input['phone_number'], "0")]])->where(['user_type' => 1])->first();
+				if($checkuserPhnEml){
+					return response()->json(['message' => "This user's phone number already exists.", 'error' => "This user's phone number already exists."], $this->warningCode);
+				}
+			} else if (!empty($input['email']) && (!isset($input['phone_number']) || empty($input['phone_number']))) {
+				$checkuserPhnEml =  \App\User::where(['email' => $input['email'], 'user_type' => 1])->first();
+				if($checkuserPhnEml){
+					return response()->json(['message' => "This user's email already exists.", 'error' => "This user's email already exists."], $this->warningCode);
+				}
+			} elseif (!empty($input['email']) && !empty($input['phone_number'])) {
+				$checkuserPhnEml =  \App\User::where(['user_type' => 1])->where(function($query) use($input){
+					$query->where(['email' => $input['email']]);
+					$query->orWhere(function($query1) use($input){
+						$query1->where(['country_code' => $input['country_code'], 'phone' => ltrim($input['phone_number'], "0")]);
+					});
+				})->first();
+				if (!empty($checkuserPhnEml)) {
+					return response()->json(['message' => "This user's email or phone number already exists.", 'error' => "This user's email or phone number already exists."], $this->warningCode);
+				}
 			}
-			if (!empty($checkuserPhnEml)) {
-				return response()->json(['message' => 'This user email or phone already exist', 'error' => 'this user email or phone already exist'], $this->warningCode);
-			}
+			
 			$input['phone'] = ltrim($request->phone_number, "0");
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
 			$input['country_code'] = $request->country_code;
 			$input['refer_user_id'] = Auth::user()->id;
-			$input['driver_id'] = Auth::user()->id;
 			$input['first_name'] = $request->first_name;
 			$input['last_name'] = $request->last_name;
 			$input['country'] = $request->country;
 			$input['state'] = $request->state;
 			$input['city'] = $request->city;
 			$input['zip'] = $request->zip;
+			$input['created_by'] = Auth::user()->id;
+			$input['user_type'] = 1;
 			$record = \App\User::create($input);
 			if (!empty($_FILES['image'])) {
 				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
-					$imageName = 'profile-image'.time().'.' . $request->image->extension();
+					$imageName = 'profile-image' . time() . '.' . $request->image->extension();
 					$record->image = Storage::disk('public')->putFileAs(
 						'user/' . $record->id,
 						$request->image,
@@ -6632,33 +6645,33 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$record->save();
 				}
 			}
-			$newData = User::where([['id', '=', $record->id]])->first();
-			return response()->json(['success' => true, 'message' => 'user data saved successfully', 'data' => $newData], $this->successCode);
+			$newData = User::find($record->id);
+			return response()->json(['success' => true, 'message' => 'User data was successfully saved.', 'data' => $newData], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $exception->getMessage()."------".$exception->getLine()], $this->warningCode);
 		}
 	}
 
 	public function updateUserData(Request $request)
 	{
 		if (isset($request['id'])) {
-			$user = User::where([['id', '=', $request['id']]])->first();
+			$user = User::find($request['id']);
 		} else {
 			$user = Auth::user();
 		}
 		try {
-			$rules = [
-				'first_name' => 'required',
-				'country_code' => 'required',
-				'phone_number' => 'required',
-			];
+			// $rules = [
+			// 	'first_name' => 'required',
+			// 	'country_code' => 'required',
+			// 	'phone_number' => 'required',
+			// ];
 
-			$validator = Validator::make($request->all(), $rules);
-			if ($validator->fails()) {
-				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-			}
+			// $validator = Validator::make($request->all(), $rules);
+			// if ($validator->fails()) {
+			// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			// }
 			$input = $request->all();
 			$user_id = $user->id;
 
@@ -6729,7 +6742,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			$user->save();
 			$userData = $this->getRafrenceUser($user_id);
-			return response()->json(['success' => true, 'message' => 'User data saved successfully', 'user' => $userData], $this->successCode);
+			return response()->json(['success' => true, 'message' => 'User data was successfully saved.', 'user' => $userData], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
