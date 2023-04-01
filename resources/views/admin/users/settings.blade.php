@@ -289,6 +289,24 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?php
+                                        echo Form::label('temporary_phone_number_users', 'Delete only phone number users (In days)', ['class' => 'control-label']);
+                                        echo Form::number('temporary_phone_number_users', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
+                                        ?>
+                                        <span class="subtitle">When creating a user from driver app by inputting only the phone number, will delete in ___ days</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?php
+                                        echo Form::label('temporary_last_name_users', 'Delete only last name users (In days)', ['class' => 'control-label']);
+                                        echo Form::number('temporary_last_name_users', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
+                                        ?>
+                                        <span class="subtitle">When creating a user from driver app by inputting only the last name, will delete in ___ days</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-actions">

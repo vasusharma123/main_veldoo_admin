@@ -15,6 +15,7 @@ class UpdateColumnFirstNameToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('first_name',100)->default(null)->nullable()->change();
+            $table->string('last_name',100)->default(null)->nullable()->change();
         });
     }
 
@@ -27,6 +28,7 @@ class UpdateColumnFirstNameToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('first_name')->change();
+            $table->string('last_name')->change();
         });
     }
 }
