@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use PHPExcel_Worksheet_PageSetup;
 use DB;
+use Auth;
 
 class VehicleExport implements FromCollection, WithHeadings, WithTitle, WithMapping, ShouldAutoSize
 {
@@ -29,7 +30,7 @@ class VehicleExport implements FromCollection, WithHeadings, WithTitle, WithMapp
 	 */
 	public function collection()
 	{
-		return Vehicle::with(['last_driver_choosen.driver', 'carType'])->orderBy('id', 'DESC')->get();
+		return Vehicle::with(['last_driver_choosen.driver', 'carType'])->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 	}
 
 	public function map($vehicle): array

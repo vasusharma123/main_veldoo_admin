@@ -15,8 +15,8 @@
 					
 						
 						<div class="" id="allDataUpdate">
-							<div class="">
-	<table class="table table-bordered data-table table-responsive" width="100%">
+							<div class="table-responsive">
+	<table class="table table-bordered data-table " width="100%">
 		<thead class="thead-light">
 			<tr>
 			<th>ID</th>

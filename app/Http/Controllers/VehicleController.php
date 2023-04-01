@@ -86,7 +86,7 @@ class VehicleController extends Controller
         $breadcrumb = array('title'=>'Vehicle','action'=>'Add Vehicle');
         
         $data = [];
-        $data['car_types']=\App\Price::get();
+        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->get();
         $data = array_merge($breadcrumb,$data);
         return view('admin.vehicle.create')->with($data);
     }
@@ -121,6 +121,7 @@ class VehicleController extends Controller
         }
 
         $input['category_id'] = $input['car_type'];
+        $input['service_provider_id'] = Auth::user()->id;
         $vehicleObj = \App\Vehicle::create($input);
 
         if (!empty($_FILES['image'])) {
@@ -150,7 +151,7 @@ class VehicleController extends Controller
         $breadcrumb = array('title'=>trans('admin.Vehicle'),'action'=>trans('admin.Vehicle Detail'));
         $data = [];
         $where = array('id' => $id);
-        $record = \App\Vehicle::where($where)->first();
+        $record = \App\Vehicle::where($where)->where('service_provider_id',Auth::user()->id)->first();
         
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
@@ -177,7 +178,7 @@ class VehicleController extends Controller
          $breadcrumb = array('title'=>'Vehicle','action'=>'Edit Vehicle');
         $data = [];
         $where = array('id' => $id);
-        $record = \App\Vehicle::with(['last_driver_choosen'])->where($where)->first();
+        $record = \App\Vehicle::with(['last_driver_choosen'])->where('service_provider_id',Auth::user()->id)->where($where)->first();
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
         }

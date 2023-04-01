@@ -549,7 +549,7 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$record = (object)[];
-		$configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
+		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first()->value;
 		$data['record'] = json_decode($configuration);
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.settings')->with($data);
@@ -573,7 +573,7 @@ class UserController extends Controller
 		$path = 'setting/';
 		$pathDB = 'public/setting/';
 		$record = [];
- 		$setting = Setting::where(['key'=>'_configuration'])->first();
+ 		$setting = Setting::where(['key'=>'_configuration'])->where(['service_provider_id'=>Auth::user()->id])->first();
 		if (empty($setting)) {
 			$setting = new Setting;
 		} else {

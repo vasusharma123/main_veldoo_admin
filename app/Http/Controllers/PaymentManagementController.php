@@ -54,10 +54,10 @@ class PaymentManagementController extends Controller
 
 		if ($request->has('status') && !empty($request->input('id'))) {
 			$status = ($request->input('status') ? 0 : 1);
-			\App\PaymentMethod::where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
+			\App\PaymentMethod::where([['id', $request->input('id')]])->where('service_provider_id',Auth::user()->id)->limit(1)->update(array('status' => $status));
 		}
 		if ($request->has('type') && $request->input('type') == 'delete' && !empty($request->input('id'))) {
-			\App\PaymentMethod::where([['id', $request->input('id')]])->delete();
+			\App\PaymentMethod::where([['id', $request->input('id')]])->where('service_provider_id',Auth::user()->id)->delete();
 		}
 		$payment_methods = \App\PaymentMethod::query();
 		if (!empty($request->input('text'))) {
@@ -69,7 +69,7 @@ class PaymentManagementController extends Controller
 			$payment_methods->orderBy('id', 'desc');
 		}
 
-		$data['payment_methods'] = $payment_methods->paginate($this->limit);
+		$data['payment_methods'] = $payment_methods->where('service_provider_id',Auth::user()->id)->paginate($this->limit);
 		$data['i'] = (($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -108,7 +108,7 @@ class PaymentManagementController extends Controller
 		$request->validate($rules);
 		//$request=$request()->except(['_token']);
 		$data = [];
-		$data['record'] = \App\PaymentMethod::create(['name' => $request->name, 'status' => 1]);
+		$data['record'] = \App\PaymentMethod::create(['name' => $request->name, 'status' => 1, 'service_provider_id'=>Auth::user()->id]);
 		return Redirect::back()->with('success', __('Payment method added successfully'));
 	}
 
@@ -145,7 +145,7 @@ class PaymentManagementController extends Controller
 	{
 		$breadcrumb = array('title' => 'Payment Method', 'action' => 'Edit Payment Method');
 		$data = [];
-		$where = array('id' => $id);
+		$where = array('id' => $id, 'service_provider_id'=>Auth::user()->id);
 		$record = \App\PaymentMethod::where($where)->first();
 		if (empty($record)) {
 			return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');

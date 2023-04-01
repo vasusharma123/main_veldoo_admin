@@ -16,6 +16,9 @@ class AddServiceProviderTable extends Migration
         Schema::table('rides', function (Blueprint $table) {
             $table->bigInteger('service_provider_id')->nullable();
         });
+        Schema::table('payment_methods', function (Blueprint $table) {
+            $table->bigInteger('service_provider_id')->nullable();
+        });
     }
 
     /**
@@ -26,6 +29,9 @@ class AddServiceProviderTable extends Migration
     public function down()
     {
         Schema::table('rides', function (Blueprint $table) {
+            $table->dropColumn('service_provider_id');
+        });
+        Schema::table('payment_methods', function (Blueprint $table) {
             $table->dropColumn('service_provider_id');
         });
     }

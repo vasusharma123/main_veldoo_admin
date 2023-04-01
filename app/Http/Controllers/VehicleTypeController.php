@@ -78,9 +78,9 @@ class VehicleTypeController extends Controller
      * This function use to  create contacts subject
      */
     public function change_status(Request $request){
-        DB::table('prices')->update(['status'=>0]);
+        DB::table('prices')->where('service_provider_id',Auth::user()->id)->update(['status'=>0]);
         $status = ($request->status)?0:1;
-           $updateUser = Price::where('id',$request->vtype_id)->update(['status'=>$status]);
+           $updateUser = Price::where('id',$request->vtype_id)->where('service_provider_id',Auth::user()->id)->update(['status'=>$status]);
        
         if ($updateUser) {
             echo json_encode(true);
@@ -124,6 +124,7 @@ class VehicleTypeController extends Controller
         
         $request->validate($rules);
         $input = $request->all();
+        $input['service_provider_id'] = Auth::user()->id;
         unset($input['_method'],$input['_token']);
       //  unset($input['basic_fee']);
         $result=\App\Price::create($input);
@@ -149,7 +150,7 @@ class VehicleTypeController extends Controller
     {
         $breadcrumb = array('title'=>trans('admin.Vehicle Type'),'action'=>trans('admin.Vehicle Type Detail'));
         $data = [];
-        $where = array('id' => $id);
+        $where = array('id' => $id,'service_provider_id'=>Auth::user()->id);
         $record = \App\Price::where($where)->first();
         
         if(empty($record)){

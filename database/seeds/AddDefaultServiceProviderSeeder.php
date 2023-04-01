@@ -47,5 +47,11 @@ class AddDefaultServiceProviderSeeder extends Seeder
         })->update([
             'service_provider_id' => 1
         ]);
+        DB::table('payment_methods')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
     }
 }
