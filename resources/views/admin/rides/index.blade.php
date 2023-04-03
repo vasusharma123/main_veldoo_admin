@@ -10,6 +10,10 @@
         list-style: none;
         border-radius: 0.25rem;
     }
+    .filter-min
+    {
+        width: 150px !important;
+    }
 </style>
     <!-- Container fluid  -->
     <!-- ============================================================== -->
