@@ -5633,7 +5633,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$all_ride_ids = [$request->ride_id];
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
-					$all_ride_ids = Ride::where(['parent_ride_id' => $rideDetail->parent_ride_id])->pluck('id')->toArray();
+					$all_ride_ids = Ride::where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->pluck('id')->toArray();
 				} 
 			}
 			foreach ($all_ride_ids as $ride_key => $ride_id) {

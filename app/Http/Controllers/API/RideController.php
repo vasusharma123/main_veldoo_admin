@@ -602,7 +602,14 @@ class RideController extends Controller
         }
         try {
             $user = Auth::user()->id;
-            Ride::where('id', $request->ride_id)->delete();
+            $rideDetail = Ride::find($request->ride_id);
+            $rideObj = new Ride;
+            if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
+                $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
+            } else {
+                $rideObj = $rideObj->where('id', $request->ride_id);
+            }
+            $rideObj->delete();
             return response()->json(['success' => true, 'message' => 'Ride deleted successfully.'], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['message' => $exception->getMessage()], $this->warningCode);
