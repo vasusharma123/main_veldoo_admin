@@ -316,4 +316,8 @@ class User extends Authenticatable implements HasMedia
 	{
 		return $this->belongsTo(Company::class, 'company_id');
 	}
+
+	public function creator(){
+		return $this->belongsTo(User::class, 'created_by', 'id');
+	}
 }

@@ -2049,7 +2049,7 @@ class UserController extends Controller
 			} else {
 				$all_rides_dates = [$request->ride_time];
 			}
-
+			$all_ride_ids = [];
 			foreach ($all_rides_dates as $ride_date_time) {
 				$ride = new Ride();
 
@@ -2095,6 +2095,11 @@ class UserController extends Controller
 				$ride->status = 0;
 				$ride->platform = Auth::user()->device_type;
 				$ride->save();
+				$all_ride_ids[] = $ride->id;
+			}
+
+			if(!empty($all_ride_ids)){
+				Ride::whereIn('id',$all_ride_ids)->update(['parent_ride_id' => $all_ride_ids[0]]);
 			}
 
 			/* When a planned ride is created by any driver, send a notification to all master drivers about this */
@@ -5624,83 +5629,95 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		try {
 			DB::beginTransaction();
-			$ride = Ride::find($request->ride_id);
+			$rideDetail = Ride::find($request->ride_id);
+			$all_ride_ids = [$request->ride_id];
+			if($request->change_for_all == 1){
+				if(!empty($rideDetail->parent_ride_id)){
+					$all_ride_ids = Ride::where(['parent_ride_id' => $rideDetail->parent_ride_id])->pluck('id')->toArray();
+				} 
+			}
+			foreach ($all_ride_ids as $ride_key => $ride_id) {
+				$ride = Ride::find($ride_id);
 
-			if (!empty($request->start_location)) {
-				$ride->pickup_address = $request->start_location;
-			}
-			if (!empty($request->user_id)) {
-				$ride->user_id = $request->user_id;
-			}
-			if (!empty($request->drop_location)) {
-				$ride->dest_address = $request->drop_location;
-			}
-			if (!empty($request->dest_lat)) {
-				$ride->dest_lat = $request->dest_lat;
-			}
-			if (!empty($request->dest_lng)) {
-				$ride->dest_lng = $request->dest_lng;
-			}
-			if (!empty($request->pick_lat)) {
-				$ride->pick_lat = $request->pick_lat;
-			}
-			if (!empty($request->pick_lng)) {
-				$ride->pick_lng = $request->pick_lng;
-			}
-			if (!empty($request->passanger)) {
-				$ride->passanger = $request->passanger;
-			}
-			if (!empty($request->schedule_time)) {
-				$ride->schedule_time = $request->schedule_time;
-			}
+				if (!empty($request->start_location)) {
+					$ride->pickup_address = $request->start_location;
+				}
+				if (!empty($request->user_id)) {
+					$ride->user_id = $request->user_id;
+				}
+				if (!empty($request->drop_location)) {
+					$ride->dest_address = $request->drop_location;
+				}
+				if (!empty($request->dest_lat)) {
+					$ride->dest_lat = $request->dest_lat;
+				}
+				if (!empty($request->dest_lng)) {
+					$ride->dest_lng = $request->dest_lng;
+				}
+				if (!empty($request->pick_lat)) {
+					$ride->pick_lat = $request->pick_lat;
+				}
+				if (!empty($request->pick_lng)) {
+					$ride->pick_lng = $request->pick_lng;
+				}
+				if (!empty($request->passanger)) {
+					$ride->passanger = $request->passanger;
+				}
+				if (!empty($request->schedule_time)) {
+					$ride->schedule_time = $request->schedule_time;
+				}
 
-			if (!empty($request->ride_time)) {
-				$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+				if (!empty($request->ride_time)) {
+					$onlyTime = date("H:i:s", strtotime($request->ride_time));
+					$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+					$date_time = $onlyDate." ".$onlyTime;
+					$ride->ride_time = $date_time;
+					if (!empty($request->alert_time)) {
+						$ride->alert_time = $request->alert_time;
+						$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($date_time)));
+					} else {
+						$alert_notification_date_time = $date_time;
+					}
+				}
+
 				if (!empty($request->alert_time)) {
 					$ride->alert_time = $request->alert_time;
-					$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
-				} else {
-					$alert_notification_date_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 				}
-			}
 
-			if (!empty($request->alert_time)) {
-				$ride->alert_time = $request->alert_time;
-			}
-
-			if (!empty($request->note)) {
-				$ride->note = $request->note;
-			}
-			if (!empty($request->company_id)) {
-				$ride->company_id = $request->company_id;
-			}
-			$user_type = Auth::user()->user_type;
-			if ($user_type == 2) {
-				if (!empty($request->payment_type)) {
-					$ride->payment_type = $request->payment_type;
+				if (!empty($request->note)) {
+					$ride->note = $request->note;
 				}
-			}
+				if (!empty($request->company_id)) {
+					$ride->company_id = $request->company_id;
+				}
+				$user_type = Auth::user()->user_type;
+				if ($user_type == 2) {
+					if (!empty($request->payment_type)) {
+						$ride->payment_type = $request->payment_type;
+					}
+				}
 
-			if (!empty($request->car_type)) {
-				$ride->car_type = $request->car_type;
-			}
-			if (!empty($request->ride_cost)) {
-				$ride->ride_cost = $request->ride_cost;
-			}
-			if (!empty($request->distance)) {
-				$ride->distance = $request->distance;
-			}
-			if (!empty($request->ride_type)) {
-				$ride->ride_type = 1;
-			}
+				if (!empty($request->car_type)) {
+					$ride->car_type = $request->car_type;
+				}
+				if (!empty($request->ride_cost)) {
+					$ride->ride_cost = $request->ride_cost;
+				}
+				if (!empty($request->distance)) {
+					$ride->distance = $request->distance;
+				}
+				if (!empty($request->ride_type)) {
+					$ride->ride_type = 1;
+				}
 
-			if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
-				$ride->alert_notification_date_time = $alert_notification_date_time;
-				$ride->notification_sent = 0;
-				$ride->alert_send = 0;
-				$ride->status = 0;
+				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
+					$ride->alert_notification_date_time = $alert_notification_date_time;
+					$ride->notification_sent = 0;
+					$ride->alert_send = 0;
+					$ride->status = 0;
+				}
+				$ride->save();
 			}
-			$ride->save();
 			DB::commit();
 			$ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
 			if (!empty($ride_data->user_id)) {
