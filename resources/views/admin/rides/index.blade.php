@@ -1,6 +1,16 @@
 @extends('admin.layouts.master')
 
 @section('content')
+<style>
+    .c-pagination {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+</style>
     <!-- Container fluid  -->
     <!-- ============================================================== -->
     <div class="container-fluid">
@@ -74,9 +84,9 @@
                                 </form>
                             </div>
                         </div> --}}
-                        <div class="box" id="allDataUpdate">
+                        <div class="box" id="">
                             <div class="table-responsive">
-                                <table class="table table-bordered data-table">
+                                <table class="table table-bordered">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>
@@ -149,6 +159,9 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                <div>
+                                    {{ $rides->appends($_GET)->links('vendor.pagination.bootstrap-4-c') }}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -55,7 +55,7 @@ class RideController extends Controller
             $endDate = Carbon::createFromFormat('d/m/Y', $request->end_date);
             $rides->whereRaw('date(ride_time) between date("'.$startDate.'") and date("'.$endDate.'")');
         }
-        $data['rides'] = $rides->paginate(200);
+        $data['rides'] = $rides->paginate(100);
         // if ($request->ajax()) {
 
         //     $data = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'rides.payment_type', 'users.first_name', 'users.last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name'])
