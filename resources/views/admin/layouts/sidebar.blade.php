@@ -225,6 +225,16 @@
 						{{-- <li><a href="{{ route('daily-report.expenses') }}">Expenses Report</a></li> --}}
 					</ul>
 				</li>
+
+				<li> 
+					<a class="has-arrow waves-effect waves-dark" href="javascript::void(0);" aria-expanded="false">
+						<i class="mdi mdi-arrange-send-backward"></i>
+						<span class="hide-menu">Temporary Guest Users</span>
+					</a>
+					<ul aria-expanded="false" class="collapse">
+						<li><a href="{{ route('temporary_users.only_phone') }}">Only Phone</a></li>
+					</ul>
+				</li>
 			</ul>
 		</nav>
 		<!-- End Sidebar navigation -->
