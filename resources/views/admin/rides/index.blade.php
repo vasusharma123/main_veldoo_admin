@@ -30,11 +30,11 @@
                             <div class="d-flex">
                                 <div class="form-group mr-2">
                                     <label for="">Start Date</label>
-                                    <input type="text" id="min" value="{{ $start_date }}" class="filter-min" name="min">
+                                    <input type="text" id="min" value="{{ $start_date }}" class="filter-min" name="start_date">
                                 </div>
                                 <div class="form-group mr-2">
                                     <label for="">End Date</label>
-                                    <input type="text" id="max" value="{{ $end_date }}" class="filter-max" name="max">
+                                    <input type="text" id="max" value="{{ $end_date }}" class="filter-max" name="end_date">
                                 </div>
                                 <div class="form-group mr-2">
                                     <label for="">Enter Keyword</label>
@@ -49,8 +49,8 @@
                                             Clear
                                         </a>
                                     @endif
-                                    <a class="btn btn-primary btn-sm" href="{{ route('ride/export') }}">
-                                        Export
+                                    <a class="btn btn-primary btn-sm" href="{{ route('ride/export')}}?startDate={{ request()->get('start_date') }}&endDate={{ request()->get('end_date') }}&search={{ request()->get('search') }}">
+                                         Export
                                     </a>
                                 </div>
                             </div>

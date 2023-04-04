@@ -9,7 +9,7 @@ use DataTables;
 use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Exports\RideExport;
+use App\Exports\Version1Export;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -159,9 +159,10 @@ class RideController extends Controller
         }
     }
 
-    public function rideExport()
+    public function rideExport(Request $request)
     {
-        return Excel::download(new RideExport([]), 'Rides List Veldoo.xlsx');
+        
+        return Excel::download(new Version1Export($request->get()), 'Rides List Veldoo.xlsx');
     }
 
     public function delete_multiple(Request $request)
