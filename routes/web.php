@@ -113,6 +113,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::post('expenses/type_delete', 'ExpensesController@type_delete')->name('expenses.type_delete');
 	Route::get('expenses/list', 'ExpensesController@list')->name('expenses.list');
 	Route::get('expenses/show/{id}', 'ExpensesController@show')->name('expenses.show');
+
+	Route::get('temporary_user/only_phone', 'TemporaryUserController@only_phone')->name('temporary_users.only_phone');
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
