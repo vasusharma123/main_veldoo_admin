@@ -9,7 +9,7 @@ use DataTables;
 use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use App\Exports\Version1Export;
+use App\Exports\RideV1Export;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -36,10 +36,11 @@ class RideController extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $rides->where(function($query) use ($request){
                 $query->orWhere('rides.id','LIKE','%'.$request->search.'%');
-                $query->orWhere('users.first_name','LIKE','%'.$request->search.'%');
-                $query->orWhere('users.last_name','LIKE','%'.$request->search.'%');
-                $query->orWhere('guest.first_name','LIKE','%'.$request->search.'%');
-                $query->orWhere('guest.last_name','LIKE','%'.$request->search.'%');
+                // $query->orWhere('users.first_name','LIKE','%'.$request->search.'%');
+                // $query->orWhere('users.last_name','LIKE','%'.$request->search.'%');
+                $query->orWhereRaw("CONCAT(`users`.`first_name`,' ',`users`.`last_name`) LIKE '%".$request->search."%'");
+                $query->orWhereRaw("CONCAT(`guest`.`first_name`,' ',`guest`.`last_name`) LIKE '%".$request->search."%'");
+                // $query->orWhere('guest.last_name','LIKE','%'.$request->search.'%');
                 $query->orWhere('vehicles.vehicle_number_plate','LIKE','%'.$request->search.'%');
                 $query->orWhere('rides.pickup_address','LIKE','%'.$request->search.'%');
                 $query->orWhere('rides.dest_address','LIKE','%'.$request->search.'%');
@@ -162,7 +163,7 @@ class RideController extends Controller
     public function rideExport(Request $request)
     {
         
-        return Excel::download(new Version1Export($request->get()), 'Rides List Veldoo.xlsx');
+        return Excel::download(new RideV1Export($request->all()), 'Rides List Veldoo.xlsx');
     }
 
     public function delete_multiple(Request $request)
