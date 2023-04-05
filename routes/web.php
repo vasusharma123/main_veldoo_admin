@@ -115,6 +115,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('expenses/show/{id}', 'ExpensesController@show')->name('expenses.show');
 
 	Route::get('temporary_user/only_phone', 'TemporaryUserController@only_phone')->name('temporary_users.only_phone');
+	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
