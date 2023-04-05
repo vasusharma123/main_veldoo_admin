@@ -30,15 +30,15 @@
                             <div class="d-flex">
                                 <div class="form-group mr-2">
                                     <label for="">Start Date</label>
-                                    <input type="text" id="min" value="{{ $start_date }}" class="filter-min" name="min">
+                                    <input type="text" id="min" value="{{ $start_date }}" class="filter-min" name="start_date">
                                 </div>
                                 <div class="form-group mr-2">
                                     <label for="">End Date</label>
-                                    <input type="text" id="max" value="{{ $end_date }}" class="filter-max" name="max">
+                                    <input type="text" id="max" value="{{ $end_date }}" class="filter-max" name="end_date">
                                 </div>
                                 <div class="form-group mr-2">
                                     <label for="">Enter Keyword</label>
-                                    <input type="text" class="filter-min" name="search" placeholder="Search keyword" value="{{ isset($_GET) && isset($_GET['search'])?$_GET['search']:'' }}">
+                                    <input type="text" class="filter-min" name="search" id="searchInput" placeholder="Search keyword" value="{{ isset($_GET) && isset($_GET['search'])?$_GET['search']:'' }}">
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn-info btn-sm">
@@ -49,7 +49,7 @@
                                             Clear
                                         </a>
                                     @endif
-                                    <a class="btn btn-primary btn-sm" href="{{ route('ride/export') }}">
+                                    <a class="btn btn-primary btn-sm exportBtn" href="javascript:;">
                                         Export
                                     </a>
                                 </div>
@@ -201,15 +201,23 @@
             dateFormat: 'dd/mm/yy'
         });
 
-        $(document).on('change','#min, #max',function(){
+        // $(document).on('change','#min, #max',function(){
+
+        //     var min = $('#min').val();
+        //     var max = $('#max').val();
+        //     if (min != '' && max != '') {
+        //         // var startDate = moment(min, 'DD-MM-YYYY');
+        //         // var endDate = moment(max, 'DD-MM-YYYY');
+        //         window.location.href = "{{ route('rides.index') }}?start_date="+min+"&end_date="+max;
+        //     }
+        // });
+
+        $(document).on('click','.exportBtn',function(){
 
             var min = $('#min').val();
             var max = $('#max').val();
-            if (min != '' && max != '') {
-                // var startDate = moment(min, 'DD-MM-YYYY');
-                // var endDate = moment(max, 'DD-MM-YYYY');
-                window.location.href = "{{ route('rides.index') }}?start_date="+min+"&end_date="+max;
-            }
+            var search = $('#searchInput').val();
+            window.location.href = "{{ route('ride/export')}}?startDate="+min+"&endDate="+max+"&search="+search;
         });
 
 
