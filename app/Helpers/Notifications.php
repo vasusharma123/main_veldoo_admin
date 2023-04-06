@@ -281,7 +281,7 @@ class Notifications
 		if (count($overallDriversCount) <= count($drivers)) {
 			$rideData->alert_send = 1;
 		}
-		$rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
+		$rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
 		$rideData->save();
     }
 
