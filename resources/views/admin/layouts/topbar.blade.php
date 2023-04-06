@@ -14,7 +14,7 @@
 					@if(!empty($setting['admin_logo']) && file_exists('storage/'.$setting['admin_logo']))
 						<img src="{{ env('URL_PUBLIC').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="40" height="40" /> 
 					@else
-						<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" class="dark-logo" />
+						<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" class="dark-logo" style="height:25px;margin-top:5px" />
 					@endif
 				</b>
 				<!--End Logo icon -->
@@ -22,9 +22,9 @@
 				<span>
 					<!-- dark Logo text -->
 					@if(!empty($setting['admin_sidebar_logo']) && file_exists('storage/'.$setting['admin_sidebar_logo']))
-						<img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="128" height="19" /> 
+						<img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="160" height="30" /> 
 					@else
-						<img src="{{ asset('/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" />
+						<img src="{{ asset('/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" width="160" height="30"  />
 					@endif
 				</span>
 			</a>

@@ -980,7 +980,7 @@ class UserController extends Controller
 			"first_x_free_users"=> "1",
 			"admin_free_subscription_days"=> "1",
 			"copyright"=> $request->site_name,
-			"admin_primary_color"=> "#000000",
+			"admin_primary_color"=> "#fc4c02",
 			"ad_interval"=> "2",
 			"topic_title_limit"=> "2",
 			"admin_background"=> "",

@@ -46,7 +46,7 @@
 		}
 	@else
 		:root {
-			--primary-color: #1976d2 !important;
+			--primary-color: #fc4c02 !important;
 		}
 	@endif	
 		#loading {
