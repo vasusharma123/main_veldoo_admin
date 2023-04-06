@@ -95,14 +95,14 @@ class SendRideNotificationOnScheduleTime extends Command
                 
                     usort($drivers, 'sortByDistance');
 
-                    foreach ($drivers as $driver) {
+                    if(!empty($drivers)) {
                         for ($i = 0; $i < $driverlimit; $i++) {
                             if (!empty($drivers[$i])) {
-                                $driverids[] = $driver['id'];
+                                $driverids[] = $drivers[$i]['id'];
                             }
                         }
+                        $ride->all_drivers = implode(",", $driverids);
                     }
-                    $ride->all_drivers = implode(",", $driverids);
                     $ride->save();
                     $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                     $title = 'New Booking';
