@@ -192,7 +192,7 @@ class RidesController extends Controller
             if (count($overallDriversCount) <= count($drivers)) {
                 $rideData->alert_send = 1;
             }
-            $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
+            $rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
             $rideData->save();
             DB::commit();
             return response()->json(['status' => 1, 'message' => __('Instant ride created successfully.'), 'data' => $ride], $this->successCode);
@@ -472,7 +472,7 @@ class RidesController extends Controller
             $ride->note = $request->note;
             $ride->ride_type = 1;
             $ride->car_type = $request->car_type;
-            $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->ride_time));
+            $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
             if ((!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 				$ride->notification_sent = 0;
 				$ride->alert_send = 0;
