@@ -37,6 +37,7 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('page', 'PageController@page');
 	Route::post('subjects', 'CategoryController@subjectsList');
 	Route::post('check_user_by_phone', 'UserController@checkRegisteredUser');
+	Route::post('verify_user_registered', 'UserController@verify_user_registered');
 	Route::get('rideAssignstoNext', 'UserController@rideAssignstoNext');
 	Route::get('expense/types', 'ExpenseController@types');
 });

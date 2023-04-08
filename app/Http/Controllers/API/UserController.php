@@ -723,6 +723,36 @@ class UserController extends Controller
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
+	public function verify_user_registered(Request $request)
+	{
+		try {
+			$rules = [
+				'phone' => 'required',
+				'country_code' => 'required',
+				'user_type' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])
+			->where(function($query){
+				$query->whereNotNull('password')->where('password','!=',"");
+			})->first();
+			if ($user) {
+				return response()->json(['status' => 1, 'message' => 'Already registered'], $this->successCode);
+			} else {
+				return response()->json(['status' => 0, 'message' => 'Not Registered'], $this->successCode);
+			}
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+
 	public function register(Request $request)
 	{
 		DB::beginTransaction();
