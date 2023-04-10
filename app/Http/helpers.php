@@ -673,7 +673,11 @@ function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional 
 	$payload = Payload::create()->setAlert($alert);
 
 	//set notification sound to default
-	$payload->setSound('example.caf');
+	if($additional['type'] == 15){
+		$payload->setSound('type15.mp3');
+	} else {
+		$payload->setSound('example.caf');
+	}
 	// $payload->setContentAvailability(true);
 	// $payload->setMutableContent(true);
 	//add custom value to your notification, needs to be customized
@@ -703,82 +707,88 @@ function bulk_pushok_ios_notification($title, $body, $deviceTokens, $additional 
 
 function bulk_firebase_android_notification($title = '', $msg = '', $token, $additionalPushData = [])
 {
-	if(!empty($additionalPushData['ride_data'])){
-		$ride_data = $additionalPushData['ride_data'];
-		unset($ride_data['accept_time']);
-		unset($ride_data['cancel_amount']);
-		unset($ride_data['commission']);
-		unset($ride_data['created_at']);
-		unset($ride_data['cus_token']);
-		unset($ride_data['driver_earning']);
-		unset($ride_data['notification_send']);
-		unset($ride_data['payment_id']);
-		unset($ride_data['payment_by']);
-		unset($ride_data['reach_time']);
-		unset($ride_data['token']);
-		unset($ride_data['updated_at']);
-		unset($ride_data['all_drivers']);
-		unset($ride_data['driver_id']);
-		if (empty($ride_data['dest_address'])) {
-			$ride_data['dest_address'] = "";
-		}
-		if (empty($ride_data['ride_cost'])) {
-			$ride_data['ride_cost'] = "";
-		}
-		if (empty($ride_data['note'])) {
-			$ride_data['note'] = "";
-		}
-		if (empty($ride_data['alert_time'])) {
-			$ride_data['alert_time'] = "";
-		}
-		// prep the bundle
-		$message = array(
-			'message' 	=> (!empty($msg))?$msg:"",
-			'not_type' => $additionalPushData['type'],
-			'ride_id' => $additionalPushData['ride_id'],
-			'ride_data' => json_encode($ride_data),
-			'vibrate'	    => 1,
-			'title'	    => $title,
-			'sound'		    => 'default'
-		);
-	} else {
-		$message = array(
-			'title' => $title,
-			'message' => (!empty($msg))?$msg:"",
-			'not_type' => $additionalPushData['type'],
-			'vibrate' => 1,
-			'sound'	=> 'default'
-		);
-	}
-	
-	$fields = array(
-		'registration_ids' => $token,
-		'data' => $message,
-		'priority' => 'high'
-	);
+    if (!empty($additionalPushData['ride_data'])) {
+        $ride_data = $additionalPushData['ride_data'];
+        unset($ride_data['accept_time']);
+        unset($ride_data['cancel_amount']);
+        unset($ride_data['commission']);
+        unset($ride_data['created_at']);
+        unset($ride_data['cus_token']);
+        unset($ride_data['driver_earning']);
+        unset($ride_data['notification_send']);
+        unset($ride_data['payment_id']);
+        unset($ride_data['payment_by']);
+        unset($ride_data['reach_time']);
+        unset($ride_data['token']);
+        unset($ride_data['updated_at']);
+        unset($ride_data['all_drivers']);
+        unset($ride_data['driver_id']);
+        if (empty($ride_data['dest_address'])) {
+            $ride_data['dest_address'] = "";
+        }
+        if (empty($ride_data['ride_cost'])) {
+            $ride_data['ride_cost'] = "";
+        }
+        if (empty($ride_data['note'])) {
+            $ride_data['note'] = "";
+        }
+        if (empty($ride_data['alert_time'])) {
+            $ride_data['alert_time'] = "";
+        }
+        $sound = 'default';
+        if ($additionalPushData['type'] == 15) {
+            $sound = 'type15.mp3';
+        }
 
-	$headers = array(
-		'Authorization: key=AAAAgHr7nhw:APA91bFIwYf7g3bGWuiPjAGK4UW52FMXP329mfx3S0097RglyBZiVbXWhVhNkt0pqF1SDHEXf4ce0P364gi2RmtuFBjwGpnT2aRLBFDfBSNE0MuNUIBcXPFBvhGhagFDSJsbiaaG91XT',
-		'Content-Type: application/json'
-	);
+        // prep the bundle
+        $message = array(
+            'message' => (!empty($msg)) ? $msg : "",
+            'not_type' => $additionalPushData['type'],
+            'ride_id' => $additionalPushData['ride_id'],
+            'ride_data' => json_encode($ride_data),
+            'vibrate' => 1,
+            'title' => $title,
+            'sound' => $sound
+        );
 
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
-	curl_setopt($ch, CURLOPT_POST, true);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-	$result = curl_exec($ch);
-	curl_close($ch);
-	// DB::table('test_jobs')->insert(['data'=>json_encode($result)]);
-	if ($result === FALSE) {
-		die('Curl failed: ' . curl_error($ch));
-	} else {
-		// DB::table('test_jobs')->insert(['data'=>'success']);
-		$data = array('message' => 'success');
-	}
-	return true;
+    } else {
+        $message = array(
+            'title' => $title,
+            'message' => (!empty($msg)) ? $msg : "",
+            'not_type' => $additionalPushData['type'],
+            'vibrate' => 1,
+            'sound' => 'default'
+        );
+    }
+
+    $fields = array(
+        'registration_ids' => $token,
+        'data' => $message,
+        'priority' => 'high'
+    );
+
+    $headers = array(
+        'Authorization: key=AAAAgHr7nhw:APA91bFIwYf7g3bGWuiPjAGK4UW52FMXP329mfx3S0097RglyBZiVbXWhVhNkt0pqF1SDHEXf4ce0P364gi2RmtuFBjwGpnT2aRLBFDfBSNE0MuNUIBcXPFBvhGhagFDSJsbiaaG91XT',
+        'Content-Type: application/json'
+    );
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+    $result = curl_exec($ch);
+    curl_close($ch);
+    // DB::table('test_jobs')->insert(['data'=>json_encode($result)]);
+    if ($result === false) {
+        die('Curl failed: ' . curl_error($ch));
+    } else {
+        // DB::table('test_jobs')->insert(['data'=>'success']);
+        $data = array('message' => 'success');
+    }
+    return true;
 }
 
 function sortByDistance($x, $y) {
