@@ -14,7 +14,7 @@ use Twilio\Rest\Client;
 class Ride extends Model
 {
 
-	protected $fillable = ['id', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance', 'alert_notification_date_time', 'pick_lat', 'pick_lng', 'dest_lat', 'dest_lng', 'notification_sent', 'alert_send', 'status'];
+	protected $fillable = ['id', 'pickup_address', 'dest_address', 'ride_type', 'user_id', 'driver_id', 'schedule_time', 'company_id', 'payment_by', 'alert_time', 'payment_type', 'car_type', 'passanger', 'note', 'additional_note', 'ride_time', 'ride_cost', 'distance', 'alert_notification_date_time', 'pick_lat', 'pick_lng', 'dest_lat', 'dest_lng', 'notification_sent', 'alert_send', 'status', 'updated_at'];
 
 	protected $appends = [
 		'stop_over',

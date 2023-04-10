@@ -14,6 +14,7 @@ use App\Notification;
 use App\RideHistory;
 use Illuminate\Support\Facades\DB;
 use Config;
+use Illuminate\Support\Facades\Log;
 
 class RideController extends Controller
 {
@@ -1672,7 +1673,6 @@ class RideController extends Controller
             'status' => 'required',
             'ride_id' => 'required',
         ];
-
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
@@ -1684,6 +1684,9 @@ class RideController extends Controller
                 $userdata = User::find($ride['user_id']);
                 $deviceToken = $userdata['device_token'] ?? "";
                 $deviceType = $userdata['device_type'] ?? "";
+                $title = 'Ride Cancelled';
+                $message = "Ride Cancelled Successfully";
+                $type = 5;
                 if ($request->status == -2) {
                     if ($ride['status'] == -2) {
                         return response()->json(['success' => true, 'message' => "Ride Cancelled already"], $this->successCode);
@@ -1696,20 +1699,16 @@ class RideController extends Controller
                         $rideObj->status = -2;
                         $rideObj->save();
                     }
-
-
+                    $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+                    if (!empty($ride_detail->driver)) {
+                        $ride_detail->driver->car_data = $ride_detail->driver->car_data;
+                        $ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
+                    }
                     if (!empty($userdata)) {
-                        $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
                         $settings = \App\Setting::first();
                         $settingValue = json_decode($settings['value']);
                         $ride['waiting_time'] = $settingValue->waiting_time;
-                        if (!empty($ride_detail->driver)) {
-                            $ride_detail->driver->car_data = $ride_detail->driver->car_data;
-                            $ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
-                        }
-                        $title = 'Ride Cancelled';
-                        $message = "Ride Cancelled Successfully";
-                        $type = 5;
+
                         $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
                         if (!empty($deviceToken)) {
                             if ($deviceType == 'android') {
@@ -1728,11 +1727,11 @@ class RideController extends Controller
                         $notification->additional_data = json_encode($additional);
                         $notification->save();
                     }
+                    return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
                 }
             } else {
                 return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
             }
-            return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             Log::info($exception->getMessage() . "--" . $exception->getLine());
             return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
