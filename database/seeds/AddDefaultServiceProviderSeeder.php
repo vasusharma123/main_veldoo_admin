@@ -47,11 +47,39 @@ class AddDefaultServiceProviderSeeder extends Seeder
         })->update([
             'service_provider_id' => 1
         ]);
+
         DB::table('payment_methods')->where(function($query){
             $query->where(['service_provider_id' => ''])
             ->orWhereNull('service_provider_id');
         })->update([
             'service_provider_id' => 1
+        ]);
+
+        DB::table('sms_templates')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
+
+        DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>1])->update([
+            'unique_key' => "send_otp_create_booking"
+        ]);
+
+        DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>2])->update([
+            'unique_key' => "send_booking_details_after_create_booking"
+        ]);
+
+        DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>3])->update([
+            'unique_key' => "send_otp_for_my_bookings"
+        ]);
+
+        DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>4])->update([
+            'unique_key' => "send_otp_before_ride_edit"
+        ]);
+
+        DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>5])->update([
+            'unique_key' => "send_booking_details_after_edit_booking"
         ]);
     }
 }

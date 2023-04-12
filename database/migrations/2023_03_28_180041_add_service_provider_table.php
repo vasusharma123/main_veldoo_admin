@@ -19,6 +19,10 @@ class AddServiceProviderTable extends Migration
         Schema::table('payment_methods', function (Blueprint $table) {
             $table->bigInteger('service_provider_id')->nullable();
         });
+        Schema::table('sms_templates', function (Blueprint $table) {
+            $table->bigInteger('service_provider_id')->nullable();
+            $table->string('unique_key',255);
+        });
     }
 
     /**
@@ -33,6 +37,10 @@ class AddServiceProviderTable extends Migration
         });
         Schema::table('payment_methods', function (Blueprint $table) {
             $table->dropColumn('service_provider_id');
+        });
+        Schema::table('sms_templates', function (Blueprint $table) {
+            $table->dropColumn('service_provider_id');
+            $table->dropColumn('unique_key');
         });
     }
 }

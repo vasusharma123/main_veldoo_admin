@@ -31,6 +31,7 @@ use App\DriverChooseCar;
 use Exception;
 use App\Price;
 use App\Vehicle;
+use App\SMSTemplate;
 
 class UserController extends Controller
 {
@@ -278,6 +279,7 @@ class UserController extends Controller
 				}
 				$user_type = 1;
 				$createdBy = Auth::user()->id;
+				$service_provider_id = "";
 			} else {
 				$userData = User::where('user_type', 2)->where('phone', ltrim($request->phone, "0"))->first();
 				//driver
@@ -290,6 +292,7 @@ class UserController extends Controller
 				}
 				$user_type = 2;
 				$createdBy = 0;
+				$service_provider_id = Auth::user()->id;
 				if(!empty($request->phone)){
 					if(substr($request->phone, 0, 1) == 0){
 						$input['phone'] = substr_replace($request->phone,"",0,1);
@@ -300,6 +303,8 @@ class UserController extends Controller
 			$input['password'] = Hash::make($request->input('password'));
 			$input['user_type'] = $user_type;
 			$input['created_by'] = $createdBy;
+			$input['service_provider_id'] = $service_provider_id;
+			// dd($input);
 			$user  = \App\User::create($input);
 			//SAVE IMAGE
 			if ($request->image) {
@@ -1020,6 +1025,47 @@ class UserController extends Controller
 		$setting = new Setting();
 		$setting->fill(['key' => '_configuration','service_provider_id'=>$serviceProvider->id,'value'=>json_encode($settingValue)]);
 		$setting->save();
+
+		// SMS templates
+		SMSTemplate::insert([
+			[
+				"title" => "Send OTP (create booking)",
+				"english_content" => "Dear User, your Veldoo verification code is #OTP#. Use this password to complete your booking",
+				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#. Verwenden Sie dieses Passwort, um Ihre Buchung abzuschließen",
+				"service_provider_id" => Auth::user()->id,
+				"unique_key" => "send_otp_create_booking",
+			],
+			[
+				"title" => "Send booking details after create booking",
+				"english_content" => "Your Booking has been confirmed with Veldoo, for time - #TIME#. To view the status of your ride go to: #LINK#",
+				"german_content" => "Ihre Buchung wurde mit Veldoo für die Zeit bestätigt - #TIME#. Um den Status Ihrer Fahrt anzuzeigen, gehen Sie zu: #LINK#",
+				"service_provider_id" => Auth::user()->id,
+				"unique_key" => "send_booking_details_after_create_booking",
+			],
+			[
+				"title" => "Send OTP for my bookings",
+				"english_content" => "Dear User, your Veldoo verification code is #OTP#",
+				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#",
+				"service_provider_id" => Auth::user()->id,
+				"unique_key" => "send_otp_for_my_bookings",
+			],
+			[
+				"title" => "Send OTP before ride edit",
+				"english_content" => "Dear User, your Veldoo verification code is #OTP#. Use this password to complete your booking",
+				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#. Verwenden Sie dieses Passwort, um Ihre Buchung abzuschließen",
+				"service_provider_id" => Auth::user()->id,
+				"unique_key" => "send_otp_before_ride_edit",
+			],
+			[
+				"title" => "Send booking details after edit booking",
+				"english_content" => "Your Booking has been confirmed with Veldoo, for time - #TIME#. To view the status of your ride go to: #LINK#",
+				"german_content" => "Ihre Buchung wurde mit Veldoo für die Zeit bestätigt - #TIME#. Um den Status Ihrer Fahrt anzuzeigen, gehen Sie zu: #LINK#",
+				"service_provider_id" => Auth::user()->id,
+				"unique_key" => "send_booking_details_after_edit_booking",
+			]
+		]);
+
+		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
 		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
 		Mail::send('email.emailVerificationEmail', ['token' => $token], function($message) use($request){
 			$message->to($request->email);
