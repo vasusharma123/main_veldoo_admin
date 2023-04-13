@@ -9,6 +9,7 @@ use Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use DataTables;
+use Auth;
 
 class SMSTemplateController extends Controller
 {
@@ -21,7 +22,7 @@ class SMSTemplateController extends Controller
     {
         $data['title'] = 'SMS Templates';
         $data['action'] = 'SMS Templates';
-        $data['templates'] = SMSTemplate::get();
+        $data['templates'] = SMSTemplate::where('service_provider_id',Auth::user()->id)->get();
         return view('admin.sms-templates.index')->with($data);
     }
 
@@ -56,7 +57,7 @@ class SMSTemplateController extends Controller
         try 
         {
             $sms = new SMSTemplate();
-            $sms->fill($request->all());
+            $sms->fill(collect($request->all())->put('service_provider_id',Auth::user()->id));
             $sms->save();    
             DB::commit();
             return redirect()->route('sms-template.index')->with('success', 'Template created!');
@@ -89,7 +90,7 @@ class SMSTemplateController extends Controller
     {
         $data['title'] = 'SMS Templates';
         $data['action'] = 'SMS Templates';
-        $data['template'] = SMSTemplate::find($id);
+        $data['template'] = SMSTemplate::where('service_provider_id',Auth::user()->id)->find($id);
 	    return view('admin.sms-templates.edit')->with($data);
     }
 
@@ -111,7 +112,7 @@ class SMSTemplateController extends Controller
         DB::beginTransaction();
         try 
         {
-            $sms = SMSTemplate::find($id);
+            $sms = SMSTemplate::where('service_provider_id',Auth::user()->id)->find($id);
             $sms->fill($request->all());
             $sms->update();    
             DB::commit();
@@ -133,12 +134,12 @@ class SMSTemplateController extends Controller
      */
     public function destroy(Request $request)
     {
-        $price = User::where('id',$request->user_id)->delete();
-        // $price->delete();
+        // $price = User::where('id',$request->user_id)->delete();
+        // // $price->delete();
 
         
-        echo json_encode(true);
-        exit();
+        // echo json_encode(true);
+        // exit();
     }
 
     /**

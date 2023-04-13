@@ -373,7 +373,7 @@ if($_REQUEST['cm'] == 2)
 				);
 			}
 
-			$SMSTemplate = SMSTemplate::find(1);
+			$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_otp_create_booking','service_provider_id'=>Auth::user()->id])->first();
 			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
 			if (app()->getLocale()!="en") 
 			{
@@ -423,7 +423,7 @@ if($_REQUEST['cm'] == 2)
 		if($responseObj['status'] == 1){
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			$SMSTemplate = SMSTemplate::find(2);
+			$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->id])->first();//find(2);
 			if ($request->url_type=="taxisteinemann") {
 				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
 				if (app()->getLocale()!="en") 
@@ -643,7 +643,7 @@ if($_REQUEST['cm'] == 2)
 				$expiryMin = config('app.otp_expiry_minutes');
 				$otp = rand(1000, 9999);
 
-				$SMSTemplate = SMSTemplate::find(3);
+				$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_otp_for_my_bookings','service_provider_id'=>Auth::user()->id])->first();//find(3);
 				$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
 				if (app()->getLocale()!="en") 
 				{
@@ -877,7 +877,7 @@ if($_REQUEST['cm'] == 2)
 			$otp = rand(1000, 9999);
 			$phone_number = explode("-",$request->phone);
 			$request->phone = $phone_number[1];
-			$SMSTemplate = SMSTemplate::find(4);
+			$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_otp_before_ride_edit','service_provider_id'=>Auth::user()->id])->first();//find(4);
 			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
 			if (app()->getLocale()!="en") 
 			{
@@ -955,7 +955,7 @@ if($_REQUEST['cm'] == 2)
 			$message_content = "";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
-			$SMSTemplate = SMSTemplate::find(5);
+			$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_booking_details_after_edit_booking','service_provider_id'=>Auth::user()->id])->first();//find(5);
 			if ($request->url_type=="taxisteinemann") {
 				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
 				if (app()->getLocale()!="en") 
