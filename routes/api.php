@@ -188,6 +188,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 });
 #COMPANY GROUP
 Route::get('company/list', 'API\CompanyController@index');
+Route::get('company/list_data', 'API\CompanyController@list_data');
 
 
 Route::get('common', 'API\UserController@common');

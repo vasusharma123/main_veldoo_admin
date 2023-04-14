@@ -2120,6 +2120,9 @@ class UserController extends Controller
 				if (!empty($request->distance)) {
 					$ride->distance = $request->distance;
 				}
+				if (!empty($request->company_id)) {
+					$ride->company_id = $request->company_id;
+				}
 				$ride->created_by = 2;
 				$ride->creator_id = Auth::user()->id;
 				$ride->status = 0;
@@ -4476,6 +4479,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->payment_type)) {
 			$ride->payment_type = $request->payment_type;
 		}
+		if (!empty($request->company_id)) {
+			$ride->company_id = $request->company_id;
+		}
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
 		$ride->creator_id = Auth::user()->id;
@@ -5596,6 +5602,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			if (!empty($request->ride_cost)) {
 				$ride->ride_cost = $request->ride_cost;
+			}
+			if (!empty($request->company_id)) {
+				$ride->company_id = $request->company_id;
 			}
 			$ride->ride_type = 3;
 			$ride->status = 2;
