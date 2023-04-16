@@ -15,6 +15,7 @@ use App\RideHistory;
 use Illuminate\Support\Facades\DB;
 use Config;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\RideResource;
 
 class RideController extends Controller
 {
