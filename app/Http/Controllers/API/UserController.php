@@ -6211,8 +6211,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$payment_method = \App\PaymentMethod::get();
 		$settings = \App\Setting::first();
 		$settingValue = json_decode($settings['value']);
-		return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name], $this->successCode);
+		return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name, 'driver_count_to_display' => $settingValue->driver_count_to_display], $this->successCode);
 	}
+	
 	public function rideAssignstoNext(Request $request)
 	{
 		echo "function working";
