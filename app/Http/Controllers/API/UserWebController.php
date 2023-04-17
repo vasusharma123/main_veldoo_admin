@@ -57,6 +57,8 @@ class UserWebController extends Controller
             $ride = new Ride();
 
             $ride->user_id = $user->id;
+            $ride->user_country_code = $user->country_code;
+            $ride->user_phone = $user->phone;
             $ride->pickup_address = $request->pickup_address;
             $ride->dest_address = $request->dest_address??"";
             $ride->passanger = $request->passanger;
@@ -161,6 +163,8 @@ class UserWebController extends Controller
             }
             $ride = new Ride();
             $ride->user_id = $user->id;
+            $ride->user_country_code = $user->country_code;
+            $ride->user_phone = $user->phone;
             $ride->pickup_address = $request->pickup_address;
             if (!empty($request->dest_address)) {
                 $ride->dest_address = $request->dest_address;
