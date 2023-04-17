@@ -65,6 +65,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Log;
 use App\DriverStayActiveNotification;
 use Exception;
+use App\Http\Resources\RideResource;
 
 class UserController extends Controller
 {
@@ -2119,6 +2120,9 @@ class UserController extends Controller
 				$ride->ride_time = $ride_date_time;
 				if (!empty($request->distance)) {
 					$ride->distance = $request->distance;
+				}
+				if (!empty($request->company_id)) {
+					$ride->company_id = $request->company_id;
 				}
 				$ride->created_by = 2;
 				$ride->creator_id = Auth::user()->id;
@@ -4476,6 +4480,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->payment_type)) {
 			$ride->payment_type = $request->payment_type;
 		}
+		if (!empty($request->company_id)) {
+			$ride->company_id = $request->company_id;
+		}
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
 		$ride->creator_id = Auth::user()->id;
@@ -5449,7 +5456,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideDetail->check_assigned_driver_ride_acceptation = null;
 						$rideDetail->save();
 					}
-					return $this->successResponse($ride_detail, 'Ride Accepted Successfully.');
+					$rideResponse = new RideResource(Ride::find($request->ride_id));
+					return $this->successResponse($rideResponse, 'Ride Accepted Successfully.');
 				} else if ($request->status == 2) {
 					// \App\Ride::where('id', $request->ride_id)->update(['status' => $request->status]);
 					// $rideHistory->saveData(['ride_id'=>$request->ride_id,'driver_id'=>Auth::user()->id]);
@@ -5502,8 +5510,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideDetail->check_assigned_driver_ride_acceptation = null;
 						$rideDetail->save();
 					}
-					$ride = Ride::with(['user', 'driver'])->find($request->ride_id);
-					return $this->successResponse($ride, 'Ride Rejected Successfully.');
+					$rideResponse = new RideResource(Ride::find($request->ride_id));
+					return $this->successResponse($rideResponse, 'Ride Rejected Successfully.');
 				}
 			} else {
 				return response()->json(['message' => 'Record not found'], $this->errorCode);
@@ -5596,6 +5604,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			if (!empty($request->ride_cost)) {
 				$ride->ride_cost = $request->ride_cost;
+			}
+			if (!empty($request->company_id)) {
+				$ride->company_id = $request->company_id;
 			}
 			$ride->ride_type = 3;
 			$ride->status = 2;

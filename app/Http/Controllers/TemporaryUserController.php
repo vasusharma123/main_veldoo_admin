@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Expense;
-use App\ExpenseAttachment;
-use App\ExpenseType;
 use App\User;
 
 class TemporaryUserController extends Controller
 {
 
+    protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+    protected $limit;
+
     public function __construct()
     {
+        $this->limit = config('app.record_limit_web');
     }
 
     public function only_phone()
@@ -31,7 +34,7 @@ class TemporaryUserController extends Controller
             });
         })->whereHas('creator', function ($query) {
             $query->where('user_type', 2);
-        })->get();
+        })->paginate($this->limit);
         return view('admin.temporary_user.only_phone')->with(['title' => 'Temporary Guest User', 'action' => '', 'users' => $users]);
     }
 
@@ -49,7 +52,7 @@ class TemporaryUserController extends Controller
             });
         })->whereHas('creator', function ($query) {
             $query->where('user_type', 2);
-        })->get();
+        })->paginate($this->limit);
         return view('admin.temporary_user.only_last_name')->with(['title' => 'Temporary Guest User', 'action' => '', 'users' => $users]);
     }
 
