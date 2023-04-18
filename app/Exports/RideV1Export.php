@@ -31,7 +31,7 @@ class RideV1Export implements FromCollection, WithHeadings, WithTitle, WithMappi
 	{
 		$request = $this->data;
 		// dd($request);
-		$rides = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'rides.payment_type', 'users.first_name', 'users.last_name','guest.first_name as guest_first_name', 'guest.last_name as guest_last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name','companies.name as company_name'])
+		$rides = Ride::select(['rides.id', 'rides.user_id', 'rides.pickup_address', 'rides.dest_address', 'rides.ride_time', 'rides.distance', 'rides.status', 'rides.note', 'rides.ride_cost', 'rides.payment_type', 'rides.car_type', 'users.first_name', 'users.last_name','guest.first_name as guest_first_name', 'guest.last_name as guest_last_name', 'vehicles.vehicle_number_plate', 'prices.seating_capacity', 'payment_methods.name AS payment_name','companies.name as company_name'])
                 ->leftJoin('users', 'users.id', 'rides.driver_id')
                 ->leftJoin('companies', 'companies.id', 'rides.company_id')
                 ->leftJoin('users as guest', 'guest.id', 'rides.user_id')
@@ -82,7 +82,8 @@ class RideV1Export implements FromCollection, WithHeadings, WithTitle, WithMappi
 			ucfirst($ride->payment_type),
 			$ride->company_name,
 			date("W",strtotime($ride->ride_time)),
-			ucfirst($ride->note)
+			ucfirst($ride->note),
+			$ride->car_type
 		];
 	}
 
@@ -103,7 +104,8 @@ class RideV1Export implements FromCollection, WithHeadings, WithTitle, WithMappi
 				trans('admin.Payment Type'),
 				"Company",
 				"Week",
-				"Note"
+				"Note",
+				"Vehicle Type"
 			],
 		];
 	}

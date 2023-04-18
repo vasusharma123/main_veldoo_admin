@@ -471,6 +471,10 @@
             color: #000;
         }
 
+        .vehicle_type{
+            font-size: 17px !important;
+        }
+
         @media (max-width: 400px) {
             .filter_booking_section_row .col-4 {
                 padding: 0px;
@@ -808,6 +812,10 @@
                                 <img src="{{ asset('images/cash.png') }}" class="img-responsive price_type_img">
                                 <span class="ride_payment_type">Cash</span>
                             </div>
+                        </div>
+                        <p class="title_main">Vehicle Type</p>
+                        <div class="">
+                            <p class="price vehicle_type">---</p>
                         </div>
                     </div>
 
@@ -1157,7 +1165,8 @@
                     {
                         ride_cost = "N/A";
                     }
-                    $('.ride_price').html("CHF "+ride_cost);
+                    $('.ride_price').html("<b>CHF "+ride_cost+"</b>");
+                    $('.vehicle_type').html("<b>"+element.car_type+"</b>");
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
