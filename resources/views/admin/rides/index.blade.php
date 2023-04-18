@@ -26,7 +26,7 @@
                 <div class="card">
                     <div class="card-body">
                         @include('admin.layouts.flash-message')
-                        <form action="">
+                        <form action="" autocomplete="off">
                             <div class="d-flex">
                                 <div class="form-group mr-2">
                                     <label for="">Start Date</label>
