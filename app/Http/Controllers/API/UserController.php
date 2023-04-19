@@ -4999,6 +4999,33 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$ride->save();
+
+			$settings = Setting::first();
+			$settingValue = json_decode($settings['value']);
+
+			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			if (!empty($masterDriverIds)) {
+				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
+				$title = 'Ride is planned';
+				$message = 'A new ride is planned';
+				$ride['user_data'] = $user_data;
+				$ride['waiting_time'] = $settingValue->waiting_time;
+				$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
+				$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
+				if (!empty($ios_driver_tokens)) {
+					bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
+				}
+				$android_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'android'])->pluck('device_token')->toArray();
+				if (!empty($android_driver_tokens)) {
+					bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
+				}
+				$notification_data = [];
+				foreach ($masterDriverIds as $driverid) {
+					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+				}
+				Notification::insert($notification_data);
+			}
+
 			$ride_data = Ride::find($ride->id);
 			return response()->json(['success' => true, 'message' => 'Trip created successfully.', 'data' => $ride_data], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
