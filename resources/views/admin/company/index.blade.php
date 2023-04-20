@@ -1,6 +1,20 @@
 @extends('admin.layouts.master')
 
 @section('content')
+<style>
+	.c-pagination {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+    .filter-min
+    {
+        width: 150px !important;
+    }
+</style>
 	<!-- Container fluid  -->
 	<!-- ============================================================== -->
 	<div class="container-fluid">
@@ -12,52 +26,109 @@
 				<div class="card" >
 					<div class="card-body">
 						@include('admin.layouts.flash-message')
-						
-					
-						<div class=" box" id="allDataUpdate">
+						<form action="" autocomplete="off">
+                            <div class="d-flex">
+                                {{-- <div class="form-group mr-2">
+                                    <label for="">Start Date</label>
+                                    <input type="text" id="min" value="{{ $start_date }}" class="filter-min" name="start_date">
+                                </div>
+                                <div class="form-group mr-2">
+                                    <label for="">End Date</label>
+                                    <input type="text" id="max" value="{{ $end_date }}" class="filter-max" name="end_date">
+                                </div> --}}
+                                <div class="form-group mr-2">
+                                    <label for="">Enter Keyword</label>
+                                    <input type="text" class="filter-min" name="search" id="searchInput" placeholder="Search keyword" value="{{ isset($_GET) && isset($_GET['search'])?$_GET['search']:'' }}">
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-info btn-sm">
+                                        Search
+                                    </button>
+                                    @if (isset($_GET) && !empty($_GET))
+                                        <a class="btn btn-success btn-sm" href="{{ route('company.index') }}">
+                                            Clear
+                                        </a>
+                                    @endif
+                                    {{-- <a class="btn btn-primary btn-sm exportBtn" href="javascript:;">
+                                        Export
+                                    </a> --}}
+                                </div>
+                            </div>
+                        </form>
+						<div class=" box" id="allDeataUpdate">
 							<div class="table-responsive">
-								<table class="table table-bordered data-table " width="100%">
+								<table class="table table-bordered data-dtable " width="100%">
 									<thead class="thead-light">
 										<tr>
 										<th>ID</th>
 										<th>
-											
+											Owner Name
+										</th>
+										<th>
+											Owner Email
+										</th>
+										<th>
 											Name
 										</th>
-										
 										<th>
-											
 											Email
 										</th>
-										{{-- <th>Country Code</th> --}}
 										<th>
-											
 											Phone
 										</th>
 										<th>
-											
 											State
 										</th>
 										<th>
-											
 											City
 										</th>
 										<th>
-											
 											Country
 										</th>
 										<th>
-											
 											Status
 										</th>
 										<th>Action</th>
 									</tr>
 									</thead>
 									<tbody>
-										
-										
+										@foreach ($companies as $company)
+											<tr>
+												<td>{{ $company->id }}</td>
+												<td>{{ @$company->user->name }}</td>
+												<td>{{ @$company->user->email }}</td>
+												<td>{{ $company->name }}</td>
+												<td>{{ $company->email }}</td>
+												<td>{{ $company->country_code.' '.$company->phone }}</td>
+												<td>{{ $company->state }}</td>
+												<td>{{ $company->city }}</td>
+												<td>{{ $company->country }}</td>
+												<td>
+													<div class="switch">
+														<label>
+															<input type="checkbox" class="change_status" data-status="{{ @$company->user->status }}" data-id="{{@$company->user->id }}" {{ (@$company->user->status === 1)?'checked':'' }}><span class="lever" data-id="{{ @$company->user->id }}" ></span>
+														</label>
+													</div>
+												</td>
+												<td>
+													<div class="btn-group dropright">
+														<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+															Action
+														</button>
+														<div class="dropdown-menu">	
+															<a class="dropdown-item" href="{{ route('company.show',$company->id) }}"> {{  trans("admin.View") }}</a>
+															<a class="dropdown-item" href="{{  route('company.edit',$company->id) }}"> {{ trans("admin.Edit") }}</a>
+															<a class="dropdown-item delete_record" data-id="{{ $company->id }}"> {{  trans("admin.Delete") }}</a>
+														</div>
+													</div>
+												</td>
+											</tr>
+										@endforeach
 									</tbody>
 								</table>
+								<div>
+                                    {{ $companies->appends($_GET)->links('vendor.pagination.bootstrap-4-c') }}
+                                </div>
 							</div>
 						</div>
 					</div>
@@ -193,75 +264,75 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 }
 */
 $(function() {
-        var table = $('.data-table').DataTable({
-            processing: false,
-            serverSide: true,
-           ajax: "{{ url('admin/company') }}",
-               'columnDefs': [{
-        //  'targets': [0,1,2,3,4,5,6],
-         'searchable':true,
-         'orderable':true,
-          'className': 'dt-body-center text-center new-class',
+    //     var table = $('.data-table').DataTable({
+    //         processing: false,
+    //         serverSide: true,
+    //        ajax: "{{ url('admin/company') }}",
+    //            'columnDefs': [{
+    //     //  'targets': [0,1,2,3,4,5,6],
+    //      'searchable':true,
+    //      'orderable':true,
+    //       'className': 'dt-body-center text-center new-class',
              
-      } 
-      ],
+    //   } 
+    //   ],
        
-         //   'order': [1, 'desc'],
+    //      //   'order': [1, 'desc'],
 		  
-            columns: [
-                // {
-                    // data: 'id',
-                    // name: 'id'
-                // },
+    //         columns: [
+    //             // {
+    //                 // data: 'id',
+    //                 // name: 'id'
+    //             // },
 
-                {data: 'id', name: 'id', orderable: true, searchable: true},
-				{
-                    data: 'name',
-                    name: 'name',
-                    orderable: true, searchable: true
-                },
+    //             {data: 'id', name: 'id', orderable: true, searchable: true},
+	// 			{
+    //                 data: 'name',
+    //                 name: 'name',
+    //                 orderable: true, searchable: true
+    //             },
                
-                {
-                    data: 'email',
-                    name: 'email'
-                },
-                {
-                	data:'country_code_phone',
-                	name:'country_code_phone'
-                },
-                // {
-                //     data: 'phone',
-                //     name: 'phone'
-                // },
-				{
-                    data: 'state',
-                    name: 'state'
-                },
-				{
-                    data: 'city',
-                    name: 'city'
-                },
-                {
-                    data: 'country',
-                    name: 'country'
-                },
+    //             {
+    //                 data: 'email',
+    //                 name: 'email'
+    //             },
+    //             {
+    //             	data:'country_code_phone',
+    //             	name:'country_code_phone'
+    //             },
+    //             // {
+    //             //     data: 'phone',
+    //             //     name: 'phone'
+    //             // },
+	// 			{
+    //                 data: 'state',
+    //                 name: 'state'
+    //             },
+	// 			{
+    //                 data: 'city',
+    //                 name: 'city'
+    //             },
+    //             {
+    //                 data: 'country',
+    //                 name: 'country'
+    //             },
                 
-                 {
-                    data: 'status',
-                    name: 'status'
-                },
-				{
-                    data: 'action',
-                    name: 'action'
-                },
+    //              {
+    //                 data: 'status',
+    //                 name: 'status'
+    //             },
+	// 			{
+    //                 data: 'action',
+    //                 name: 'action'
+    //             },
                 
-            ],
-            dom: 'Bfrtip',
-        buttons: [
-            'excel', 'pageLength'
-        ],  
-        });
-    });
+    //         ],
+    //         dom: 'Bfrtip',
+    //     buttons: [
+    //         'excel', 'pageLength'
+    //     ],  
+    //     });
+});
 
 	$(document).on('click', '.change_status', function(e) {
 		e.preventDefault();

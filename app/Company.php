@@ -37,4 +37,14 @@ class Company extends Model
 		return $this->logo;
 	}
 
+    /**
+     * Get the user that owns the Company
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'company_id');
+    }
+
 }

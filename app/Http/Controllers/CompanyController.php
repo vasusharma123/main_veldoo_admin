@@ -32,64 +32,79 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-         $data = array();
-        $data = array('title'=>'Company','action'=>'List Companies');
-       
-
-        if ($request->ajax()) {
+        $data['title'] = "Company";
+        $data['action'] = "List Companies";
+        // if ($request->ajax()) {
             
-            $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->orderBy('id','DESC')->get();
+        //     $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->orderBy('id','DESC')->get();
             
-            return Datatables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('action', function ($row) {
-                                $btn = '<div class="btn-group dropright">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Action
-                            </button>
-                            <div class="dropdown-menu">
+        //     return Datatables::of($data)
+        //                     ->addIndexColumn()
+        //                     ->addColumn('action', function ($row) {
+        //                         $btn = '<div class="btn-group dropright">
+        //                     <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        //                         Action
+        //                     </button>
+        //                     <div class="dropdown-menu">
                               
-                                <a class="dropdown-item" href="'.route('company.show',$row->id) .'">'.trans("admin.View").'</a>
-                                <a class="dropdown-item" href="'. route('company.edit',$row->id).'">'. trans("admin.Edit").'</a>
-                                <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
-                            </div>
-                        </div>';
+        //                         <a class="dropdown-item" href="'.route('company.show',$row->id) .'">'.trans("admin.View").'</a>
+        //                         <a class="dropdown-item" href="'. route('company.edit',$row->id).'">'. trans("admin.Edit").'</a>
+        //                         <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
+        //                     </div>
+        //                 </div>';
                                 
                                   
                                 
-                                return $btn;
+        //                         return $btn;
                         
-                            })
-                            ->addColumn('status', function ($row) {
-                                $status=($row->status === 1)?'checked':'';
-                                $btn = '<div class="switch">
-                            <label>
-                                <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
-                            </label>
-                        </div>';
+        //                     })
+        //                     ->addColumn('status', function ($row) {
+        //                         $status=($row->status === 1)?'checked':'';
+        //                         $btn = '<div class="switch">
+        //                     <label>
+        //                         <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+        //                     </label>
+        //                 </div>';
                                 
                                   
                                 
-                                return $btn;
+        //                         return $btn;
                         
-                            })->addColumn('name', function ($row) {
-                                return ucfirst($row->name);
-                            })->addColumn('email', function ($row) {
-                                return ($row->email)?$row->email:'N/A';
-                            })->addColumn('country', function ($row) {
-                                return ucfirst($row->country);
-                            })->addColumn('city', function ($row) {
-                                return ucfirst($row->city);
-                            })->addColumn('state', function ($row) {
-                                return ucfirst($row->state);
-                            })
-                            ->addColumn('country_code_phone', function ($row) {
-                                return $row->country_code.'-'.$row->phone;
-                            })
+        //                     })->addColumn('name', function ($row) {
+        //                         return ucfirst($row->name);
+        //                     })->addColumn('email', function ($row) {
+        //                         return ($row->email)?$row->email:'N/A';
+        //                     })->addColumn('country', function ($row) {
+        //                         return ucfirst($row->country);
+        //                     })->addColumn('city', function ($row) {
+        //                         return ucfirst($row->city);
+        //                     })->addColumn('state', function ($row) {
+        //                         return ucfirst($row->state);
+        //                     })
+        //                     ->addColumn('country_code_phone', function ($row) {
+        //                         return $row->country_code.'-'.$row->phone;
+        //                     })
                            
-                            ->rawColumns(['action','status','name','email','country','city','state'])
-                            ->make(true);
+        //                     ->rawColumns(['action','status','name','email','country','city','state'])
+        //                     ->make(true);
+        // }
+        $companies = Company::orderBy('created_at','desc');
+        if ($request->has('search') && !empty($request->search)) {
+            $companies->where(function($query) use ($request){
+                $query->orWhere('name','LIKE','%'.$request->search.'%');
+                $query->orWhere('email','LIKE','%'.$request->search.'%');
+                $query->orWhere('phone','LIKE','%'.$request->search.'%');
+                $query->orWhere('state','LIKE','%'.$request->search.'%');
+                $query->orWhere('city','LIKE','%'.$request->search.'%');
+                $query->orWhere('country','LIKE','%'.$request->search.'%');
+            })->orWhereHas('user', function($user) use ($request) {
+                $user->where(function($query) use ($request){
+                    $query->orWhere('name','LIKE','%'.$request->search.'%');
+                    $query->orWhere('email','LIKE','%'.$request->search.'%');
+                });
+            });
         }
+        $data['companies'] = $companies->paginate(100);
         return view('admin.company.index')->with($data);
     }
 
@@ -116,66 +131,74 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'company_logo' => 'image|mimes:jpeg,png,jpg|max:2048',
             // 'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
             // 'first_name' => 'required',
-            'user_name' => 'required',
-            'email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
-            'password' => 'required|min:6',
-            'country' => 'required|min:3',
+            'company_name' => 'required',
+            'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
+            'admin_password' => 'required|min:6',
+            'company_country' => 'required|min:3',
             //'state' => 'required|min:3',
-            'city' => 'required|min:3',
-            'zip' => 'required|min:3',
+            'company_city' => 'required|min:3',
+            'company_zip' => 'required|min:3',
             'status' => 'required',
-            'phone' => 'required',
-
+            'company_phone' => 'required',
         ]);
 
         DB::beginTransaction();
         try {
-            // dd($request->all());
-            $data = array();
-            $data['name'] = $request->user_name;
-            $data['email'] = $request->email;
-            $data['password'] = Hash::make($request->password);
-            $data['user_type'] = 4;
-            $data['country'] = $request->country;
-            $data['state'] = $request->state;
-            $data['city'] = $request->city;
-            $data['street'] = $request->street;
-            $data['zip'] = $request->zip;
-            $data['status'] = $request->status;
-            $data['addresses'] = $request->street;
-            $data['country_code'] = $request->country_code;
-            $data['phone'] = ltrim($request->phone, "0");
-            $user = User::create($data);
-            // dd($user);
-            // Company
-            $image = null;
-            if (!empty($request->image)) {
-                $imageName = 'profile-image' . time() . '.' . $request->image->extension();
 
-                $image = Storage::disk('public')->putFileAs(
-                    'user/' . $user->id,
-                    $request->image,
-                    $imageName
-                );
+            $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+            if ($request->admin_password) 
+            {
+                $data['password'] = Hash::make($request->admin_password);
             }
 
-            $companyData = ['name'=>$request->user_name,'email'=>$request->email,'country_code'=>$request->country_code,'phone'=>$request->phone,'password'=>Hash::make($request->password),'image'=>$image,'country'=>$request->country,'state'=>$request->state,'city'=>$request->city,'street'=>$request->street,'zip'=>$request->zip];
+            $user = new User();
+            $user->fill($data);
+            $user->save();
+
+            if($request->hasFile('admin_profile_picture') && $request->file('admin_profile_picture')->isValid())
+            {
+                $imageName = 'profile-image'.time().'.'.$request->admin_profile_picture->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'user/'.$user->id, $request->admin_profile_picture, $imageName
+                );
+                $user = User::find($user->id);
+                $user->fill(['image'=>$image]);
+                $user->update();
+            }
+
+            $companyData = ['name'=>$request->company_name,'email'=>$request->company_email,'phone'=>$request->company_phone,'country_code'=>$request->company_country_code,'street'=>$request->company_street,'state'=>$request->company_state,'zip'=>$request->company_zip,'country'=>$request->company_country,'city'=>$request->company_city];  
             $company = new Company();
             $company->fill($companyData);
             $company->save();
-            
-            $user->company_id = $company->id;
-            $user->image = $image;
-            $user->save();
 
-            if (!empty($request->email)) {
-                // $m = Mail::send('admin.company.email', $data, function($message) use ($request) {
-                //                   $message->to($request->email, 'Login Credential')->subject('Login Credential');
-                // });
+            if($request->hasFile('company_logo') && $request->file('company_logo')->isValid())
+            {
+                $imageName = 'logo-'.time().'.'.$request->company_logo->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->company_logo, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['logo'=>$image]);
+                $company->update();
             }
+
+            if($request->hasFile('company_background_image') && $request->file('company_background_image')->isValid())
+            {
+                $imageName = 'background-image-'.time().'.'.$request->company_background_image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->company_background_image, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['background_image'=>$image]);
+                $company->update();
+            }
+
+            $user = User::find($user->id);
+            $user->fill(['company_id'=>$company->id]);
+            $user->update();
             DB::commit();
             return back()->with('success', 'Company created!');
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -310,11 +333,12 @@ class CompanyController extends Controller
      * @var $user object of user class
      * @return object with registered user id
      * This function use to  create contacts subject
-     */
+    */
     public function change_status(Request $request){
-        DB::table('users')->update(['status'=>0]);
+        // dd($request->user_id);
+        // DB::table('users')->update(['status'=>0]);
         $status = ($request->status)?0:1;
-           $updateUser = User::where('id',$request->user_id)->update(['status'=>$status]);
+        $updateUser = User::where('id',$request->user_id)->update(['status'=>$status]);
        
         if ($updateUser) {
             echo json_encode(true);
