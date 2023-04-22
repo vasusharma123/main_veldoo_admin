@@ -2081,9 +2081,9 @@ class UserController extends Controller
 				$all_rides_dates = [$request->ride_time];
 			}
 			$all_ride_ids = [];
+			$rideUser = User::find($request->user_id);
 			foreach ($all_rides_dates as $ride_date_time) {
 				$ride = new Ride();
-				$rideUser = User::find($request->user_id);
 				if ($rideUser) 
 				{
 					$ride->user_country_code = $rideUser->country_code;

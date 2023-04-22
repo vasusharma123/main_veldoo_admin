@@ -19,7 +19,6 @@ class Ride extends Model
 	protected $appends = [
 		'stop_over',
 		'ride_time_modified',
-		'created_by_user_type',
 	];
 
 	public function getRideTimeModifiedAttribute()
