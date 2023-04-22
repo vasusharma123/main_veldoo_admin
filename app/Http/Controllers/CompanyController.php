@@ -218,15 +218,14 @@ class CompanyController extends Controller
      */
     public function show($id,Request $request)
     {
-         $breadcrumb = array('title'=>trans('admin.Company'),'action'=>trans('admin.Company Detail'));
+        $breadcrumb = array('title'=>trans('admin.Company'),'action'=>trans('admin.Company Detail'));
 		$data = [];
         $where = array('id' => $id);
-        $record = User::where($where)->first();
-		
+        $record = Company::where($where)->first();
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
 		}
-		
+
 		if ($request->ajax()) {
 			if($request->has('type') && $request->input('type')=='approve' && !empty($request->input('id')) ){
 				$company = \App\User::where(['id'=>$id])->first();
@@ -241,7 +240,6 @@ class CompanyController extends Controller
 		$data['status'] = array(1=>'Active',0=>'In-active');
 		$data['record'] = $record;
 		$data = array_merge($breadcrumb,$data);
-		
 	    return view("admin.{$this->folder}.show")->with($data);
     }
 
@@ -255,8 +253,8 @@ class CompanyController extends Controller
     {
         $breadcrumb = array('title'=>'Company','action'=>'Edit Company');
 		$data = [];
-        $where = array('id' => $id,'user_type'=>4);
-        $record = User::where($where)->first();
+        $where = array('id' => $id);
+        $record = Company::where($where)->first();
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
 		}
@@ -275,39 +273,130 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-      $query = User::where(['id'=>$id,'user_type'=>4]);
-		$haveUser = $query->first();
-		$rules = [
-         'email' => 'required|'.(!empty($haveUser->id) ? 'unique:users,email,'.$haveUser->id : ''),
-            'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-        ];
-		if(!empty($request->reset_password)){
-			$rules['password'] = 'required|min:6';
-		}
-		$request->validate($rules);
-		$input = $request->all();
-		if(!empty($request->reset_password)){
-            $input['password'] = Hash::make($request->password);
+        
+        $this->validate($request, [
+            // 'company_logo' => 'image|mimes:jpeg,png,jpg|max:2048',
+            // 'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
+            // 'first_name' => 'required',
+            'company_name' => 'required',
+            'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL,email,'.$id,
+            // 'admin_password' => 'min:6',
+            'company_country' => 'required|min:3',
+            //'state' => 'required|min:3',
+            'company_city' => 'required|min:3',
+            'company_zip' => 'required|min:3',
+            'status' => 'required',
+            'company_phone' => 'required',
+        ]);
+        // dd($request->all());
+        DB::beginTransaction();
+        try {
+
+            $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+            if ($request->has('reset_password') && !empty($request->admin_password)) 
+            {
+                $data['password'] = Hash::make($request->admin_password);
+            }
+
+            $user = User::where('company_id',$id)->first();
+            if ($user) {
+                $user->fill($data);
+                $user->update();
+            }
+            else
+            {
+                $user = new User();
+                $user->fill($data);
+                $user->save();
+            }
+            
+
+            if($request->hasFile('admin_profile_picture') && $request->file('admin_profile_picture')->isValid())
+            {
+                $imageName = 'profile-image'.time().'.'.$request->admin_profile_picture->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'user/'.$user->id, $request->admin_profile_picture, $imageName
+                );
+                $user = User::find($user->id);
+                $user->fill(['image'=>$image]);
+                $user->update();
+            }
+
+            $companyData = ['name'=>$request->company_name,'email'=>$request->company_email,'phone'=>$request->company_phone,'country_code'=>$request->company_country_code,'street'=>$request->company_street,'state'=>$request->company_state,'zip'=>$request->company_zip,'country'=>$request->company_country,'city'=>$request->company_city]; 
+            // dd($companyData); 
+            $company = Company::find($id);
+            $company->fill($companyData);
+            $company->update();
+
+            if($request->hasFile('company_logo') && $request->file('company_logo')->isValid())
+            {
+                $imageName = 'logo-'.time().'.'.$request->company_logo->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->company_logo, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['logo'=>$image]);
+                $company->update();
+            }
+
+            if($request->hasFile('company_background_image') && $request->file('company_background_image')->isValid())
+            {
+                $imageName = 'background-image-'.time().'.'.$request->company_background_image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->company_background_image, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['background_image'=>$image]);
+                $company->update();
+            }
+
+            $user = User::find($user->id);
+            $user->fill(['company_id'=>$company->id]);
+            $user->update();
+            DB::commit();
+            return back()->with('success', 'Company updated!');
+        } catch (\Illuminate\Database\QueryException $exception) {
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
         }
-		unset($input['_method'],$input['_token'],$input['image_tmp'],$input['reset_password']);
+
+
+    //   $query = User::where(['id'=>$id,'user_type'=>4]);
+	// 	$haveUser = $query->first();
+	// 	$rules = [
+    //      'email' => 'required|'.(!empty($haveUser->id) ? 'unique:users,email,'.$haveUser->id : ''),
+    //         'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+    //     ];
+	// 	if(!empty($request->reset_password)){
+	// 		$rules['password'] = 'required|min:6';
+	// 	}
+	// 	$request->validate($rules);
+	// 	$input = $request->all();
+	// 	if(!empty($request->reset_password)){
+    //         $input['password'] = Hash::make($request->password);
+    //     }
+	// 	unset($input['_method'],$input['_token'],$input['image_tmp'],$input['reset_password']);
 		
-		$path = 'users/'.$haveUser->id.'/profile/';
-		$pathDB = 'public/users/'.$haveUser->id.'/profile/';
+	// 	$path = 'users/'.$haveUser->id.'/profile/';
+	// 	$pathDB = 'public/users/'.$haveUser->id.'/profile/';
 		
-		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
+	// 	if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
 			
-			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
-			if(!empty($haveUser->image)){
-				Storage::disk('public')->delete($haveUser->image);
-			}
+	// 		$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
+	// 		if(!empty($haveUser->image)){
+	// 			Storage::disk('public')->delete($haveUser->image);
+	// 		}
 			
-			$input['image'] = Storage::disk('public')->putFileAs(
-				'user/'.$haveUser->id, $request->image_tmp, $imageName
-			);
-		}
-        User::where('id', $id)->update($input);
+	// 		$input['image'] = Storage::disk('public')->putFileAs(
+	// 			'user/'.$haveUser->id, $request->image_tmp, $imageName
+	// 		);
+	// 	}
+    //     User::where('id', $id)->update($input);
 		
-		return back()->with('success', __('Record updated!'));
+	// 	return back()->with('success', __('Record updated!'));
     }
 
     /**

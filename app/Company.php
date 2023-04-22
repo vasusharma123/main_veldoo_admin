@@ -44,7 +44,7 @@ class Company extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'company_id');
+        return $this->hasOne(User::class, 'company_id')->where('user_type',4);
     }
 
 }

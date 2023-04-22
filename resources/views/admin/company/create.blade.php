@@ -134,8 +134,8 @@
 										<div class="col-md-6">
 											<div class="" style="margin-bottom:20px">
 												<?php
-												echo Form::label('company_phone', 'Phone',['class'=>'control-label']);
-												echo Form::text('company_phone',null,['class'=>'form-control','required'=>false,'id'=>'Regphones','autocomplete'=>'off']);
+													echo Form::label('company_phone', 'Phone',['class'=>'control-label']);
+													echo Form::text('company_phone',null,['class'=>'form-control','required'=>true,'id'=>'Regphones','autocomplete'=>'off']);
 												?>
 												<input type="hidden" value="+1" id="test1" name="company_country_code" />
 												@error('company_phone')
@@ -281,9 +281,9 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 													echo Form::label('admin_phone', 'Phone',['class'=>'control-label']);
-													echo Form::text('admin_phone',null,['class'=>'form-control','required'=>false,'id'=>'Regphones','autocomplete'=>'off','required'=>true]);
+													echo Form::text('admin_phone',null,['class'=>'form-control','required'=>false,'id'=>'admin_phone','autocomplete'=>'off','required'=>true]);
 												?>
-												<input type="hidden" value="+1" id="test1" name="admin_country_code" />
+												<input type="hidden" value="+1" id="admin_phone_country_code" name="admin_country_code" />
 												@error('admin_phone')
 													<span class="invalid-feedback" role="alert">
 														<strong>{{ $message }}</strong>
@@ -347,6 +347,22 @@
 			$("#Regphones").removeAttr('placeholder');
 			$("#Regphones").val(myStr);
 		}, 500);
+		setTimeout(function(){
+			$('[autocomplete=off]').val('');
+			$('#userCreate').show();
+			var myStr = $("#admin_phone").val().replaceAll(/-/g, "").replaceAll(" ", "");
+			$("#admin_phone").removeAttr('placeholder');
+			$("#admin_phone").val(myStr);
+		}, 500);
+	});
+	var input = $('#Regphones').intlTelInput("setNumber", "+1");
+	input.on("countrychange", function() {
+		$("#test1").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
+	});
+
+	var admin_phone = $('#admin_phone').intlTelInput("setNumber", "+1");
+	admin_phone.on("countrychange", function() {
+		$("#admin_phone_country_code").val($("#admin_phone").intlTelInput("getSelectedCountryData").dialCode);
 	});
 	$(document).ready(function () {
 		$('#userCreate').validate();
@@ -363,10 +379,10 @@
 		}
 	}
 
-	$('.flag-container').click(function(){
-		var data = $('.selected-dial-code').html();
-		$("#test1").val(data);
-	});
+	// $('.flag-container').click(function(){
+	// 	var data = $('.selected-dial-code').html();
+	// 	$("#test1").val(data);
+	// });
 
 
 	</script>
