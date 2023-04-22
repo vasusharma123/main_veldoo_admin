@@ -307,6 +307,14 @@
                                         <span class="subtitle">When creating a user from driver app by inputting only the last name, will delete in ___ days</span>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <?php
+                                        echo Form::label('driver_count_to_display', 'Driver count to Display', ['class' => 'control-label']);
+                                        echo Form::number('driver_count_to_display', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
+                                        ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-actions">

@@ -34,6 +34,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <nav aria-label="...">
+                            {{ $users->links() }}
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -46,5 +49,7 @@
 <!-- ============================================================== -->
 <!-- End Container fluid  -->
 @section('footer_scripts')
-
+<script>
+    $(document).find(".pagination").addClass("laravel_pagination");
+</script>
 @stop

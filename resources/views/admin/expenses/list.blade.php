@@ -99,7 +99,7 @@
                                     @foreach ($expenses as $expense_key => $expense_value)
                                         <tr>
                                             <td>{{ $expense_value->id }}</td>
-                                            <td class="text-capitalize">{{ $expense_value->driver->first_name . ' ' . $expense_value->driver->last_name }}
+                                            <td class="text-capitalize">{{ (!empty($expense_value->driver->first_name))?($expense_value->driver->first_name . ' ' . $expense_value->driver->last_name):"" }}
                                             </td>
                                             <td>{{ $expense_value->type }}</td>
                                             <td><a href="{{ route('bookings.show',$expense_value->ride_id) }}">{{ !empty($expense_value->ride_id) ? $expense_value->ride_id : '' }}</a>
@@ -115,11 +115,11 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="card-footer py-4">
-                            <nav aria-label="...">
-                                {{ $expenses->appends(['driver' => $selected_driver, 'expense_type' => $selected_expense_type])->links() }}
-                            </nav>
-                        </div>
+                    </div>
+                    <div class="card-footer py-4">
+                        <nav aria-label="...">
+                            {{ $expenses->appends(['driver' => $selected_driver, 'expense_type' => $selected_expense_type])->links() }}
+                        </nav>
                     </div>
                 </div>
             </div>
