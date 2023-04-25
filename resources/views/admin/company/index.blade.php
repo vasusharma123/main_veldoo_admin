@@ -118,7 +118,7 @@
 														<div class="dropdown-menu">	
 															<a class="dropdown-item" href="{{ route('company.show',$company->id) }}"> {{  trans("admin.View") }}</a>
 															<a class="dropdown-item" href="{{  route('company.edit',$company->id) }}"> {{ trans("admin.Edit") }}</a>
-															<a class="dropdown-item delete_record" data-id="{{ $company->id }}"> {{  trans("admin.Delete") }}</a>
+															<a class="dropdown-item delete_record" href="javascript:;" data-id="{{ $company->id }}"> {{  trans("admin.Delete") }}</a>
 														</div>
 													</div>
 												</td>
@@ -385,17 +385,17 @@ $(function() {
 			confirmButtonText: 'Yes, delete it!'
 		}).then((result) => {
 			if (result.value) {
-				var user_id = $(this).attr('data-id');
+				var company_id = $(this).attr('data-id');
 
 				$.ajax({
 					type: "post",
 					url: "{{ url('admin/company/delete') }}",
 					data: {
 						"_token": "{{ csrf_token() }}",
-						"user_id": user_id
+						"company_id": company_id
 					},
 					success: function(data) {
-						if (data) {
+						if (data.status=="1") {
 							Swal.fire({
 								title: 'Deleted',
 								text: "Company has been deleted.",
