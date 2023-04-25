@@ -700,6 +700,16 @@ class Socket{
 					console.log(`Error : There is no id send`);
 				}
             });
+
+			socket.on("last_activity_timing", async (data) => {
+                if (data.user_id) {
+					var last_activity_data = await helper.lastDriverActivity(data.user_id);
+
+					this.io.emit(`last_activity_timing_${data.user_id}`, last_activity_data[0]); 
+                } else {
+					console.log(`Error : There is no id send`);
+				}
+            });
         });
 
     }

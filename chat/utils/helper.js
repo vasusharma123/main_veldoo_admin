@@ -214,5 +214,12 @@ class Helper{
 			return null;
 		}
 	}
+	async lastDriverActivity(d_id){
+		try {
+			return await this.db.query(`Select * from driver_stay_active_notifications WHERE driver_id = ? limit 1`,[d_id]);
+		} catch (error) {
+			return error;
+		}
+	}
 }
 module.exports = new Helper();
