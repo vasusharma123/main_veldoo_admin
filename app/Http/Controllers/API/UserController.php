@@ -2081,9 +2081,14 @@ class UserController extends Controller
 				$all_rides_dates = [$request->ride_time];
 			}
 			$all_ride_ids = [];
+			$rideUser = User::find($request->user_id);
 			foreach ($all_rides_dates as $ride_date_time) {
 				$ride = new Ride();
-
+				if ($rideUser) 
+				{
+					$ride->user_country_code = $rideUser->country_code;
+					$ride->user_phone = $rideUser->phone;
+				}
 				$ride->user_id = $request->user_id;
 				$ride->pickup_address = $request->pickup_location;
 				$ride->dest_address = $request->drop_off_location;
@@ -2377,6 +2382,12 @@ class UserController extends Controller
 
 
 			$ride->user_id = $user_id;
+			$rideUser = User::find($user_id);
+			if ($rideUser) 
+			{
+				$ride->user_country_code = $rideUser->country_code;
+				$ride->user_phone = $rideUser->phone;
+			}
 			unset($ride->created_at);
 			unset($ride->updated_at);
 			//print_r($place); die;
@@ -4496,6 +4507,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		if (!empty($request->user_id)) {
 			$ride->user_id = $request->user_id;
+			$rideUser = User::find($request->user_id);
+			if ($rideUser) 
+			{
+				$ride->user_country_code = $rideUser->country_code;
+				$ride->user_phone = $rideUser->phone;
+			}
 		}
 		if (!empty($request->note)) {
 			$ride->note = $request->note;
@@ -4680,6 +4697,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->user_id = Auth::user()->id;
+		if (Auth::user()) 
+		{
+			$ride->user_country_code = Auth::user()->country_code;
+			$ride->user_phone = Auth::user()->phone;
+		}
 		if (!empty($request->distance)) {
 			$ride->distance = $request->distance;
 		}
@@ -4857,6 +4879,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->user_id = Auth::user()->id;
+		if (Auth::user()) 
+		{
+			$ride->user_country_code = Auth::user()->country_code;
+			$ride->user_phone = Auth::user()->phone;
+		}
 		if (!empty($request->distance)) {
 			$ride->distance = $request->distance;
 		}
@@ -4993,6 +5020,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->created_by = 1;
 			$ride->creator_id = Auth::user()->id;
 			$ride->user_id = Auth::user()->id;
+			if (Auth::user()) 
+			{
+				$ride->user_country_code = Auth::user()->country_code;
+				$ride->user_phone = Auth::user()->phone;
+			}
 			$ride->platform = Auth::user()->device_type;
 			if (!empty($request->driver_id)) {
 				$ride->driver_id = $request->driver_id;
@@ -5618,6 +5650,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (isset($request->user_id) && !empty($request->user_id)) {
 
 				$ride->user_id = $request->user_id;
+				$rideUser = User::find($request->user_id);
+				if ($rideUser) 
+				{
+					$ride->user_country_code = $rideUser->country_code;
+					$ride->user_phone = $rideUser->phone;
+				}
 			} else {
 				unset($input['user_id']);
 			}
