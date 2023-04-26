@@ -203,10 +203,10 @@ class CompanyController extends Controller
             return back()->with('success', 'Company created!');
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollBack();
-            return back()->with('error', $exception->getMessage());
+            return back()->withInput()->with('error', $exception->getMessage());
         } catch (\Exception $exception) {
             DB::rollBack();
-            return back()->with('error', $exception->getMessage());
+            return back()->withInput()->with('error', $exception->getMessage());
         }
     }
 
@@ -407,12 +407,23 @@ class CompanyController extends Controller
      */
     public function destroy(Request $request)
     {
-        $price = User::where('id',$request->user_id)->delete();
-        // $price->delete();
+        DB::beginTransaction();
+        try 
+        {
+            Company::where('id',$request->company_id)->delete();
+            Ride::where('company_id',$request->company_id)->update(['company_id'=>null]);
 
-        
-        echo json_encode(true);
-        exit();
+            User::where(['company_id'=>$request->company_id,'user_type'=>1])->update(['company_id'=>null]);
+            User::where(['company_id'=>$request->company_id])->whereIn('user_type',[4,5])->forcedelete();
+
+            DB::commit();
+            return response()->json(['status'=>1,'message'=>'Deleted']);
+            // all good
+        } catch (\Exception $e) {
+            DB::rollback();
+            // something went wrong
+            return response()->json(['status'=>0,'message'=>'something went wrong! please try again.']);
+        }
     }
 
     /**

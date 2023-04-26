@@ -376,12 +376,12 @@ $(document).ready(function(){
 		$("#admin_phone").val(myStr);
 	}, 1000);
 });
-var input = $('#Regphones').intlTelInput("setNumber", "{{ $record->country_code.$record->phone }}");
+var input = $('#Regphones').intlTelInput("setNumber", "+{{ $record->country_code.$record->phone }}");
 input.on("countrychange", function() {
 	$("#test1").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
 });
 
-var admin_phone = $('#admin_phone').intlTelInput("setNumber", "{{ @$record->user->country_code.@$record->user->phone }}");
+var admin_phone = $('#admin_phone').intlTelInput("setNumber", "+{{ @$record->user->country_code.@$record->user->phone }}");
 admin_phone.on("countrychange", function() {
 	$("#admin_phone_country_code").val($("#admin_phone").intlTelInput("getSelectedCountryData").dialCode);
 });
