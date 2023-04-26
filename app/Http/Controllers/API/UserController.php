@@ -738,14 +738,15 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])
-			->where(function($query){
-				$query->whereNotNull('password')->where('password','!=',"");
-			})->first();
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			if ($user) {
-				return response()->json(['status' => 1, 'message' => 'Already registered'], $this->successCode);
+				if(!empty($user->password)){
+					return response()->json(['data' => ['account_created' => 1, 'password_created' => 1], 'message' => 'Already registered & login'], $this->successCode);
+				} else {
+					return response()->json(['data' => ['account_created' => 1, 'password_created' => 0], 'message' => 'Already registered but not login'], $this->successCode);
+				}
 			} else {
-				return response()->json(['status' => 0, 'message' => 'Not Registered'], $this->successCode);
+				return response()->json(['data' => ['account_created' => 0, 'password_created' => 0], 'message' => 'Not Registered'], $this->successCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
