@@ -5986,7 +5986,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$phonenum = ltrim($request->phone, "0");
 			$countryCode = $request->country_code;
-			$userData = \App\UserData::whereJsonContains('phone_number', ['country_code' => $countryCode])->whereJsonContains('phone_number', ['phone' => $phonenum])->first();
+			$userData = \App\UserData::whereJsonContains('phone_numbers', ['country_code' => $countryCode])->whereJsonContains('phone_numbers', ['phone' => $phonenum])->first();
 			$userData2 = \App\UserData::where('user_id', $user['id'])->first();
 			if (empty($user) && empty($userData)) {
 				return response()->json(['success' => false, 'message' => 'Record Not found'], $this->successCode);
