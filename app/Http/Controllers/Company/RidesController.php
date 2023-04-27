@@ -71,6 +71,12 @@ class RidesController extends Controller
         try {
             $ride = new Ride();
             $ride->user_id = $request->user_id??"";
+            $rideUser = User::find($request->user_id);
+            if ($rideUser) 
+            {
+                $ride->user_country_code = $rideUser->country_code;
+                $ride->user_phone = $rideUser->phone;
+            }
             $ride->company_id = Auth::user()->company_id;
             $ride->pickup_address = $request->pickup_address;
             if (!empty($request->dest_address)) {
@@ -224,6 +230,12 @@ class RidesController extends Controller
         try {
             $ride = new Ride();
             $ride->user_id = $request->user_id??"";
+            $rideUser = User::find($request->user_id);
+            if ($rideUser) 
+            {
+                $ride->user_country_code = $rideUser->country_code;
+                $ride->user_phone = $rideUser->phone;
+            }
             $ride->pickup_address = $request->pickup_address;
             $ride->dest_address = $request->dest_address??"";
             $ride->passanger = $request->passanger;
