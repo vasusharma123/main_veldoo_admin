@@ -413,8 +413,8 @@ class UserController extends Controller
 				'user/'.$haveUser->id, $request->image_tmp, $imageName
 			);
 		}
-		
-		User::where('id', $id)->update($input);
+		// dd($input);
+		User::where('id', $id)->update(collect($input)->forget('reset_password')->toArray());
 		
 		return back()->with('success', __('Record updated!'));
     }
