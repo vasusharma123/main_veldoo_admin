@@ -99,16 +99,18 @@
 												<td>{{ @$company->user->email }}</td>
 												<td>{{ $company->name }}</td>
 												<td>{{ $company->email }}</td>
-												<td>{{ $company->country_code.' '.$company->phone }}</td>
+												<td>{{ $company->phone?($company->country_code.' '.$company->phone):'' }}</td>
 												<td>{{ $company->state }}</td>
 												<td>{{ $company->city }}</td>
 												<td>{{ $company->country }}</td>
 												<td>
-													<div class="switch">
-														<label>
-															<input type="checkbox" class="change_status" data-status="{{ @$company->user->status }}" data-id="{{@$company->user->id }}" {{ (@$company->user->status === 1)?'checked':'' }}><span class="lever" data-id="{{ @$company->user->id }}" ></span>
-														</label>
-													</div>
+													@if ($company->user)
+														<div class="switch">
+															<label>
+																<input type="checkbox" class="change_status change_status{{@$company->user->id }}" data-status="{{ @$company->user->status }}" data-id="{{@$company->user->id }}" {{ (@$company->user->status === 1)?'checked':'' }}><span class="lever" data-id="{{ @$company->user->id }}" ></span>
+															</label>
+														</div>
+													@endif
 												</td>
 												<td>
 													<div class="btn-group dropright">
@@ -336,6 +338,7 @@ $(function() {
 
 	$(document).on('click', '.change_status', function(e) {
 		e.preventDefault();
+		isChecked = $(this).is(":checked");
 		Swal.fire({
 			title: 'Are you sure?',
 			text: "You want to change its status!",
@@ -347,26 +350,37 @@ $(function() {
 		}).then((result) => {
 			if (result.value) {
 				var user_id = $(this).attr('data-id');
-				var status = $(this).attr('data-status');
+				// var status = $(this).attr('data-status');
 				$.ajax({
 					type: "post",
 					url: "{{ url('admin/company/change_status') }}",
 					data: {
 						"_token": "{{ csrf_token() }}",
 						"user_id": user_id,
-						"status": status
+						"status": isChecked
 					},
 					success: function(data) {
-						if (data) {
+						if (!data) {
+							// Swal.fire({
+							// 	title: 'Success',
+							// 	text: "The status has been changed.",
+							// 	icon: 'success',
+							// 	showConfirmButton: false
+							// });
+							// setTimeout(function() {
+							// 	location.reload(true);
+							// }, 2000);
 							Swal.fire({
-								title: 'Success',
-								text: "The status has been changed.",
-								icon: 'success',
+								title: 'Error',
+								text: "Something went wrong please try again.",
+								icon: 'error',
 								showConfirmButton: false
 							});
-							setTimeout(function() {
-								location.reload(true);
-							}, 2000);
+						}
+						else
+						{
+							// checkedStatus = (isChecked?false:true);
+							$('.change_status'+user_id).prop("checked",isChecked);
 						}
 					}
 				});

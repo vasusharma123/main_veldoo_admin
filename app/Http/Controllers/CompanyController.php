@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use DataTables;
 use App\Company;
 use Auth;
+use App\Ride;
 
 class CompanyController extends Controller
 {
@@ -135,38 +136,50 @@ class CompanyController extends Controller
             // 'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
             // 'first_name' => 'required',
             'company_name' => 'required',
-            'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
-            'admin_password' => 'required|min:6',
-            'company_country' => 'required|min:3',
+            // 'admin_password' => 'min:6',
+            // 'company_country' => 'min:3',
             //'state' => 'required|min:3',
-            'company_city' => 'required|min:3',
-            'company_zip' => 'required|min:3',
+            // 'company_city' => 'min:3',
+            // 'company_zip' => 'min:3',
             'status' => 'required',
-            'company_phone' => 'required',
+            // 'company_phone' => 'required',
         ]);
+        if ($request->has('admin_email') && !empty($request->admin_email)) {
+            $this->validate($request, [
+                'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
+            ]);
+        }
 
         DB::beginTransaction();
         try {
-
-            $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
-            if ($request->admin_password) 
+            // dd($request->all());
+            if (
+                ($request->has('admin_email') && !empty($request->admin_email)) ||
+                ($request->has('admin_name') && !empty($request->admin_name)) ||
+                ($request->has('admin_phone') && !empty($request->admin_phone)) ||
+                ($request->has('admin_password') && !empty($request->admin_password))
+            ) 
             {
-                $data['password'] = Hash::make($request->admin_password);
-            }
+                $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+                if ($request->admin_password) 
+                {
+                    $data['password'] = Hash::make($request->admin_password);
+                }
+    
+                $user = new User();
+                $user->fill($data);
+                $user->save();
 
-            $user = new User();
-            $user->fill($data);
-            $user->save();
-
-            if($request->hasFile('admin_profile_picture') && $request->file('admin_profile_picture')->isValid())
-            {
-                $imageName = 'profile-image'.time().'.'.$request->admin_profile_picture->extension();
-                $image = Storage::disk('public')->putFileAs(
-                    'user/'.$user->id, $request->admin_profile_picture, $imageName
-                );
-                $user = User::find($user->id);
-                $user->fill(['image'=>$image]);
-                $user->update();
+                if($request->hasFile('admin_profile_picture') && $request->file('admin_profile_picture')->isValid())
+                {
+                    $imageName = 'profile-image'.time().'.'.$request->admin_profile_picture->extension();
+                    $image = Storage::disk('public')->putFileAs(
+                        'user/'.$user->id, $request->admin_profile_picture, $imageName
+                    );
+                    $user = User::find($user->id);
+                    $user->fill(['image'=>$image]);
+                    $user->update();
+                }
             }
 
             $companyData = ['name'=>$request->company_name,'email'=>$request->company_email,'phone'=>$request->company_phone,'country_code'=>$request->company_country_code,'street'=>$request->company_street,'state'=>$request->company_state,'zip'=>$request->company_zip,'country'=>$request->company_country,'city'=>$request->company_city];  
@@ -196,9 +209,17 @@ class CompanyController extends Controller
                 $company->update();
             }
 
-            $user = User::find($user->id);
-            $user->fill(['company_id'=>$company->id]);
-            $user->update();
+            if (
+                ($request->has('admin_email') && !empty($request->admin_email)) || 
+                ($request->has('admin_name') && !empty($request->admin_name)) || 
+                ($request->has('admin_phone') && !empty($request->admin_phone)) || 
+                ($request->has('admin_password') && !empty($request->admin_password))
+            ) 
+            {
+                $user = User::find($user->id);
+                $user->fill(['company_id'=>$company->id]);
+                $user->update();
+            }
             DB::commit();
             return back()->with('success', 'Company created!');
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -279,15 +300,20 @@ class CompanyController extends Controller
             // 'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
             // 'first_name' => 'required',
             'company_name' => 'required',
-            'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL,email,'.$id,
+            // 'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL,email,'.$id,
             // 'admin_password' => 'min:6',
-            'company_country' => 'required|min:3',
+            // 'company_country' => 'required|min:3',
             //'state' => 'required|min:3',
-            'company_city' => 'required|min:3',
-            'company_zip' => 'required|min:3',
+            // 'company_city' => 'required|min:3',
+            // 'company_zip' => 'required|min:3',
             'status' => 'required',
-            'company_phone' => 'required',
+            // 'company_phone' => 'required',
         ]);
+        if ($request->has('admin_email') && !empty($request->admin_email)) {
+            $this->validate($request, [
+                'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
+            ]);
+        }
         // dd($request->all());
         DB::beginTransaction();
         try {
@@ -305,9 +331,17 @@ class CompanyController extends Controller
             }
             else
             {
-                $user = new User();
-                $user->fill($data);
-                $user->save();
+                if (
+                    ($request->has('admin_email') && !empty($request->admin_email)) || 
+                    ($request->has('admin_name') && !empty($request->admin_name)) || 
+                    ($request->has('admin_phone') && !empty($request->admin_phone)) || 
+                    ($request->has('admin_password') && !empty($request->admin_password))
+                ) 
+                {
+                    $user = new User();
+                    $user->fill($data);
+                    $user->save();
+                }
             }
             
 
@@ -350,9 +384,11 @@ class CompanyController extends Controller
                 $company->update();
             }
 
-            $user = User::find($user->id);
-            $user->fill(['company_id'=>$company->id]);
-            $user->update();
+            if ($user) {
+                $user = User::find($user->id);
+                $user->fill(['company_id'=>$company->id]);
+                $user->update();
+            }
             DB::commit();
             return back()->with('success', 'Company updated!');
         } catch (\Illuminate\Database\QueryException $exception) {
@@ -437,7 +473,8 @@ class CompanyController extends Controller
     public function change_status(Request $request){
         // dd($request->user_id);
         // DB::table('users')->update(['status'=>0]);
-        $status = ($request->status)?0:1;
+        $status = ($request->status=="true")?1:0;
+        // dd($status);
         $updateUser = User::where('id',$request->user_id)->update(['status'=>$status]);
        
         if ($updateUser) {
