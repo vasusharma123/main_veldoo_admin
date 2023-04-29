@@ -63,8 +63,6 @@
 												<div class="col-md-2">
 													@if(!empty($record->logo))
 														<img id="previewLogo" src="{{url('storage/'.$record->logo)}}" alt="" height="50px" width="80px" />
-													@else
-														<img id="previewLogo" src="#" alt="" height="50px" width="80px" />
 													@endif
 												</div>
 											</div>
@@ -97,8 +95,6 @@
 												<div class="col-md-2">
 													@if(!empty($record->background_image))
 														<img id="previewbackground_image" src="{{url('storage/'.$record->background_image)}}" alt="" height="50px" width="80px" />
-													@else
-														<img id="previewbackground_image" src="#" alt="" height="50px" width="80px" />
 													@endif
 												</div>
 											</div>
@@ -107,7 +103,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_name', 'Company Name',['class'=>'control-label']);
-													echo Form::text('company_name',$record->name,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::text('company_name',$record->name,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('company_name')
 													<span class="invalid-feedback" role="alert">
@@ -133,7 +129,7 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 													echo Form::label('company_phone', 'Phone',['class'=>'control-label']);
-													echo Form::text('company_phone',$record->phone,['class'=>'form-control','required'=>true,'id'=>'Regphones','autocomplete'=>'off']);
+													echo Form::text('company_phone',$record->phone,['class'=>'form-control','required'=>false,'id'=>'Regphones','autocomplete'=>'off']);
 												?>
 												<input type="hidden" value="{{ $record->country_code }}" id="test1" name="company_country_code" />
 												@error('company_phone')
@@ -160,7 +156,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_city', 'City',['class'=>'control-label']);
-													echo Form::text('company_city',$record->city,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::text('company_city',$record->city,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('company_city')
 													<span class="invalid-feedback" role="alert">
@@ -181,7 +177,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_zip', 'Zip Code',['class'=>'control-label']);
-													echo Form::text('company_zip',$record->zip,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::text('company_zip',$record->zip,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('company_zip')
 													<span class="invalid-feedback" role="alert">
@@ -194,7 +190,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_country', 'Country',['class'=>'control-label']);
-													echo Form::text('company_country',$record->country,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::text('company_country',$record->country,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('company_country')
 													<span class="invalid-feedback" role="alert">
@@ -207,7 +203,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('status', 'Status',['class'=>'control-label']);
-													echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),@$record->user->status,['class'=>'form-control custom-select','required'=>true]);
+													echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),@$record->user->status,['class'=>'form-control custom-select','required'=>false]);
 												?>
 												@error('status')
 													<span class="invalid-feedback" role="alert">
@@ -247,8 +243,6 @@
 												<div class="col-md-2">
 													@if(!empty(@$record->user->image))
 														<img id="previewimage" src="{{url('storage/'.@$record->user->image)}}" alt="" height="50px" width="80px" />
-													@else
-														<img id="previewimage" src="#" alt="" height="50px" width="80px" />
 													@endif
 												</div>
 											</div>
@@ -257,7 +251,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('admin_email', 'Email',['class'=>'control-label']);
-													echo Form::email('admin_email',@$record->user->email,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::email('admin_email',@$record->user->email,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('admin_email')
 													<span class="invalid-feedback" role="alert">
@@ -270,7 +264,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('admin_name','Name',['class'=>'control-label']);
-													echo Form::text('admin_name',@$record->user->name,['class'=>'form-control','required'=>true,'autocomplete'=>'off']);
+													echo Form::text('admin_name',@$record->user->name,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
 												@error('admin_name')
 													<span class="invalid-feedback" role="alert">
@@ -283,7 +277,7 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 													echo Form::label('admin_phone', 'Phone',['class'=>'control-label']);
-													echo Form::text('admin_phone',@$record->user->phone,['class'=>'form-control','required'=>false,'id'=>'admin_phone','autocomplete'=>'off','required'=>true]);
+													echo Form::text('admin_phone',@$record->user->phone,['class'=>'form-control','required'=>false,'id'=>'admin_phone','autocomplete'=>'off','required'=>false]);
 												?>
 												<input type="hidden" value="{{ @$record->user->country_code }}" id="admin_phone_country_code" name="admin_country_code" />
 												@error('admin_phone')
