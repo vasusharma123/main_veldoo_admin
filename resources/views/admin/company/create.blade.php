@@ -135,7 +135,7 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 													echo Form::label('company_phone', 'Phone',['class'=>'control-label']);
-													echo Form::text('company_phone',null,['class'=>'form-control','required'=>true,'id'=>'Regphones']);
+													echo Form::text('company_phone',null,['class'=>'form-control','required'=>false,'id'=>'Regphones']);
 												?>
 												<input type="hidden" value="+1" id="test1" name="company_country_code" />
 												@error('company_phone')
@@ -162,7 +162,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_city', 'City',['class'=>'control-label']);
-													echo Form::text('company_city',null,['class'=>'form-control','required'=>true]);
+													echo Form::text('company_city',null,['class'=>'form-control','required'=>false]);
 												?>
 												@error('company_city')
 													<span class="invalid-feedback" role="alert">
@@ -183,7 +183,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_zip', 'Zip Code',['class'=>'control-label']);
-													echo Form::text('company_zip',null,['class'=>'form-control','required'=>true]);
+													echo Form::text('company_zip',null,['class'=>'form-control','required'=>false]);
 												?>
 												@error('company_zip')
 													<span class="invalid-feedback" role="alert">
@@ -196,7 +196,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('company_country', 'Country',['class'=>'control-label']);
-													echo Form::text('company_country',null,['class'=>'form-control','required'=>true]);
+													echo Form::text('company_country',null,['class'=>'form-control','required'=>false]);
 												?>
 												@error('company_country')
 													<span class="invalid-feedback" role="alert">
@@ -209,7 +209,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('status', 'Status',['class'=>'control-label']);
-													echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),null,['class'=>'form-control custom-select','required'=>true]);
+													echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),null,['class'=>'form-control custom-select','required'=>false]);
 												?>
 												@error('status')
 													<span class="invalid-feedback" role="alert">
@@ -255,7 +255,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('admin_email', 'Email',['class'=>'control-label']);
-													echo Form::email('admin_email',null,['class'=>'form-control','required'=>true]);
+													echo Form::email('admin_email',null,['class'=>'form-control','required'=>false]);
 												?>
 												@error('admin_email')
 													<span class="invalid-feedback" role="alert">
@@ -268,7 +268,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('admin_name','Name',['class'=>'control-label']);
-													echo Form::text('admin_name',null,['class'=>'form-control','required'=>true]);
+													echo Form::text('admin_name',null,['class'=>'form-control','required'=>false]);
 												?>
 												@error('admin_name')
 													<span class="invalid-feedback" role="alert">
@@ -281,7 +281,7 @@
 											<div class="" style="margin-bottom:20px">
 												<?php
 													echo Form::label('admin_phone', 'Phone',['class'=>'control-label']);
-													echo Form::text('admin_phone',null,['class'=>'form-control','required'=>false,'id'=>'admin_phone','required'=>true]);
+													echo Form::text('admin_phone',null,['class'=>'form-control','required'=>false,'id'=>'admin_phone','required'=>false]);
 												?>
 												<input type="hidden" value="+1" id="admin_phone_country_code" name="admin_country_code" />
 												@error('admin_phone')
@@ -295,7 +295,7 @@
 											<div class="form-group">
 												<?php
 													echo Form::label('admin_password', 'Password',['class'=>'control-label']);
-													echo Form::password('admin_password',['class'=>'form-control','required'=>true]);
+													echo Form::password('admin_password',['class'=>'form-control','required'=>false]);
 												?>
 												@error('admin_password')
 													<span class="invalid-feedback" role="alert">
