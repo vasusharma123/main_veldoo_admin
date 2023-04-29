@@ -6839,4 +6839,62 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
+
+	public function getUserInfoById(Request $request)
+	{
+		try {
+			$rules = [
+				'user_id' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+
+			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
+				->where('id', $request->user_id)->where('user_type', 1)->first();
+			if (empty($user)) {
+				return response()->json(['success' => false, 'message' => 'Record Not found'], $this->successCode);
+			}
+			//$userData=\App\UserData::whereRaw('json_contains(phone_number, \''.$request->phone.'\')')->first();
+
+			$phonenum = ltrim($user->phone, "0");
+			$countryCode = $user->country_code;
+			$userData = \App\UserData::whereJsonContains('phone_numbers', ['country_code' => $countryCode])->whereJsonContains('phone_numbers', ['phone' => $phonenum])->first();
+			$userData2 = \App\UserData::where('user_id', $user['id'])->first();
+			if (empty($user) && empty($userData)) {
+				return response()->json(['success' => false, 'message' => 'Record Not found'], $this->successCode);
+			}
+
+			if (!empty($userData)) {
+				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
+					->where('id', $userData->user_id)->where('user_type', 1)->first();
+				$user['phone_number'] = json_decode($userData->phone_number);
+				$user['emails'] = json_decode($userData->email);
+				$user['addresses'] = json_decode($userData->addresses);
+				$user['favourite_address'] = json_decode($userData->favourite_address);
+			}
+			if (!empty($userData2)) {
+				//echo "true"; die;
+				$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
+					->where('id', $userData2->user_id)->where('user_type', 1)->first();
+				$user['phone_number'] = json_decode($userData2->phone_number);
+				$user['emails'] = json_decode($userData2->email);
+				$user['addresses'] = json_decode($userData2->addresses);
+				$user['favourite_address'] = json_decode($userData2->favourite_address);
+			}
+			if (empty($userData) && empty($userData2)) {
+				$user['phone_number'] = array();
+				$user['emails'] = array();
+				$user['addresses'] = array();
+				$user['favourite_address'] = array();
+			}
+			return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $user], $this->successCode);
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
 }
