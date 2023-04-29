@@ -55,7 +55,7 @@
 									</tr>
 									<tr>
 										<td><strong>Phone</strong></td>
-										<td>{{ $record->country_code }} {{ $record->phone }}</td>
+										<td>{{ $record->phone?$record->country_code:'' }} {{ $record->phone }}</td>
 									</tr>
 									<tr>
 										<td><strong>State</strong></td>
@@ -110,7 +110,7 @@
 									</tr>
 									<tr>
 										<td><strong>Phone</strong></td>
-										<td>{{ @$record->user->country_code }} {{ @$record->user->phone }}</td>
+										<td>{{ @$record->user->phone?@$record->user->country_code:'' }} {{ @$record->user->phone }}</td>
 									</tr>
 								</table>
 								<div class="form-actions">
