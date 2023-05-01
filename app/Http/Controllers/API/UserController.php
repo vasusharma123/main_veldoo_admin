@@ -6215,6 +6215,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (isset($input['second_phone_number'])) {
 				$user['second_phone_number'] = $input['second_phone_number'];
 			}
+			if (isset($input['phone_number'])) {
+				$user['phone'] = $input['phone_number'];
+			}
+			if (isset($input['country_code'])) {
+				$user['country_code'] = $input['country_code'];
+			}
 			if (isset($input['name'])) {
 				$user['name'] = $input['name'];
 			}
