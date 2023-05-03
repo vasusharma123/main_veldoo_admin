@@ -40,6 +40,7 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('verify_user_registered', 'UserController@verify_user_registered');
 	Route::get('rideAssignstoNext', 'UserController@rideAssignstoNext');
 	Route::get('expense/types', 'ExpenseController@types');
+	Route::post('users/set-users-password', 'UserController@setUsersPassword');
 });
 
 #CATEGORY GROUP
