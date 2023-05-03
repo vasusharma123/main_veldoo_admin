@@ -694,12 +694,12 @@
                             $("#confirmOTPModal").modal('show');
                             timer(30,"confirmOTPModalTimer","otp_not_rec");
                         } else if(response.status == 0){
-                            swal("{{ __('Error') }}",response.message,"error");
+                            new swal("{{ __('Error') }}",response.message,"error");
                             $(document).find(".verify_otp").removeAttr('disabled');
                         }
                     },
                     error(response) {
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 });
@@ -710,17 +710,17 @@
         {
             if ($.trim($('input[name="first_name"]').val())=="") 
             {
-                swal("{{ __('Error') }}","{{ __('First name is required.') }}","error");
+                new swal("{{ __('Error') }}","{{ __('First name is required.') }}","error");
                 return false;
             }
             if ($.trim($('input[name="phone"]').val())=="") 
             {
-                swal("{{ __('Error') }}","{{ __('Phone number is required.') }}","error");
+                new swal("{{ __('Error') }}","{{ __('Phone number is required.') }}","error");
                 return false;
             }
             if ($('input[name="terms_conditions"]').prop('checked') != true) 
             {
-                swal("{{ __('Error') }}","{{ __('Terms and conditions checkbox is required.') }}","error");
+                new swal("{{ __('Error') }}","{{ __('Terms and conditions checkbox is required.') }}","error");
                 return false;
             }
             return true;
@@ -766,12 +766,12 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -802,19 +802,19 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("{{ __('Success') }}",response.message,"success");
+                        new swal("{{ __('Success') }}",response.message,"success");
                         setTimeout(function() {
                             route = "{{ route('list_of_booking_taxi2000','~') }}";
                             route = route.replace('~',response.user_data.random_token);
                             window.location.href = route;//"{{ route('booking_taxisteinemann')}}";
                         }, 2000);
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
