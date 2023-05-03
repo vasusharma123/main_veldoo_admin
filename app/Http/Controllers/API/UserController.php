@@ -6871,4 +6871,36 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
+	public function setUsersPassword(Request $request)
+	{
+		DB::beginTransaction();
+		try {
+			$rules = [
+				'user_id' => 'required',
+				'password' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+			$user = User::where([['user_type', '=', 1]])->find($request->user_id);
+			// dd($user->password);
+			if (!empty($user) && empty($user->password)) {
+				$user->password = Hash::make($request->password);
+				$user->update();
+			}
+			else
+			{
+				return response()->json(['success' => false, 'message' => 'Invalid request'], $this->successCode);
+			}
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Password changed successfully'], $this->successCode);
+			// all good
+		} catch (\Exception $e) {
+			DB::rollback();
+			// something went wrong
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
 }
