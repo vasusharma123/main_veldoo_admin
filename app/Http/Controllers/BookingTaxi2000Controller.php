@@ -506,6 +506,11 @@ if($_REQUEST['cm'] == 2)
 		$ride = Ride::where(['platform' => 'web'])->where(function ($query) {
 			$query->where('status', '!=', 3)->where('status', '!=', -3)->where('status', '!=', -2);
 		})->with(['driver', 'vehicle'])->find($id);
+
+		if (!$ride) 
+		{
+			return null;
+		}
 		
 		$ride->ride_time = date('D d-m-Y H:i',strtotime($ride->ride_time));
 		$ride->create_date = date('D d-m-Y H:i',strtotime($ride->created_at));
