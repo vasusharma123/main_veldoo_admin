@@ -6877,15 +6877,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		DB::beginTransaction();
 		try {
 			$rules = [
-				'user_id' => 'required',
+				'phone_number' => 'required',
+				'country_code' => 'required',
 				'password' => 'required',
 			];
 			$validator = Validator::make($request->all(), $rules);
 			if ($validator->fails()) {
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
-			$user = User::where([['user_type', '=', 1]])->find($request->user_id);
-			// dd($user->password);
+			// $user = User::where([['user_type', '=', 1]])->find($request->user_id);
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone_number, "0"), 'user_type' => 1])->first();
 			if (!empty($user) && empty($user->password)) {
 				$user->password = Hash::make($request->password);
 				$user->update();
