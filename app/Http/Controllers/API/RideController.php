@@ -80,8 +80,9 @@ class RideController extends Controller
             return $this->validationErrorResponse($validateerror[0]);
         }
 
-          $updateUser['current_lat']=($inputArr['latitude'])?$inputArr['latitude']:null;
-          $updateUser['current_lng']=($inputArr['longitude'])?$inputArr['longitude']:null;
+        $updateUser['current_lat']=($inputArr['latitude'])?$inputArr['latitude']:null;
+        $updateUser['current_lng']=($inputArr['longitude'])?$inputArr['longitude']:null;
+        $updateUser['last_driver_location_update_time']= Carbon::now();
               
         $hasUpdate = $userObj->updateUser($userObj->id, $updateUser);  
           
