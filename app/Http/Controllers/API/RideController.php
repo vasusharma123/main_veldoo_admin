@@ -2131,13 +2131,13 @@ class RideController extends Controller
                         }
                     }
 
-                    // $notification = new Notification();
-                    // $notification->title = $title;
-                    // $notification->description = $message;
-                    // $notification->type = $type;
-                    // $notification->user_id = $userdata['id'];
-                    // $notification->additional_data = json_encode($additional);
-                    // $notification->save();
+                    $notification = new Notification();
+                    $notification->title = $title;
+                    $notification->description = $message;
+                    $notification->type = $type;
+                    $notification->user_id = $userdata['id'];
+                    $notification->additional_data = json_encode($additional);
+                    $notification->save();
                 }
                 return response()->json(['success' => true, 'message' => $message, 'data' => $rideResponse], $this->successCode);
             } else {
