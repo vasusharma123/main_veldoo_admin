@@ -710,6 +710,17 @@ class Socket{
 					console.log(`Error : There is no id send`);
 				}
             });
+
+			socket.on("ride_address", async (data) => {
+                if (data.ride_id) {
+					var ride_data = await helper.rideAddress(data.ride_id);
+
+					this.io.emit(`ride_address_${data.ride_id}`, ride_data[0]); 
+                } else {
+					console.log(`Error : There is no id send`);
+				}
+            });
+
         });
 
     }

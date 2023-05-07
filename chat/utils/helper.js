@@ -221,5 +221,14 @@ class Helper{
 			return error;
 		}
 	}
+
+	async rideAddress(r_id) {
+		try {
+			return await this.db.query(`Select id,pick_lat,pick_lng,pickup_address,dest_lat,dest_lng,dest_address from rides WHERE id = ? limit 1`, [r_id]);
+		} catch (error) {
+			return error;
+		}
+	}
+
 }
 module.exports = new Helper();
