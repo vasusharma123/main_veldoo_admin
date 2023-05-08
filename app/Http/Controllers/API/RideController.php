@@ -2112,8 +2112,8 @@ class RideController extends Controller
                 $userdata = User::find($rideDetail['driver_id']);
                 $deviceToken = $userdata['device_token'] ?? "";
                 $deviceType = $userdata['device_type'] ?? "";
-                $title = 'Address Updated';
-                $message = "Address Updated Successfully";
+                $title = 'Pickup Location Changed';
+                $message = "The pickup location for your ride has been changed";
                 $type = 16;
                 $rideResponse = new RideResource(Ride::find($request->ride_id));
                 if (!empty($userdata)) {
