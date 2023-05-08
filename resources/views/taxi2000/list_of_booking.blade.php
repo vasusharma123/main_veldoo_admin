@@ -885,11 +885,11 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if (response.status == 0) {
-                        swal("{{ __('Error') }}", response.message, "error");
+                        new swal("{{ __('Error') }}", response.message, "error");
                     }
                 },
                 error(response) {
-                   swal("{{ __('Error') }}", response.message, "error");
+                   new swal("{{ __('Error') }}", response.message, "error");
                 }
             });
         })
@@ -937,12 +937,12 @@
                         $(document).find('.ride_list_div').removeClass('d-none');
                         $("#confirmOTPModal").modal('hide');
                     } else if(response.status == 0){
-                       swal("{{ __('Error') }}",response.message,"error");
+                       new swal("{{ __('Error') }}",response.message,"error");
                     }
                     $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {
-                   swal("{{ __('Error') }}",response.message,"error");
+                   new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -959,12 +959,12 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -1250,7 +1250,7 @@
             if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -1271,7 +1271,7 @@
                             // $(".SelectedDateList").html("");
                             $(document).find(".bookingList[data-id='"+selectedBooking+"']").remove();
                             $("#cancelBookingModal").modal('hide');
-                            swal("Success",response.message,"success");
+                            new swal("Success",response.message,"success");
                             // $('#bookingDetailsTable').html('');
                             $('.map_area_price').hide();
                             if (directionsDisplay != null) {
@@ -1285,17 +1285,17 @@
                             map.setCenter(pt);
                             map.setZoom(8);
                         } else if(response.status == 0){
-                           swal("{{ __('Error') }}",response.message,"error");
+                           new swal("{{ __('Error') }}",response.message,"error");
                         }
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     },
                     error(response) {
-                       swal("{{ __('Error') }}",response.message,"error");
+                       new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     }
                 });
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -1308,7 +1308,7 @@
                     { 
                         if (element.status!=-4 && element.status!=0) 
                         {
-                            swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
+                            new swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
                             redirect = false;
                         }
                     }
@@ -1319,7 +1319,7 @@
                     window.location.href= route;
                 }
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         })
     </script>

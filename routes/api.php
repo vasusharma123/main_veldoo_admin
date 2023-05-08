@@ -40,6 +40,7 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('verify_user_registered', 'UserController@verify_user_registered');
 	Route::get('rideAssignstoNext', 'UserController@rideAssignstoNext');
 	Route::get('expense/types', 'ExpenseController@types');
+	Route::post('users/set-users-password', 'UserController@setUsersPassword');
 });
 
 #CATEGORY GROUP
@@ -136,6 +137,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('get_user_by_phone','user\ProfileController@getUserByPhone');
 	Route::get('my_profile','user\ProfileController@my_profile');
 	Route::post('delete_account', 'user\ProfileController@destroy');
+	Route::post('ride/update_address', 'RideController@update_ride_address');
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {
@@ -156,6 +158,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::get('get_promotions', 'UserController@getPromotion');
 		Route::post('get_promotions', 'UserController@getPromotion');
 		Route::post('get_user_by_phone', 'UserController@getUserByPhone');
+		Route::post('get_user_info_by_id', 'UserController@getUserInfoById');
 		Route::post('ride_list', 'RideController@RideList');
 		Route::post('save_user_data', 'UserController@saveUserData');
 

@@ -80,8 +80,9 @@ class RideController extends Controller
             return $this->validationErrorResponse($validateerror[0]);
         }
 
-          $updateUser['current_lat']=($inputArr['latitude'])?$inputArr['latitude']:null;
-          $updateUser['current_lng']=($inputArr['longitude'])?$inputArr['longitude']:null;
+        $updateUser['current_lat']=($inputArr['latitude'])?$inputArr['latitude']:null;
+        $updateUser['current_lng']=($inputArr['longitude'])?$inputArr['longitude']:null;
+        $updateUser['last_driver_location_update_time']= Carbon::now();
               
         $hasUpdate = $userObj->updateUser($userObj->id, $updateUser);  
           
@@ -2072,4 +2073,85 @@ class RideController extends Controller
             return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
         }
     }
+
+    public function update_ride_address(Request $request)
+    {
+        $logged_in_user = Auth::user();
+        $rules = [
+            'ride_id' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+        }
+        try {
+            DB::beginTransaction();
+            $rideDetail = Ride::find($request->ride_id);
+
+            if (!empty($rideDetail)) {
+                if (!empty($request->pick_lat)) {
+                    $rideDetail->pick_lat = $request->pick_lat;
+                }
+                if (!empty($request->pick_lng)) {
+                    $rideDetail->pick_lng = $request->pick_lng;
+                }
+                if (!empty($request->pickup_address)) {
+                    $rideDetail->pickup_address = $request->pickup_address;
+                }
+                if (!empty($request->dest_lat)) {
+                    $rideDetail->dest_lat = $request->dest_lat;
+                }
+                if (!empty($request->dest_lng)) {
+                    $rideDetail->dest_lng = $request->dest_lng;
+                }
+                if (!empty($request->dest_address)) {
+                    $rideDetail->dest_address = $request->dest_address;
+                }
+                $rideDetail->save();
+                DB::commit();
+                $userdata = User::find($rideDetail['driver_id']);
+                $deviceToken = $userdata['device_token'] ?? "";
+                $deviceType = $userdata['device_type'] ?? "";
+                $title = 'Pickup Location Changed';
+                $message = "The pickup location for your ride has been changed";
+                $type = 16;
+                $rideResponse = new RideResource(Ride::find($request->ride_id));
+                if (!empty($userdata)) {
+                    $settings = Setting::first();
+                    $settingValue = json_decode($settings['value']);
+                    $ride['waiting_time'] = $settingValue->waiting_time;
+
+                    $additional = ['type' => $type, 'ride_id' => $request->ride_id, 'ride_data' => $rideResponse];
+                    if (!empty($deviceToken)) {
+                        if ($deviceType == 'android') {
+                            bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                        }
+                        if ($deviceType == 'ios') {
+                            bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+                        }
+                    }
+
+                    $notification = new Notification();
+                    $notification->title = $title;
+                    $notification->description = $message;
+                    $notification->type = $type;
+                    $notification->user_id = $userdata['id'];
+                    $notification->additional_data = json_encode($additional);
+                    $notification->save();
+                }
+                return response()->json(['success' => true, 'message' => $message, 'data' => $rideResponse], $this->successCode);
+            } else {
+                return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            DB::rollback();
+            Log::info($exception->getMessage() . "--" . $exception->getLine());
+            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            DB::rollback();
+            Log::info($exception->getMessage() . "--" . $exception->getLine());
+            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
 }

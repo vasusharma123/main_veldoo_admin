@@ -694,7 +694,7 @@
                 success: function(response) {
                     if(response.status==1){
                         @if ($user)
-                            swal("{{ _('Success') }}",response.message,"success");
+                            new swal("{{ _('Success') }}",response.message,"success");
                             setTimeout(function() {
                                 window.location.href = "{{ route('list_of_booking_taxi2000',$user->random_token)}}";
                             }, 2000);
@@ -703,12 +703,12 @@
                             $("#confirmOTPModal").modal('show');
                         @endif
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -753,12 +753,12 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -790,17 +790,17 @@
                 data: post_data,
                 success: function(response) {
                     if(response.status){
-                        swal("{{ _('Success') }}",response.message,"success");
+                        new swal("{{ _('Success') }}",response.message,"success");
                         setTimeout(function() {
                             window.location.href = "{{ route('booking_taxi2000')}}";
                         }, 2000);
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });

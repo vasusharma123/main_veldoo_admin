@@ -732,7 +732,7 @@
             var pickup_longitude = $("#pickup_longitude").val();
             var pickup_address = $("#pickupPoint").val();
             if (pickup_latitude == '' || pickup_longitude == '') {
-                swal("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
+                new swal("{{ __('Error') }}", "{{ __('Please select Pick up address') }}", "error");
                 return false;
             }
             var dropoff_latitude = $("#dropoff_latitude").val();
@@ -773,7 +773,7 @@
             // $(".distance_calculated").text(distance_calculated + " KM");
             // $(".distance_calculated_input").val(distance_calculated);
             if ($("#carType").val() == '') {
-                swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
+                new swal("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                 return false;
             }
             // var carType = $('#carType').val();

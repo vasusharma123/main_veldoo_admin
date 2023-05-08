@@ -5986,7 +5986,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$phonenum = ltrim($request->phone, "0");
 			$countryCode = $request->country_code;
-			$userData = \App\UserData::whereJsonContains('phone_number', ['country_code' => $countryCode])->whereJsonContains('phone_number', ['phone' => $phonenum])->first();
+			$userData = \App\UserData::whereJsonContains('phone_numbers', ['country_code' => $countryCode])->whereJsonContains('phone_numbers', ['phone' => $phonenum])->first();
 			$userData2 = \App\UserData::where('user_id', $user['id'])->first();
 			if (empty($user) && empty($userData)) {
 				return response()->json(['success' => false, 'message' => 'Record Not found'], $this->successCode);
@@ -6214,6 +6214,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			if (isset($input['second_phone_number'])) {
 				$user['second_phone_number'] = $input['second_phone_number'];
+			}
+			if (isset($input['phone_number'])) {
+				$user['phone'] = $input['phone_number'];
+			}
+			if (isset($input['country_code'])) {
+				$user['country_code'] = $input['country_code'];
 			}
 			if (isset($input['name'])) {
 				$user['name'] = $input['name'];
@@ -6838,5 +6844,64 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
 		}
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
+	}
+
+	public function getUserInfoById(Request $request)
+	{
+		try {
+			$rules = [
+				'user_id' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+
+			$user = User::where([['user_type', '=', 1]])->find($request->user_id);
+			if (!empty($user)) {
+				$user->full_name = $user->full_name;
+				$user->avg_rating = $user->avg_rating;
+				$user->app_installed = (!empty($user->password))?1:0;
+			}
+			return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $user], $this->successCode);
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+
+	public function setUsersPassword(Request $request)
+	{
+		DB::beginTransaction();
+		try {
+			$rules = [
+				'phone_number' => 'required',
+				'country_code' => 'required',
+				'password' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+			// $user = User::where([['user_type', '=', 1]])->find($request->user_id);
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone_number, "0"), 'user_type' => 1])->first();
+			if (!empty($user) && empty($user->password)) {
+				$user->password = Hash::make($request->password);
+				$user->update();
+			}
+			else
+			{
+				return response()->json(['success' => false, 'message' => 'Invalid request'], $this->successCode);
+			}
+			DB::commit();
+			return response()->json(['success' => true, 'message' => 'Password changed successfully'], $this->successCode);
+			// all good
+		} catch (\Exception $e) {
+			DB::rollback();
+			// something went wrong
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
 	}
 }

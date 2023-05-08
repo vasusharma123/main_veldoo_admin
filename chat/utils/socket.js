@@ -710,6 +710,21 @@ class Socket{
 					console.log(`Error : There is no id send`);
 				}
             });
+
+			socket.on("ride_address", async (data) => {
+                if (data.ride_id) {
+					var ride_data = await helper.rideAddress(data.ride_id);
+					if(ride_data[0] && ride_data[0]['driver_id']){
+						var driver_data = await helper.DriverData(ride_data[0]['driver_id']);
+						if(driver_data[0] && driver_data[0]['socket_id']){
+							this.io.to(driver_data[0]['socket_id']).emit(`ride_address`, ride_data[0]); 
+						}
+					}
+                } else {
+					console.log(`Error : There is no id send`);
+				}
+            });
+
         });
 
     }
