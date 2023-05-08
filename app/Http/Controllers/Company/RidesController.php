@@ -70,7 +70,7 @@ class RidesController extends Controller
         DB::beginTransaction();
         try {
             $ride = new Ride();
-            $ride->user_id = $request->user_id??"";
+            $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
             if ($rideUser) 
             {
@@ -229,7 +229,7 @@ class RidesController extends Controller
         DB::beginTransaction();
         try {
             $ride = new Ride();
-            $ride->user_id = $request->user_id??"";
+            $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
             if ($rideUser) 
             {
