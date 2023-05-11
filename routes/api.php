@@ -20,7 +20,6 @@ Config::set('limit_api', 20);
 
 #GUEST GROUP
 Route::group(['namespace' => 'API'], function(){
-	Route::get('notifytest', 'UserController@notifytest');
 	// Route::post('register_or_update', 'UserController@register_or_update');
 	Route::post('register', 'UserController@register');
 	Route::post('login', 'UserController@login');

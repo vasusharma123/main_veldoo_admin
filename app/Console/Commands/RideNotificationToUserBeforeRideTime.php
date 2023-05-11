@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RideResource;
 
 class RideNotificationToUserBeforeRideTime extends Command
 {
@@ -46,12 +47,12 @@ class RideNotificationToUserBeforeRideTime extends Command
     {
         $after13Mins = Carbon::now()->addMinutes(13)->toDateTimeString();
         $after15Mins = Carbon::now()->addMinutes(15)->toDateTimeString();
-        $rides = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])
-        ->whereHas('user')
+        $rides = Ride::whereHas('user')
         ->whereNotNull('user_id')->whereIn('status', [0,1])->where(['is_notified_user_before_ride' => 0])
         ->whereBetween('ride_time', [$after13Mins, $after15Mins])->get();
         if (!empty($rides) && count($rides) > 0) {
             foreach ($rides as $ride) {
+                $ride = new RideResource(Ride::find($ride->id));
                 $title = 'Hey '.$ride->user->first_name;
                 $message = 'You ride is about to start';
                 $additional = ['type' => 14, 'ride_id' => $ride->id, 'ride_data' => $ride];

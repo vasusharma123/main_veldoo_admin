@@ -17,6 +17,7 @@ use Edujugon\PushNotification\PushNotification;
 use App\Http\Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RideResource;
 
 class Notifications
 {
@@ -134,10 +135,9 @@ class Notifications
             }
             $ride->all_drivers = implode(",", $driverids);
             $ride->save();
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
-            $ride['user_data'] = $user_data;
+            $ride = new RideResource(Ride::find($ride->id));
             $ride['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride];
             $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
@@ -169,15 +169,13 @@ class Notifications
 
     public static function sendRideNotificationToMasters($ride_id)
     {
-        $ride = Ride::find($ride_id);
+        $ride = new RideResource(Ride::find($ride_id));
         $settings = Setting::first();
         $settingValue = json_decode($settings['value']);
         $masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
         if (!empty($masterDriverIds)) {
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
             $title = 'No Driver Found';
             $message = 'Sorry No driver found at this time for your booking';
-            $ride['user_data'] = $user_data;
             $ride['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 9, 'ride_id' => $ride->id, 'ride_data' => $ride];
             $ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
@@ -241,13 +239,12 @@ class Notifications
 		$ride->all_drivers = $driverids;
 		$ride->save();
 
-		$ride_data = Ride::find($ride->id);
+		$ride_data = new RideResource(Ride::find($ride->id));
 
 		$driverids = explode(",", $driverids);
 		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
-		$ride_data['user_data'] = $user_data;
 		$ride_data['waiting_time'] = $settingValue->waiting_time;
 		$additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
 		if(!empty($driverids)){
