@@ -26,7 +26,7 @@
                 <div class="card">
                     <div class="card-body">
                         @include('admin.layouts.flash-message')
-                        <form action="">
+                        <form action="" autocomplete="off">
                             <div class="d-flex">
                                 <div class="form-group mr-2">
                                     <label for="">Start Date</label>
@@ -107,6 +107,8 @@
                                             <th>Ride Cost</th>
                                             <th>Status</th>
                                             <th>Payment Type</th>
+                                            <th>Booking Method</th>
+                                            <th>Phone Number</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -148,6 +150,8 @@
                                                     @endif
                                                 </td>
                                                 <td>{{ ucfirst($ride->payment_type) }}</td>
+                                                <td>{{ $ride->created_by_user_type }} {{ ucfirst($ride->platform) }}</td>
+                                                <td>{{ $ride->user_country_code.'-'.$ride->user_phone }}</td>
                                                 <td>
                                                     <div class="btn-group dropright">
                                                         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

@@ -117,7 +117,6 @@ class Helper{
 	
 	async addSocketId(userId, userSocketId,current_lat,current_lng){
 		try {
-			console.log('userId, userSocketId,current_lat,current_lng',userId, userSocketId,current_lat,current_lng);
 			// return await this.db.query(`UPDATE group_users SET socket_id = ?, online = ? WHERE group_id=? AND user_id = ?`, [userSocketId,1,group_id,userId]);
 			return await this.db.query('UPDATE users SET socket_id = ?, current_lat = ?,current_lng = ? WHERE id = ?', [userSocketId,current_lat,current_lng,userId]);
 		} catch (error) {
@@ -214,5 +213,21 @@ class Helper{
 			return null;
 		}
 	}
+	async lastDriverActivity(d_id){
+		try {
+			return await this.db.query(`Select * from driver_stay_active_notifications WHERE driver_id = ? limit 1`,[d_id]);
+		} catch (error) {
+			return error;
+		}
+	}
+
+	async rideAddress(r_id) {
+		try {
+			return await this.db.query(`Select id,driver_id,pick_lat,pick_lng,pickup_address,dest_lat,dest_lng,dest_address from rides WHERE id = ? limit 1`, [r_id]);
+		} catch (error) {
+			return error;
+		}
+	}
+
 }
 module.exports = new Helper();

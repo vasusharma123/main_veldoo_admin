@@ -71,6 +71,7 @@ class UserController extends Controller
 		$whereData = array('email' => $input['email'], 'password' => $input['password']);
         if(auth()->attempt($whereData)){
 			if (in_array(Auth::user()->user_type,[4,5])) {
+				Auth::user()->syncRoles('Company');
 				return redirect()->route('company.rides');
 			}
             return redirect()->route('users.dashboard');
@@ -101,12 +102,12 @@ class UserController extends Controller
 		}
 		elseif(Auth::user()->user_type==4)
 		{
-			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
+			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company'); 
 		}
 		elseif(Auth::user()->user_type==5)
 		{
-			$data['booking_count'] = Ride::where('company_id',Auth::user()->id)->count();
+			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company');	
 		}
 		return view('dashboards.'.Auth::user()->user_role)->with($data);
@@ -422,8 +423,8 @@ class UserController extends Controller
 				'user/'.$haveUser->id, $request->image_tmp, $imageName
 			);
 		}
-		
-		User::where('id', $id)->update($input);
+		// dd($input);
+		User::where('id', $id)->update(collect($input)->forget('reset_password')->toArray());
 		
 		return back()->with('success', __('Record updated!'));
     }

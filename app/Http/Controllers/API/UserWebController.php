@@ -12,6 +12,7 @@ use App\Setting;
 use App\Notification;
 use App\RideHistory;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RideResource;
 
 class UserWebController extends Controller
 {
@@ -57,6 +58,8 @@ class UserWebController extends Controller
             $ride = new Ride();
 
             $ride->user_id = $user->id;
+            $ride->user_country_code = $user->country_code;
+            $ride->user_phone = $user->phone;
             $ride->pickup_address = $request->pickup_address;
             $ride->dest_address = $request->dest_address??"";
             $ride->passanger = $request->passanger;
@@ -161,6 +164,8 @@ class UserWebController extends Controller
             }
             $ride = new Ride();
             $ride->user_id = $user->id;
+            $ride->user_country_code = $user->country_code;
+            $ride->user_phone = $user->phone;
             $ride->pickup_address = $request->pickup_address;
             if (!empty($request->dest_address)) {
                 $ride->dest_address = $request->dest_address;
@@ -241,13 +246,11 @@ class UserWebController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::query()->find($ride->id);
+            $ride_data = new RideResource(Ride::find($ride->id));
 
             $driverids = explode(",", $driverids);
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
-            $ride_data['user_data'] = $user_data;
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
             if (!empty($driverids)) {
@@ -463,13 +466,11 @@ class UserWebController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::query()->find($ride->id);
+            $ride_data = new RideResource(Ride::find($ride->id));
 
             $driverids = explode(",", $driverids);
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
-            $ride_data['user_data'] = $user_data;
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
             if (!empty($driverids)) {

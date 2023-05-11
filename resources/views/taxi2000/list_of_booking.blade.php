@@ -455,6 +455,9 @@
             justify-content: space-between;
             align-items: center;
         }
+        .vehicle_type{
+            font-size: 17px !important;
+        }
 
         @media (max-width: 300px) {
 
@@ -795,6 +798,10 @@
                                 <span class="ride_payment_type">Cash</span>
                             </div>
                         </div>
+                        <p class="title_main">Vehicle Type</p>
+                        <div class="">
+                            <p class="price vehicle_type">---</p>
+                        </div>
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
@@ -878,11 +885,11 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if (response.status == 0) {
-                        swal("{{ __('Error') }}", response.message, "error");
+                        new swal("{{ __('Error') }}", response.message, "error");
                     }
                 },
                 error(response) {
-                   swal("{{ __('Error') }}", response.message, "error");
+                   new swal("{{ __('Error') }}", response.message, "error");
                 }
             });
         })
@@ -930,12 +937,12 @@
                         $(document).find('.ride_list_div').removeClass('d-none');
                         $("#confirmOTPModal").modal('hide');
                     } else if(response.status == 0){
-                       swal("{{ __('Error') }}",response.message,"error");
+                       new swal("{{ __('Error') }}",response.message,"error");
                     }
                     $(document).find(".verify_otp").removeAttr('disabled');
                 },
                 error(response) {
-                   swal("{{ __('Error') }}",response.message,"error");
+                   new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -952,12 +959,12 @@
                         $("#confirmOTPModal").modal('show');
                         timer(30,"confirmOTPModalTimer","otp_not_rec");
                     } else if(response.status == 0){
-                        swal("{{ __('Error') }}",response.message,"error");
+                        new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
                     }
                 },
                 error(response) {
-                    swal("{{ __('Error') }}",response.message,"error");
+                    new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             });
@@ -1145,7 +1152,8 @@
                     {
                         ride_cost = "N/A";
                     }
-                    $('.ride_price').html("CHF "+ride_cost);
+                    $('.ride_price').html("<b>CHF "+ride_cost+"</b>");
+                    $('.vehicle_type').html("<b>"+element.car_type+"</b>");
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
@@ -1242,7 +1250,7 @@
             if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -1263,7 +1271,7 @@
                             // $(".SelectedDateList").html("");
                             $(document).find(".bookingList[data-id='"+selectedBooking+"']").remove();
                             $("#cancelBookingModal").modal('hide');
-                            swal("Success",response.message,"success");
+                            new swal("Success",response.message,"success");
                             // $('#bookingDetailsTable').html('');
                             $('.map_area_price').hide();
                             if (directionsDisplay != null) {
@@ -1277,17 +1285,17 @@
                             map.setCenter(pt);
                             map.setZoom(8);
                         } else if(response.status == 0){
-                           swal("{{ __('Error') }}",response.message,"error");
+                           new swal("{{ __('Error') }}",response.message,"error");
                         }
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     },
                     error(response) {
-                       swal("{{ __('Error') }}",response.message,"error");
+                       new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".cancelBookingModal").removeAttr('disabled');
                     }
                 });
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         });
 
@@ -1300,7 +1308,7 @@
                     { 
                         if (element.status!=-4 && element.status!=0) 
                         {
-                            swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
+                            new swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
                             redirect = false;
                         }
                     }
@@ -1311,7 +1319,7 @@
                     window.location.href= route;
                 }
             } else {
-               swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
+               new swal("{{ __('Error') }}","{{ __('Please select booking') }}","error");
             }
         })
     </script>

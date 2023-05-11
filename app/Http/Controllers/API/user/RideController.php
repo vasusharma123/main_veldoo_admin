@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Config;
 use Carbon\Carbon;
+use App\Http\Resources\RideResource;
 
 class RideController extends Controller
 {
@@ -103,11 +104,10 @@ class RideController extends Controller
 
             $ride->save();
 
-            $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
-
+            $ride_detail = new RideResource(Ride::find($request->ride_id));
             $settings = Setting::first();
             $settingValue = json_decode($settings['value']);
-            $ride['waiting_time'] = $settingValue->waiting_time;
+            $ride_detail['waiting_time'] = $settingValue->waiting_time;
             if ($request->status != -1) {
                 if (!empty($driverData)) {
                     $additional = ['type' => $type, 'ride_id' => $ride_detail->id, 'ride_data' => $ride_detail];

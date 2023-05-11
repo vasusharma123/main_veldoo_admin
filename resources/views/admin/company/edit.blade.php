@@ -32,12 +32,15 @@
 								@method('PATCH')
 								<div class="form-body">
 									<div class="row p-t-5">
+										<div class="col-12">
+											<h2>Company Information</h2>
+										</div>
 										<div class="col-md-6">
 											<div class="row">
 												<div class="col-md-10">
 													<div class="form-group">
 														<?php
-														echo Form::label('image_tmp', 'Profile Picture',['class'=>'control-label']);
+														echo Form::label('company', 'Logo',['class'=>'control-label']);
 														?>
 														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
 															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
@@ -45,116 +48,262 @@
 																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
 															<input type="hidden">
 															<?php
-															echo Form::file('image_tmp',['class'=>'form-control','onchange'=>'readURL(this);','required'=>false]);
+																echo Form::file('company_logo',['class'=>'form-control','onchange'=>'readURL(this,"previewLogo");','required'=>false]);
 															?>
 															</span>
 															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
 														</div>
+														@error('company_logo')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror  
 													</div>
 												</div>
 												<div class="col-md-2">
-													<?php 
-														echo Html::image(((!empty($record->image)) ? (config('app.url_public').'/'.$record->image) : asset('no-images.png')),'sidebar logo',['id'=>'previewimage','width'=>'50','height'=>'50']);
-													?>
+													@if(!empty($record->logo))
+														<img id="previewLogo" src="{{url('storage/'.$record->logo)}}" alt="" height="50px" width="80px" />
+													@endif
 												</div>
 											</div>
-
+										</div>
+										<div class="col-md-6">
+											<div class="row">
+												<div class="col-md-10">
+													<div class="form-group">
+														<?php
+														echo Form::label('background_image', 'Background Image',['class'=>'control-label']);
+														?>
+														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
+															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
+															<span class="input-group-addon btn btn-default btn-file" > 
+																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
+															<input type="hidden">
+															<?php
+															echo Form::file('company_background_image',['class'=>'form-control','onchange'=>'readURL(this,"previewbackground_image");','required'=>false]);
+															?>
+															</span>
+															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
+														</div>
+														@error('company_background_image')
+															<span class="invalid-feedback" role="alert">
+																<strong>{{ $message }}</strong>
+															</span>
+														@enderror  
+													</div>
+												</div>
+												<div class="col-md-2">
+													@if(!empty($record->background_image))
+														<img id="previewbackground_image" src="{{url('storage/'.$record->background_image)}}" alt="" height="50px" width="80px" />
+													@endif
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('name', 'Company Name', ['class' => 'control-label']);
-												echo Form::text('name', null, ['class' => 'form-control', 'required' => true]);
+													echo Form::label('company_name', 'Company Name',['class'=>'control-label']);
+													echo Form::text('company_name',$record->name,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
-		
-												@error('name')
+												@error('company_name')
 													<span class="invalid-feedback" role="alert">
 														<strong>{{ $message }}</strong>
 													</span>
-												@enderror
+												@enderror 
 											</div>
-										
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('email', 'Email',['class'=>'control-label']);
-												echo Form::text('email',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('company_email', 'Email',['class'=>'control-label']);
+													echo Form::email('company_email',$record->email,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
+												@error('company_email')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
-											<div class="" style="margin-bottom: 20px">
+										</div>
+										<div class="col-md-6">
+											<div class="" style="margin-bottom:20px">
 												<?php
-												echo Form::label('phone', 'Phone',['class'=>'control-label']);
-												// echo Form::text('phone',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('company_phone', 'Phone',['class'=>'control-label']);
+													echo Form::text('company_phone',$record->phone,['class'=>'form-control','required'=>false,'id'=>'Regphones','autocomplete'=>'off']);
 												?>
-												<input class="form-control " id="Regphones" required="" value="{{ '+'.$record->country_code.' '.$record->phone }}" name="phone" type="text" placeholder="9201550123">
-												<input type="hidden" value="{{'+'.$record->country_code}}" id="test1" name="country_code" />
+												<input type="hidden" value="{{ $record->country_code }}" id="test1" name="company_country_code" />
+												@error('company_phone')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
-											
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::checkbox('reset_password',1, null,  array('id'=>'reset_password'));
-												echo Form::label('reset_password', 'Reset Password',['class'=>'reset_password']);
+													echo Form::label('company_state', 'State',['class'=>'control-label']);
+													echo Form::text('company_state',$record->state,['class'=>'form-control','autocomplete'=>'off']);
 												?>
+												@error('company_state')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
-											<div class="form-group change-password hide">
-												<?php
-												echo Form::label('password', 'Password',['class'=>'control-label']);
-												echo Form::password('password',['class'=>'form-control','required'=>false]);
-												?>
-											</div>
-											
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('state', 'State',['class'=>'control-label']);
-												echo Form::text('state',null,['class'=>'form-control']);
+													echo Form::label('company_city', 'City',['class'=>'control-label']);
+													echo Form::text('company_city',$record->city,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
-												@error('state')
+												@error('company_city')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<?php
+													echo Form::label('company_street', 'Street',['class'=>'control-label']);
+													echo Form::text('company_street',$record->street,['class'=>'form-control','autocomplete'=>'off']);
+												?>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<?php
+													echo Form::label('company_zip', 'Zip Code',['class'=>'control-label']);
+													echo Form::text('company_zip',$record->zip,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
+												?>
+												@error('company_zip')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<?php
+													echo Form::label('company_country', 'Country',['class'=>'control-label']);
+													echo Form::text('company_country',$record->country,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
+												?>
+												@error('company_country')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<?php
+													echo Form::label('status', 'Status',['class'=>'control-label']);
+													echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),@$record->user->status,['class'=>'form-control custom-select','required'=>false]);
+												?>
+												@error('status')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
+											</div>
+										</div>
+										<div class="col-12">
+											<h2>Admin Profile</h2>
+										</div>
+										<div class="col-md-6">
+											<div class="row">
+												<div class="col-md-10">
+													<div class="form-group">
+														<?php
+															echo Form::label('admin_profile_picture', 'Profile Picture',['class'=>'control-label']);
+														?>
+														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
+															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
+															<span class="input-group-addon btn btn-default btn-file" > 
+																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
+															<input type="hidden">
+															<?php
+															echo Form::file('admin_profile_picture',['class'=>'form-control','onchange'=>'readURL(this,"previewimage");','required'=>false]);
+															?>
+															</span>
+															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
+														</div>
+														@error('admin_profile_picture')
 															<span class="invalid-feedback" role="alert">
 																<strong>{{ $message }}</strong>
 															</span>
-														@enderror 
+														@enderror  
+													</div>
+												</div>
+												<div class="col-md-2">
+													@if(!empty(@$record->user->image))
+														<img id="previewimage" src="{{url('storage/'.@$record->user->image)}}" alt="" height="50px" width="80px" />
+													@endif
+												</div>
 											</div>
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('city', 'City',['class'=>'control-label']);
-												echo Form::text('city',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('admin_email', 'Email',['class'=>'control-label']);
+													echo Form::email('admin_email',@$record->user->email,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
-												@error('city')
-															<span class="invalid-feedback" role="alert">
-																<strong>{{ $message }}</strong>
-															</span>
-														@enderror 
+												@error('admin_email')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('street', 'Street',['class'=>'control-label']);
-												echo Form::text('street',null,['class'=>'form-control']);
+													echo Form::label('admin_name','Name',['class'=>'control-label']);
+													echo Form::text('admin_name',@$record->user->name,['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
+												@error('admin_name')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="" style="margin-bottom:20px">
+												<?php
+													echo Form::label('admin_phone', 'Phone',['class'=>'control-label']);
+													echo Form::text('admin_phone',@$record->user->phone,['class'=>'form-control','required'=>false,'id'=>'admin_phone','autocomplete'=>'off','required'=>false]);
+												?>
+												<input type="hidden" value="{{ @$record->user->country_code }}" id="admin_phone_country_code" name="admin_country_code" />
+												@error('admin_phone')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
+											</div>
+										</div>
+										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('zip', 'Zip Code',['class'=>'control-label']);
-												echo Form::text('zip',null,['class'=>'form-control','required'=>true]);
+													echo Form::checkbox('reset_password', 1, null, ['id' => 'reset_password']);
+													echo Form::label('reset_password', 'Reset Password', ['class' => 'reset_password']);
 												?>
-												@error('zip')
-															<span class="invalid-feedback" role="alert">
-																<strong>{{ $message }}</strong>
-															</span>
-														@enderror 
 											</div>
-											<div class="form-group">
+											<div class="form-group change-password" style="display: none">
 												<?php
-												echo Form::label('country', 'Country',['class'=>'control-label']);
-												echo Form::text('country',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('admin_password', 'Password',['class'=>'control-label']);
+													echo Form::password('admin_password',['class'=>'form-control','required'=>false,'autocomplete'=>'off']);
 												?>
-												@error('country')
-															<span class="invalid-feedback" role="alert">
-																<strong>{{ $message }}</strong>
-															</span>
-														@enderror 
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('status', 'Status',['class'=>'control-label']);
-												echo Form::select('status', array('1' => 'Active', '0' => 'In-active'),null,['class'=>'form-control custom-select','required'=>true]);
-												?>
+												@error('admin_password')
+													<span class="invalid-feedback" role="alert">
+														<strong>{{ $message }}</strong>
+													</span>
+												@enderror 
 											</div>
 										</div>
 									</div>
@@ -194,30 +343,41 @@
 			}
 		});
 	});
-	function readURL(input){
+	function readURL(input,imgtag){
 		 if (input.files && input.files[0]) {
 			var reader = new FileReader();
 			reader.onload = function (e) {
-				$('#previewimage').attr('src', e.target.result);
-				$('#previewimage').attr('height','50px');
-				$('#previewimage').attr('width','50px');
+				$('#'+imgtag).attr('src', e.target.result);
+				$('#'+imgtag).attr('height','50px');
+				$('#'+imgtag).attr('width','50px');
 			}
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
 
-	$('.flag-container').click(function(){
-		var data = $('.selected-dial-code').html();
-		$("#test1").val(data);
-	});
+	// $('.flag-container').click(function(){
+	// 	var data = $('.selected-dial-code').html();
+	// 	$("#test1").val(data);
+	// });
 
 $(document).ready(function(){
     setTimeout(function(){  
-           var myStr = $("#Regphones").val().replace(/-/g, "");
-           
-           $("#Regphones").val(myStr);
-           }, 1000);
-
+		var myStr = $("#Regphones").val().replace(/-/g, "");
+		$("#Regphones").val(myStr);
+	}, 1000);
+    setTimeout(function(){  
+		var myStr = $("#admin_phone").val().replace(/-/g, "");
+		$("#admin_phone").val(myStr);
+	}, 1000);
 });
-	</script>
+var input = $('#Regphones').intlTelInput("setNumber", "+{{ $record->country_code.$record->phone }}");
+input.on("countrychange", function() {
+	$("#test1").val($("#Regphones").intlTelInput("getSelectedCountryData").dialCode);
+});
+
+var admin_phone = $('#admin_phone').intlTelInput("setNumber", "+{{ @$record->user->country_code.@$record->user->phone }}");
+admin_phone.on("countrychange", function() {
+	$("#admin_phone_country_code").val($("#admin_phone").intlTelInput("getSelectedCountryData").dialCode);
+});
+</script>
 @stop

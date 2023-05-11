@@ -285,4 +285,21 @@ class Ride extends Model
 		return $this->belongsTo(User::class, 'creator_id');
 	}
 	  
+	public function getCreatedByUserTypeAttribute()
+	{
+		switch ($this->created_by) {
+			case '1':
+				return "User";
+				break;
+			case '2':
+				return "Driver";
+				break;
+			case '3':
+				return "Company";
+				break;
+			default:
+				return "";
+				break;
+		}
+	}
 }

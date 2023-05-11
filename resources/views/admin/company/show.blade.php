@@ -20,54 +20,63 @@
 						<div class="col-md-8">
 							<div class="table-responsive">
 								<table class="table table-bordered">
-								  <tr>
-										<td><strong>{{trans('admin.Image')}}</strong></td>
-										<td>
-											@if(!empty($record->image))
-											<img src="{{url('storage/'.$record->image)}}" height="50px" width="80px">
-											@else
-											<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
-										@endif
+									<tr>
+										<td colspan="2">
+											<h3>Company Information</h3>
 										</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('admin.Email')}}</strong></td>
-										<td>{{ $record->email }}</td>
+										<td><strong>Logo</strong></td>
+										<td>
+											@if(!empty($record->logo))
+												<img src="{{url('storage/'.$record->logo)}}" height="50px" width="80px">
+											@else
+												<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
+											@endif
+										</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Company name')}}</strong></td>
+										<td><strong>Background Image</strong></td>
+										<td>
+											@if(!empty($record->background_image))
+												<img src="{{url('storage/'.$record->background_image)}}" height="50px" width="80px">
+											@else
+												<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
+											@endif
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Company Name</strong></td>
 										<td>{{ $record->name }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Country code')}}</strong></td>
-										<td>{{ $record->country_code }}</td>
+										<td><strong>Email</strong></td>
+										<td>{{ $record->email }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Phone')}}</strong></td>
-										<td>{{ $record->phone }}</td>
+										<td><strong>Phone</strong></td>
+										<td>{{ $record->phone?$record->country_code:'' }} {{ $record->phone }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Country')}}</strong></td>
-										<td>{{ $record->country }}</td>
-									</tr>
-									<tr>
-										<td><strong>{{trans('State')}}</strong></td>
+										<td><strong>State</strong></td>
 										<td>{{ $record->state }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('City')}}</strong></td>
+										<td><strong>City</strong></td>
 										<td>{{ $record->city }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Zip')}}</strong></td>
+										<td><strong>Street</strong></td>
+										<td>{{ $record->street }}</td>
+									</tr>
+									<tr>
+										<td><strong>Zip Code</strong></td>
 										<td>{{ $record->zip }}</td>
 									</tr>
 									<tr>
-										<td><strong>{{trans('Address')}}</strong></td>
-										<td>{{ $record->address }}</td>
+										<td><strong>Country</strong></td>
+										<td>{{ $record->country }}</td>
 									</tr>
-								
-									
 									<tr>
 										<td><strong>{{trans('admin.Created at')}}</strong></td>
 										<td>{{ $record->created_at }}</td>
@@ -76,12 +85,36 @@
 										<td><strong>{{trans('admin.Updated at')}}</strong></td>
 										<td>{{ $record->updated_at }}</td>
 									</tr>
+									<tr>
+										<td colspan="2">
+											<h3>Admin Profile</h3>
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Profile Picture</strong></td>
+										<td>
+											@if(!empty(@$record->user->image))
+												<img src="{{url('storage/'.$record->user->image)}}" height="50px" width="80px">
+											@else
+												<img src="{{ asset('no-images.png') }}" height="50px" width="80px">	
+											@endif
+										</td>
+									</tr>
+									<tr>
+										<td><strong>Email</strong></td>
+										<td>{{ @$record->user->email }}</td>
+									</tr>
+									<tr>
+										<td><strong>Name</strong></td>
+										<td>{{ @$record->user->name }}</td>
+									</tr>
+									<tr>
+										<td><strong>Phone</strong></td>
+										<td>{{ @$record->user->phone?@$record->user->country_code:'' }} {{ @$record->user->phone }}</td>
+									</tr>
 								</table>
 								<div class="form-actions">
 									<a href="{{route( $route.'.index')}}" class="btn btn-inverse">{{trans('admin.Back')}}</a>
-								{{-- @if(!empty($record) && $record->verify==0)
-									<a href="javascript:;" class="btn btn-success approve" data-id="{{$record->id}}">Approve</a>
-								@endif --}}
 								</div>
 							</div>
 						</div>

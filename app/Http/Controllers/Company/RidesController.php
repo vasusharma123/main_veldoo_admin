@@ -18,6 +18,7 @@ use App\Price;
 use Carbon\Carbon;
 use App\Setting;
 use App\Notification;
+use App\Http\Resources\RideResource;
 
 class RidesController extends Controller
 {
@@ -70,7 +71,13 @@ class RidesController extends Controller
         DB::beginTransaction();
         try {
             $ride = new Ride();
-            $ride->user_id = $request->user_id??"";
+            $ride->user_id = $request->user_id??null;
+            $rideUser = User::find($request->user_id);
+            if ($rideUser) 
+            {
+                $ride->user_country_code = $rideUser->country_code;
+                $ride->user_phone = $rideUser->phone;
+            }
             $ride->company_id = Auth::user()->company_id;
             $ride->pickup_address = $request->pickup_address;
             if (!empty($request->dest_address)) {
@@ -152,13 +159,11 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride->id);
+            $ride_data = new RideResource(Ride::find($ride->id));
 
             $driverids = explode(",", $driverids);
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
-            $ride_data['user_data'] = $user_data;
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
             if (!empty($driverids)) {
@@ -223,7 +228,13 @@ class RidesController extends Controller
         DB::beginTransaction();
         try {
             $ride = new Ride();
-            $ride->user_id = $request->user_id??"";
+            $ride->user_id = $request->user_id??null;
+            $rideUser = User::find($request->user_id);
+            if ($rideUser) 
+            {
+                $ride->user_country_code = $rideUser->country_code;
+                $ride->user_phone = $rideUser->phone;
+            }
             $ride->pickup_address = $request->pickup_address;
             $ride->dest_address = $request->dest_address??"";
             $ride->passanger = $request->passanger;
@@ -394,13 +405,10 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
-            $ride_data = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride->id);
-
+            $ride_data = new RideResource(Ride::find($ride->id));
             $driverids = explode(",", $driverids);
-            $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride_data['user_id']);
             $title = 'New Booking';
             $message = 'You Received new booking';
-            $ride_data['user_data'] = $user_data;
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
             if (!empty($driverids)) {
@@ -527,11 +535,10 @@ class RidesController extends Controller
 				// 	$ride->cancel_reason = $request->cancel_reason;
 				// }
 				$ride->save();
-				$ride_detail = Ride::select('id', 'accept_time', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'driver_id', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'company_id', 'vehicle_id')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate'])->find($ride_id);
-
+                $ride_detail = new RideResource(Ride::find($ride->id));
 				$settings = Setting::first();
 				$settingValue = json_decode($settings['value']);
-				$ride['waiting_time'] = $settingValue->waiting_time;
+				$ride_detail['waiting_time'] = $settingValue->waiting_time;
 				if (!empty($driverData)) {
 					$deviceToken = $driverData['device_token'] ?? "";
 					$deviceType = $driverData['device_type'] ?? "";
