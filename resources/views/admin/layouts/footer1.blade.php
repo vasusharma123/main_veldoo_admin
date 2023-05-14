@@ -142,6 +142,14 @@ jQuery("#Regphones").intlTelInput({
 			return "";
 		},
 });  
+jQuery("#CRegphones").intlTelInput({
+		initialCountry:"us",
+		separateDialCode: true,
+		utilsScript: "{{url('assets/js/utils.js')}}",
+		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+			return "";
+		},
+});  
 jQuery("#admin_phone").intlTelInput({
 		initialCountry:"us",
 		separateDialCode: true,
