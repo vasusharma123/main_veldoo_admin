@@ -126,6 +126,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('driver/edit/{id}','UserController@editDriver');
 	Route::match(['put', 'patch'],'driver/update/{id}','UserController@updateDriver');
 	Route::get('driver/create','UserController@createDriver');
+	Route::post('driver/checkDriverByPhone','UserController@checkDriverByPhone')->name('checkDriverByPhone');
+	Route::get('driver/service-provider/add/{id}','UserController@addDriverServiceProvider')->name('addDriverServiceProvider');
 	
 	Route::get('driver/{id}','UserController@showDriver')->name('showDriver');
 	Route::post('driver/delete','DriverController@destroy')->name('admin.driver.delete');

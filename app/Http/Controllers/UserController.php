@@ -32,6 +32,7 @@ use Exception;
 use App\Price;
 use App\Vehicle;
 use App\SMSTemplate;
+use App\ServiceProviderDriver;
 
 class UserController extends Controller
 {
@@ -280,7 +281,7 @@ class UserController extends Controller
 				}
 				$user_type = 1;
 				$createdBy = Auth::user()->id;
-				$service_provider_id = "";
+				// $service_provider_id = "";
 			} else {
 				$userData = User::where('user_type', 2)->where('phone', ltrim($request->phone, "0"))->first();
 				//driver
@@ -293,7 +294,7 @@ class UserController extends Controller
 				}
 				$user_type = 2;
 				$createdBy = 0;
-				$service_provider_id = Auth::user()->id;
+				// $service_provider_id = Auth::user()->id;
 				if(!empty($request->phone)){
 					if(substr($request->phone, 0, 1) == 0){
 						$input['phone'] = substr_replace($request->phone,"",0,1);
@@ -304,7 +305,7 @@ class UserController extends Controller
 			$input['password'] = Hash::make($request->input('password'));
 			$input['user_type'] = $user_type;
 			$input['created_by'] = $createdBy;
-			$input['service_provider_id'] = $service_provider_id;
+			// $input['service_provider_id'] = $service_provider_id;
 			// dd($input);
 			$user  = \App\User::create($input);
 			//SAVE IMAGE
@@ -327,6 +328,9 @@ class UserController extends Controller
 				//DB::commit();
 				return back()->with('success', 'User created!');
 			} else {
+				$serviceProviderDriver = new ServiceProviderDriver();
+				$serviceProviderDriver->fill(['driver_id'=>$user->id,'service_provider_id'=>Auth::user()->id]);
+				$serviceProviderDriver->save();
 				return back()->with('success', 'Driver created!');
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
@@ -717,10 +721,11 @@ class UserController extends Controller
             return view('admin.drivers.index_element')->with($data);
         }
         */
-
 		if ($request->ajax()) {
-			$data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
-
+			$users = ServiceProviderDriver::where(['service_provider_id'=>Auth::user()->id])->with('user:id,first_name,is_master,last_name,email,phone,status,name,country_code')->get();
+			$data = $users->pluck('user')->flatten();
+			// $data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
+			// <a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 			return Datatables::of($data)
 				->addIndexColumn()
 				->addColumn('action', function ($row) {
@@ -730,7 +735,6 @@ class UserController extends Controller
 								</button>
 								<div class="dropdown-menu">
 									<a class="dropdown-item" href="' . url('admin/driver', $row->id) . '">' . trans("admin.View") . '</a>
-									<a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 									<a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
 									<a class="dropdown-item logout_driver" data-id="' . $row->id . '">Logout</a>
                                 </div>
@@ -771,6 +775,7 @@ class UserController extends Controller
 	
 	 public function editDriver($id)
     {
+		return redirect()->route('showDriver',$id);
 	    $breadcrumb = array('title'=>'Driver','action'=>'Edit Driver');
 		$data = [];
         $where = array('id' => $id,'user_type'=>2);
@@ -1293,4 +1298,62 @@ class UserController extends Controller
 		}
 	}
 
+	public function checkDriverByPhone(Request $request)
+	{
+		DB::beginTransaction();
+		try {
+			$rules = [
+				'phone' => 'required',
+				'country_code' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+			$driver = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
+			if ($driver) 
+			{
+				$checkDriverAdded = ServiceProviderDriver::where(['driver_id'=>$driver->id,'service_provider_id'=>Auth::user()->id])->first();
+				if ($checkDriverAdded) {
+					DB::commit();
+					return response()->json(['status' => 2, 'message' => 'Driver already added'], $this->successCode);
+				}
+				else
+				{
+					DB::commit();
+					return response()->json(['status' => 1, 'message' => 'Driver Found','driver'=>$driver], $this->successCode);
+				}
+			}
+			else
+			{
+				DB::commit();
+				return response()->json(['status' => 0, 'message' => 'Driver not found'], $this->successCode);
+			}
+		} catch (\Exception $e) {
+			DB::rollback();
+			// something went wrong
+			return response()->json(['status'=>2,'message' => $e->getMessage()], $this->warningCode);
+		}
+	}
+
+	public function addDriverServiceProvider($id)
+	{
+		DB::beginTransaction();
+		try {
+			$checkDriverAdded = ServiceProviderDriver::where(['driver_id'=>$id,'service_provider_id'=>Auth::user()->id])->first();
+			if (!$checkDriverAdded) {
+				$driver =  new ServiceProviderDriver();
+				$driver->fill(['driver_id'=>$id,'service_provider_id'=>Auth::user()->id]);
+				$driver->save();
+			}
+			
+			DB::commit();
+			return back()->with('success', 'Driver added!');
+			
+		} catch (\Exception $e) {
+			DB::rollback();
+			// something went wrong
+			return back()->with('error', $exception->getMessage());
+		}
+	}
 }

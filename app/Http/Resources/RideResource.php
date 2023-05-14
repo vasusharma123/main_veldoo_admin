@@ -36,6 +36,7 @@ class RideResource extends JsonResource
             'parent_ride_id' => $this->parent_ride_id,
             'created_at' => $this->created_at,
             'user' => new RideUserResource($this->user),
+            'user_data' => new RideUserResource($this->user),
             'driver' => new RideUserResource($this->driver),
             'company_data' => new RideCompanyResource($this->company_data),
             'car_data' => new RideVehicleResource($this->car_data),
