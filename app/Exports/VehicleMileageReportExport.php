@@ -15,6 +15,7 @@ use PHPExcel_Worksheet_PageSetup;
 use DB;
 use App\DriverChooseCar;
 use App\Ride;
+use Auth;
 
 class VehicleMileageReportExport implements FromCollection, WithHeadings, WithTitle, WithMapping, ShouldAutoSize
 {
@@ -35,9 +36,12 @@ class VehicleMileageReportExport implements FromCollection, WithHeadings, WithTi
 		$choosen_slots = DriverChooseCar::with([
 			'vehicle:id,vehicle_number_plate,model,year', 'driver:id,first_name,last_name,phone',
 		])
-			->where(function ($query) use ($start_date, $end_date) {
-				$query->whereRaw("Date(created_at) >= ? && Date(created_at) <= ?", [$start_date, $end_date]);
-			})->get();
+		->whereHas('vehicle',function($vehicle){
+			$vehicle->where('service_provider_id',Auth::user()->id);
+		})
+		->where(function ($query) use ($start_date, $end_date) {
+			$query->whereRaw("Date(created_at) >= ? && Date(created_at) <= ?", [$start_date, $end_date]);
+		})->get();
 		return $choosen_slots;
 	}
 

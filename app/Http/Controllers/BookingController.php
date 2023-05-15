@@ -36,7 +36,7 @@ class BookingController extends Controller
 		$breadcrumb = array('title' => 'Bookings', 'action' => 'List Bookings');
 		$data = [];
 		$records = \App\Ride::select('rides.*', 'users.first_name', 'users.last_name', 'categories.name')->leftjoin('users', 'users.id', '=', 'rides.user_id')->leftjoin('categories', 'rides.car_type', '=', 'categories.id');
-
+		$records->where('rides.service_provider_id',Auth::user()->id);
 		if ($request->has('status') && !empty($request->input('id'))) {
 			$status = ($request->input('status') ? 0 : 1);
 			DB::table($this->table)->where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
@@ -177,6 +177,7 @@ class BookingController extends Controller
 		$data = [];
 		$whereRaw = '';
 		$records = \App\Ride::select('rides.*', 'users.first_name', 'users.last_name')->leftjoin('users', 'users.id', '=', 'rides.user_id');
+		$records->where('rides.service_provider_id',Auth::user()->id);
 		//->leftjoin('categories','rides.car_type','=','categories.id');
 		//dd($records->get());
 		if ($request->has('status') && !empty($request->input('id'))) {

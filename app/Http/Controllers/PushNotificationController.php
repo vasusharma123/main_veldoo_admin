@@ -13,6 +13,7 @@ use Helper;
 use Twilio\Rest\Client;
 use App\PushNotification;
 use Storage;
+use Auth;
 use App\Jobs\SendNotificationJob;
 
 class PushNotificationController extends Controller
@@ -28,7 +29,7 @@ class PushNotificationController extends Controller
     {
 		$data['title'] = "Send Notification to driver or users";
 		$data['action'] = "Send Notification to driver or users";
-		$data['notifications'] = PushNotification::orderBy('created_at','desc')->get();
+		$data['notifications'] = PushNotification::where('service_provider_id',Auth::user()->id)->orderBy('created_at','desc')->get();
 	    return view("admin.{$this->folder}.index")->with($data);
     }
 
