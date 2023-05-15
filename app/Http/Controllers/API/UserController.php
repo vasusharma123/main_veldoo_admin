@@ -395,27 +395,31 @@ class UserController extends Controller
 	public function driverLogin(Request $request)
 	{
 		$rules = [
-			//'email' => 'required',
+			'country_code' => 'required',
+			'phone' => 'required',
 			'password' => 'required',
+			'service_provider_id' => 'required'
 		];
 
-		$where = ['password' => request('password')];
-		if (!empty($request->email)) {
-			$where['email'] = $request->email;
+		$validator = Validator::make($request->all(), $rules);
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
-		$where2 = ['password' => request('password')];
+		$where = ['password' => request('password'), 'country_code' => request('country_code')];
+
+		// if (!empty($request->email)) {
+		// 	$where['email'] = $request->email;
+		// }
+
 		if (!empty($request->phone)) {
-			$where2['phone'] = ltrim($request->phone, "0");
+			$where['phone'] = ltrim($request->phone, "0");
 		}
 		$where['user_type'] = 2;
-		$where2['user_type'] = 2;
-		if (auth()->attempt($where2)) {
+		if (auth()->attempt($where)) {
 			Auth::user()->AauthAcessToken()->delete();
 			$user = Auth::user();
-			//print_r($user); die;
 			if (!empty($request->fcm_token)) {
-
 				$user['fcm_token'] = $request->fcm_token;
 			}
 			if (!empty($request->device_type)) {
@@ -427,7 +431,7 @@ class UserController extends Controller
 			if (!empty($request->socket_id)) {
 				$user['socket_id'] = $request->socket_id;
 			}
-
+			$user['service_provider_id'] = $request->service_provider_id;
 			$user['availability'] = 0;
 			$user->save();
 			/* if($user->status == 0){
@@ -708,8 +712,7 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
-
+			$user = User::with(['driver_service_providers:id,name'])->where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			//print_r($user)
 			//$user=\App\User::where('phone',$request->phone)->where('country_code',$request->country_code)->first();
 			if (!empty($user) && $user != null) {
@@ -1220,12 +1223,14 @@ class UserController extends Controller
 	{
 		$user = Auth::user();
 
-
-
-
-
-
 		try {
+			if (!empty($request->country_code) && !empty($request->phone)) {
+				$already_exist_phone = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $user->user_type])->where('id','!=',$user->id)->first();
+				if($already_exist_phone){
+					return response()->json(['message' => "This phone number already exists for another user."], $this->warningCode);
+				}
+			}
+
 			if (!empty($request->email)) {
 				$user->email = $request->email;
 			}
@@ -1282,7 +1287,6 @@ class UserController extends Controller
 				$user->last_name = $request->last_name;
 			}
 
-
 			if (!empty($_FILES['image'])) {
 
 				if (isset($_FILES['image']) && $_FILES['image']['name'] !== '' && !empty($_FILES['image']['name'])) {
@@ -1299,8 +1303,6 @@ class UserController extends Controller
 							$user->image = $url . "/" . $path . $filename;
 						}
 					} else {
-
-
 						return response()->json(['message' => 'Upload valid image'], $this->warningCode);
 					}
 				}
@@ -5248,7 +5250,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function carList()
 	{
-		$categories = Price::query()->get();
+		$user = Auth::user();
+		$categories = Price::where(['service_provider_id' => $user->service_provider_id])->get();
 		$catnew = array();
 		$cararray = array();
 		$i = 0;

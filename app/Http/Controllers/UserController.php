@@ -974,7 +974,7 @@ class UserController extends Controller
 			'email'=>$request->email,
 			'first_name'=>$request->first_name,
 			'last_name'=>$request->last_name,
-			'name'=>$request->first_name.' '.$request->last_name,
+			'name' => $request->site_name,
 			'country_code'=>$request->country_code,
 			'phone'=>$request->phone,
 			'user_type'=>3,
