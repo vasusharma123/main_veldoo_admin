@@ -35,7 +35,7 @@
 		</thead>
 		<tbody>
 		@foreach ($array as $record)
-		<tr>
+			<tr>
 					<td>{{ $record->id }}</td>
 					<td>{{$record->user?$record->user->first_name:'' }} {{$record->user?$record->user->last_name:'' }}</td>
 					<td>{{ $record->driver?$record->driver->first_name:'' }} {{ $record->driver?$record->driver->last_name:'' }}</td>
@@ -70,9 +70,9 @@
 					</td>
 				</tr>
 			@endforeach
-				@if(count($array) == 0)
+			@if(count($array) == 0)
 				<tr>
-					<td class="text-center" colspan="6">No Record Found</td>
+					<td class="text-center" colspan="10">No Record Found</td>
 				</tr>
 			@endif
 		</tbody>

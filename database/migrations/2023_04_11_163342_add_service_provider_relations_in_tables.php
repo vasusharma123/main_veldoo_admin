@@ -54,6 +54,16 @@ class AddServiceProviderRelationsInTables extends Migration
             $table->index('service_provider_id');
             $table->foreign('service_provider_id')->references('id')->on('users')->onDelete('set null');
         });
+
+        Schema::table('push_notifications', function (Blueprint $table) {
+            $table->bigInteger('service_provider_id')->nullable();
+        });
+
+        Schema::table('push_notifications', function (Blueprint $table) {
+            $table->unsignedBigInteger('service_provider_id')->default(null)->nullable()->comment('foreign key of users table where user_type = 1')->change();
+            $table->index('service_provider_id');
+            $table->foreign('service_provider_id')->references('id')->on('users')->onDelete('set null');
+        });
         
     }
 
@@ -128,12 +138,24 @@ class AddServiceProviderRelationsInTables extends Migration
         });
         Schema::enableForeignKeyConstraints();
 
+
         Schema::table('sms_templates', function (Blueprint $table) {
             $table->dropForeign('sms_templates_service_provider_id_foreign');
             $table->dropIndex('sms_templates_service_provider_id_index');
         });
         Schema::disableForeignKeyConstraints();
         Schema::table('sms_templates', function (Blueprint $table) {
+            $table->integer('service_provider_id')->change();
+        });
+        Schema::enableForeignKeyConstraints();
+
+        
+        Schema::table('push_notifications', function (Blueprint $table) {
+            $table->dropForeign('push_notifications_service_provider_id_foreign');
+            $table->dropIndex('push_notifications_service_provider_id_index');
+        });
+        Schema::disableForeignKeyConstraints();
+        Schema::table('push_notifications', function (Blueprint $table) {
             $table->integer('service_provider_id')->change();
         });
         Schema::enableForeignKeyConstraints();
