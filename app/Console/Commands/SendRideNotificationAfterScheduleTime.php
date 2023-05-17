@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RideResource;
 
 class SendRideNotificationAfterScheduleTime extends Command
 {
@@ -78,10 +79,9 @@ class SendRideNotificationAfterScheduleTime extends Command
                     }
                     $ride->all_drivers = implode(",", $driverids);
                     $ride->save();
-                    $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                     $title = 'New Booking';
                     $message = 'You Received new booking';
-                    $ride['user_data'] = $user_data;
+                    $ride = new RideResource(Ride::find($ride->id));
                     $ride['waiting_time'] = $settingValue->waiting_time;
                     $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride];
                     $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();

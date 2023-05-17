@@ -10,6 +10,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RideResource;
 
 class SendRideNotificationToDriverOnScheduleTime extends Command
 {
@@ -59,7 +60,7 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
                 $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                 $title = 'New Booking';
                 $message = 'You Received new booking';
-                $ride['user_data'] = $user_data;
+                $ride = new RideResource(Ride::find($ride->id));
                 $ride['waiting_time'] = $settingValue->waiting_time;
                 $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride];
                 if (!empty($ride->driver->device_token)) {

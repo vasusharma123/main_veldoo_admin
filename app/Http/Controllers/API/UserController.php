@@ -2148,10 +2148,9 @@ class UserController extends Controller
 
 			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
 			if (!empty($masterDriverIds)) {
-				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
+				$ride = new RideResource(Ride::find($ride->id));
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
-				$ride['user_data'] = $user_data;
 				$ride['waiting_time'] = $settingValue->waiting_time;
 				$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
 				$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
@@ -2937,18 +2936,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride->save();
 
-			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
-
+			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
 			$ride['waiting_time'] = $settingValue->waiting_time;
 			if ($request->status != -1) {
 				if (!empty($userdata)) {
-					if(!empty($ride_detail->driver)){
-						$ride_detail->driver->car_data = $ride_detail->driver->car_data;
-						$ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
-					}
-
 					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
 					if (!empty($deviceToken)) {
 						if ($deviceType == 'android') {
@@ -4412,12 +4405,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 
-		$ride_data = Ride::find($ride->id);
+		$ride_data = new RideResource(Ride::find($ride->id));
 		$driverids = explode(",", $driverids);
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
-		$ride_data['user_data'] = $user_data;
 		$ride_data['waiting_time'] = $settingValue->waiting_time;
 		$additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
 		if (!empty($driverids)) {
@@ -4598,12 +4589,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
-		$ride_data = Ride::query()->find($ride->id);
+		$ride_data = new RideResource(Ride::find($ride->id));
 
 		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
-		$ride_data['user_data'] = $user_data;
 		$ride_data['waiting_time'] = $settingValue->waiting_time;
 		$additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
 		if (!empty($driverids)) {
@@ -5038,10 +5028,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
 			if (!empty($masterDriverIds)) {
-				$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
-				$ride['user_data'] = $user_data;
+				$ride = new RideResource(Ride::find($ride->id));
 				$ride['waiting_time'] = $settingValue->waiting_time;
 				$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
 				$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
@@ -5478,12 +5467,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$rideHistoryDetail->status = "1";
 						$rideHistoryDetail->save();
 					}
-					$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+					$ride_detail = new RideResource(Ride::find($request->ride_id));
 					$userdata = User::find($ride_detail['user_id']);
 					if (!empty($userdata)) {
-						$ride_detail->driver->car_data = $ride_detail->driver->car_data;
-						$ride_detail->driver->avg_rating = $ride_detail->getAvgRating($ride_detail->driver->id);
-						$choosed_vehicle = DriverChooseCar::with(['vehicle'])->where(['user_id' => Auth::user()->id, 'logout' => 0])->first();
 						if ($ride->platform == 'web') {
 							// $ride->accept_ride_sms_notify($userdata, $choosed_vehicle);
 						}
@@ -6555,14 +6541,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$rideDetail->alert_notification_date_time = $rideAlertTime;
 					$rideDetail->save();
 				} else {
-					$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride['user_id']);
-					$driver_data = User::select('id', 'first_name', 'last_name', 'image', 'current_lat', 'current_lng', 'country_code', 'phone', 'user_type')->find($request->driver_id);
-
-					$driver_car = DriverChooseCar::where('user_id', $driver_data['id'])->orderBy('id', 'desc')->first();
-					$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
-					$driver_data['car_data'] = $car_data;
-					$ride['user_data'] = $user_data;
-					$ride['driver_data'] = $driver_data;
+					$ride = new RideResource(Ride::find($request->ride_id));
 					$settings = \App\Setting::first();
 					$settingValue = json_decode($settings['value']);
 					$ride['waiting_time'] = $settingValue->waiting_time;
@@ -6901,7 +6880,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		} catch (\Exception $e) {
 			DB::rollback();
 			// something went wrong
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 }
