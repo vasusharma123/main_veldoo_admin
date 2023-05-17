@@ -11,6 +11,7 @@ use DB;
 use App\PushNotification;
 use App\Jobs\SendNotificationJob;
 use App\User;
+use Auth;
 
 class SendNotificationJob implements ShouldQueue
 {
@@ -34,6 +35,7 @@ class SendNotificationJob implements ShouldQueue
     */
     public function handle()
     {
+        // dd('d');
         $itemData = PushNotification::find($this->notification->id);
         $additional = ['type' => "", 'ride_id' => "", 'ride_data' => ""];
         $current_page = $itemData->current_page;
@@ -43,23 +45,73 @@ class SendNotificationJob implements ShouldQueue
 		{
 			$user_type = [1,2];
 		}
-		$android_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->where('deleted',0)->whereNull('deleted_at')->paginate(100, ['*'], 'page', $current_page);
         $android_tokens = [];
-        foreach ($android_users as $key => $android_user) 
+		if ($itemData->receiver==1 || $itemData->receiver==3) 
         {
-            $android_tokens[] = $android_user->device_token;
+            $android_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->whereHas('user_ride',function($user_ride)
+            {
+                $user_ride->where('service_provider_id',Auth::user()->id);
+
+            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+            foreach ($android_users as $key => $android_user) 
+            {
+                $android_tokens[] = $android_user->device_token;
+            }
         }
+
+		if ($itemData->receiver==2 || $itemData->receiver==3) 
+        {
+            $android_driver = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->whereHas('service_provider_driver',function($service_provider_driver)
+            {
+                $service_provider_driver->where('service_provider_id',Auth::user()->id);
+
+            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+
+            foreach ($android_driver as $key => $android_drive) 
+            {
+                $android_tokens[] = $android_drive->device_token;
+            }
+        }
+        // dd($android_tokens);
         if (!empty($android_tokens)) 
         {
             bulk_firebase_android_notification($itemData->title, $itemData->description, $android_tokens, $additional);
         }
         
-		$ios_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->where('deleted',0)->whereNull('deleted_at')->paginate(100, ['*'], 'page', $current_page);
         $ios_tokens = [];
-        foreach ($ios_users as $key => $ios_user) 
+
+        if ($itemData->receiver==1 || $itemData->receiver==3) 
         {
-            $ios_tokens[] = $ios_user->device_token;
+            $ios_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->whereHas('user_ride',function($user_ride)
+            {
+                $user_ride->where('service_provider_id',Auth::user()->id);
+
+            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+            foreach ($ios_users as $key => $ios_user) 
+            {
+                $ios_tokens[] = $ios_user->device_token;
+            }
         }
+
+		if ($itemData->receiver==2 || $itemData->receiver==3) 
+        {
+            $ios_drivers = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->whereHas('service_provider_driver',function($service_provider_driver)
+            {
+                $service_provider_driver->where('service_provider_id',Auth::user()->id);
+
+            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+
+            foreach ($ios_drivers as $key => $ios_driver) 
+            {
+                $ios_tokens[] = $ios_driver->device_token;
+            }
+        }
+
+		// $ios_users = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->where('deleted',0)->whereNull('deleted_at')->paginate(100, ['*'], 'page', $current_page);
+        // foreach ($ios_users as $key => $ios_user) 
+        // {
+        //     $ios_tokens[] = $ios_user->device_token;
+        // }
         
         if (!empty($ios_tokens)) 
         {

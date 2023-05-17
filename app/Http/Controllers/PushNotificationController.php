@@ -67,9 +67,20 @@ class PushNotificationController extends Controller
 		{
 			$user_type = [1,2];
 		}
-		$total_page = User::whereIn('user_type',$user_type)->where('deleted',0)->whereNull('deleted_at')->count();
+		$total_page = 0;
+		if ($request->receiver==1 || $request->receiver==3) 
+		{
+			$total_page_users = DB::select("SELECT COUNT(users.id) as count FROM `users` JOIN rides on rides.user_id = users.id WHERE rides.service_provider_id = ".Auth::user()->id." AND deleted = 0 AND deleted_at is null and user_type = 1");
+			$total_page += $total_page_users[0]->count;
+		}
+		if ($request->receiver==2 || $request->receiver==3) 
+		{
+			$total_page_driver = DB::select("SELECT COUNT(users.id) as count FROM `users` JOIN service_provider_drivers on service_provider_drivers.driver_id = users.id WHERE service_provider_drivers.service_provider_id = ".Auth::user()->id." AND deleted = 0 AND deleted_at is null and user_type = 2");
+			$total_page += $total_page_driver[0]->count;
+		}
 		$total_page = ceil($total_page/100);
-		$data = collect($request->all())->forget(['image','_token'])->put('total_page',$total_page)->put('current_page',1)->toArray();
+		// dd($total_page);
+		$data = collect($request->all())->forget(['image','_token'])->put('total_page',$total_page)->put('current_page',1)->put('service_provider_id',Auth::user()->id)->toArray();
 		$notification = new PushNotification;
 		$notification->fill($data);
 		$notification->save();
@@ -125,7 +136,7 @@ class PushNotificationController extends Controller
 		// 			   ]);
 		// 	}
 		// }
-		
+		// dd($notification);
 		dispatch(new SendNotificationJob($notification))->onQueue('push_notifications');
 		return redirect()->route('push-notifications.index')->with('success', __('Notification Sent Successfully!'));
     }
