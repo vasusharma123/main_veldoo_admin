@@ -279,6 +279,16 @@ class User extends Authenticatable implements HasMedia
 		return $this->hasOne(Ride::class, 'driver_id', 'id');
 	}
 
+	function user_ride()
+	{
+		return $this->hasOne(Ride::class, 'user_id', 'id');
+	}
+
+	function service_provider_driver()
+	{
+		return $this->hasOne(ServiceProviderDriver::class, 'driver_id', 'id');
+	}
+
 	public function getImageWithUrlAttribute(){
 		if(!empty($this->image)){
 			return env('URL_PUBLIC').'/'.$this->image;
