@@ -2,70 +2,63 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Notifications\Notifiable;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\User;
-use App\Place;
-use App\Notification;
-use App\helpers;
-use App\Item;
+use App\AdminContact;
+use App\BankDetail;
+use App\Booking;
+use App\Card;
+use App\Cart;
 use App\Category;
-use App\UserCategory;
-use App\UserMeta;
-use App\Vehicle;
-use App\Ride;
-use App\Driverclass;
+use App\Complaint;
 use App\ComplainType;
 use App\Contact;
-use App\Complaint;
-use App\Page;
-use App\Rating;
-use App\Wallet;
-use App\BankDetail;
-use App\SaveLocation;
 use App\DriverChooseCar;
-use App\Stopover;
-use App\UserData;
-use App\Promotion;
-use App\InvitationMile;
-use App\UserVoucher;
-use App\Voucher;
-use App\Price;
-use App\Card;
-use App\Setting;
-use App\OtpVerification;
-use App\Subject;
-use App\Favourite;
-use App\Cart;
-use App\Booking;
-use App\Promocode;
-use App\AdminContact;
-use Illuminate\Support\Facades\Auth;
-use App\Rules\MatchOldPassword;
-use App\Notifications\ResetPassword as ResetPasswordNotification;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use Edujugon\PushNotification\PushNotification;
-use Helper;
-use Config;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
-use Illuminate\Support\Facades\Password;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\URL;
-use Mail;
-use Illuminate\Support\Facades\Hash;
-use \stdClass;
-use App\RideHistory;
-use App\Helpers\Notifications;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\Log;
+use App\Driverclass;
 use App\DriverStayActiveNotification;
-use Exception;
+use App\Favourite;
+use App\Helpers\Notifications;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\RideResource;
+use App\InvitationMile;
+use App\Item;
+use App\Notification;
+use App\OtpVerification;
+use App\Page;
+use App\PaymentMethod;
+use App\Place;
+use App\Price;
+use App\Promocode;
+use App\Promotion;
+use App\Rating;
+use App\Ride;
+use App\RideHistory;
+use App\Rules\MatchOldPassword;
+use App\SaveLocation;
+use App\Setting;
+use App\Stopover;
+use App\Subject;
+use App\User;
+use App\UserData;
+use App\UserMeta;
+use App\UserVoucher;
+use App\Vehicle;
+use App\Voucher;
+use App\Wallet;
+use Carbon\Carbon;
+use Config;
+use Exception;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
+use Mail;
+use \stdClass;
 
 class UserController extends Controller
 {
@@ -975,11 +968,8 @@ class UserController extends Controller
 	#USER DETAILS
 	public function details()
 	{
-		$id = Auth::user()->id;
-		// echo $id; die;
+		$user = Auth::user();
 		$user = $this->getRafrenceUser(Auth::user()->id);
-
-		// print_r($user ); die;
 		return response()->json(['message' => __('Successfully.'), 'user' => $user], $this->successCode);
 	}
 
@@ -1118,9 +1108,9 @@ class UserController extends Controller
 		$userdata['notification_count'] = $ncount; */
 		return $userdata;
 	}
+
 	public function getRafrenceUser($id)
 	{
-		// echo $id; 
 		$where = array('id' => $id);
 		$userd = User::where($where)->first();
 		if (!empty($userd['refer_code'])) {
@@ -1129,10 +1119,7 @@ class UserController extends Controller
 			$userd->refer_code = $random_code;
 			$userd->save();
 		}
-		// $userdata = $userd ;
-		// $userdata= User::query()->where([['id', '=', $id]])->first();
 		$userdata = User::where($where)->get();
-		// print_r($userdata[0]->id); die;
 		$userdata = $userdata[0];
 		$driver_car = DriverChooseCar::where('user_id', $id)->orderBy('id', 'desc')->first();
 		if (!empty($driver_car)) {
@@ -1147,18 +1134,11 @@ class UserController extends Controller
 			$userdata->cardata = null;
 		}
 		$userdata->full_name = $userdata->first_name . ' ' . $userdata->last_name;
-
-		//$cardata = DriverChooseCar::query()->where([['user_id', '=', $id]])->orderBy('id','desc')->first();
-		// $userdata['cardata'] = $car_data;
 		$ride_detail = "";
 		if ($userdata->user_type == 1) {
-			/* ->where(function($query) {
-			$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
-}) */
 			$ride = Ride::query()->where([['user_id', '=', $id]])->where(function ($query) {
 				$query->where([['status', '=', 0]])->orWhere([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
 			})->orderBy('id', 'desc')->first();
-			// print_r('$ride ',$ride ); die;
 			if (!empty($ride)) {
 				$ride_detail = $this->getRide($ride['id']);
 			} else {
@@ -1176,11 +1156,9 @@ class UserController extends Controller
 			}
 		}
 		$userdata->ride_detail = $ride_detail;
-		//print_r($userdata); die;
-		/*  $ncount = Notification::query()->where([['user_id', '=', $id],['status', '=', 0]])->count();
-		$userdata['notification_count'] = $ncount; */
 		return $userdata;
 	}
+
 	function generateRandomString($length)
 	{
 		$characters = '0123456789abcdefghijklmnopqrs092u3tuvwxyzaskdhfhf9882323ABCDEFGHIJKLMNksadf9044OPQRSTUVWXYZ';
@@ -2809,7 +2787,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		$user = Auth::user();
 		try {
-			$resnewarray = Price::orderBy('sort')->get();
+			$resnewarray = Price::where(['service_provider_id' => $user->service_provider_id])->orderBy('sort')->get();
 			return response()->json(['message' => __('Successfully.'), 'data' => $resnewarray], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
@@ -6269,8 +6247,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function settings(Request $request)
 	{
-		$payment_method = \App\PaymentMethod::get();
-		$settings = \App\Setting::first();
+		$user = Auth::user();
+		$payment_method = PaymentMethod::where(['service_provider_id' => $user->service_provider_id])->get();
+		$settings = Setting::where(['service_provider_id' => $user->service_provider_id])->first();
 		$settingValue = json_decode($settings['value']);
 		return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name, 'driver_count_to_display' => $settingValue->driver_count_to_display], $this->successCode);
 	}
@@ -6457,7 +6436,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lat = $ride_data['pick_lat'];
 			$lon = $ride_data['pick_lng'];
 
-			$settings = \App\Setting::first();
+			$settings = Setting::first();
 			$settingValue = json_decode($settings['value']);
 			$driverlimit = $settingValue->driver_requests;
 
