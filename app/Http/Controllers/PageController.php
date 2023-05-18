@@ -26,6 +26,7 @@ use Pushok\Payload;
 use Pushok\Payload\Alert;
 use Edujugon\PushNotification\PushNotification;
 use App\Http\Resources\RideResource;
+use Auth;
 
 class PageController extends Controller
 {
@@ -50,7 +51,7 @@ class PageController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$type = 1;
-		$data['record'] = Page::where(['type'=>$type])->first();
+		$data['record'] = Page::where(['type'=>$type])->where('service_provider_id',Auth::user()->id)->first();
 		$data['record']['type'] = $type;
 		$data['previewRoute'] = 'about';
 	    return view("admin.{$this->folder}.page")->with($data);
@@ -61,7 +62,7 @@ class PageController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$type = 3;
-		$data['record'] = Page::where(['type'=>$type])->first();
+		$data['record'] = Page::where(['type'=>$type])->where('service_provider_id',Auth::user()->id)->first();
 		$data['record']['type'] = $type;
 		$data['previewRoute'] = 'terms';
 	    return view("admin.{$this->folder}.page")->with($data);
@@ -72,7 +73,7 @@ class PageController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$type = 2;
-		$data['record'] = Page::where(['type'=>$type])->first();
+		$data['record'] = Page::where(['type'=>$type])->where('service_provider_id',Auth::user()->id)->first();
 		$data['record']['type'] = $type;
 		$data['previewRoute'] = 'policy';
 	    return view("admin.{$this->folder}.page")->with($data);
@@ -118,8 +119,8 @@ class PageController extends Controller
 		$request = $request->except(['_method', '_token']);
 		// dd($request);
 		Page::updateOrCreate(
-			['type'=>$request['type'] ],
-			['title' => $request['title'],'content' => $request['content'] ]
+			['type'=>$request['type'],'service_provider_id'=>Auth::user()->id],
+			['title' => $request['title'],'content' => $request['content'],'service_provider_id'=>Auth::user()->id ]
 		);
 		return back()->with('success', __('Record updated!'));
     }

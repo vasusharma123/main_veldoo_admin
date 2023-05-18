@@ -15,12 +15,11 @@
 								<h4 class="m-b-0 text-white pull-left">{{ $action }}</h4>
 							@endif
 							@if(!empty($previewRoute))
-							<a class="btn btn-primary btn-sm pull-right active" href="{{route( $previewRoute)}}" target="_blank">Preview</a>
+								<a class="btn btn-primary btn-sm pull-right active" href="{{route( $previewRoute)}}" target="_blank">Preview</a>
 							@endif
 						</div>
 						<div class="card-body">
 							@include('admin.layouts.flash-message')
-							
 							{{ Form::model($record, array('url' => route( $route.'.store' ),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
 							@method('PATCH')
 								<div class="form-body">
@@ -28,15 +27,15 @@
 										<div class="col-md-8">
 											<div class="form-group">
 												<?php
-												echo Form::label('title', 'Title',['class'=>'control-label']);
-												echo Form::text('title',null,['class'=>'form-control','required'=>true]);
-												echo Form::hidden('type',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('title', 'Title',['class'=>'control-label']);
+													echo Form::text('title',null,['class'=>'form-control','required'=>true]);
+													echo Form::hidden('type',null,['class'=>'form-control','required'=>true]);
 												?>
 											</div>
 											<div class="form-group">
 												<?php
-												echo Form::label('content', 'Description',['class'=>'control-label']);
-												echo Form::textarea('content',null,['class'=>'form-control ckeditor','required'=>true,'style'=>'width:99.8%;']);
+													echo Form::label('content', 'Description',['class'=>'control-label']);
+													echo Form::textarea('content',null,['class'=>'form-control ckeditor','required'=>true,'style'=>'width:99.8%;']);
 												?>
 											</div>
 										</div>
