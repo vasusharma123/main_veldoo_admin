@@ -81,5 +81,12 @@ class AddDefaultServiceProviderSeeder extends Seeder
         DB::table('sms_templates')->where(['service_provider_id'=>1,'id'=>5])->update([
             'unique_key' => "send_booking_details_after_edit_booking"
         ]);
+
+        DB::table('pages')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
     }
 }

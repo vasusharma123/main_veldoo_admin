@@ -1071,6 +1071,27 @@ class UserController extends Controller
 			]
 		]);
 
+		Page::insert([
+			[
+				"title" => "About",
+				"content" => "Veldoo",
+				"type" => "1",
+				"service_provider_id" => $serviceProvider->id,
+			],
+			[
+				"title" => "Privacy Policy",
+				"content" => "Veldoo",
+				"type" => "2",
+				"service_provider_id" => $serviceProvider->id,
+			],
+			[
+				"title" => "Terms",
+				"content" => "Veldoo",
+				"type" => "2",
+				"service_provider_id" => $serviceProvider->id,
+			]
+		]);
+
 		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
 		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
 		Mail::send('email.emailVerificationEmail', ['token' => $token], function($message) use($request){
