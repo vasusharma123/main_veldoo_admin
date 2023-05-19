@@ -344,8 +344,9 @@ class RideController extends Controller
                         $newarray = array();
                         if ($request->master_driver == 1) {
                             $rides[0] = $ownrideswaiting;
-                            $rides[1] = $overallPendingRides;
-                            $rides[2] = $othersFuturePendingRides;
+                            $rides[1] = $globalridespending;
+                            $rides[2] = $overallPendingRides;
+                            $rides[3] = $othersFuturePendingRides;
                         } else {
                             $rides[0] = $globalRideswaiting;
                             $rides[1] = $globalridespending;
