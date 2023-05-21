@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Promotion;
 use Illuminate\Support\Facades\URL;
+use Auth;
 
 class PromotionController extends Controller
 {
@@ -45,7 +46,7 @@ class PromotionController extends Controller
 			$vouchers->orderBy('id', 'desc');
 		}
 		
-		$data['promotion_offers'] = $vouchers->paginate($this->limit);
+		$data['promotion_offers'] = $vouchers->where('service_provider_id',Auth::user()->id)->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -79,7 +80,7 @@ class PromotionController extends Controller
      */
     public function store(Request $request)
     { 
-			$rules = [
+        $rules = [
 			'title'=>'required',
 			'description'=>'required',
 			'type'=>'required',
@@ -94,6 +95,7 @@ class PromotionController extends Controller
 		$promotion->type = $request->type;
 		$promotion->start_date = $request->start_date;
 		$promotion->end_date = $request->end_date;
+		$promotion->service_provider_id = Auth::user()->id;
 		if($request->type == 2)
 		{
 			$promotion->user_id = implode(",",$request->user_id);

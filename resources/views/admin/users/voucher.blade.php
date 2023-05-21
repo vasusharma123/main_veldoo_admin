@@ -16,37 +16,33 @@
 						</div>
 						<div class="card-body">
 							@include('admin.layouts.flash-message')
-							
 							{{ Form::model($record, array('url' => route( 'users.vouchersUpdate'),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
 							@method('PATCH')
 								<div class="form-body">							
 									<div class="row">
-										
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'control-label']);
-												echo Form::text('mile_per_ride',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'control-label']);
+													echo Form::text('mile_per_ride',null,['class'=>'form-control','required'=>true]);
 												?>
 											</div>
 										</div>
-										
 									</div>
-									
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'control-label']);
-												echo Form::text('mile_to_currency',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'control-label']);
+													echo Form::text('mile_to_currency',null,['class'=>'form-control','required'=>true]);
 												?>
 											</div>
 										</div>
 										<div class="col-md-6">
 											<div class="form-group">
 												<?php
-												echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'control-label']);
-												echo Form::text('mile_on_invitation',null,['class'=>'form-control','required'=>true]);
+													echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'control-label']);
+													echo Form::text('mile_on_invitation',null,['class'=>'form-control','required'=>true]);
 												?>
 											</div>
 										</div>
@@ -57,7 +53,6 @@
 									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
 								</div>
 							 {{ Form::close() }}
-					
 						</div>
 					</div>
 				</div>
@@ -69,9 +64,9 @@
 		<!-- ============================================================== -->
 		<!-- End Container fluid  -->
 		<style>
-		span.subtitle {
-    font-size: 12px;
-}
+			span.subtitle {
+				font-size: 12px;
+			}
 		</style>
 @endsection
 

@@ -9,7 +9,7 @@ class Promotion extends Model
 {
     
 	protected $fillable = [
-        'pickup_address','dest_address','user_id','promotion','type'
+        'pickup_address','dest_address','user_id','promotion','type','service_provider_id'
     ];
 	
 }

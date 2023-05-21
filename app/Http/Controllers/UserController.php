@@ -650,34 +650,15 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$record = (object)[];
-		$configuration =  Voucher::firstOrNew(['key' => '_configuration'])->value;
-		$data['record'] = json_decode($configuration);
+		$configuration =  Voucher::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first();
+		$data['record'] = json_decode($configuration->value);
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.voucher')->with($data);
     }
 	public function vouchersUpdate(Request $request)
 	{
-		
-		$path = 'voucher/';
-		$pathDB = 'public/voucher/';
-		$record = [];
- 		$voucher = Voucher::where(['key'=>'_configuration'])->first();
-		if (empty($voucher)) {
-			$voucher = new Voucher;
-		} else {
-			$record = json_decode($voucher->value);
-		}
-		
-		$voucher->key = '_configuration';
-		$input = $request->all();
-		
-		
-		foreach($input as $key=>$value){
-			/* echo $key;
-			echo $value; */
-			$voucher["value->$key"] = $value;
-		}
-		$voucher->save();
+		$matchThese = ['key'=>'_configuration','service_provider_id'=>Auth::user()->id];
+		Voucher::updateOrCreate($matchThese,['value'=>json_encode(['mile_per_ride'=>$request->mile_per_ride,'mile_to_currency'=>$request->mile_to_currency,'mile_on_invitation'=>$request->mile_on_invitation])]);
 		return back()->with('success', __('Record updated!'));
 	}
 
@@ -1088,6 +1069,19 @@ class UserController extends Controller
 				"title" => "Terms",
 				"content" => "Veldoo",
 				"type" => "2",
+				"service_provider_id" => $serviceProvider->id,
+			]
+		]);
+
+		$voucherValue = [
+			"mile_per_ride"=> "10",
+			"mile_to_currency"=> "1",
+			"mile_on_invitation"=> "5"
+		];
+		Voucher::insert([
+			[
+				"key" => "_configuration",
+				"value" => json_encode($voucherValue),
 				"service_provider_id" => $serviceProvider->id,
 			]
 		]);
