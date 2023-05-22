@@ -6168,46 +6168,46 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			if (isset($input['first_name'])) {
+			if ($request->has('first_name')) {
 				$user['first_name'] = $input['first_name'];
 			}
-			if (isset($input['last_name'])) {
+			if ($request->has('last_name')) {
 				$user['last_name'] = $input['last_name'];
 			}
-			if (isset($input['city'])) {
+			if ($request->has('city')) {
 				$user['city'] = $input['city'];
 			}
-			if (isset($input['state'])) {
+			if ($request->has('state')) {
 				$user['state'] = $input['state'];
 			}
-			if (isset($input['zip'])) {
+			if ($request->has('zip')) {
 				$user['zip'] = $input['zip'];
 			}
-			if (isset($input['location'])) {
+			if ($request->has('location')) {
 				$user['location'] = $input['location'];
 			}
-			if (isset($input['country'])) {
+			if ($request->has('country')) {
 				$user['country'] = $input['country'];
 			}
-			if (isset($input['addresses'])) {
+			if ($request->has('addresses')) {
 				$user['addresses'] = $input['addresses'];
 			}
-			if (isset($input['street'])) {
+			if ($request->has('street')) {
 				$user['street'] = $input['street'];
 			}
-			if (isset($input['second_country_code'])) {
+			if ($request->has('second_country_code')) {
 				$user['second_country_code'] = $input['second_country_code'];
 			}
-			if (isset($input['second_phone_number'])) {
+			if ($request->has('second_phone_number')) {
 				$user['second_phone_number'] = $input['second_phone_number'];
 			}
-			if (isset($input['phone_number'])) {
+			if ($request->has('phone_number')) {
 				$user['phone'] = $input['phone_number'];
 			}
-			if (isset($input['country_code'])) {
+			if ($request->has('country_code')) {
 				$user['country_code'] = $input['country_code'];
 			}
-			if (isset($input['name'])) {
+			if ($request->has('name')) {
 				$user['name'] = $input['name'];
 			}
 			$user->save();
