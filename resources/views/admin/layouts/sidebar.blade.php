@@ -152,7 +152,7 @@
 						<li><a href="{{ route('daily-report.vehicle_mileage') }}">Vehicles Mileage Report</a></li>
 					</ul>
 				</li>
-				<li> 
+				{{-- <li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
 						<span class="hide-menu">{{ trans("admin.Contact Support") }}</span>
@@ -160,7 +160,7 @@
 					<ul aria-expanded="false" class="collapse">
 						<li><a href="{{route('contact-support.create')}}">{{ trans("admin.Send Email") }}</a></li>
 					</ul>
-				</li>
+				</li> --}}
 				<!--<li> 
 					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
 						<i class="mdi mdi-arrange-send-backward"></i>
