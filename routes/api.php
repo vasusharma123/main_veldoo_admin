@@ -185,6 +185,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('calendarViewRidesUpDown', 'RideController@calendarViewRidesUpDown');
 		Route::post('calendarBasedRides', 'RideController@calendarBasedRides');
 		Route::post('cancel_ride', 'RideController@cancel_ride');
+		Route::post('make_driver_logout', 'UserController@make_driver_logout');
 		
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');

@@ -6883,4 +6883,33 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
+
+	public function make_driver_logout(Request $request)
+	{
+		try {
+			$rules = [
+				'driver_id' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+			$logged_in_user = Auth::user();
+			if ($logged_in_user->is_master == 0) {
+				return response()->json(['status' => 0, 'message' => "You are not authorised for this operation."], $this->warningCode);
+			}
+			DB::beginTransaction();
+			User::where(['id' => $request->driver_id])->update(['availability' => 0]);
+			DB::table('oauth_access_tokens')
+			->where(['user_id' => $request->driver_id])
+			->delete();
+			DriverStayActiveNotification::where(['driver_id' => $request->driver_id])->delete();
+			DriverChooseCar::where(['user_id' => $request->driver_id])->where(['logout' => 0])->update(['logout' => 1]);
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => "Driver has successfully logged out."], 200);
+		} catch (Exception $e) {
+			DB::rollBack();
+			return response()->json(['status' => 0, 'message' => $e->getMessage()], $this->warningCode);
+		}
+	}
 }
