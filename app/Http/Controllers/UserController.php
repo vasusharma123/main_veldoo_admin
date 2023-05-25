@@ -15,6 +15,7 @@ use Config;
 use Illuminate\Http\Request;
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\DB;
@@ -940,10 +941,22 @@ class UserController extends Controller
 	public function doRegister(Request $request){
 		
 		$rules = [
-			'email' => 'required|email|unique:users',
+			'email' =>  [
+				'required',
+				'email',
+				Rule::unique('users')->where(function ($query) {
+					return $query->where('user_type',3);
+				}),
+			],
+			'phone' =>  [
+				'required',
+				Rule::unique('users')->where(function ($query) {
+					return $query->where('user_type',3);
+				}),
+			],
 			// 'password' => 'required|min:6',
 			// 'confirm_password' => 'required|min:6',
-			'phone'=>'required',
+			// 'phone'=>'required',
 			'country_code'=>'required',
 			'site_name'=>'required',
 			'first_name'=>'required',
