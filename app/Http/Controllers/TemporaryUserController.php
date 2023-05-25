@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
+use Auth;
 
 class TemporaryUserController extends Controller
 {
@@ -33,7 +34,9 @@ class TemporaryUserController extends Controller
                 $query1->whereNotNull('phone')->where('phone', '!=', '');
             });
         })->whereHas('creator', function ($query) {
-            $query->where('user_type', 2);
+            $query->where('user_type', 2)->whereHas('service_provider_driver',function($service_provider_driver){
+                $service_provider_driver->where('service_provider_id',Auth::user()->id);
+            });
         })->paginate($this->limit);
         return view('admin.temporary_user.only_phone')->with(['title' => 'Temporary Guest User', 'action' => '', 'users' => $users]);
     }
@@ -51,7 +54,9 @@ class TemporaryUserController extends Controller
                 $query1->whereNotNull('last_name')->where('last_name', '!=', '');
             });
         })->whereHas('creator', function ($query) {
-            $query->where('user_type', 2);
+            $query->where('user_type', 2)->whereHas('service_provider_driver',function($service_provider_driver){
+                $service_provider_driver->where('service_provider_id',Auth::user()->id);
+            });
         })->paginate($this->limit);
         return view('admin.temporary_user.only_last_name')->with(['title' => 'Temporary Guest User', 'action' => '', 'users' => $users]);
     }
