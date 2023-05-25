@@ -90,6 +90,7 @@ class CompanyController extends Controller
         //                     ->make(true);
         // }
         // ->where('service_provider_id',Auth::user()->id)
+        // DB::enableQueryLog();
         $companies = Company::orderBy('created_at','desc');
         if ($request->has('search') && !empty($request->search)) {
             $companies->where(function($query) use ($request){
@@ -106,7 +107,14 @@ class CompanyController extends Controller
                 });
             });
         }
+        else
+        {
+            $companies->whereHas('user', function($user) use ($request) {
+                $user->where('service_provider_id',Auth::user()->id);
+            });
+        }
         $data['companies'] = $companies->paginate(100);
+        // dd(DB::getQueryLog());
         return view('admin.company.index')->with($data);
     }
 
@@ -160,7 +168,7 @@ class CompanyController extends Controller
                 ($request->has('admin_password') && !empty($request->admin_password))
             ) 
             {
-                $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+                $data = ['service_provider_id'=>Auth::user()->id,'name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
                 if ($request->admin_password) 
                 {
                     $data['password'] = Hash::make($request->admin_password);

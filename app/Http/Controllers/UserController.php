@@ -33,6 +33,7 @@ use App\Price;
 use App\Vehicle;
 use App\SMSTemplate;
 use App\ServiceProviderDriver;
+use App\Page;
 
 class UserController extends Controller
 {
@@ -1068,7 +1069,7 @@ class UserController extends Controller
 			[
 				"title" => "Terms",
 				"content" => "Veldoo",
-				"type" => "2",
+				"type" => "3",
 				"service_provider_id" => $serviceProvider->id,
 			]
 		]);
