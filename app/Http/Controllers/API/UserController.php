@@ -2846,12 +2846,38 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				$deviceToken = $userdata['device_token']??"";
 				$deviceType = $userdata['device_type']??"";
+				if ($request->status == 1) {
+					if ($ride->status == 1) {
+						return response()->json(['message' => "Ride already Accepted"], $this->warningCode);
+					}
+					if (empty($request->car_id)) {
+						return $this->validationErrorResponse('The car id is required !');
+					}
+					$ride->status = $request->status;
+					$ride->vehicle_id = $request->car_id;
+					$ride->waiting = $request->waiting;
+					$ride->driver_id = Auth::user()->id;
+					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
+					if (!empty($rideHistoryDetail)) {
+						$rideHistoryDetail->status = "1";
+						$rideHistoryDetail->save();
+					}
+					$title = 'Ride Accepted';
+					$responseMessage = 'Ride Accepted Successfully.';
+					$notifiMessage = 'Your booking accepted by the driver please check the driver detail';
+					$type = 2;
+
+					if (!empty($ride->check_assigned_driver_ride_acceptation)) {
+						$ride->check_assigned_driver_ride_acceptation = null;
+					}
+				}
 				if ($request->status == 2) {
 					if ($ride['status'] == 2) {
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
 					$title = 'Ride Started';
-					$message = 'Ride Started Successfully';
+					$responseMessage = 'Ride Started Successfully';
+					$notifiMessage = 'Ride Started Successfully';
 					$type = 3;
 					$ride->status = 2;
 				}
@@ -2860,7 +2886,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
 					}
 					$title = 'Driver Reached';
-					$message = "Driver Reached Successfully";
+					$responseMessage = 'Driver Reached Successfully';
+					$notifiMessage = 'Driver Reached Successfully';
 					$type = 7;
 					$ride->status = 4;
 					if ($ride->platform == 'web' && (!empty($userdata))) {
@@ -2873,7 +2900,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['success' => true, 'message' => "Ride already Completed"], $this->successCode);
 					}
 					$title = "Ride Completed";
-					$message = "Ride Completed Successfully";
+					$responseMessage = 'Ride Completed Successfully';
+					$notifiMessage = 'Ride Completed Successfully';
 					$type = 4;
 					$ride->status = 3;
 
@@ -2925,7 +2953,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['success' => true, 'message' => "Ride Cancelled already"], $this->successCode);
 					}
 					$title = 'Ride Cancelled';
-					$message = "Ride Cancelled Successfully";
+					$responseMessage = 'Ride Cancelled Successfully';
+					$notifiMessage = 'The ride is cancelled by the driver.';
 
 					$type = 5;
 					$ride->status = -2;
@@ -2945,16 +2974,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
 					if (!empty($deviceToken)) {
 						if ($deviceType == 'android') {
-							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+							bulk_firebase_android_notification($title, $notifiMessage, [$deviceToken], $additional);
 						}
 						if ($deviceType == 'ios') {
-							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+							bulk_pushok_ios_notification($title, $notifiMessage, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
 						}
 					}
 
 					$notification = new Notification();
 					$notification->title = $title;
-					$notification->description = $message;
+					$notification->description = $notifiMessage;
 					$notification->type = $type;
 					$notification->user_id = $userdata['id'];
 					$notification->additional_data = json_encode($additional);
@@ -2973,7 +3002,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
+			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
