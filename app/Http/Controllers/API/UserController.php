@@ -5277,48 +5277,36 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function carList()
 	{
-		$categories = Price::query()->get();
-		$catnew = array();
-		$cararray = array();
-		$i = 0;
-		foreach ($categories as $cat) {
-
-			$catnew[$i] = $cat;
-
+		$logged_in_user = Auth::user();
+		$categories = Price::get();
+		foreach ($categories as $category_key => $cat) {
 			$j = 0;
-			$allcars = Vehicle::query()->where([['category_id', '=', $cat['id']]])->orderBy('id', 'desc')->get()->toArray();;
-
+			$allcars = Vehicle::where([['category_id', '=', $cat['id']]])->orderBy('id', 'desc')->get();
 			$cararray = array();
-
-			//print_r($catnew);
 			foreach ($allcars as $allcar) {
-
-
-				$driver_car = DriverChooseCar::where([['car_id', '=', $allcar['id']], ['logout', '=', 0]])->orderBy('id', 'desc')->first();
-				//print_r($driver_car); die;
-				if (!empty($driver_car)) {
-					//echo "if condition";
-					//$catnew[$i]['cars'] = array();
-				} else {
-					/* echo "else condition";
-				echo $allcar['id']; echo " <br> "; */
-					$cararray[$j] = $allcar;
-					$driver_car = DriverChooseCar::where([['car_id', '=', $allcar['id']], ['logout', '=', 1]])->orderBy('id', 'desc')->first();
-
-					if (!empty($driver_car)) {
-						$cararray[$j]['logout_mileage'] = $driver_car['logout_mileage'];
-					} else {
-						$cararray[$j]['logout_mileage'] = "";
+				$driver_car = DriverChooseCar::where(['car_id' => $allcar->id])->orderBy('id', 'desc')->first();
+				if (!empty($driver_car) && $driver_car->logout == 0) {
+					if ($logged_in_user->is_master == 1) {
+						$allcar->logout_mileage = "";
+						$allcar->is_occupied = 1;
+						$cararray[$j] = $allcar;
+						$j++;
 					}
+				} else {					
+					$allcar->is_occupied = 0;
+					if (!empty($driver_car)) {
+						$allcar->logout_mileage = $driver_car['logout_mileage'];
+					} else {
+						$allcar->logout_mileage = "";
+					}
+					$cararray[$j] = $allcar;
 					$j++;
 				}
 			}
-
-			$catnew[$i]['cars'] = $cararray;
-			$i++;
+			$categories[$category_key]['cars'] = $cararray;
 		}
 
-		return response()->json(['success' => true, 'message' => 'get car list successfully.', 'data' => $catnew], $this->successCode);
+		return response()->json(['success' => true, 'message' => 'List of cars', 'data' => $categories], $this->successCode);
 	}
 
 
