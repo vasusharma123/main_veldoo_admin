@@ -66,6 +66,7 @@ use Illuminate\Support\Facades\Log;
 use App\DriverStayActiveNotification;
 use Exception;
 use App\Http\Resources\RideResource;
+use App\SMSTemplate;
 
 class UserController extends Controller
 {
@@ -2050,6 +2051,7 @@ class UserController extends Controller
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function bookRide(Request $request)
 	{
 		try {
@@ -2167,7 +2169,16 @@ class UserController extends Controller
 				}
 				Notification::insert($notification_data);
 			}
-
+			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(2);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			}
 			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -4620,7 +4631,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride->save();
 		$ride_data = new RideResource(Ride::find($ride->id));
 
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
 		$ride_data['waiting_time'] = $settingValue->waiting_time;
@@ -4662,6 +4672,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
 		$rideData->save();
+		if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
+			$message_content = "";
+			$SMSTemplate = SMSTemplate::find(2);
+			if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
+				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
+			} else {
+				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->english_content));
+			}
+			$this->sendSMS("+" . $rideData->user->country_code, ltrim($rideData->user->phone, "0"), $message_content);
+		}
+		
 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
 	}
 
@@ -5688,6 +5709,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			$ride->platform = Auth::user()->device_type;
 			$ride->save();
+			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(2);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			}
 			$rideid = $ride->id;
 			$ride = Ride::query()->where([['id', '=', $rideid]])->first();
 			return response()->json(['success' => true, 'message' => 'Instant ride started successfully', 'data' => $ride], $this->successCode);

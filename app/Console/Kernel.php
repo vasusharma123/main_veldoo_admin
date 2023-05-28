@@ -50,7 +50,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('SendRideNotificationToMaster:AssignedDriverNoResponse')->everyMinute();
         $schedule->command('RideNotificationToUser:BeforeRideTime')->everyMinute();
 		// $schedule->command('ride_begin:notify')->everyFiveMinutes();
-
+        
+        $schedule->command('delete_temp_users:only_last_name')->daily();
+        $schedule->command('delete_temp_users:only_phone_number')->daily();
         $schedule->command('database:backup')->daily();
     }
 
