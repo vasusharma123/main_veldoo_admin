@@ -6815,8 +6815,28 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 			})->count();
 			$resultArr['data'][$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
+			$resultArr['data'][$driver_key]->car_data = $driver_value->car_data;
 		}
 		return $this->successResponse($resultArr, 'Get online drivers successfully');
+	}
+
+	public function onlineDriversList(Request $request)
+	{
+		$userObj = Auth::user();
+
+		$resultArr = User::with(['driver_choosen_car' => function ($query) {
+			$query->where('logout','=',0);
+		}])->with('driver_choosen_car.vehicle')->whereHas('driver_choosen_car', function ($query) {
+			$query->where('logout','=',0);
+		})->where('users.availability', 1)->orderBy('users.id', 'DESC')->get();
+
+		foreach ($resultArr as $driver_key => $driver_value) {
+			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where(function ($query) {
+				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+			})->count();
+			$resultArr[$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
+		}
+		return response()->json(['message' => 'List of online drivers', 'data' => $resultArr], $this->successCode);
 	}
 
 

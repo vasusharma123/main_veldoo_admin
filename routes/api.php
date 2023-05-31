@@ -108,6 +108,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('drivercompletedRide', 'UserController@drivercompleted_ride');
 	Route::get('drivercancelledRide', 'UserController@drivercancelled_ride');
 	Route::get('onlineDrivers', 'UserController@onlineDrivers');
+	Route::get('onlineDriversList', 'UserController@onlineDriversList');
 	//
 	Route::post('instant_ride', 'UserController@instantRide');
 	Route::post('share_ride', 'UserController@sharingRide');
