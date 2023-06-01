@@ -12,7 +12,6 @@ use DataTables;
 use App\Company;
 use Auth;
 use App\Ride;
-use Illuminate\Validation\Rule;
 
 class CompanyController extends Controller
 {
