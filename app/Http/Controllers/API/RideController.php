@@ -1651,6 +1651,13 @@ class RideController extends Controller
                         }
                     }
                 }
+                if(!empty($rides)){
+                    foreach ($rides as $ride_key => $ride_value) {
+                        if(!empty($rides[$ride_key]->driver)){
+                            $rides[$ride_key]->driver->car_data = $ride_value->driver->car_data;
+                        }
+                    }
+                }
                 return response()->json(['success' => true, 'message' => 'Rides List', 'data' => $rides, 'next_available_ride' => $next_available_ride, 'previous_available_ride' => $previous_available_ride], $this->successCode);
             } else {
                 return response()->json(['message' => 'Record Not found'], $this->warningCode);
@@ -1979,6 +1986,13 @@ class RideController extends Controller
                         $previous_available_ride = $pastRides ? 1 : 0;
                         if (!empty($request->page) && $request->page < 0) {
                             $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                }
+                if(!empty($rides)){
+                    foreach ($rides as $ride_key => $ride_value) {
+                        if(!empty($rides[$ride_key]->driver)){
+                            $rides[$ride_key]->driver->car_data = $ride_value->driver->car_data;
                         }
                     }
                 }

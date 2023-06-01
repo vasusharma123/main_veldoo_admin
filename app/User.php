@@ -320,4 +320,8 @@ class User extends Authenticatable implements HasMedia
 	public function creator(){
 		return $this->belongsTo(User::class, 'created_by', 'id');
 	}
+
+	public function driver_choosen_car(){
+		return $this->hasOne(DriverChooseCar::class, 'user_id', 'id');
+	}
 }

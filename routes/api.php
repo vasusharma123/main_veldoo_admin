@@ -108,6 +108,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('drivercompletedRide', 'UserController@drivercompleted_ride');
 	Route::get('drivercancelledRide', 'UserController@drivercancelled_ride');
 	Route::get('onlineDrivers', 'UserController@onlineDrivers');
+	Route::get('onlineDriversList', 'UserController@onlineDriversList');
 	//
 	Route::post('instant_ride', 'UserController@instantRide');
 	Route::post('share_ride', 'UserController@sharingRide');
@@ -185,6 +186,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('calendarViewRidesUpDown', 'RideController@calendarViewRidesUpDown');
 		Route::post('calendarBasedRides', 'RideController@calendarBasedRides');
 		Route::post('cancel_ride', 'RideController@cancel_ride');
+		Route::post('make_driver_logout', 'UserController@make_driver_logout');
 		
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');

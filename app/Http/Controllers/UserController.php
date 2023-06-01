@@ -28,6 +28,7 @@ use DataTables;
 use App\DriverStayActiveNotification;
 use App\DriverChooseCar;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -425,10 +426,19 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
-    }
+	public function destroy($id)
+	{
+		DB::beginTransaction();
+		try {
+			User::where('id', $id)->delete();
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => 'User has been deleted.']);
+		} catch (\Exception $exception) {
+			DB::rollback();
+			Log::info($exception->getMessage() . "--" . $exception->getLine());
+			return response()->json(['status' => 0, 'message' => 'Something went wrong! Please try again.']);
+		}
+	}
 	
     public function profile()
     {
