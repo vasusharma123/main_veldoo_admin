@@ -324,7 +324,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_ride_accepted_by_driver" {{ $record->want_send_sms_to_user_when_ride_accepted_by_driver?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_ride_accepted_by_driver">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_ride_accepted_by_driver" {{ (!empty($record->want_send_sms_to_user_when_ride_accepted_by_driver))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_ride_accepted_by_driver">
                                         <label class="form-check-label" for="want_send_sms_to_user_when_ride_accepted_by_driver">
                                             Want send sms to User when Ride accepted by Driver?
                                         </label>
@@ -332,7 +332,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_reached_to_pickup_point" {{ $record->want_send_sms_to_user_when_driver_reached_to_pickup_point?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_reached_to_pickup_point">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_reached_to_pickup_point" {{ (!empty($record->want_send_sms_to_user_when_driver_reached_to_pickup_point))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_reached_to_pickup_point">
                                         <label class="form-check-label" for="want_send_sms_to_user_when_driver_reached_to_pickup_point">
                                             Want send sms to User when Driver reached to pickup point?
                                         </label>
@@ -340,7 +340,7 @@
                                 </div>
                                 <div class="col-md-6 mb-5">
                                     <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_cancelled_the_ride" {{ $record->want_send_sms_to_user_when_driver_cancelled_the_ride?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_cancelled_the_ride">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_cancelled_the_ride" {{ (!empty($record->want_send_sms_to_user_when_driver_cancelled_the_ride))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_cancelled_the_ride">
                                         <label class="form-check-label" for="want_send_sms_to_user_when_driver_cancelled_the_ride">
                                             Want send sms to User when Driver cancelled the Ride?
                                         </label>

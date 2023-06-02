@@ -2840,6 +2840,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
+		$settings = Setting::first();
+        $settingValue = json_decode($settings['value']);
 		try {
 			$ride = Ride::find($request->ride_id);
 
@@ -2881,6 +2883,18 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (!empty($ride->check_assigned_driver_ride_acceptation)) {
 						$ride->check_assigned_driver_ride_acceptation = null;
 					}
+
+					if(!empty($settingValue->want_send_sms_to_user_when_ride_accepted_by_driver) && $settingValue->want_send_sms_to_user_when_ride_accepted_by_driver == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(6);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
+					}
 				}
 				if ($request->status == 2) {
 					if ($ride['status'] == 2) {
@@ -2901,9 +2915,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Driver Reached Successfully';
 					$type = 7;
 					$ride->status = 4;
-					if ($ride->platform == 'web' && (!empty($userdata))) {
-						// $ride->driver_reach_sms_notify($userdata);
-						$this->sendSMS("+".$userdata->country_code, ltrim($userdata->phone, "0"), "Your driver is here to pick you up");
+					if(!empty($settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point) && $settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(7);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
 					}
 				}
 				if ($request->status == 3) {
@@ -2969,6 +2990,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 					$type = 5;
 					$ride->status = -2;
+					if(!empty($settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride) && $settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(8);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
+					}
 				}
 			} else {
 				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
