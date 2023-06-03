@@ -6561,24 +6561,25 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query->where([['user_type', '=', 2]])->orderBy('distance', 'asc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
-				$drivers = $query->get()->toArray();
+				$drivers = $query->get();
 			} else {
 				$query = User::where([['user_type', '=', 2]])->orderBy('created_at', 'desc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
-				$drivers = $query->get()->toArray();
+				$drivers = $query->get();
 			}
 			//$drivers = User::query()->where([['user_type', '=', 2],['is_master', '=', 0]])->get()->toArray();
 			if (!empty($drivers)) {
 				$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
 				foreach ($drivers as $driver_key => $driver_value) {
-					$count_of_assign_rides = Ride::where(['driver_id' => $driver_value['id']])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+					$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
 						$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 					})->count();
 					$drivers[$driver_key]['already_have_ride'] = $count_of_assign_rides ? 1 : 0;
-					if (empty($lat) || $driver_value['availability'] == 0){
-						$drivers[$driver_key]['distance'] = 0;
+					if (empty($lat) || $driver_value->availability == 0){
+						$drivers[$driver_key]->distance = 0;
 					}
+					$drivers[$driver_key]->car_data = $driver_value->car_data;
 				}
 				return response()->json(['message' => 'Driver Listed successfully', 'data' => $drivers], $this->successCode);
 			} else {
