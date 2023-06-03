@@ -1323,19 +1323,30 @@ class UserController extends Controller
 	public function updateCar(Request $request)
 	{
 		$user = Auth::user();
-		$user_id = $user['id'];
+		$user_id = $user->id;
 		$rules = [
 			'car_id' => 'required',
 			'mileage' => 'required',
 		];
-
+		$car_id = $request->car_id;
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
 		try {
-			DriverChooseCar::where(['user_id' => $user_id, 'logout' => 0])->update(array('logout' => 1));
+			$oldDriverDetails = DriverChooseCar::where(['car_id' => $car_id, 'logout' => 0])->orderBy('id', 'desc')->first();
+			if (!empty($oldDriverDetails)) {
+				User::where(['id' => $oldDriverDetails->user_id])->update(['availability' => 0]);
+				DB::table('oauth_access_tokens')
+					->where(['user_id' => $oldDriverDetails->user_id])
+					->delete();
+				DriverStayActiveNotification::where(['driver_id' => $oldDriverDetails->user_id])->delete();
+			}
+
+			DriverChooseCar::where(function ($query) use ($user_id, $car_id) {
+				$query->where(['user_id' => $user_id])->orWhere(['car_id' => $car_id]);
+			})->where(['logout' => 0])->update(array('logout' => 1));
 
 			$driverhoosencar = new DriverChooseCar();
 			$driverhoosencar->car_id = $request->car_id;
