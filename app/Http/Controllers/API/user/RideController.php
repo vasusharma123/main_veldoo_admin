@@ -89,9 +89,9 @@ class RideController extends Controller
                         return response()->json(['success' => true, 'message' => "Ride Cancelled already"], $this->successCode);
                     }
                     $title = 'Ride Cancelled';
-                    $message = 'Ride Cancelled by User';
+                    $message = 'The user has cancelled the ride.';
                     $notification->title = 'Ride Cancelled';
-                    $notification->description = 'Ride Cancelled by you';
+                    $notification->description = 'Ride cancelled by you';
                     $type = 6;
                     $ride->status = -3;
                     if (!empty($request->cancel_reason)) {
