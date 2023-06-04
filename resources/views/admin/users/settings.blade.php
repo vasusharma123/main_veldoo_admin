@@ -1,5 +1,12 @@
 @extends('admin.layouts.master')
 @section('content')
+<style>
+    .form-check {
+        position: relative;
+        display: block;
+        padding-left: 0px !important;
+    }
+</style>
     <!-- Container fluid  -->
     <!-- ============================================================== -->
     <div class="container-fluid">
@@ -313,6 +320,30 @@
                                         echo Form::label('driver_count_to_display', 'Driver count to Display', ['class' => 'control-label']);
                                         echo Form::number('driver_count_to_display', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
                                         ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_ride_accepted_by_driver" {{ (!empty($record->want_send_sms_to_user_when_ride_accepted_by_driver))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_ride_accepted_by_driver">
+                                        <label class="form-check-label" for="want_send_sms_to_user_when_ride_accepted_by_driver">
+                                            Want send sms to User when Ride accepted by Driver?
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_reached_to_pickup_point" {{ (!empty($record->want_send_sms_to_user_when_driver_reached_to_pickup_point))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_reached_to_pickup_point">
+                                        <label class="form-check-label" for="want_send_sms_to_user_when_driver_reached_to_pickup_point">
+                                            Want send sms to User when Driver reached to pickup point?
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-5">
+                                    <div class="form-check">
+                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_cancelled_the_ride" {{ (!empty($record->want_send_sms_to_user_when_driver_cancelled_the_ride))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_cancelled_the_ride">
+                                        <label class="form-check-label" for="want_send_sms_to_user_when_driver_cancelled_the_ride">
+                                            Want send sms to User when Driver cancelled the Ride?
+                                        </label>
                                     </div>
                                 </div>
                             </div>

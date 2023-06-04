@@ -35,6 +35,7 @@ use App\Vehicle;
 use App\SMSTemplate;
 use App\ServiceProviderDriver;
 use App\Page;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -441,10 +442,19 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
-    }
+	public function destroy($id)
+	{
+		DB::beginTransaction();
+		try {
+			User::where('id', $id)->delete();
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => 'User has been deleted.']);
+		} catch (\Exception $exception) {
+			DB::rollback();
+			Log::info($exception->getMessage() . "--" . $exception->getLine());
+			return response()->json(['status' => 0, 'message' => 'Something went wrong! Please try again.']);
+		}
+	}
 	
     public function profile()
     {
@@ -643,6 +653,22 @@ class UserController extends Controller
 		foreach($input as $key=>$value){
 			$setting["value->$key"] = $value;
 		}
+		$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 0;
+		$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 0;
+		$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 0;
+		if ($request->has('want_send_sms_to_user_when_ride_accepted_by_driver')) 
+		{
+			$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 1;
+		}
+		if ($request->has('want_send_sms_to_user_when_driver_reached_to_pickup_point')) 
+		{
+			$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 1;
+		}
+		if ($request->has('want_send_sms_to_user_when_driver_cancelled_the_ride')) 
+		{
+			$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 1;
+		}
+		// dd($input);
 		$setting->save();
 		return back()->with('success', __('Record updated!'));
 	}

@@ -339,4 +339,7 @@ class User extends Authenticatable implements HasMedia
 		return $this->hasOne(Setting::class, 'service_provider_id', 'id');
 	}
 
+	public function driver_choosen_car(){
+		return $this->hasOne(DriverChooseCar::class, 'user_id', 'id');
+	}
 }

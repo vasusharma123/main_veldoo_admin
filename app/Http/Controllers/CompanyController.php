@@ -304,7 +304,6 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
         $this->validate($request, [
             // 'company_logo' => 'image|mimes:jpeg,png,jpg|max:2048',
             // 'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
@@ -320,9 +319,11 @@ class CompanyController extends Controller
             // 'company_phone' => 'required',
         ]);
         if ($request->has('admin_email') && !empty($request->admin_email)) {
-            $this->validate($request, [
-                'admin_email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
-            ]);
+            $checkMail = User::where('email',$request->admin_email)->whereNull('deleted_at')->where('company_id','!=',$id)->first();
+            if ($checkMail) 
+            {
+                return back()->with('error', 'The Admin email has already been taken.');
+            }
         }
         // dd($request->all());
         DB::beginTransaction();

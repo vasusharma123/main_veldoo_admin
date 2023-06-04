@@ -15,42 +15,20 @@
 						
 						<div class=" box" id="allDataUpdate">
 							<table class="table table-bordered data-table data-table" width="100%">
-		<thead class="thead-light">
-			<tr>
-			<th>ID</th>
-			<th>
-				
-				Name
-			</th>
-			{{-- <th>
-				
-				Last Name --}}
-			</th>
-			<th>
-				
-				Email
-			</th>
-			{{-- <th>Country Code</th> --}}
-			<th>
-				
-				Phone
-			</th>
-			<th>
-				
-				Invoice Status	
-			</th>
-			{{-- <th>
-				
-				Status
-			</th> --}}
-			<th>Action</th>
-		</tr>
-		</thead>
-		<tbody>
-			
-			
-		</tbody>
-	</table>
+							    <thead class="thead-light">
+							        <tr>
+							            <th>ID</th>
+							            <th>Name</th>
+							            <th>Email</th>
+							            <th>Phone</th>
+							            <th>Invoice Status</th>
+							            <th>Action</th>
+							        </tr>
+							    </thead>
+							    <tbody>
+
+							    </tbody>
+							</table>
 						</div>
 					</div>
 				</div>
@@ -372,23 +350,29 @@ $('body').on('click', '.change_invoice_status', function(){
 			if (result.value) {
 				var user_id = $(this).attr('data-id');
 				$.ajax({
-					type: "post",
-					url: "{{ url('admin/company/delete') }}",
+					type: "delete",
+					url: "{{ url('admin/users') }}/"+user_id,
 					data: {
 						"_token": "{{ csrf_token() }}",
-						"user_id": user_id
+						// "user_id": user_id
 					},
 					success: function(data) {
-						if (data) {
+						if (data.status == 1) {
 							Swal.fire({
 								title: 'Deleted',
-								text: "User has been deleted.",
+								text: data.message,
 								icon: 'success',
 								showConfirmButton: false
 							});
 							setTimeout(function() {
 								location.reload(true);
 							}, 2000);
+						} else {
+							Swal.fire({
+								title: 'Error',
+								text: data.message,
+								icon: 'error'							
+							});
 						}
 					}
 				});

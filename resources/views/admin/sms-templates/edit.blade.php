@@ -54,9 +54,9 @@
 											</div>
 										</div>
 										<div class="col-12">
-											@if ($template->id==2)
-												<h6 style="color: gray">Please put this tag <strong>#TIME#</strong>,<strong>#LINK#</strong>.</h6>
-											@else
+											@if (in_array($template->id,[2,5]))
+												<h6 style="color: gray">Please put these tag <strong>#TIME#</strong>,<strong>#LINK#</strong>.</h6>
+											@elseif (in_array($template->id,[1,3,4]))
 												<h6 style="color: gray">Please put this tag <strong>#OTP#</strong>. where you want to add otp number</h6>
 											@endif
 										</div>

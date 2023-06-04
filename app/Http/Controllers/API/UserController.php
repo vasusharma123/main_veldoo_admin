@@ -59,6 +59,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Mail;
 use \stdClass;
+use App\SMSTemplate;
 
 class UserController extends Controller
 {
@@ -1302,19 +1303,30 @@ class UserController extends Controller
 	public function updateCar(Request $request)
 	{
 		$user = Auth::user();
-		$user_id = $user['id'];
+		$user_id = $user->id;
 		$rules = [
 			'car_id' => 'required',
 			'mileage' => 'required',
 		];
-
+		$car_id = $request->car_id;
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
 		try {
-			DriverChooseCar::where(['user_id' => $user_id, 'logout' => 0])->update(array('logout' => 1));
+			$oldDriverDetails = DriverChooseCar::where(['car_id' => $car_id, 'logout' => 0])->orderBy('id', 'desc')->first();
+			if (!empty($oldDriverDetails)) {
+				User::where(['id' => $oldDriverDetails->user_id])->update(['availability' => 0]);
+				DB::table('oauth_access_tokens')
+					->where(['user_id' => $oldDriverDetails->user_id])
+					->delete();
+				DriverStayActiveNotification::where(['driver_id' => $oldDriverDetails->user_id])->delete();
+			}
+
+			DriverChooseCar::where(function ($query) use ($user_id, $car_id) {
+				$query->where(['user_id' => $user_id])->orWhere(['car_id' => $car_id]);
+			})->where(['logout' => 0])->update(array('logout' => 1));
 
 			$driverhoosencar = new DriverChooseCar();
 			$driverhoosencar->car_id = $request->car_id;
@@ -2030,6 +2042,7 @@ class UserController extends Controller
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function bookRide(Request $request)
 	{
 		try {
@@ -2147,7 +2160,16 @@ class UserController extends Controller
 				}
 				Notification::insert($notification_data);
 			}
-
+			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(2);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			}
 			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -2809,6 +2831,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
+		$settings = Setting::first();
+        $settingValue = json_decode($settings['value']);
 		try {
 			$ride = Ride::find($request->ride_id);
 
@@ -2826,12 +2850,50 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				$deviceToken = $userdata['device_token']??"";
 				$deviceType = $userdata['device_type']??"";
+				if ($request->status == 1) {
+					if ($ride->status == 1) {
+						return response()->json(['message' => "Ride already Accepted"], $this->warningCode);
+					}
+					if (empty($request->car_id)) {
+						return $this->validationErrorResponse('The car id is required !');
+					}
+					$ride->status = $request->status;
+					$ride->vehicle_id = $request->car_id;
+					$ride->waiting = $request->waiting;
+					$ride->driver_id = Auth::user()->id;
+					$rideHistoryDetail = RideHistory::where(['ride_id' => $request->ride_id, 'driver_id' => Auth::user()->id])->first();
+					if (!empty($rideHistoryDetail)) {
+						$rideHistoryDetail->status = "1";
+						$rideHistoryDetail->save();
+					}
+					$title = 'Ride Accepted';
+					$responseMessage = 'Ride Accepted Successfully.';
+					$notifiMessage = 'Your booking accepted by the driver please check the driver detail';
+					$type = 2;
+
+					if (!empty($ride->check_assigned_driver_ride_acceptation)) {
+						$ride->check_assigned_driver_ride_acceptation = null;
+					}
+
+					if(!empty($settingValue->want_send_sms_to_user_when_ride_accepted_by_driver) && $settingValue->want_send_sms_to_user_when_ride_accepted_by_driver == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(6);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
+					}
+				}
 				if ($request->status == 2) {
 					if ($ride['status'] == 2) {
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
 					$title = 'Ride Started';
-					$message = 'Ride Started Successfully';
+					$responseMessage = 'Ride Started Successfully';
+					$notifiMessage = 'Ride Started Successfully';
 					$type = 3;
 					$ride->status = 2;
 				}
@@ -2840,12 +2902,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
 					}
 					$title = 'Driver Reached';
-					$message = "Driver Reached Successfully";
+					$responseMessage = 'Driver Reached Successfully';
+					$notifiMessage = 'Driver Reached Successfully';
 					$type = 7;
 					$ride->status = 4;
-					if ($ride->platform == 'web' && (!empty($userdata))) {
-						// $ride->driver_reach_sms_notify($userdata);
-						$this->sendSMS("+".$userdata->country_code, ltrim($userdata->phone, "0"), "Your driver is here to pick you up");
+					if(!empty($settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point) && $settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(7);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
 					}
 				}
 				if ($request->status == 3) {
@@ -2853,7 +2923,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['success' => true, 'message' => "Ride already Completed"], $this->successCode);
 					}
 					$title = "Ride Completed";
-					$message = "Ride Completed Successfully";
+					$responseMessage = 'Ride Completed Successfully';
+					$notifiMessage = 'Ride Completed Successfully';
 					$type = 4;
 					$ride->status = 3;
 
@@ -2905,10 +2976,22 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						return response()->json(['success' => true, 'message' => "Ride Cancelled already"], $this->successCode);
 					}
 					$title = 'Ride Cancelled';
-					$message = "Ride Cancelled Successfully";
+					$responseMessage = 'Ride Cancelled Successfully';
+					$notifiMessage = 'The ride is cancelled by the driver.';
 
 					$type = 5;
 					$ride->status = -2;
+					if(!empty($settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride) && $settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride == 1){
+						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+							$SMSTemplate = SMSTemplate::find(8);
+							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+								$message_content = $SMSTemplate->german_content;
+							} else {
+								$message_content = $SMSTemplate->english_content;
+							}
+							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+						}
+					}
 				}
 			} else {
 				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
@@ -2925,16 +3008,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
 					if (!empty($deviceToken)) {
 						if ($deviceType == 'android') {
-							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+							bulk_firebase_android_notification($title, $notifiMessage, [$deviceToken], $additional);
 						}
 						if ($deviceType == 'ios') {
-							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+							bulk_pushok_ios_notification($title, $notifiMessage, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
 						}
 					}
 
 					$notification = new Notification();
 					$notification->title = $title;
-					$notification->description = $message;
+					$notification->description = $notifiMessage;
 					$notification->type = $type;
 					$notification->user_id = $userdata['id'];
 					$notification->additional_data = json_encode($additional);
@@ -2953,7 +3036,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
+			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
@@ -4571,7 +4654,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride->save();
 		$ride_data = new RideResource(Ride::find($ride->id));
 
-		$user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone', 'user_type')->find($ride_data['user_id']);
 		$title = 'New Booking';
 		$message = 'You Received new booking';
 		$ride_data['waiting_time'] = $settingValue->waiting_time;
@@ -4613,6 +4695,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
 		$rideData->save();
+		if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
+			$message_content = "";
+			$SMSTemplate = SMSTemplate::find(2);
+			if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
+				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
+			} else {
+				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->english_content));
+			}
+			$this->sendSMS("+" . $rideData->user->country_code, ltrim($rideData->user->phone, "0"), $message_content);
+		}
+		
 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
 	}
 
@@ -5228,49 +5321,36 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function carList()
 	{
-		$user = Auth::user();
-		$categories = Price::where(['service_provider_id' => $user->service_provider_id])->get();
-		$catnew = array();
-		$cararray = array();
-		$i = 0;
-		foreach ($categories as $cat) {
-
-			$catnew[$i] = $cat;
-
+		$logged_in_user = Auth::user();
+		$categories = Price::where(['service_provider_id' => $logged_in_user->service_provider_id])->get();
+		foreach ($categories as $category_key => $cat) {
 			$j = 0;
-			$allcars = Vehicle::query()->where([['category_id', '=', $cat['id']]])->orderBy('id', 'desc')->get()->toArray();;
-
+			$allcars = Vehicle::where([['category_id', '=', $cat['id']]])->orderBy('id', 'desc')->get();
 			$cararray = array();
-
-			//print_r($catnew);
 			foreach ($allcars as $allcar) {
-
-
-				$driver_car = DriverChooseCar::where([['car_id', '=', $allcar['id']], ['logout', '=', 0]])->orderBy('id', 'desc')->first();
-				//print_r($driver_car); die;
-				if (!empty($driver_car)) {
-					//echo "if condition";
-					//$catnew[$i]['cars'] = array();
-				} else {
-					/* echo "else condition";
-				echo $allcar['id']; echo " <br> "; */
-					$cararray[$j] = $allcar;
-					$driver_car = DriverChooseCar::where([['car_id', '=', $allcar['id']], ['logout', '=', 1]])->orderBy('id', 'desc')->first();
-
-					if (!empty($driver_car)) {
-						$cararray[$j]['logout_mileage'] = $driver_car['logout_mileage'];
-					} else {
-						$cararray[$j]['logout_mileage'] = "";
+				$driver_car = DriverChooseCar::where(['car_id' => $allcar->id])->orderBy('id', 'desc')->first();
+				if (!empty($driver_car) && $driver_car->logout == 0) {
+					if ($logged_in_user->is_master == 1) {
+						$allcar->logout_mileage = "";
+						$allcar->is_occupied = 1;
+						$cararray[$j] = $allcar;
+						$j++;
 					}
+				} else {					
+					$allcar->is_occupied = 0;
+					if (!empty($driver_car)) {
+						$allcar->logout_mileage = $driver_car['logout_mileage'];
+					} else {
+						$allcar->logout_mileage = "";
+					}
+					$cararray[$j] = $allcar;
 					$j++;
 				}
 			}
-
-			$catnew[$i]['cars'] = $cararray;
-			$i++;
+			$categories[$category_key]['cars'] = $cararray;
 		}
 
-		return response()->json(['success' => true, 'message' => 'get car list successfully.', 'data' => $catnew], $this->successCode);
+		return response()->json(['success' => true, 'message' => 'List of cars', 'data' => $categories], $this->successCode);
 	}
 
 
@@ -5652,6 +5732,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			$ride->platform = Auth::user()->device_type;
 			$ride->save();
+			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(2);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			}
 			$rideid = $ride->id;
 			$ride = Ride::query()->where([['id', '=', $rideid]])->first();
 			return response()->json(['success' => true, 'message' => 'Instant ride started successfully', 'data' => $ride], $this->successCode);
@@ -6149,46 +6239,46 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			if (isset($input['first_name'])) {
+			if ($request->has('first_name')) {
 				$user['first_name'] = $input['first_name'];
 			}
-			if (isset($input['last_name'])) {
+			if ($request->has('last_name')) {
 				$user['last_name'] = $input['last_name'];
 			}
-			if (isset($input['city'])) {
+			if ($request->has('city')) {
 				$user['city'] = $input['city'];
 			}
-			if (isset($input['state'])) {
+			if ($request->has('state')) {
 				$user['state'] = $input['state'];
 			}
-			if (isset($input['zip'])) {
+			if ($request->has('zip')) {
 				$user['zip'] = $input['zip'];
 			}
-			if (isset($input['location'])) {
+			if ($request->has('location')) {
 				$user['location'] = $input['location'];
 			}
-			if (isset($input['country'])) {
+			if ($request->has('country')) {
 				$user['country'] = $input['country'];
 			}
-			if (isset($input['addresses'])) {
+			if ($request->has('addresses')) {
 				$user['addresses'] = $input['addresses'];
 			}
-			if (isset($input['street'])) {
+			if ($request->has('street')) {
 				$user['street'] = $input['street'];
 			}
-			if (isset($input['second_country_code'])) {
+			if ($request->has('second_country_code')) {
 				$user['second_country_code'] = $input['second_country_code'];
 			}
-			if (isset($input['second_phone_number'])) {
+			if ($request->has('second_phone_number')) {
 				$user['second_phone_number'] = $input['second_phone_number'];
 			}
-			if (isset($input['phone_number'])) {
+			if ($request->has('phone_number')) {
 				$user['phone'] = $input['phone_number'];
 			}
-			if (isset($input['country_code'])) {
+			if ($request->has('country_code')) {
 				$user['country_code'] = $input['country_code'];
 			}
-			if (isset($input['name'])) {
+			if ($request->has('name')) {
 				$user['name'] = $input['name'];
 			}
 			$user->save();
@@ -6463,24 +6553,25 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query->where([['user_type', '=', 2]])->orderBy('distance', 'asc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
-				$drivers = $query->get()->toArray();
+				$drivers = $query->get();
 			} else {
 				$query = User::where([['user_type', '=', 2]])->orderBy('created_at', 'desc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
-				$drivers = $query->get()->toArray();
+				$drivers = $query->get();
 			}
 			//$drivers = User::query()->where([['user_type', '=', 2],['is_master', '=', 0]])->get()->toArray();
 			if (!empty($drivers)) {
 				$end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
 				foreach ($drivers as $driver_key => $driver_value) {
-					$count_of_assign_rides = Ride::where(['driver_id' => $driver_value['id']])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
+					$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where('ride_time', '<=', $end_date_time)->where(function ($query) {
 						$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 					})->count();
 					$drivers[$driver_key]['already_have_ride'] = $count_of_assign_rides ? 1 : 0;
-					if (empty($lat) || $driver_value['availability'] == 0){
-						$drivers[$driver_key]['distance'] = 0;
+					if (empty($lat) || $driver_value->availability == 0){
+						$drivers[$driver_key]->distance = 0;
 					}
+					$drivers[$driver_key]->car_data = $driver_value->car_data;
 				}
 				return response()->json(['message' => 'Driver Listed successfully', 'data' => $drivers], $this->successCode);
 			} else {
@@ -6749,8 +6840,28 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
 			})->count();
 			$resultArr['data'][$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
+			$resultArr['data'][$driver_key]->car_data = $driver_value->car_data;
 		}
 		return $this->successResponse($resultArr, 'Get online drivers successfully');
+	}
+
+	public function onlineDriversList(Request $request)
+	{
+		$userObj = Auth::user();
+
+		$resultArr = User::with(['driver_choosen_car' => function ($query) {
+			$query->where('logout','=',0);
+		}])->with('driver_choosen_car.vehicle')->whereHas('driver_choosen_car', function ($query) {
+			$query->where('logout','=',0);
+		})->where('users.availability', 1)->orderBy('users.id', 'DESC')->get();
+
+		foreach ($resultArr as $driver_key => $driver_value) {
+			$count_of_assign_rides = Ride::where(['driver_id' => $driver_value->id])->where(function ($query) {
+				$query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+			})->count();
+			$resultArr[$driver_key]->already_have_ride = $count_of_assign_rides ? 1 : 0;
+		}
+		return response()->json(['message' => 'List of online drivers', 'data' => $resultArr], $this->successCode);
 	}
 
 
@@ -6863,6 +6974,35 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			DB::rollback();
 			// something went wrong
 			return response()->json(['message' => $e->getMessage()], $this->warningCode);
+		}
+	}
+
+	public function make_driver_logout(Request $request)
+	{
+		try {
+			$rules = [
+				'driver_id' => 'required',
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			}
+			$logged_in_user = Auth::user();
+			if ($logged_in_user->is_master == 0) {
+				return response()->json(['status' => 0, 'message' => "You are not authorised for this operation."], $this->warningCode);
+			}
+			DB::beginTransaction();
+			User::where(['id' => $request->driver_id])->update(['availability' => 0]);
+			DB::table('oauth_access_tokens')
+			->where(['user_id' => $request->driver_id])
+			->delete();
+			DriverStayActiveNotification::where(['driver_id' => $request->driver_id])->delete();
+			DriverChooseCar::where(['user_id' => $request->driver_id])->where(['logout' => 0])->update(['logout' => 1]);
+			DB::commit();
+			return response()->json(['status' => 1, 'message' => "Driver has successfully logged out."], 200);
+		} catch (Exception $e) {
+			DB::rollBack();
+			return response()->json(['status' => 0, 'message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 }
