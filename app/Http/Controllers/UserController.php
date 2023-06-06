@@ -1089,6 +1089,27 @@ class UserController extends Controller
 				"german_content" => "Ihre Buchung wurde mit Veldoo für die Zeit bestätigt - #TIME#. Um den Status Ihrer Fahrt anzuzeigen, gehen Sie zu: #LINK#",
 				"service_provider_id" => $serviceProvider->id,
 				"unique_key" => "send_booking_details_after_edit_booking",
+			],
+			[
+				"title" => "Ride Accepted By driver",
+				"english_content" => "Ride Accepted By driver",
+				"german_content" => "Fahrt vom Fahrer akzeptiert",
+				"service_provider_id" => $serviceProvider->id,
+				"unique_key" => "ride_accepted_by_driver",
+			],
+			[
+				"title" => "Driver reached to pickup point",
+				"english_content" => "Driver reached to pickup point",
+				"german_content" => "Der Fahrer erreichte den Abholpunkt",
+				"service_provider_id" => $serviceProvider->id,
+				"unique_key" => "driver_reached_to_pickup_point",
+			],
+			[
+				"title" => "Ride cancelled by driver",
+				"english_content" => "Ride cancelled by driver",
+				"german_content" => "Fahrt vom Fahrer abgesagt",
+				"service_provider_id" => $serviceProvider->id,
+				"unique_key" => "ride_cancelled_by_driver",
 			]
 		]);
 
