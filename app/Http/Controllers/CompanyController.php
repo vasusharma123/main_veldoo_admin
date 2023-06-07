@@ -114,7 +114,6 @@ class CompanyController extends Controller
             });
         }
         $data['companies'] = $companies->paginate(100);
-        // dd(DB::getQueryLog());
         return view('admin.company.index')->with($data);
     }
 

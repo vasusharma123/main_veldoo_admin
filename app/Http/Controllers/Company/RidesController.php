@@ -105,6 +105,7 @@ class RidesController extends Controller
             $ride->ride_type = 3;
             $ride->created_by = Auth::user()->user_type;
             $ride->creator_id = Auth::user()->id;
+            $ride->service_provider_id = Auth::user()->service_provider_id;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -126,7 +127,7 @@ class RidesController extends Controller
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
-                $settings = Setting::first();
+                $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
                 $settingValue = json_decode($settings['value']);
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
@@ -137,12 +138,11 @@ class RidesController extends Controller
                         + sin(radians(" . $lat . ")) 
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->where('service_provider_id',Auth::user()->service_provider_id)->orderBy('distance', 'asc')->limit($driverlimit);
                 $drivers = $query->get()->toArray();
             }
 
             $driverids = array();
-
             if (!empty($drivers)) {
                 foreach ($drivers as $driver) {
                     $driverids[] = $driver['id'];
@@ -192,7 +192,7 @@ class RidesController extends Controller
 				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
 				+ sin(radians(" . $ride->pick_lat . "))
 				* sin(radians(users.current_lat))) AS distance")
-            )->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
+            )->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->where('service_provider_id',Auth::user()->service_provider_id)->get()->toArray();
             $rideData = Ride::find($ride->id);
             $rideData->notification_sent = 1;
             if (count($overallDriversCount) <= count($drivers)) {
@@ -203,7 +203,8 @@ class RidesController extends Controller
             DB::commit();
             if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
                 $message_content = "";
-                $SMSTemplate = SMSTemplate::find(2);
+                // $SMSTemplate = SMSTemplate::find(2);
+                $SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
                 if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
                     $message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
                 } else {
@@ -251,6 +252,7 @@ class RidesController extends Controller
             $ride->passanger = $request->passanger;
             $ride->note = $request->note;
             $ride->ride_type = 1;
+            $ride->service_provider_id = Auth::user()->service_provider_id;
             $ride->car_type = $request->car_type;
             $ride->created_by = Auth::user()->user_type;
             $ride->creator_id = Auth::user()->id;
@@ -285,7 +287,8 @@ class RidesController extends Controller
             DB::commit();
             if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
                 $message_content = "";
-                $SMSTemplate = SMSTemplate::find(2);
+                // $SMSTemplate = SMSTemplate::find(2);
+                $SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
                 if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
                     $message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
                 } else {
@@ -379,6 +382,7 @@ class RidesController extends Controller
                 $ride->payment_type = $request->payment_type;
             }
             $ride->ride_type = 3;
+            $ride->service_provider_id = Auth::user()->service_provider_id;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -392,7 +396,7 @@ class RidesController extends Controller
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
-                $settings = Setting::first();
+                $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
                 $settingValue = json_decode($settings['value']);
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
@@ -403,7 +407,7 @@ class RidesController extends Controller
                         + sin(radians(" . $lat . ")) 
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->where('service_provider_id',Auth::user()->service_provider_id)->orderBy('distance', 'asc')->limit($driverlimit);
                 $drivers = $query->get()->toArray();
             }
 
@@ -457,7 +461,7 @@ class RidesController extends Controller
 				* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
 				+ sin(radians(" . $ride->pick_lat . "))
 				* sin(radians(users.current_lat))) AS distance")
-            )->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
+            )->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->where('service_provider_id',Auth::user()->service_provider_id)->get()->toArray();
             $rideData = Ride::find($ride->id);
             $rideData->notification_sent = 1;
             if (count($overallDriversCount) <= count($drivers)) {
@@ -500,6 +504,7 @@ class RidesController extends Controller
             $ride->passanger = $request->passanger;
             $ride->note = $request->note;
             $ride->ride_type = 1;
+            $ride->service_provider_id = Auth::user()->service_provider_id;
             $ride->car_type = $request->car_type;
             $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
             if ((!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
@@ -557,7 +562,7 @@ class RidesController extends Controller
 				// }
 				$ride->save();
                 $ride_detail = new RideResource(Ride::find($ride->id));
-				$settings = Setting::first();
+                $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
 				$settingValue = json_decode($settings['value']);
 				$ride_detail['waiting_time'] = $settingValue->waiting_time;
 				if (!empty($driverData)) {
@@ -579,6 +584,7 @@ class RidesController extends Controller
 					$notification->title = 'Ride Cancelled';
 					$notification->description = 'Ride Cancelled by you';
 					$notification->type = $type;
+                    $notification->service_provider_id = Auth::user()->service_provider_id;
 					$notification->user_id = $userData['id'];
 					$notification->additional_data = (!empty($additional)) ? json_encode($additional) : null;
 					$notification->save();
