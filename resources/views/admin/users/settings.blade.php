@@ -323,27 +323,45 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_ride_accepted_by_driver" {{ (!empty($record->want_send_sms_to_user_when_ride_accepted_by_driver))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_ride_accepted_by_driver">
-                                        <label class="form-check-label" for="want_send_sms_to_user_when_ride_accepted_by_driver">
-                                            Want send sms to User when Ride accepted by Driver?
-                                        </label>
+                                    <div class="form-group">
+                                        <?php
+                                            echo Form::label('want_send_sms_to_user_when_ride_accepted_by_driver', 'Want send sms to User when Ride accepted by Driver', ['class' => 'control-label']);
+                                        ?>
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="want_send_sms_to_user_when_ride_accepted_by_driver" class=""
+                                                    value="1" {{ (!empty($record->want_send_sms_to_user_when_ride_accepted_by_driver))?'checked':'' }}><span
+                                                    class="lever"></span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_reached_to_pickup_point" {{ (!empty($record->want_send_sms_to_user_when_driver_reached_to_pickup_point))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_reached_to_pickup_point">
-                                        <label class="form-check-label" for="want_send_sms_to_user_when_driver_reached_to_pickup_point">
-                                            Want send sms to User when Driver reached to pickup point?
-                                        </label>
+                                    <div class="form-group">
+                                        <?php
+                                            echo Form::label('want_send_sms_to_user_when_driver_reached_to_pickup_point', 'Want send sms to User when Driver reached to pickup point', ['class' => 'control-label']);
+                                        ?>
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="want_send_sms_to_user_when_driver_reached_to_pickup_point" class=""
+                                                    value="1" {{ (!empty($record->want_send_sms_to_user_when_driver_reached_to_pickup_point))?'checked':'' }}><span
+                                                    class="lever"></span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-5">
-                                    <div class="form-check">
-                                        <input class="form-check-input" name="want_send_sms_to_user_when_driver_cancelled_the_ride" {{ (!empty($record->want_send_sms_to_user_when_driver_cancelled_the_ride))?'checked':'' }} type="checkbox" id="want_send_sms_to_user_when_driver_cancelled_the_ride">
-                                        <label class="form-check-label" for="want_send_sms_to_user_when_driver_cancelled_the_ride">
-                                            Want send sms to User when Driver cancelled the Ride?
-                                        </label>
+                                    <div class="form-group">
+                                        <?php
+                                            echo Form::label('want_send_sms_to_user_when_driver_cancelled_the_ride', 'Want send sms to User when Driver cancelled the Ride', ['class' => 'control-label']);
+                                        ?>
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="want_send_sms_to_user_when_driver_cancelled_the_ride" class=""
+                                                    value="1" {{ (!empty($record->want_send_sms_to_user_when_driver_cancelled_the_ride))?'checked':'' }}><span
+                                                    class="lever"></span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
