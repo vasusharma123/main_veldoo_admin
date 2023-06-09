@@ -2162,7 +2162,7 @@ class UserController extends Controller
 			}
 			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
-				$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
+				$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
 				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
 				} else {
@@ -2878,7 +2878,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if(!empty($settingValue->want_send_sms_to_user_when_ride_accepted_by_driver) && $settingValue->want_send_sms_to_user_when_ride_accepted_by_driver == 1){
 						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 							// $SMSTemplate = SMSTemplate::find(6);
-							$SMSTemplate = SMSTemplate::where(['unique_code'=>'ride_accepted_by_driver','service_provider_id'=>Auth::user()->service_provider_id])->first();
+							$SMSTemplate = SMSTemplate::where(['unique_key'=>'ride_accepted_by_driver','service_provider_id'=>Auth::user()->service_provider_id])->first();
 							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 								$message_content = $SMSTemplate->german_content;
 							} else {
@@ -2910,7 +2910,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if(!empty($settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point) && $settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point == 1){
 						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 							// $SMSTemplate = SMSTemplate::find(7);
-							$SMSTemplate = SMSTemplate::where(['unique_code'=>'driver_reached_to_pickup_point','service_provider_id'=>Auth::user()->service_provider_id])->first();
+							$SMSTemplate = SMSTemplate::where(['unique_key'=>'driver_reached_to_pickup_point','service_provider_id'=>Auth::user()->service_provider_id])->first();
 							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 								$message_content = $SMSTemplate->german_content;
 							} else {
@@ -2986,7 +2986,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if(!empty($settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride) && $settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride == 1){
 						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 							// $SMSTemplate = SMSTemplate::find(8);
-							$SMSTemplate = SMSTemplate::where(['unique_code'=>'ride_cancelled_by_driver','service_provider_id'=>Auth::user()->service_provider_id])->first();
+							$SMSTemplate = SMSTemplate::where(['unique_key'=>'ride_cancelled_by_driver','service_provider_id'=>Auth::user()->service_provider_id])->first();
 							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 								$message_content = $SMSTemplate->german_content;
 							} else {
@@ -4701,7 +4701,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
 			$message_content = "";
 			// $SMSTemplate = SMSTemplate::find(2);
-			$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
+			$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
 			if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
 				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
 			} else {
@@ -5739,7 +5739,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
 				// $SMSTemplate = SMSTemplate::find(2);
-				$SMSTemplate = SMSTemplate::where(['unique_code'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
+				$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->service_provider_id])->first();
 				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
 				} else {
