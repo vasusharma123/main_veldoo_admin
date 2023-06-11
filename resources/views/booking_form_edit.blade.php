@@ -443,7 +443,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-3 col-md-3 col-sm-4 col-3 align-self-center lst_col">
-                                
+
                             </div>
                         </div>
                         <div class="row show_case">
@@ -479,7 +479,7 @@
                                     <textarea rows="3" cols="5" class="form-control input_field" name="note" id="additionalNotes" placeholder="Enter notes...">{{$rideDetail->note}}</textarea>
                                 </div>
                             </div>
-                            <!-- 
+                            <!--
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="form-group">
                                     <label for="captcha" id="captchaOperation"><?php //echo(rand(100,1000)); ?></label>
@@ -648,7 +648,7 @@
             }
         }
 
-        function setShortestRoute(response) 
+        function setShortestRoute(response)
         {
             shortestRouteArr = [];
             $.each(response.routes, function( index, route ) {
@@ -656,7 +656,7 @@
             });
             return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
-        
+
         MapPoints = [{
             Latitude: "{{ $input['pickup_latitude'] }}",
             Longitude: "{{ $input['pickup_longitude'] }}",
@@ -668,7 +668,7 @@
         }];
         initializeMapReport(MapPoints);
 
-        function onSubmitOtp(token) 
+        function onSubmitOtp(token)
         {
             $('#personal_info_form').trigger('submit');
         }
@@ -715,15 +715,15 @@
             $('.'+timerClass).show();
             var m = Math.floor(remaining / 60);
             var s = remaining % 60;
-            
+
             m = m < 10 ? '0' + m : m;
             s = s < 10 ? '0' + s : s;
             // console.log(timerClass);
             // console.log(s);
             $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
-            // document.getElementById(id).innerHTML = 
+            // document.getElementById(id).innerHTML =
             remaining -= 1;
-            
+
             if(remaining >= 0) {
                 setTimeout(function() {
                     timer(remaining,timerClass,confirmOTPModalResendOtpClass);
@@ -731,7 +731,7 @@
                 return;
             }
 
-            
+
             // Do timeout stuff here
             // alert('Timeout for otp');
             $('.'+confirmOTPModalResendOtpClass).show();
