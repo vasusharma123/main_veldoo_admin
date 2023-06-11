@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\Log;
 class UserController extends Controller
 {
 	protected $layout = 'layouts.admin';
-	
+
 	protected $roles = [3=>'Administrator',2=>'Driver',1=>'Customer',4=>'Company'];
 
 	public function __construct() {
@@ -52,7 +52,7 @@ class UserController extends Controller
 		$this->errorCode = 401;
 		$this->warningCode = 500;
 	}
-   
+
 	public function guest_message(){
 		 return view('admin.guest_message');
 	}
@@ -63,7 +63,7 @@ class UserController extends Controller
 		$data = array_merge($breadcrumb,$data);
 		return view('admin.login')->with($data);
 	}
-	
+
 	public function doLogin(Request $request){
 		$rules = [
 			'email' => 'required|email',
@@ -85,7 +85,7 @@ class UserController extends Controller
 		}
 
 	}
-	
+
 	public function dashboard(){
 		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
@@ -95,7 +95,7 @@ class UserController extends Controller
 		{
 			$data['booking_count'] = Ride::where('service_provider_id',Auth::user()->id)->count();
 			$data['rider_count'] = User::where('user_type',1)->where('service_provider_id',Auth::user()->id)->count();
-			$data['driver_count'] = User::where('user_type',2)->where('service_provider_id',Auth::user()->id)->count();
+			$data['driver_count'] = ServiceProviderDriver::where('service_provider_id',Auth::user()->id)->count();
 			$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
 			$data['companies_registered']=User::where('user_type',4)->where('service_provider_id',Auth::user()->id)->count();
 			$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
@@ -107,16 +107,16 @@ class UserController extends Controller
 		elseif(Auth::user()->user_type==4)
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
-			Auth::user()->syncRoles('Company'); 
+			Auth::user()->syncRoles('Company');
 		}
 		elseif(Auth::user()->user_type==5)
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
-			Auth::user()->syncRoles('Company');	
+			Auth::user()->syncRoles('Company');
 		}
 		return view('dashboards.'.Auth::user()->user_role)->with($data);
 	}
-   
+
     /**
      * Display a listing of the resource.
      *
@@ -136,11 +136,11 @@ class UserController extends Controller
 			$invoice_status = ($request->input('invoice_status')?0:1);
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 1]])->limit(1)->update(array('invoice_status' => $invoice_status));
 	     	}
-		
+
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			DB::table($this->table)->where([['id', $request->input('id')]])->delete();
 		}
-		
+
 		$loggedInUser=\App\User::where('id',Auth::user()->id)->first();
 		if($loggedInUser->hasRole('Company')){
 			$users = DB::table('users')->where('created_by',Auth::user()->id);
@@ -156,7 +156,7 @@ class UserController extends Controller
 		} else {
 			$users->orderBy('id', 'desc');
 		}
-		
+
 		$data['users'] = $users->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
@@ -168,11 +168,11 @@ class UserController extends Controller
         */
 
          if ($request->ajax()) {
-            
+
             $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)
 			// ->where('service_provider_id',Auth::user()->id)
 			->orderBy('id','DESC')->get();
-            
+
             return Datatables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function ($row) {
@@ -181,15 +181,15 @@ class UserController extends Controller
                                 Action
                             </button>
                             <div class="dropdown-menu">
-                              
+
                                 <a class="dropdown-item" href="'.route('users.show',$row->id) .'">'.trans("admin.View").'</a>
                                 <a class="dropdown-item" href="'. route('users.edit',$row->id).'">'. trans("admin.Edit").'</a>
                                 <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
                             </div>
                         </div>';
-                       
+
                                 return $btn;
-                        
+
                             })
                             ->addColumn('invoice_status', function ($row) {
                                 $status=($row->invoice_status === 1)?'checked':'';
@@ -198,9 +198,9 @@ class UserController extends Controller
                                 <input type="checkbox" class="invoice_status" data-status="'.$row->invoice_status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
                             </label>
                         </div>';
-                         
+
                                 return $btn;
-                        
+
                             })
                             ->addColumn('status', function ($row) {
                                 $status=($row->status === 1)?'checked':'';
@@ -209,25 +209,25 @@ class UserController extends Controller
                                 <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
                             </label>
                         </div>';
-                         
+
                                 return $btn;
-                        
+
                             })->addColumn('first_name', function ($row) {
-                                
-                                
+
+
                                 return ucfirst($row->first_name);
-                        
+
 							})->addColumn('full_name', function ($row) {
-                                
-                                
+
+
                                 return ucfirst($row->first_name).' '.ucfirst($row->last_name);
-                        
+
                             })
                             ->addColumn('last_name', function ($row) {
-                                
-                                
+
+
                                 return ucfirst($row->last_name);
-                        
+
                             })
                             ->rawColumns(['action','status','first_name','last_name','invoice_status'])
                             ->make(true);
@@ -243,7 +243,7 @@ class UserController extends Controller
     public function create()
     {
 	    $breadcrumb = array('title'=>'Users','action'=>'Add User');
-		
+
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.create')->with($data);
@@ -355,17 +355,17 @@ class UserController extends Controller
     {
 	    $data = array();
 	    $data = array('title'=>trans('admin.User'),'action'=>trans('admin.User Detail'));
-		
+
         $where = array('id' => $id);
         $record = User::where($where)->first();
-		
+
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
 		}
 		$data['status'] = array(1=>'Active',0=>'In-active');
 		$data['record'] = $record;
 		// $data = array_merge($breadcrumb,$data);
-		
+
 	    return view("admin.{$this->folder}.show")->with($data);
     }
 
@@ -384,7 +384,7 @@ class UserController extends Controller
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
 		}
-				  
+
 		$data['record'] = $record;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.{$this->folder}.edit")->with($data);
@@ -413,26 +413,26 @@ class UserController extends Controller
 		}
 		$request->validate($rules);
 		$input = $request->all();
-		
+
 		unset($input['_method'],$input['_token'],$input['image_tmp']);
-		
+
 		$path = 'users/'.$haveUser->id.'/profile/';
 		$pathDB = 'public/users/'.$haveUser->id.'/profile/';
-		
+
 		if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid()){
-			
+
 			$imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
 			if(!empty($haveUser->image)){
 				Storage::disk('public')->delete($haveUser->image);
 			}
-			
+
 			$input['image'] = Storage::disk('public')->putFileAs(
 				'user/'.$haveUser->id, $request->image_tmp, $imageName
 			);
 		}
 		// dd($input);
 		User::where('id', $id)->update(collect($input)->forget('reset_password')->toArray());
-		
+
 		return back()->with('success', __('Record updated!'));
     }
 
@@ -455,13 +455,13 @@ class UserController extends Controller
 			return response()->json(['status' => 0, 'message' => 'Something went wrong! Please try again.']);
 		}
 	}
-	
+
     public function profile()
     {
 	    $breadcrumb = array('title'=>'Users','action'=>'My Profile');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
-		
+
         $record = Auth::user();
 		if(empty($record)){
 			return redirect()->route('users.dashboard')->with('warning', 'Record not found!');
@@ -476,20 +476,20 @@ class UserController extends Controller
 		$record->copyright = UserData::firstOrNew(['user_id' => Auth::user()->id,'meta_key' => '_copyright'])->meta_value;
 		$data['record'] = $record;
 		$data = array_merge($breadcrumb,$data);
-		
+
 	    return view('admin.users.my_profile')->with($data);
     }
-	
+
 	public function myProfile(Request $request)
 	{
-		if ($request->isMethod('post')) 
+		if ($request->isMethod('post'))
 		{
 			$data = ['name'=>$request->name,'email'=>$request->email];
-			if ($request->has('password') && !empty($request->password)) 
+			if ($request->has('password') && !empty($request->password))
 			{
 				$data['password'] = hash::make($request->password);
 			}
-			if ($request->hasFile('profile') && !empty($request->profile)) 
+			if ($request->hasFile('profile') && !empty($request->profile))
 			{
 				$path = 'user/'.Auth::user()->id;
 				$imageName = 'profile-image-'.Auth::user()->id.'.'.$request->profile->extension();
@@ -531,25 +531,25 @@ class UserController extends Controller
 		$path = 'users/'.Auth::user()->id.'/profile/';
 		$pathDB = 'public/users/'.Auth::user()->id.'/profile/';
 
-		
+
 		if($request->hasFile('image') && $request->file('image')->isValid()){
-			
+
 			$isImage = Auth::user()->image;
 			if(!empty($isImage)){
 				Storage::disk('public')->delete("$isImage");
 			}
-			
+
 			$imageName = 'profile-image'.time().'.'.$request->image->extension();
-			
+
 			$user->image = Storage::disk('public')->putFileAs(
 				'user/'.Auth::user()->id, $request->file('image'), $imageName
 			);
-						
+
 			$user->save();
 		}
 		return back()->with('success', __('Record updated!'));
     }
-	
+
     public function changePassword(Request $request)
     {
 
@@ -564,7 +564,7 @@ class UserController extends Controller
 		return back()->with('success', __('Password updated successfully.'));
 	}
 
-	
+
     public function settings()
     {
 	    $breadcrumb = array('title'=>'User','action'=>'Settings');
@@ -601,18 +601,18 @@ class UserController extends Controller
 		} else {
 			$record = json_decode($setting->value);
 		}
-		
+
 		$setting->key = '_configuration';
 		$input = $request->all();
 		unset($input['_token'],$input['_method'],$input['admin_logo_tmp'],$input['admin_favicon_tmp'],$input['admin_background_tmp'],$input['admin_sidebar_logo_tmp']);
 		if(!empty($request->admin_logo_tmp)){
 			$logoName = 'admin-logo.'.$request->admin_logo_tmp->extension();
-			
+
 			if(!empty($record->admin_logo)){
 				Storage::disk('public')->delete($record->admin_logo);
 				//Storage::disk('public')->delete("$isImage");
 			}
-			
+
 			$setting["value->admin_logo"] = Storage::disk('public')->putFileAs(
 				'setting', $request->admin_logo_tmp, $logoName
 			);
@@ -622,7 +622,7 @@ class UserController extends Controller
 			if(!empty($record->admin_favicon)){
 				Storage::disk('public')->delete('setting'.$record->admin_favicon);
 			}
-			
+
 			$setting["value->admin_favicon"] = Storage::disk('public')->putFileAs(
 				'setting', $request->admin_favicon_tmp, $favName
 			);
@@ -632,7 +632,7 @@ class UserController extends Controller
 			if(!empty($record->admin_background)){
 				Storage::disk('public')->delete($record->admin_background);
 			}
-			
+
 			$setting["value->admin_background"] = Storage::disk('public')->putFileAs(
 				'setting', $request->admin_background_tmp, $backgroundName
 			);
@@ -642,29 +642,29 @@ class UserController extends Controller
 			if(!empty($record->admin_sidebar_logo)){
 				Storage::disk('public')->delete('setting'.$record->admin_sidebar_logo);
 			}
-			
+
 			$setting["value->admin_sidebar_logo"] = Storage::disk('public')->putFileAs(
 				'setting', $request->admin_sidebar_logo_tmp, $sidebarLogoName
 			);
 		}
 
 		$input['notification'] = $request->notification ?? 0;
-		
+
 		foreach($input as $key=>$value){
 			$setting["value->$key"] = $value;
 		}
 		$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 0;
 		$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 0;
 		$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 0;
-		if ($request->has('want_send_sms_to_user_when_ride_accepted_by_driver')) 
+		if ($request->has('want_send_sms_to_user_when_ride_accepted_by_driver'))
 		{
 			$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 1;
 		}
-		if ($request->has('want_send_sms_to_user_when_driver_reached_to_pickup_point')) 
+		if ($request->has('want_send_sms_to_user_when_driver_reached_to_pickup_point'))
 		{
 			$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 1;
 		}
-		if ($request->has('want_send_sms_to_user_when_driver_cancelled_the_ride')) 
+		if ($request->has('want_send_sms_to_user_when_driver_cancelled_the_ride'))
 		{
 			$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 1;
 		}
@@ -705,7 +705,7 @@ class UserController extends Controller
 			$is_master = ($request->input('is_master')?0:1);
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('is_master' => $is_master));
 		}
-		
+
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			DB::table($this->table)->where([['id', $request->input('id')]])->delete();
 		}
@@ -719,7 +719,7 @@ class UserController extends Controller
 		} else {
 			$users->orderBy('id', 'desc');
 		}
-		
+
 		$data['users'] = $users->paginate($this->limit);
 		$data['active_deriver'] = $users->where('availability',1)->count();
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
@@ -781,7 +781,7 @@ class UserController extends Controller
 		}
 		return view('admin.drivers.index')->with($data);
 	}
-	
+
 	 public function editDriver($id)
     {
 		return redirect()->route('showDriver',$id);
@@ -793,7 +793,7 @@ class UserController extends Controller
 		if(empty($record)){
 			return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
 		}
-				  
+
 		$data['record'] = $record;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
@@ -849,16 +849,16 @@ class UserController extends Controller
 
 		return back()->with('success', __('Record updated!'));
 	}
-	
-	
+
+
 	public function createDriver(Request $request){
 		$breadcrumb = array('title'=>'Drivers','action'=>'Add Driver');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
-	    return view('admin.drivers.create')->with($data); 
+	    return view('admin.drivers.create')->with($data);
 	}
-	
-	
+
+
 	   public function showDriver(Request $request,$id)
 	   {
 		   $breadcrumb = array('title'=>trans('admin.Driver'),'action'=>trans('admin.Driver Detail'));
@@ -868,7 +868,7 @@ class UserController extends Controller
 		   if(empty($record)){
 			   return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
 			   }
-			   
+
 			if ($request->ajax()) {
 			if($request->has('type') && $request->input('type')=='approve' && !empty($request->input('id')) ){
 				$driver = \App\User::where(['id'=>$id])->first();
@@ -882,10 +882,10 @@ class UserController extends Controller
 		$data['status'] = array(1=>'Active',0=>'In-active');
 		$data['record'] = $record;
 		$data = array_merge($breadcrumb,$data);
-		
+
 	    return view("admin.drivers.show")->with($data);
     }
-    
+
     public function userBooking(Request $request,$id){
 
 		$breadcrumb = array('title'=>'User Booking','action'=>'List User Bookings');
@@ -965,7 +965,7 @@ class UserController extends Controller
 	}
 
 	public function doRegister(Request $request){
-		
+
 		$rules = [
 			'email' =>  [
 				'required',
@@ -1183,7 +1183,9 @@ class UserController extends Controller
 				'service_provider_id'=>$verifyUser->id,
 			]);
 			$driver->save();
-
+            $serviceProviderDriver = new ServiceProviderDriver();
+            $serviceProviderDriver->fill(['service_provider_id'=>$verifyUser->id,'driver_id'=>$driver->id]);
+            $serviceProviderDriver->save();
 			//customer
 			$user = new User();
 			$user->fill([
@@ -1276,7 +1278,7 @@ class UserController extends Controller
 	// 		return redirect()->route('users.dashboard');
 	// 		}
 	// }
-	
+
 
 	public function updateLatLong(Request $request){
 		$userId= Auth::user()->id;
@@ -1285,8 +1287,8 @@ class UserController extends Controller
 			return response()->json(['data'=>'success']);
 		}
 	}
-	
-	
+
+
 	public function exportExcel(Request $request){
 		$data=['type'=>$request->type];
 		$dataModel=new UsersExport($data);
@@ -1301,13 +1303,13 @@ class UserController extends Controller
 			 exit();
 		}
 	}
-	
+
 	public function logout(Request $request){
 		// dd($request->all());
         Session::flush();
         Auth::logout();
 		$route = "adminLogin";
-		if ($request->has('company')) 
+		if ($request->has('company'))
 		{
 			$route = "company_login";
 		}
@@ -1323,10 +1325,10 @@ class UserController extends Controller
      * This function use to  create contacts subject
      */
     public function driver_change_status(Request $request){
-       
+
         $status = ($request->status)?0:1;
            $updateUser = User::where('id',$request->user_id)->update(['is_master'=>$status]);
-       
+
         if ($updateUser) {
             echo json_encode(true);
         } else {
@@ -1344,10 +1346,10 @@ class UserController extends Controller
      * This function use to  create contacts subject
      */
     public function invoice_change_status(Request $request){
-       
+
         $status = ($request->status)?0:1;
            $updateUser = User::where('id',$request->user_id)->update(['invoice_status'=>$status]);
-       
+
         if ($updateUser) {
             echo json_encode(true);
         } else {
@@ -1387,7 +1389,7 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 			$driver = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
-			if ($driver) 
+			if ($driver)
 			{
 				$checkDriverAdded = ServiceProviderDriver::where(['driver_id'=>$driver->id,'service_provider_id'=>Auth::user()->id])->first();
 				if ($checkDriverAdded) {
@@ -1422,10 +1424,10 @@ class UserController extends Controller
 				$driver->fill(['driver_id'=>$id,'service_provider_id'=>Auth::user()->id]);
 				$driver->save();
 			}
-			
+
 			DB::commit();
 			return back()->with('success', 'Driver added!');
-			
+
 		} catch (\Exception $e) {
 			DB::rollback();
 			// something went wrong
