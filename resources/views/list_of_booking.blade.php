@@ -326,7 +326,7 @@
             height: 12px;
             border-radius: 300px;
             background: #FC4C02;
-            
+
             z-index: 1;
         }
         .runing_item.final:after {
@@ -562,7 +562,7 @@
             .icon_img.img-repsonsive {
                 max-width: 14px;
             }
-            
+
             .filter_booking_section_row .form-group label {
                 min-width: 8px;
             }
@@ -580,7 +580,7 @@
                 padding: 0px;
             } */
         }
-      
+
 
         @media (min-width: 550px) and (max-width:992px) {
             .map-booking {
@@ -886,7 +886,7 @@
             });
         });
 
-        function onSubmitOtp(token) 
+        function onSubmitOtp(token)
         {
             $('#verify_phone_form').trigger('submit');
         }
@@ -994,15 +994,15 @@
             $('.'+timerClass).show();
             var m = Math.floor(remaining / 60);
             var s = remaining % 60;
-            
+
             m = m < 10 ? '0' + m : m;
             s = s < 10 ? '0' + s : s;
             // console.log(timerClass);
             // console.log(s);
             $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
-            // document.getElementById(id).innerHTML = 
+            // document.getElementById(id).innerHTML =
             remaining -= 1;
-            
+
             if(remaining >= 0) {
                 setTimeout(function() {
                     timer(remaining,timerClass,confirmOTPModalResendOtpClass);
@@ -1010,7 +1010,7 @@
                 return;
             }
 
-            
+
             // Do timeout stuff here
             // alert('Timeout for otp');
             $('.'+confirmOTPModalResendOtpClass).show();
@@ -1043,9 +1043,9 @@
             });
             // console.log(element);
             // bookingsArray.forEach(element => {
-                if (element) 
-                { 
-                    if (element.dest_lat=="") 
+                if (element)
+                {
+                    if (element.dest_lat=="")
                     {
                         if (directionsDisplay != null) {
                             directionsDisplay.setMap(null);
@@ -1060,7 +1060,7 @@
                         marker = new google.maps.Marker({
                             position: pt,
                             map: map
-                        });   
+                        });
                         markers.push(marker);
                     }
                     else
@@ -1095,7 +1095,7 @@
                             provideRouteAlternatives: true,
                             avoidFerries: true
                         };
-                        for (i = 0; i < locations.length; i++) 
+                        for (i = 0; i < locations.length; i++)
                         {
                             marker = new google.maps.Marker({
                                 position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
@@ -1170,7 +1170,7 @@
                     $('.ride_payment_type').html(element.payment_type);
                     ride_status_latest = element.ride_status_latest;
                     $('.driver_info').hide();
-                    if (element.driver!=null) 
+                    if (element.driver!=null)
                     {
                         $('.driver_image').attr('src',element.driver.image_with_url);
                         $('.driver_name').html(element.driver.first_name+' '+element.driver.last_name);
@@ -1178,7 +1178,7 @@
                         $('.driver_phone').attr('href',"tel:"+element.driver.country_code+element.driver.phone);
                         $('.driver_info').show();
 
-                        if (element.status=="1") 
+                        if (element.status=="1")
                         {
                             var distanceService = new google.maps.DistanceMatrixService();
                             var origin = new google.maps.LatLng(element.driver.current_lat,element.driver.current_lng);
@@ -1198,8 +1198,8 @@
                                         ride_status_latest = ride_status_latest.replace('#time#',response.rows[0].elements[0].duration.text);
                                         $('.latest_status').html(ride_status_latest);
                                     }
-                                });    
-                        } else if (element.status=="2") 
+                                });
+                        } else if (element.status=="2")
                         {
                             var distanceService = new google.maps.DistanceMatrixService();
                             var origin = new google.maps.LatLng(element.pick_lat,element.pick_lng);
@@ -1219,7 +1219,7 @@
                                         ride_status_latest = ride_status_latest.replace('#time#',response.rows[0].elements[0].duration.text);
                                         $('.latest_status').html(ride_status_latest);
                                     }
-                                });    
+                                });
                         } else {
                             $('.latest_status').html(ride_status_latest);
                         }
@@ -1229,7 +1229,7 @@
 
                     $('.car_image').hide();
                     $('.car_number').hide();
-                    if (element.vehicle!=null) 
+                    if (element.vehicle!=null)
                     {
                         $('.car_image').attr('src',element.vehicle.image_with_url);
                         $('.car_image').show();
@@ -1250,8 +1250,8 @@
                 }
             }
         });
-        
-        function setShortestRoute(response) 
+
+        function setShortestRoute(response)
         {
             shortestRouteArr = [];
             $.each(response.routes, function( index, route ) {
@@ -1259,7 +1259,7 @@
             });
             return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
-        
+
         $(document).on('click','#submit_request_cancel',function(){
             if(selectedBooking!=""){
                 $("#cancelBookingModal").modal('show');
@@ -1316,16 +1316,16 @@
             e.preventDefault();
             if(selectedBooking!=""){
                 redirect = true;
-                bookingsArray.forEach(element => {
-                    if (selectedBooking==element.id) 
-                    { 
-                        if (element.status!=-4 && element.status!=0) 
+                // bookingsArray.forEach(element => {
+                    if (selectedBooking==element.id)
+                    {
+                        if (element.status!=-4 && element.status!=0)
                         {
                             new swal("{{ __('Error') }}","{{ __('You cannot edit this booking') }}","error");
                             redirect = false;
                         }
                     }
-                });
+                // });
                 route = "{{ route('booking_edit_taxisteinemann','~') }}{{ isset($token)?'?token='.$token:'' }}";
                 route = route.replace('~',selectedBooking);
                 if (redirect) {
