@@ -23,7 +23,8 @@ class RideUserResource extends JsonResource
             'current_lat' => $this->current_lat,
             'current_lng' => $this->current_lng,
             'invoice_status' => $this->invoice_status,
-            'image_with_url' => $this->image_with_url
+            'image_with_url' => $this->image_with_url,
+            'avg_rating' => $this->avg_rating
         ];
     }
 }
