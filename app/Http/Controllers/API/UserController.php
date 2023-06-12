@@ -5209,7 +5209,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride->alert_time = $request->alert_time;
 						$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($date_time)));
 					} else {
-						$alert_notification_date_time = $date_time;
+						$ride->alert_time = 15;
+						$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($date_time)));
 					}
 				}
 
@@ -5250,6 +5251,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 0;
 				}
 				$ride->save();
+			}
+			if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(2);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n" . 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser' . "\n" . 'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n" . 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser' . "\n" . 'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			}
 			DB::commit();
 			$ride_data = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
