@@ -441,11 +441,11 @@ class UserController extends Controller
 			$token =  $user->createToken('auth')->accessToken;
 			$user = $this->getRafrenceUser($user->id);
 
-			$driverhoosecar = DriverChooseCar::where(['user_id' => $user->id, 'logout' => 0])->orderBy('id', 'desc')->first();
-			if (!empty($driverhoosecar)) {
-				$driverhoosecar->logout = 1;
-				$driverhoosecar->save();
-			}
+			// $driverhoosecar = DriverChooseCar::where(['user_id' => $user->id, 'logout' => 0])->orderBy('id', 'desc')->first();
+			// if (!empty($driverhoosecar)) {
+			// 	$driverhoosecar->logout = 1;
+			// 	$driverhoosecar->save();
+			// }
 			DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0]);
 			return response()->json(['success' => true, 'message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
 		} else {
@@ -1132,7 +1132,7 @@ class UserController extends Controller
 		$userdata = User::where($where)->get();
 		// print_r($userdata[0]->id); die;
 		$userdata = $userdata[0];
-		$driver_car = DriverChooseCar::where('user_id', $id)->orderBy('id', 'desc')->first();
+		$driver_car = DriverChooseCar::where(['user_id' => $id, 'logout' => 0])->orderBy('id', 'desc')->first();
 		if (!empty($driver_car)) {
 			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
 			if (!empty($car_data)) {
