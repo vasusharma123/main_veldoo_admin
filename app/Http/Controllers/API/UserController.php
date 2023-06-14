@@ -844,14 +844,14 @@ class UserController extends Controller
 					/* $InvitationMile = new InvitationMile();
 				$InvitationMile->refer_code = $request->refer_code;
 				$InvitationMile->user_id = $refered_userdata['id'];
-				
-					
 
-				
+
+
+
 				$InvitationMile->miles_received = $mile_on_invitation;
-            unset($InvitationMile->created_at);		
-            unset($InvitationMile->updated_at);             
-			
+            unset($InvitationMile->created_at);
+            unset($InvitationMile->updated_at);
+
 				$InvitationMile->save(); */
 
 					// $where = array('id' => $userData->id);
@@ -910,7 +910,7 @@ class UserController extends Controller
 
 		/* 	$m = Mail::send('mail', $data, function($message) use ($request, $isUser) {
 			$message->to($isUser->email, 'OTP')->subject('OTP Verification Code');
-			
+
 			if(!empty($request->from)){
 				$message->from($request->from, 'Haylup');
 			}
@@ -1011,7 +1011,7 @@ class UserController extends Controller
 	}
 	public function getUser($id)
 	{
-		// echo $id; 
+		// echo $id;
 		$where = array('id' => $id);
 		$userd = User::where($where)->first();
 		if (!empty($userd['refer_code'])) {
@@ -1118,7 +1118,7 @@ class UserController extends Controller
 	}
 	public function getRafrenceUser($id)
 	{
-		// echo $id; 
+		// echo $id;
 		$where = array('id' => $id);
 		$userd = User::where($where)->first();
 		if (!empty($userd['refer_code'])) {
@@ -1380,7 +1380,7 @@ class UserController extends Controller
 	// 	$isphone = User::where(['phone' => ltrim($request->phone, "0")])->first();
 	// 	/* if(empty($isphone)){
 	// 		return response()->json(['message'=>'Your phone is not registered.'], $this->warningCode);
-			
+
 	// 	} */
 	// 	if (!empty($isphone) && $isphone['verify'] == 1) {
 	// 		return response()->json(['message' => 'Your phone number already verified.'], $this->warningCode);
@@ -1683,10 +1683,10 @@ class UserController extends Controller
 
 			$query = User::select(
 				"users.*",
-				DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.lat)) 
-                    * cos(radians(users.lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+				DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(users.lat))
+                    * cos(radians(users.lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(users.lat))) AS distance")
 			);
 			$query->where('user_type', '=', 3)->having('distance', '<', 2000)->orderBy('distance', 'asc');
@@ -2074,7 +2074,7 @@ class UserController extends Controller
 				//'dest_lat' => 'required',
 				//'dest_lng' => 'required',
 				'pickup_location' => 'required',
-				//'dest_address' => 'required',			
+				//'dest_address' => 'required',
 				'car_type' => 'required',
 				'ride_time' => 'required',
 				//'ride_type'=>'required',
@@ -2098,7 +2098,7 @@ class UserController extends Controller
 			$rideUser = User::find($request->user_id);
 			foreach ($all_rides_dates as $ride_date_time) {
 				$ride = new Ride();
-				if ($rideUser) 
+				if ($rideUser)
 				{
 					$ride->user_country_code = $rideUser->country_code;
 					$ride->user_phone = $rideUser->phone;
@@ -2180,16 +2180,16 @@ class UserController extends Controller
 				}
 				Notification::insert($notification_data);
 			}
-			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
-				$message_content = "";
-				$SMSTemplate = SMSTemplate::find(2);
-				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
-				} else {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
-				}
-				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
-			}
+			// if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+			// 	$message_content = "";
+			// 	$SMSTemplate = SMSTemplate::find(2);
+			// 	if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+			// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+			// 	} else {
+			// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+			// 	}
+			// 	$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			// }
 			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -2207,21 +2207,21 @@ class UserController extends Controller
 			//'dest_lat' => 'required',
 			//'dest_lng' => 'required',
 			'pickup_address' => 'required',
-			//'dest_address' => 'required',			
+			//'dest_address' => 'required',
 			'car_type' => 'required',
 			'payment_type' => 'required',
-		
+
         ];
-		
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return response()->json(['message'=>trans('api.required_data'),'error'=>$validator->errors()], $this->warningCode);            
+            return response()->json(['message'=>trans('api.required_data'),'error'=>$validator->errors()], $this->warningCode);
         }
-		
+
 		try {
-			
+
 				$ride = new Ride();
-			
+
 			$ride->pick_lat = $request->pick_lat;
             $ride->pick_lng = $request->pick_lng;
 			if(!empty($request->drop_location))
@@ -2256,22 +2256,22 @@ class UserController extends Controller
             $ride->created_by = 1;
             $pool_number = time();
             $ride->pool_number = $pool_number;
-           
-           
+
+
             $ride->user_id = $user_id;
-          unset($ride->created_at);		
+          unset($ride->created_at);
             unset($ride->updated_at);
 			//print_r($place); die;
-          
-			
+
+
 			 $lat = $_REQUEST['pick_lat'];
             $lon = $_REQUEST['pick_lng'];
-			
+
 			$query = User::select("users.*"
-                    ,DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.current_lat)) 
-                    * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" .$lat. ")) 
+                    ,DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(users.current_lat))
+                    * cos(radians(users.current_lng) - radians(" . $lon . "))
+                    + sin(radians(" .$lat. "))
                     * sin(radians(users.current_lat))) AS distance"));
 					$query->where('user_type', '=',2)->having('distance', '<', 20)->orderBy('distance','asc');
 					$drivers = $query->get()->toArray();
@@ -2280,7 +2280,7 @@ class UserController extends Controller
 			{
 				foreach($drivers as $driver)
 				{
-			
+
 			$checkride = Ride::query()->where([['driver_id', '=', $driver['id']],['status', '=', 0],['car_type', '=', 4]])->first();
 			//print_r($checkride);
 			if(!empty($checkride))
@@ -2294,13 +2294,13 @@ class UserController extends Controller
 					$driverids[] = $driver['id'];
 				$title = 'New Booking';
 		$message = 'You Received new booking';
-			
-		$type = 1; 
+
+		$type = 1;
 		$deviceToken = $driver['device_token'];
 		$additional = ['type'=>$type,'ride_id'=>0];
 		//$additional = ['type'=>1];
 	//echo $deviceToken; die;
-		
+
 		$deviceType = $driver['device_type'];
 			if($deviceType == 'android') {
 		send_notification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
@@ -2322,7 +2322,7 @@ class UserController extends Controller
 		$notification->save();
 			}
 				}
-				
+
 				}
 				$driverids = implode(",",$driverids);
 			}
@@ -2332,7 +2332,7 @@ class UserController extends Controller
 			}
 			if(empty($driverids))
 			{
-				return response()->json(['message'=>"No Driver Found"], $this->successCode); 
+				return response()->json(['message'=>"No Driver Found"], $this->successCode);
 			}
 			$ride->driver_id = $driverids;
 			$lat1 = $request->pick_lat;
@@ -2354,8 +2354,8 @@ class UserController extends Controller
 		  $rideid = $ride->id;
 		  $ride= Ride::query()->where([['id', '=', $rideid]])->first();
 				return response()->json(['message'=>'Booking Created successfully','data'=>$ride], $this->successCode);
-			
-			
+
+
 		} catch (\Illuminate\Database\QueryException $exception){
 			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message'=>$exception->getMessage()], $this->warningCode);
@@ -2405,7 +2405,7 @@ class UserController extends Controller
 
 			$ride->user_id = $user_id;
 			$rideUser = User::find($user_id);
-			if ($rideUser) 
+			if ($rideUser)
 			{
 				$ride->user_country_code = $rideUser->country_code;
 				$ride->user_phone = $rideUser->phone;
@@ -2419,10 +2419,10 @@ class UserController extends Controller
 			$lon = $_REQUEST['pick_lng'];
 
 			/* $query = User::select("users.*"
-                    ,DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.current_lat)) 
-                    * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" .$lat. ")) 
+                    ,DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(users.current_lat))
+                    * cos(radians(users.current_lng) - radians(" . $lon . "))
+                    + sin(radians(" .$lat. "))
                     * sin(radians(users.current_lat))) AS distance"));
 					$query->where('user_type', '=',2)->having('distance', '<', 20)->orderBy('distance','asc');
 					$drivers = $query->get()->toArray();
@@ -2434,13 +2434,13 @@ class UserController extends Controller
 					$driverids[] = $driver['id'];
 				$title = 'New Booking';
 		$message = 'You Received new booking';
-			
-		
+
+
 		$deviceToken = $driver['device_token'];
 		$additional = ['type'=>1,'ride_id'=>0];
 		//$additional = ['type'=>1];
 	//echo $deviceToken; die;
-		
+
 		$deviceType = $driver['device_type'];
 			if($deviceType == 'android') {
 		send_notification($title, $message, $deviceToken, '',$additional,true,false,$deviceType,[]);
@@ -2482,12 +2482,12 @@ class UserController extends Controller
 		/* echo "lat1 ".$lat1;
 echo "long1 ".$long1;
 echo "lat2 ".$lat2;
-echo "long2 ".$long2; 
+echo "long2 ".$long2;
 die; */
 		// $lat1 = $_REQUEST['lat1'];
 		// $long1 = $_REQUEST['lon1'];
 		// $lat2 =  $_REQUEST['lat2'];
-		// $long2 = $_REQUEST['lon2'];  
+		// $long2 = $_REQUEST['lon2'];
 		// AIzaSyBSKGC2md-gYLtjwtN0LUWUKzvulhgZhf8
 		// new key = AIzaSyB3BkG8m_df4tC9LoWfKcSGFBxuW6GJ0Jo
 		$url = "https://maps.googleapis.com/maps/api/directions/json?origin=" . $lat1 . "," . $long1 . "&destination=" . $lat2 . "," . $long2 . "&alternatives=true&sensor=false&key=AIzaSyBziz-4En_1Mj_aM73wJvsd4kG3bR3wr3A";
@@ -2895,17 +2895,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride->check_assigned_driver_ride_acceptation = null;
 					}
 
-					if(!empty($settingValue->want_send_sms_to_user_when_ride_accepted_by_driver) && $settingValue->want_send_sms_to_user_when_ride_accepted_by_driver == 1){
-						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
-							$SMSTemplate = SMSTemplate::find(6);
-							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-								$message_content = $SMSTemplate->german_content;
-							} else {
-								$message_content = $SMSTemplate->english_content;
-							}
-							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
-						}
-					}
+					// if(!empty($settingValue->want_send_sms_to_user_when_ride_accepted_by_driver) && $settingValue->want_send_sms_to_user_when_ride_accepted_by_driver == 1){
+					// 	if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+					// 		$SMSTemplate = SMSTemplate::find(6);
+					// 		if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					// 			$message_content = $SMSTemplate->german_content;
+					// 		} else {
+					// 			$message_content = $SMSTemplate->english_content;
+					// 		}
+					// 		$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+					// 	}
+					// }
 				}
 				if ($request->status == 2) {
 					if ($ride['status'] == 2) {
@@ -2916,6 +2916,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Ride Started Successfully';
 					$type = 3;
 					$ride->status = 2;
+                    if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+                    	$message_content = "";
+                    	$SMSTemplate = SMSTemplate::find(2);
+                    	if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+                    		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+                    	} else {
+                    		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+                    	}
+                    	$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+                    }
 				}
 				if ($request->status == 4) {
 					if ($ride['status'] == 4) {
@@ -2926,17 +2936,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Driver Reached Successfully';
 					$type = 7;
 					$ride->status = 4;
-					if(!empty($settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point) && $settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point == 1){
-						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
-							$SMSTemplate = SMSTemplate::find(7);
-							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-								$message_content = $SMSTemplate->german_content;
-							} else {
-								$message_content = $SMSTemplate->english_content;
-							}
-							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
-						}
-					}
+					// if(!empty($settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point) && $settingValue->want_send_sms_to_user_when_driver_reached_to_pickup_point == 1){
+					// 	if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+					// 		$SMSTemplate = SMSTemplate::find(7);
+					// 		if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					// 			$message_content = $SMSTemplate->german_content;
+					// 		} else {
+					// 			$message_content = $SMSTemplate->english_content;
+					// 		}
+					// 		$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+					// 	}
+					// }
 				}
 				if ($request->status == 3) {
 					if ($ride['status'] == 3) {
@@ -3001,17 +3011,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 					$type = 5;
 					$ride->status = -2;
-					if(!empty($settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride) && $settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride == 1){
-						if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
-							$SMSTemplate = SMSTemplate::find(8);
-							if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-								$message_content = $SMSTemplate->german_content;
-							} else {
-								$message_content = $SMSTemplate->english_content;
-							}
-							$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
-						}
-					}
+					// if(!empty($settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride) && $settingValue->want_send_sms_to_user_when_driver_cancelled_the_ride == 1){
+					// 	if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+					// 		$SMSTemplate = SMSTemplate::find(8);
+					// 		if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					// 			$message_content = $SMSTemplate->german_content;
+					// 		} else {
+					// 			$message_content = $SMSTemplate->english_content;
+					// 		}
+					// 		$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+					// 	}
+					// }
 				}
 			} else {
 				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
@@ -3558,13 +3568,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$user_id = $user['id'];
 		/* $rules = [
 			'vehicle_id' => 'required',
-			
-			
+
+
         ];
-		
+
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return response()->json(['message'=>trans('api.required_data'),'error'=>$validator->errors()], $this->warningCode);            
+            return response()->json(['message'=>trans('api.required_data'),'error'=>$validator->errors()], $this->warningCode);
         } */
 
 		try {
@@ -4211,7 +4221,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				//$newresultarray[$i] = $result;
 				/* $item = Item::where(['id' => $result['item_id']])->first();
-				
+
 				$driver_data = User::where(['id' => $item['user_id']])->first();
 				$newresultarray[$i] = $item;
 				$newresultarray[$i]['driver_data'] = $driver_data; */
@@ -4460,10 +4470,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$driverlimit = $settingValue->driver_requests;
 		$query = User::select(
 			"users.*",
-			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.current_lat)) 
-                    * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+			DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(users.current_lat))
+                    * cos(radians(users.current_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(users.current_lat))) AS distance")
 		);
 		$query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
@@ -4583,7 +4593,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->user_id)) {
 			$ride->user_id = $request->user_id;
 			$rideUser = User::find($request->user_id);
-			if ($rideUser) 
+			if ($rideUser)
 			{
 				$ride->user_country_code = $rideUser->country_code;
 				$ride->user_phone = $rideUser->phone;
@@ -4614,10 +4624,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$driver_radius = $settingValue->radius;
 			$query = User::select(
 				"users.*",
-				DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-						* cos(radians(users.current_lat)) 
-						* cos(radians(users.current_lng) - radians(" . $lon . ")) 
-						+ sin(radians(" . $lat . ")) 
+				DB::raw("3959 * acos(cos(radians(" . $lat . "))
+						* cos(radians(users.current_lat))
+						* cos(radians(users.current_lng) - radians(" . $lon . "))
+						+ sin(radians(" . $lat . "))
 						* sin(radians(users.current_lat))) AS distance")
 			);
 			$query = $query->with(['ride' => function ($query1) {
@@ -4629,7 +4639,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query3->where(['status' => 1, 'waiting' => 1]);
 			}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
 			$drivers = $query->get()->toArray();
-	
+
 			$rideObj = new Ride;
 			foreach ($drivers as $driver_key => $driver_value) {
 				if (!empty($driver_value['ride'])) {
@@ -4653,9 +4663,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-		
+
 			usort($drivers, 'sortByDistance');
-	
+
 			if (!empty($drivers)) {
 				for ($i=0 ; $i < $driverlimit; $i++) {
 					if(!empty($drivers[$i])){
@@ -4665,11 +4675,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} else {
 				return response()->json(['message' => "No Driver Found"], $this->warningCode);
 			}
-	
+
 			$ride->driver_id = null;
 			$ride->all_drivers = implode(",", $driverids);
 		}
-		
+
 		$ride->platform = Auth::user()->device_type;
 		$ride->save();
 		$ride_data = new RideResource(Ride::find($ride->id));
@@ -4715,17 +4725,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		$rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
 		$rideData->save();
-		if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
-			$message_content = "";
-			$SMSTemplate = SMSTemplate::find(2);
-			if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
-				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
-			} else {
-				$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->english_content));
-			}
-			$this->sendSMS("+" . $rideData->user->country_code, ltrim($rideData->user->phone, "0"), $message_content);
-		}
-		
+		// if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
+		// 	$message_content = "";
+		// 	$SMSTemplate = SMSTemplate::find(2);
+		// 	if ($rideData->user->country_code == "41" || $rideData->user->country_code == "43" || $rideData->user->country_code == "49") {
+		// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->german_content));
+		// 	} else {
+		// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($rideData->ride_time)), $SMSTemplate->english_content));
+		// 	}
+		// 	$this->sendSMS("+" . $rideData->user->country_code, ltrim($rideData->user->phone, "0"), $message_content);
+		// }
+
 		return response()->json(['success' => true, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
 	}
 
@@ -4781,7 +4791,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->user_id = Auth::user()->id;
-		if (Auth::user()) 
+		if (Auth::user())
 		{
 			$ride->user_country_code = Auth::user()->country_code;
 			$ride->user_phone = Auth::user()->phone;
@@ -4805,14 +4815,14 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'dest_lat' => 'required',
-            'dest_lng' => 'required',           
+            'dest_lng' => 'required',
             'number_of_passanger' => 'required',
             'ride_time' => 'required',
          ];
-		
+
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
-            return response()->json(['message'=>$validator->errors()->first(),'error'=>$validator->errors()], $this->warningCode);            
+            return response()->json(['message'=>$validator->errors()->first(),'error'=>$validator->errors()], $this->warningCode);
         } */
 
 		//$from = date("Y-m-d H:i:s");
@@ -4835,10 +4845,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$lon = $request->pick_lng;
 				$query = Ride::select(
 					"rides.*",
-					DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(rides.pick_lat)) 
-                    * cos(radians(rides.pick_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+					DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(rides.pick_lat))
+                    * cos(radians(rides.pick_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(rides.pick_lat))) AS distance")
 				);
 				$query->where([['status', '=', 0], ['ride_type', '=', 4], ['actual_share_ride', '=', 1]])->whereBetween('ride_time', [$from, $to])->having('distance', '<', $joinradius)->orderBy('distance', 'asc');
@@ -4855,10 +4865,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$lon = $request->pick_lng;
 				$query = Ride::select(
 					"rides.*",
-					DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(rides.pick_lat)) 
-                    * cos(radians(rides.pick_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+					DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(rides.pick_lat))
+                    * cos(radians(rides.pick_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(rides.pick_lat))) AS distance")
 				);
 				$query->where([['status', '=', 0], ['ride_type', '=', 4], ['actual_share_ride', '=', 1], ['ride_time', '>=', $from]])->having('distance', '<', $joinradius)->orderBy('distance', 'asc');
@@ -4963,7 +4973,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->payment_type = $request->payment_type;
 		}
 		$ride->user_id = Auth::user()->id;
-		if (Auth::user()) 
+		if (Auth::user())
 		{
 			$ride->user_country_code = Auth::user()->country_code;
 			$ride->user_phone = Auth::user()->phone;
@@ -4999,10 +5009,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		$query = Ride::select(
 			"rides.*",
-			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(rides.pick_lat)) 
-                    * cos(radians(rides.pick_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+			DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(rides.pick_lat))
+                    * cos(radians(rides.pick_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(rides.pick_lat))) AS distance")
 		);
 		$query->where([['join_id', '=', $request->ride_id]])->orderBy('distance', 'asc')->with('user');
@@ -5011,10 +5021,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		$query2 = Ride::select(
 			"rides.*",
-			DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(rides.dest_lat)) 
-                    * cos(radians(rides.dest_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+			DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(rides.dest_lat))
+                    * cos(radians(rides.dest_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(rides.dest_lat))) AS distance")
 		);
 		$query->where([['join_id', '=', $request->ride_id]])->orderBy('distance', 'asc')->with('user');
@@ -5104,7 +5114,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->created_by = 1;
 			$ride->creator_id = Auth::user()->id;
 			$ride->user_id = Auth::user()->id;
-			if (Auth::user()) 
+			if (Auth::user())
 			{
 				$ride->user_country_code = Auth::user()->country_code;
 				$ride->user_phone = Auth::user()->phone;
@@ -5167,7 +5177,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
 					$all_ride_ids = Ride::where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->pluck('id')->toArray();
-				} 
+				}
 			}
 			foreach ($all_ride_ids as $ride_key => $ride_id) {
 				$ride = Ride::find($ride_id);
@@ -5322,7 +5332,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
          ];
 		$validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
-            return response()->json(['message'=>$validator->errors()->first(),'error'=>$validator->errors()], $this->warningCode);            
+            return response()->json(['message'=>$validator->errors()->first(),'error'=>$validator->errors()], $this->warningCode);
         }*/
 		$dateTime = $request->time;
 		if (!empty($dateTime) && $dateTime != null) {
@@ -5367,7 +5377,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$cararray[$j] = $allcar;
 						$j++;
 					}
-				} else {					
+				} else {
 					$allcar->is_occupied = 0;
 					if (!empty($driver_car)) {
 						$allcar->logout_mileage = $driver_car['logout_mileage'];
@@ -5730,7 +5740,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				$ride->user_id = $request->user_id;
 				$rideUser = User::find($request->user_id);
-				if ($rideUser) 
+				if ($rideUser)
 				{
 					$ride->user_country_code = $rideUser->country_code;
 					$ride->user_phone = $rideUser->phone;
@@ -5763,16 +5773,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			$ride->platform = Auth::user()->device_type;
 			$ride->save();
-			if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
-				$message_content = "";
-				$SMSTemplate = SMSTemplate::find(2);
-				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
-				} else {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
-				}
-				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
-			}
+			// if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+			// 	$message_content = "";
+			// 	$SMSTemplate = SMSTemplate::find(2);
+			// 	if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+			// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->german_content));
+			// 	} else {
+			// 		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#TIME#', date('d M, Y h:ia', strtotime($ride->ride_time)), $SMSTemplate->english_content));
+			// 	}
+			// 	$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			// }
 			$rideid = $ride->id;
 			$ride = Ride::query()->where([['id', '=', $rideid]])->first();
 			return response()->json(['success' => true, 'message' => 'Instant ride started successfully', 'data' => $ride], $this->successCode);
@@ -5800,7 +5810,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		{
 			array_push($promotions,$promotionassigned);
 		}
-		
+
 		if(!empty($promotionglobal))
 		{
 			array_push($promotions,$promotionglobal);
@@ -5837,15 +5847,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			/*  $newresultarray = array();
 			if(!empty($resnewarray))
 			{
-				
+
 			$i = 0;
-			
+
 			foreach($resnewarray as $result)
 			{
 				$newresultarray[$i] = $result;
-				
-				
-				
+
+
+
 				$i++;
 			}
 			} */
@@ -6185,7 +6195,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					return response()->json(['message' => "This user's email or phone number already exists.", 'error' => "This user's email or phone number already exists."], $this->warningCode);
 				}
 			}
-			
+
 			$input['phone'] = ltrim($request->phone_number, "0");
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
@@ -6373,7 +6383,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$settingValue = json_decode($settings['value']);
 		return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name, 'driver_count_to_display' => $settingValue->driver_count_to_display], $this->successCode);
 	}
-	
+
 	public function rideAssignstoNext(Request $request)
 	{
 		echo "function working";
@@ -6403,10 +6413,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$settingValue = json_decode($settings['value']);
 			$radius = $settingValue->radius;
 			$driverlimit = $settingValue->driver_requests;
-			$query = User::select("users.id", "users.first_name", "users.last_name", "users.image", "users.current_lat", "users.current_lng", DB::raw("6371 * acos(cos(radians(" . $lat . ")) 
-                    * cos(radians(users.current_lat)) 
-                    * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                    + sin(radians(" . $lat . ")) 
+			$query = User::select("users.id", "users.first_name", "users.last_name", "users.image", "users.current_lat", "users.current_lng", DB::raw("6371 * acos(cos(radians(" . $lat . "))
+                    * cos(radians(users.current_lat))
+                    * cos(radians(users.current_lng) - radians(" . $lon . "))
+                    + sin(radians(" . $lat . "))
                     * sin(radians(users.current_lat))) AS distance"));
 			$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $radius)->orderBy('distance', 'asc')->limit($driverlimit);
 			//$query->where('user_type', '=',2)->orderBy('distance','asc');
@@ -6568,10 +6578,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					"vehicles.model",
 					"vehicles.vehicle_number_plate",
 					"vehicles.vehicle_image",
-					DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-					* cos(radians(users.current_lat)) 
-					* cos(radians(users.current_lng) - radians(" . $lon . ")) 
-					+ sin(radians(" . $lat . ")) 
+					DB::raw("3959 * acos(cos(radians(" . $lat . "))
+					* cos(radians(users.current_lat))
+					* cos(radians(users.current_lng) - radians(" . $lon . "))
+					+ sin(radians(" . $lat . "))
 					* sin(radians(users.current_lat))) AS distance")
 				);
 				$query->leftJoin('driver_choose_cars', function ($join) {
@@ -6751,10 +6761,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				// $driver_radius = $settingValue->radius;
 				// $query = User::select(
 				// 	"users.*",
-				// 	DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                //     * cos(radians(users.current_lat)) 
-                //     * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                //     + sin(radians(" . $lat . ")) 
+				// 	DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                //     * cos(radians(users.current_lat))
+                //     * cos(radians(users.current_lng) - radians(" . $lon . "))
+                //     + sin(radians(" . $lat . "))
                 //     * sin(radians(users.current_lat))) AS distance")
 				// );
 				// $query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $driver_radius)->orderBy('distance', 'asc')->limit($driverlimit);
@@ -6939,7 +6949,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		$user = Auth::user();
 		$all_drivers = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2])->orderBy('first_name')->get();
-		
+
 		foreach ($all_drivers as $driver_key => $driver_value) {
 			$driver_car = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0])->first();
 			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
