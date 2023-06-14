@@ -29,14 +29,14 @@
 								   <span aria-hidden="true">&times;</span>
 								 </button>
 							   </div>
-							@endif 
+							@endif
 							@if(Session::has('success'))
 							  <div   class="alert {{ Session::get('alert-class', 'alert-success') }}">{!! session('success') !!}
 								 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
 								   <span aria-hidden="true">&times;</span>
 								 </button>
 							   </div>
-				        @endif							
+				        @endif
 							{{ Form::open(array('url' => route('sms-template.update',$template->id),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data','autocomplete'=>"off",'role'=>"presentation")) }}
 							   @csrf
 							   @method('put')
@@ -50,7 +50,7 @@
 													<span class="invalid-feedback" role="alert">
 														<strong>{{ $message }}</strong>
 													</span>
-												@enderror  
+												@enderror
 											</div>
 										</div>
 										<div class="col-12">
@@ -58,6 +58,8 @@
 												<h6 style="color: gray">Please put these tag <strong>#TIME#</strong>,<strong>#LINK#</strong>.</h6>
 											@elseif (in_array($template->id,[1,3,4]))
 												<h6 style="color: gray">Please put this tag <strong>#OTP#</strong>. where you want to add otp number</h6>
+                                            @elseif (in_array($template->id,[6]))
+                                                <h6 style="color: gray">Please put these tag <strong>#LINK#</strong>,<strong>#SERVICE_PROVIDER#</strong>.</h6>
 											@endif
 										</div>
 										<div class="col-md-6">
@@ -68,7 +70,7 @@
 													<span class="invalid-feedback" role="alert">
 														<strong>{{ $message }}</strong>
 													</span>
-												@enderror  
+												@enderror
 											</div>
 										</div>
 										<div class="col-md-6">
@@ -79,7 +81,7 @@
 													<span class="invalid-feedback" role="alert">
 														<strong>{{ $message }}</strong>
 													</span>
-												@enderror 
+												@enderror
 											</div>
 										</div>
 										<div class="col-md-12 text-center">
@@ -104,22 +106,22 @@
 @endsection
 
 @section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
 
 <style type="text/css">
 	.invalid-feedback {
 		display: block !important;
 	}
-</style> 
+</style>
 
 
 <script type="text/javascript">
 	$(function(){
 		$('#userCreate').hide();
-		
+
 		setTimeout(function(){
 			$('[autocomplete=off]').val('');
 			$('#userCreate').show();
