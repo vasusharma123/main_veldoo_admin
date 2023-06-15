@@ -2854,7 +2854,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$settings = Setting::first();
         $settingValue = json_decode($settings['value']);
 		try {
-			$rideDetail = $ride = Ride::find($request->ride_id);
+			$rideDetail = Ride::find($request->ride_id);
+			$ride = Ride::find($request->ride_id);
 
 			if (!empty($request->note)) {
 				$ride->note = $request->note;
