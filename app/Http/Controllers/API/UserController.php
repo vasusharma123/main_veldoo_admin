@@ -2854,7 +2854,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$settings = Setting::first();
         $settingValue = json_decode($settings['value']);
 		try {
-			$ride = Ride::find($request->ride_id);
+			$rideDetail = $ride = Ride::find($request->ride_id);
 
 			if (!empty($request->note)) {
 				$ride->note = $request->note;
@@ -3066,6 +3066,18 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
+			
+			if ($request->status == 3 && empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
+				$message_content = "";
+				$SMSTemplate = SMSTemplate::find(6);
+				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->german_content));
+				} else {
+					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->english_content));
+				}
+				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+			}
+			
 			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			Log::info($exception->getMessage()."--".$exception->getLine());
