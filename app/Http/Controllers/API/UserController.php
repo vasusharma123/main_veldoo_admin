@@ -5219,8 +5219,21 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride->alert_time = $request->alert_time;
 						$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($date_time)));
 					} else {
-						$ride->alert_time = 15;
-						$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($date_time)));
+						if($date_time > date('Y-m-d H:i:s')){
+							$to = Carbon::createFromFormat('Y-m-d H:i:s', $date_time);
+							$from = now();
+							$diff_in_minutes = $to->diffInMinutes($from);
+							if($diff_in_minutes >= 15) {
+								$ride->alert_time = 15;
+								$alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($date_time)));
+							} else {
+								$ride->alert_time = $diff_in_minutes;
+								$alert_notification_date_time = date("Y-m-d H:i:s");
+							}
+						} else {
+							$ride->alert_time = 0;
+							$alert_notification_date_time = date('Y-m-d H:i:s');
+						}
 					}
 				}
 
