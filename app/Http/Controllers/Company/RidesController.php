@@ -74,7 +74,7 @@ class RidesController extends Controller
             $ride = new Ride();
             $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
-            if ($rideUser) 
+            if ($rideUser)
             {
                 $ride->user_country_code = $rideUser->country_code;
                 $ride->user_phone = $rideUser->phone;
@@ -131,10 +131,10 @@ class RidesController extends Controller
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
                     "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                        * cos(radians(users.current_lat)) 
-                        * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                        + sin(radians(" . $lat . ")) 
+                    DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                        * cos(radians(users.current_lat))
+                        * cos(radians(users.current_lng) - radians(" . $lon . "))
+                        + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
                 $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
@@ -241,7 +241,7 @@ class RidesController extends Controller
             $ride = new Ride();
             $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
-            if ($rideUser) 
+            if ($rideUser)
             {
                 $ride->user_country_code = $rideUser->country_code;
                 $ride->user_phone = $rideUser->phone;
@@ -397,10 +397,10 @@ class RidesController extends Controller
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
                     "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                        * cos(radians(users.current_lat)) 
-                        * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                        + sin(radians(" . $lat . ")) 
+                    DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                        * cos(radians(users.current_lat))
+                        * cos(radians(users.current_lng) - radians(" . $lon . "))
+                        + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
                 $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
@@ -601,5 +601,5 @@ class RidesController extends Controller
         }
         return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
     }
-    
+
 }
