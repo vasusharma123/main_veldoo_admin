@@ -338,7 +338,7 @@ class UserController extends Controller
 		$where2 = ['password' => request('password')];
 		if (!empty($request->phone)) {
 			$where2['phone'] = ltrim($request->phone, "0");
-			$where2['country_code'] = $request->country_code;
+			$where2['country_code'] = ltrim($request->country_code,"+");
 		}
 		$where['user_type'] = 1;
 		$where2['user_type'] = 1;
@@ -479,7 +479,7 @@ class UserController extends Controller
 		}
 
 		$haveOtp->delete();
-		$userData = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
+		$userData = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
 
 		//$userData = User::where('phone', $request->phone)->first();
 		Auth::login($userData);
@@ -536,7 +536,7 @@ class UserController extends Controller
 		}
 
 		$haveOtp->delete();
-		$userData = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		$userData = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 		if (!empty($userData)) {
 			Auth::login($userData);
 
@@ -709,7 +709,7 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
+			$user = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 
 			//print_r($user)
 			//$user=\App\User::where('phone',$request->phone)->where('country_code',$request->country_code)->first();
@@ -739,15 +739,15 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
+			$user = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			if ($user) {
 				if(!empty($user->password)){
-					return response()->json(['data' => ['account_created' => 1, 'password_created' => 1], 'message' => 'Already registered & login'], $this->successCode);
+					return response()->json(['data' => ['account_created' => 1, 'password_created' => 1, 'user' => $user], 'message' => 'Already registered & login'], $this->successCode);
 				} else {
-					return response()->json(['data' => ['account_created' => 1, 'password_created' => 0], 'message' => 'Already registered but not login'], $this->successCode);
+					return response()->json(['data' => ['account_created' => 1, 'password_created' => 0, 'user' => $user], 'message' => 'Already registered but not login'], $this->successCode);
 				}
 			} else {
-				return response()->json(['data' => ['account_created' => 0, 'password_created' => 0], 'message' => 'Not Registered'], $this->successCode);
+				return response()->json(['data' => ['account_created' => 0, 'password_created' => 0, 'user' => null], 'message' => 'Not Registered'], $this->successCode);
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -778,7 +778,7 @@ class UserController extends Controller
 			if ($validator->fails()) {
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
-			$usercheck = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
+			$usercheck = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			if (!empty($usercheck)) {
 				return response()->json(['success' => true, 'message' => 'This Phone number already used.'], $this->warningCode);
 			}
@@ -887,7 +887,7 @@ class UserController extends Controller
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
-		$isUser = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+		$isUser = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")])->first();
 		if (empty($isUser)) {
 			return response()->json(['message' => 'Your number is not registered with us.'], $this->warningCode);
 		}
@@ -906,7 +906,7 @@ class UserController extends Controller
 		$otp = rand(1000, 9999);
 		$data = array('name' => $otp);
 
-		$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
+		$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
 
 		/* 	$m = Mail::send('mail', $data, function($message) use ($request, $isUser) {
 			$message->to($isUser->email, 'OTP')->subject('OTP Verification Code');
@@ -918,7 +918,7 @@ class UserController extends Controller
 
 		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 
-		$otpverify = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+		$otpverify = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")])->first();
 
 
 		if (!empty($otpverify)) {
@@ -927,7 +927,7 @@ class UserController extends Controller
 		} else {
 			$otpverify = new OtpVerification();
 			$otpverify->phone = ltrim($request->phone, "0");
-			$otpverify->country_code = $request->country_code;
+			$otpverify->country_code = ltrim($request->country_code,"+");
 			$otpverify->otp = $otp;
 			$otpverify->expiry = $endTime;
 		}
@@ -1271,7 +1271,7 @@ class UserController extends Controller
 				$user->fcm_token = $request->fcm_token;
 			}
 			if (!empty($request->country_code)) {
-				$user->country_code = $request->country_code;
+				$user->country_code = ltrim($request->country_code,"+");
 			}
 			if (!empty($request->phone)) {
 				$user->phone = ltrim($request->phone, "0");
@@ -1555,10 +1555,10 @@ class UserController extends Controller
 			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 			$otp = rand(1000, 9999);
 			OtpVerification::updateOrCreate(
-				['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+				['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")],
 				['otp' => $otp, 'expiry' => $endTime, 'device_type' => $request->device_type??""]
 			);
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
+			$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
 			return response()->json(['message' => __('Send Successfully.'), 'otp' => $otp], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
@@ -1582,7 +1582,7 @@ class UserController extends Controller
 			$expiryMin = config('app.otp_expiry_minutes');
 			// OtpVerification
 			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+			$haveOtp = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Invalid OTP'], $this->warningCode);
 			}
@@ -1590,7 +1590,7 @@ class UserController extends Controller
 				return response()->json(['message' => 'OTP is expired'], $this->warningCode);
 			}
 			$haveOtp->delete();
-			$userData = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+			$userData = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
 			if (!empty($userData)) {
 				$user = Auth::login($userData);
 				if (!empty($request->fcm_token)) {
@@ -6104,12 +6104,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$user = \App\User::select('id', 'first_name', 'last_name', 'email', 'country_code', 'phone', 'image', 'user_type')
-				->where('country_code', $request->country_code)->where('phone', ltrim($request->phone, "0"))->where('user_type', 1)->first();
+				->where('country_code', ltrim($request->country_code,"+"))->where('phone', ltrim($request->phone, "0"))->where('user_type', 1)->first();
 
 			//$userData=\App\UserData::whereRaw('json_contains(phone_number, \''.$request->phone.'\')')->first();
 
 			$phonenum = ltrim($request->phone, "0");
-			$countryCode = $request->country_code;
+			$countryCode = ltrim($request->country_code,"+");
 			$userData = \App\UserData::whereJsonContains('phone_numbers', ['country_code' => $countryCode])->whereJsonContains('phone_numbers', ['phone' => $phonenum])->first();
 			$userData2 = \App\UserData::where('user_id', $user['id'])->first();
 			if (empty($user) && empty($userData)) {
@@ -6225,7 +6225,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$input['phone'] = ltrim($request->phone_number, "0");
 			$input['email'] = $request->email;
 			$input['addresses'] = $request->addresses;
-			$input['country_code'] = $request->country_code;
+			$input['country_code'] = ltrim($request->country_code,"+");
 			$input['refer_user_id'] = Auth::user()->id;
 			$input['first_name'] = $request->first_name;
 			$input['last_name'] = $request->last_name;
@@ -7024,7 +7024,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 			// $user = User::where([['user_type', '=', 1]])->find($request->user_id);
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone_number, "0"), 'user_type' => 1])->first();
+			$user = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone_number, "0"), 'user_type' => 1])->first();
 			if (!empty($user) && empty($user->password)) {
 				$user->password = Hash::make($request->password);
 				$user->update();
