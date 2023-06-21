@@ -605,7 +605,7 @@ class Socket{
 						this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
 					} else {
 						data.is_ride_deleted = 1;
-						this.io.emit(`ride-update-response`, data);
+						this.io.to(driversocketid).emit(`master-driver-response`, data);
 					}
 				});
 			});
