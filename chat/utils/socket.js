@@ -592,7 +592,8 @@ class Socket{
 				if (ridedata) {
 					this.io.emit(`ride-update-response`, ridedata);
 				} else {
-					this.io.emit(`ride-update-response`, { "is_ride_deleted" : 1 });
+					data.is_ride_deleted = 1;
+					this.io.emit(`ride-update-response`, data);
 				}
 
 				var master_drivers = await helper.masterDriverList();
@@ -603,7 +604,8 @@ class Socket{
 					if (ridedata) {
 						this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
 					} else {
-						this.io.emit(`ride-update-response`, { "is_ride_deleted" : 1 });
+						data.is_ride_deleted = 1;
+						this.io.emit(`ride-update-response`, data);
 					}
 				});
 			});
