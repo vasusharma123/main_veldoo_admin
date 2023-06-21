@@ -16,6 +16,7 @@ class RideResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'note' => $this->note,
             'pick_lat' => $this->pick_lat,
             'pick_lng' => $this->pick_lng,
