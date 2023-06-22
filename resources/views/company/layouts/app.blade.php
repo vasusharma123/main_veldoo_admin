@@ -12,8 +12,27 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <!-- Custom CSS -->
         <link href="{{ asset('new-design-company/assets/css/style.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
     </head>
     <body>
+        <style>
+            .alert-success {
+                --bs-alert-color: #0f5132 !important;
+                --bs-alert-bg: #fc4c02 !important;
+                --bs-alert-border-color: #fc4c02 !important;
+                color: white !important;
+                max-width: 600px !important;
+                margin-top: 30px !important;
+                margin-bottom: 0px !important;
+            }
+            .active>.page-link, .page-link.active {
+                z-index: 3;
+                color: white !important;
+                background-color: #fc4c02 !important;
+                border-color: #fc4c02 !important;
+            }
+        </style>
         @include('company.elements.header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">
@@ -35,6 +54,8 @@
         <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.8/index.global.min.js'></script>
         <!-- Custom Js -->
         <script src="{{ asset('new-design-company/assets/js/main.js') }}" type="application/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
         <script>
             //Swiper Slider Car
             var swiper = new Swiper(".carSwiper", {
@@ -72,35 +93,43 @@
                     }
                 }
             };
-            new TomSelect('#tom-select-it',settings);
+            if ($('#tom-select-it').length > 0) {
+                new TomSelect('#tom-select-it',settings);
+            }
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    themeSystem: 'bootstrap5',
-                    initialView: 'dayGridMonth',
-                    headerToolbar: {
-                        start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
-                        center: '',
-                        end: '' // will normally be on the right. if RTL, will be on the left
-                    }
-                });
-                calendar.render();
+                if ($('#calendar').length > 0)
+                {
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        themeSystem: 'bootstrap5',
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                            center: '',
+                            end: '' // will normally be on the right. if RTL, will be on the left
+                        }
+                    });
+                    calendar.render();
+                }
             });
             document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar2');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
+                if ($('#calendar').length > 0)
+                {
+                    var calendarEl = document.getElementById('calendar2');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
 
-                    themeSystem: 'bootstrap5',
-                    initialView: 'timeGridWeek',
-                    headerToolbar: {
-                        start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
-                        center: '',
-                        end: '' // will normally be on the right. if RTL, will be on the left
-                    }
-                });
-                calendar.render();
+                        themeSystem: 'bootstrap5',
+                        initialView: 'timeGridWeek',
+                        headerToolbar: {
+                            start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                            center: '',
+                            end: '' // will normally be on the right. if RTL, will be on the left
+                        }
+                    });
+                    calendar.render();
+                }
             });
         </script>
         @yield('footer_scripts')

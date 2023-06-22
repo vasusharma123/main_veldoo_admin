@@ -1,225 +1,245 @@
 @extends('company.layouts.app')
 @section('content')
-{{ Form::open(array('url' => route('managers.store'),'class'=>'form-horizontal form-material add_details_form','id'=>'store','enctype' => 'multipart/form-data')) }}
-    @csrf
-    <div class="row">
-        <div class="col-12">
-            <h2 class="board_title">Managers</h2>
-            @include('company.company_flash_message')
+<section class="add_booking_section">
+    <article class="add_new_booking_box">
+        <div class="action_btn text-end page_btn">
+            <button type="button" class="btn add_new_booking_btn slider_table">
+                <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon" class="img-fluid add_booking_icon" />
+                <span class="text_button">Add Manager</span>
+            </button>
         </div>
-        <div class="col-xl-4 col-lg-5 col-md-6 col-sm-12 col-xs-12">
-            <div class="search_list">
-                <div class="searc_input">
-                    <input type="search" class="form-control input_fields_search search_input" placeholder="Search">
-                    <i class="bi bi-search button_search"></i>
+    </article>
+</section>
+<section class="name_section_box">
+    <article class="container_box pt-0">
+        <h1 class="main_heading d-flex"><span>Managers</span></h1>
+        @include('company.company_flash_message')
+    </article>
+</section>
+<section class="">
+    <article class="form_inside">
+        <div class="form_add_managers">
+            <form class="add_managers inside_custom_form " action="{{ route('managers.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="container-fluid form_container">
+                    <div class="row m-0 w-100">
+                        <div class="col-lg-7 col-md-7 col-sm-12 col-12">
+                            <div class="row w-100 m-0 gx-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
+                                    <div class="img_preview position-relative mobile_avatar">
+                                        <input type="file" id="photo" class="form-control main_field position-relative" name="image">
+                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" required>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" required>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                                    <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
+                            <div class="img_preview position-relative desktop_view">
+                                <input type="file" id="photo" class="form-control main_field position-relative" name="image">
+                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                            </div>
+                            <div class="form_btn text-end mobile_margin">
+                                <button type="submit" class="btn save_form_btn">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="list_search_output">
-                    <ul class="list-group list-group-flush usersLiPar">
-                        @foreach ($managers as $key=>$manager)
-                            <li class="list-group-item usersLi" data-key="{{ $key }}">
-                                <a href="#"> 
-                                    <span class="point_list position-relative text-capitalize">
-                                        <input type="checkbox" name="selectedPoint" class="input_radio_selected">
-                                        {{ $manager->name }}
-                                    </span>
-                                </a> 
-                                <span class="action_button deleteButton" data-id="{{ $manager->id }}" style="cursor: pointer">
-                                    {{-- <span class="code_country position-relative">SA</span>  --}}
-                                    <i class="bi bi-trash3 dlt_list_btn"></i>
-                                </span>
-                            </li>
-                        @endforeach
-                    </ul>
+            </form>
+        </div>
+        <div class="edit_box inside_custom_form" style="display: none">
+            <div class="container-fluid form_container">
+                <div class="row m-0 w-100">
+                    <div class="col-lg-7 col-md-7 col-sm-12 col-12">
+                        <div class="row w-100 m-0 gx-2">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
+                                <div class="img_preview position-relative mobile_avatar">
+                                    <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
+                                    <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview1"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                <input type="text" class="form-control main_field" form="updateForm" name="name" placeholder="Name" aria-label="Name" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
+                                <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
+                                <span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
+                        <div class="img_preview position-relative desktop_view">
+                            <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
+                            <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview2"/>
+                        </div>
+                        <div class="form_btn text-end mobile_margin">
+                            <button type="submit" form="updateForm" class="btn save_form_btn">Update Changes</button>
+                        </div>
+                    </div>
                 </div>
-                <!-- List Search End -->
-            </div>
-            <!-- Search List -->
-            <div class="details_box add_box">
-                <div class="boxHeader">
-                    <h2 class="board_title mb-0">Add Manager</h2>
-                    <button class="btn save_btn">Add</button>
-                </div>
-                {{-- <div class="form-group">
-                    <input type="text" class="form-control inside_input_field mb-2" placeholder="First Name" required />
-                </div> --}}
-                <div class="form-group">
-                    <input type="text" class="form-control inside_input_field mb-2" name="name" placeholder="Name" required />
-                </div>
-                <div class="form-group">
-                    <input type="text" name="phone" id="Regphones" class="form-control inside_input_field mb-2" placeholder="Phone Number"/>
-                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control inside_input_field mb-2" name="email" placeholder="Email" required />
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control inside_input_field mb-2" name="password" placeholder="Password" required />
-                </div>
-                {{-- <div class="form-group">
-                    <textarea class="form-control inside_input_field mb-2" required placeholder="Note" rows="5"></textarea>
-                </div> --}}
-            </div>
-            <div class="details_box edit_box" style="display: none">
-                <div class="boxHeader">
-                    <h2 class="board_title mb-0">Edit Manager</h2>
-                    <button class="btn save_btn" type="submit" form="updateForm">Update</button>
-                    <button class="btn save_btn add_new_manager_btn" type="button">Add</button>
-                </div>
-                {{-- <div class="form-group">
-                    <input type="text" class="form-control inside_input_field mb-2" placeholder="First Name" required />
-                </div> --}}
-                <div class="form-group">
-                    <input type="text" class="form-control inside_input_field mb-2" form="updateForm" name="name" placeholder="Name" required />
-                </div>
-                <div class="form-group">
-                    <input type="text" name="phone" id="Regphones_edit" form="updateForm" class="form-control inside_input_field mb-2" placeholder="Phone Number"/>
-                    <input type="hidden" value="+1" class="country_code_edit" form="updateForm" id="country_code_edit" name="country_code" />
-                </div>
-                <div class="form-group">
-                    <input type="email" class="form-control inside_input_field mb-2" form="updateForm" name="email" placeholder="Email" required />
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control inside_input_field mb-2" form="updateForm" name="password" placeholder="Password"/>
-                    <span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
-                </div>
-                {{-- <div class="form-group">
-                    <textarea class="form-control inside_input_field mb-2" required placeholder="Note" rows="5"></textarea>
-                </div> --}}
             </div>
         </div>
-        <!-- Left Side Board -->
-        <div class="col-xl-8 col-lg-7 col-md-6 col-sm-12 col-xs-12">
-            <div class="map_views h-100">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d102152.55978232603!2d75.46373732010797!3d31.370071732694594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1673768174190!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
+    </article>
+</section>
+<section class="table_all_content mt-3 ms-0">
+    <article class="table_container">
+        <div class="table-responsive">
+            <table class="table table-stripes custom_table_view manager_lists ">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th class="">Email Address</th>
+                        <th class="">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($managers as $key=>$manager)
+                        <tr>
+                            <td>{{ $manager->name }}</td>
+                            <td>+{{ $manager->country_code }} {{ $manager->phone }}</td>
+                            <td class="">{{ $manager->email }}</td>
+                            <td class="">
+                                <div class="">
+                                    <button class="btn-info btn btn-sm text-white mr-2 editButton" data-user="{{ json_encode($manager) }}">
+                                        <em class="fa fa-pencil"></em>
+                                    </button>
+                                    <button class="btn-danger btn btn-sm text-white deleteButton" data-id="{{ $manager->id }}">
+                                        <em class="fa fa-trash"></em>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        <!-- Right Map Side-->
-    </div>
-</form>
-<form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy','~') }}" id="deleteForm" method="POST">
-    @method('delete')
-    @csrf
-</form>
-<form action="{{ route('managers.update','~') }}" id="updateForm" method="POST">
-    @method('put')
-    @csrf
-</form>
+        {{ $managers->links('pagination.new_design') }}
+    </article>
+    <form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy','~') }}" id="deleteForm" method="POST">
+        @method('delete')
+        @csrf
+    </form>
+    <form action="{{ route('managers.update','~') }}" id="updateForm" method="POST" enctype="multipart/form-data">
+        @method('put')
+        @csrf
+    </form>
+</section>
 @endsection
-<!-- ============================================================== -->
-<!-- End Container fluid  -->
 @section('footer_scripts')
-    <script type="text/javascript">
-        users_fixed = JSON.parse('<?php echo ($managers) ?>');
-        users = JSON.parse('<?php echo ($managers) ?>');
-        $(document).on('click','.deleteButton',function(){
-            action = $('#deleteForm').attr('action');
-            action = action.replace('~',$(this).data('id'));
-            $('#deleteForm').attr('action',action);
-            $('#deleteForm').submit();
-        });
-        $(document).on('click','.add_new_manager_btn',function(){
-            $('.edit_box').hide();
-            $('.add_box').show();
-        });
-        $(document).on('click','.usersLi',function(){
-            user = users[$(this).data('key')];
-            action = $('#updateForm').attr('action');
-            action = action.replace('~',user.id);
-            $('#updateForm').attr('action',action);
-
-            $('.edit_box').find("input[name='name']").val(user.name);
-            $('.edit_box').find("input[name='phone']").val(user.phone);
-            $('.edit_box').find("input[name='country_code']").val(user.country_code);
-            $('.edit_box').find("input[name='email']").val(user.email);
-
-            input_edit = $('#Regphones_edit').intlTelInput("setNumber","+"+user.country_code+user.phone);
-            input_edit.on("countrychange", function() {
-                $(".country_code_edit").val($("#Regphones_edit").intlTelInput("getSelectedCountryData").dialCode);
+<script>
+    $(document).on('click','.deleteButton',function(){
+        action = $('#deleteForm').attr('action');
+        action = action.replace('~',$(this).data('id'));
+        $('#deleteForm').attr('action',action);
+        $('#deleteForm').submit();
+    });
+    $(document).ready(function(){
+        $("a").tooltip();
+    });
+    var input = document.querySelector("#phone");
+    var iti = window.intlTelInput(input, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "us";
+                success(countryCode);
             });
+        },
+        initialCountry:"us",
+        separateDialCode: true,
+        utilsScript: "{{url('assets/js/utils.js')}}",
+        autoFormat: false,
+        nationalMode: true,
+        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+            return "";
+        },
+    });
+    iti.promise.then(function() {
+        input.addEventListener("countrychange", function() {
+            var selectedCountryData = iti.getSelectedCountryData();
+            $('#country_code').val(selectedCountryData.dialCode);
+        });
+    });
 
-            $('.edit_box').show();
-            $('.add_box').hide();
-        });
-        $(document).on('click', '#delete_record', function(e) {
-            e.preventDefault();
-            var selected_checkbox = [];
-            $("input.editor-active:checked").each(function() {
-                selected_checkbox.push($(this).data("id"));
+    var inputEdit = document.querySelector("#phone_edit");
+    var itiEdit = window.intlTelInput(inputEdit, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "us";
+                success(countryCode);
             });
-            if (selected_checkbox.length) {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You want to delete these rides!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            type: "delete",
-                            url: "{{ route('company.rides.delete_multiple') }}",
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                                "selected_ids": selected_checkbox
-                            },
-                            success: function(data) {
-                                if (data.status) {
-                                    Swal.fire({
-                                        title: 'Deleted',
-                                        text: data.message,
-                                        icon: 'success',
-                                        showConfirmButton: false
-                                    });
-                                    setTimeout(function() {
-                                        location.reload(true);
-                                    }, 2000);
-                                } else {
-                                    Swal.fire(
-                                        'Error',
-                                        data.message,
-                                        'error'
-                                    )
-                                }
-                            }
-                        });
-                    }
-                });
-            } else {
-                Swal.fire(
-                    'Error',
-                    "Select atleast one ride",
-                    'error'
-                )
-            }
+        },
+        initialCountry:"us",
+        nationalMode: true,
+        separateDialCode: true,
+        utilsScript: "{{url('assets/js/utils.js')}}",
+        autoFormat: false,
+        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+            return "";
+        },
+    });
+    itiEdit.promise.then(function() {
+        inputEdit.addEventListener("countrychange", function() {
+            var selectedCountryData = itiEdit.getSelectedCountryData();
+            $('#country_code_edit').val(selectedCountryData.dialCode);
         });
+    });
+    $(document).on('click','.editButton',function(){
 
-        $(document).on('keyup','.search_input',function(){
-            if ($(this).val()!="") 
-            {
-                filters.searchText = $(this).val();
-                filterUsers = renderBySearch(users_fixed, filters,'managers');
-            }
-            else
-            {
-                filterUsers = users_fixed;
-            }
-            div = "";
-            $.each(filterUsers, function (index, filterUser) {
-                div += `<li class="list-group-item usersLi" data-key="`+index+`">
-                                <a href="#"> 
-                                    <span class="point_list position-relative text-capitalize">
-                                        <input type="checkbox" name="selectedPoint" class="input_radio_selected">
-                                        `+filterUser.name+`
-                                    </span>
-                                </a> 
-                                <span class="action_button deleteButton" data-id=" `+filterUser.id+`" style="cursor: pointer">
-                                    <i class="bi bi-trash3 dlt_list_btn"></i>
-                                </span>
-                            </li>`;
-            });
-            $('.usersLiPar').html(div);
-        });
-    </script>
-@stop
+        user = $(this).data('user');
+        action = $('#updateForm').attr('action');
+        action = action.replace('~',user.id);
+        $('#updateForm').attr('action',action);
+        if ($('.edit_box').find("#imgPreview2").length > 0)
+        {
+            $('.edit_box').find("#imgPreview2").attr('src',"{{ asset('storage') }}/"+user.image);
+        }
+        if ($('.edit_box').find("#imgPreview1").length > 0)
+        {
+            $('.edit_box').find("#imgPreview1").attr('src',"{{ asset('storage') }}/"+user.image);
+        }
+        $('.edit_box').find("input[name='name']").val(user.name);
+        $('.edit_box').find("input[name='phone']").val(user.phone);
+        $('.edit_box').find("input[name='country_code']").val(user.country_code);
+        $('.edit_box').find("input[name='email']").val(user.email);
+        $('.edit_box').find("input[name='password']").val('');
+        $('.edit_box').show();
+        $('.form_add_managers').hide();
+
+        itiEdit.setNumber("+"+user.country_code+user.phone);
+    });
+    // $(document).on('change','#photo',function(){
+    //     const file = this.files[0];
+    //     console.log(file);
+    //     if (file){
+    //     let reader = new FileReader();
+    //     reader.onload = function(event){
+    //         console.log(event.target.result);
+    //         $('#imgPreview').attr('src', event.target.result);
+    //     }
+    //     reader.readAsDataURL(file);
+    //     }
+    // });
+</script>
+@endsection

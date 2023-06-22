@@ -1,7 +1,7 @@
 $(function(){
 
 
-    //Password View 
+    //Password View
     $(document).on('click','.password_icon', function(){
         var Inputtype = $(this).parents('.field').find('.loginField').attr('type');
         if(Inputtype == 'password'){
@@ -49,13 +49,13 @@ $(function(){
     //Slide animation
 
     $(document).on('click','.menu_toggle_btn',function(){
-     
+
         $(this).stop().toggleClass('show');
         $('.cs_menus').stop().slideToggle();
-        
+
     });
-    
-   
+
+
 
 
     //Stop Reconfirmation
@@ -63,7 +63,7 @@ $(function(){
         window.history.replaceState( null, null, window.location.href );
     }
 
-   
+
     //hideshownav
     $('.next-tabs').hide();
     $('.tabs_links_btns[href^="#"]').on('click', function(event) {
@@ -71,12 +71,12 @@ $(function(){
         $(this).addClass('active');
         $('.resume').hide();
         var target = $(this).attr('href');
-    
+
         $(target).show();
         console.log(target);
-    
+
     });
-    
+
 
     // Side Menu Edit
     $(document).on('click','.close_modal_action',function(){
@@ -91,12 +91,12 @@ $(function(){
     $(document).on('click','.add_new_booking_btn',function(){
             $('.close_modal_action').addClass('show');
             $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
-       
+
     });
     $(document).on('click','.addNewBtn_cs ',function(){
             $('.close_modal_action').addClass('show');
             $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
-       
+
     });
 
     // Side Menu View
@@ -112,14 +112,15 @@ $(function(){
     $(document).on('click','.btn_view_booking',function(){
             $('.close_modal_action_view').addClass('show');
             $('#view_booking').css({'margin-right':'0px','transition':'all 400ms linear'});
-       
+
     });
 //slider Table
 $(window).on('load',function(){
     if($(window).width() < 430 ){
         $('.form_add_managers').hide();
-    
+
         $('.slider_table').on('click',function(){
+            $('.edit_box').hide();
             $(this).toggleClass('active');
             if($(this).hasClass('active')){
                 $(this).parents('.dashbaord_bodycontent').find('.form_add_managers').stop().slideDown();
@@ -127,7 +128,7 @@ $(window).on('load',function(){
             else{
                 $(this).parents('.dashbaord_bodycontent').find('.form_add_managers').stop().slideUp();
             }
-        
+
         });
     }
 });
@@ -139,19 +140,19 @@ $(window).on('load',function(){
     document.addEventListener('contextmenu', (e) => e.preventDefault());
 
     function ctrlShiftKey(e, keyCode) {
-    return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
+        // return e.ctrlKey && e.shiftKey && e.keyCode === keyCode.charCodeAt(0);
     }
 
     document.onkeydown = (e) => {
     // Disable F12, Ctrl + Shift + I, Ctrl + Shift + J, Ctrl + U
-    if (
-        event.keyCode === 123 ||
-        ctrlShiftKey(e, 'I') ||
-        ctrlShiftKey(e, 'J') ||
-        ctrlShiftKey(e, 'C') ||
-        (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
-    )
-        return false;
+    // if (
+    //     event.keyCode === 123 ||
+    //     ctrlShiftKey(e, 'I') ||
+    //     ctrlShiftKey(e, 'J') ||
+    //     ctrlShiftKey(e, 'C') ||
+    //     (e.ctrlKey && e.keyCode === 'U'.charCodeAt(0))
+    // )
+    //     return false;
     };
 
 });

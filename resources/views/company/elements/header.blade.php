@@ -18,10 +18,10 @@
                                             <a class="nav-link dotnot">My Booking</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="">Managers</a>
+                                            <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="">Users</a>
+                                            <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="">Settings</a>
@@ -30,6 +30,13 @@
                                 </nav>
                             </div>
                             @yield('header_button')
+                            <div class="viewUser_content d-flex align-items-center">
+                                <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
+                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
+                                    <span class="user_name">Jameson</span>
+                                    <span class="user_position">Admin</span>
+                                </div>
+                            </div>
                             {{-- <button type="button" class="btn addNewBtn_cs me-4">
                                 <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
                                 <span class="text_button">Add Manager</span>
