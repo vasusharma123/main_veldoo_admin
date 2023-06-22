@@ -6068,8 +6068,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			$text = $request->text;
 			if (isset($request->text) && $request->text != '') {
-				$users = User::where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->orderBy('first_name', 'ASC')->paginate(100);
-				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%')->count();
+				$users = User::where(['user_type' => 1])->where(function($query) use($text){
+					$query->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%');
+				})->orderBy('first_name', 'ASC')->paginate(100);
+				$usercount = User::where(['user_type' => 1])->where(function($query) use($text){
+					$query->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%');
+				})->count();
 			} else {
 				$users = User::where([['user_type', '=', 1]])->orderBy('first_name', 'ASC')->paginate(100);
 				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->count();
