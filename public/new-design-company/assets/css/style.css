@@ -2,7 +2,7 @@
 /* All Variables */
 :root{
     --primary-color: #FC4C02;
-    --secondary-color: #060F21; 
+    --secondary-color: #060F21;
     --sidebar-hover-bg: #FFEEE7;
     --Edit-green : #36E43D;
     --Delete-red : #F33342;
@@ -16,8 +16,8 @@
     --table-header : #F2F2F2;
     --table-stroke : #E4E2E4;
     --tooltip : #031819;
-    --roboto-font : 'Roboto', sans-serif; 
-    --oswald-font : 'Oswald', sans-serif; 
+    --roboto-font : 'Roboto', sans-serif;
+    --oswald-font : 'Oswald', sans-serif;
     --heebo-font : 'Heebo', sans-serif;
     --open-sans-font : 'Open Sans', sans-serif;
 }
@@ -25,6 +25,11 @@
 *,html,body{
     margin: 0;
     padding: 0;
+}
+
+.next-tabs
+{
+    display: none;
 }
 
 body{
@@ -898,7 +903,7 @@ span.status_box{
     font-weight: 400;
     font-size: 16px;
     width: 100%;
-    
+
 }
 .add_managers.inside_custom_form .main_field{
     background: rgba(255, 255, 255, 0.75);
@@ -1163,7 +1168,7 @@ input#photo{
     font-weight: 500;
     flex-direction: column;
     align-items: center;
-    
+
 }
 .date_number {
     font-size: 20px;
@@ -1365,7 +1370,7 @@ button.fc-today-button.fc-button.fc-button-primary {
         background: white;
         margin-left: 0px !important;
     }
-    
+
     .notify_icon_link {
         min-width: 40px;
     }
@@ -1375,7 +1380,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .login_form{
         width: 90%;
     }
-    
+
     .img_preview {
         min-height: 157px;
         height: 50%;
@@ -1438,7 +1443,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .menu_toggle_btn.mobile_view:focus{
         background-color: var(--secondary-color);
     }
-    
+
     .method_box{
         padding: 0px;
     }
@@ -1448,7 +1453,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .passenger_box_content {
         flex-wrap: wrap;
     }
-    
+
     .header_top{
         border-bottom: none;
         padding-bottom: 0;
@@ -1457,7 +1462,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .empty_field{
         font-size: 20px;
     }
-   
+
     .add_booking_modal{
         padding-bottom: 100px;
     }
@@ -1488,14 +1493,14 @@ button.fc-today-button.fc-button.fc-button-primary {
     .lightgreyBg {
         background: white;
     }
-    
+
     .filter_table{
         display: block;
     }
     .add_managers.inside_custom_form {
         padding: 20px 0px;
     }
-    
+
     .mobile_margin{
         margin-top: 30px;
     }
@@ -1518,7 +1523,7 @@ button.fc-today-button.fc-button.fc-button-primary {
 }
 
 @media (max-width:330px){
-    
+
     .Toggler_close.mobile_view {
         display: block !important;
     }
@@ -1561,8 +1566,8 @@ button.fc-today-button.fc-button.fc-button-primary {
         width: 23px;
         height: 23px;
     }
-    
-   
+
+
 }
 @media (max-width: 300px){
     .col-12,.col-2,.col-3,.col-4,.col-1,.col-6,.col-5{
@@ -1578,7 +1583,7 @@ button.fc-today-button.fc-button.fc-button-primary {
 }
 
 @media (max-width:768px) {
-    
+
     .login_form_left_side_img {
         display: none;
     }
@@ -1591,7 +1596,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .login_form_content .tagline{
          margin-bottom:23px;
     }
-    
+
     #photo:before,.photo:before{
         width: 67px;
     }
@@ -1614,8 +1619,8 @@ button.fc-today-button.fc-button.fc-button-primary {
     .table_all_content {
         margin-left: 0px;
     }
-    
-    
+
+
     .divides_next_link{
         margin: 20px 0px 15px;
     }
@@ -1679,13 +1684,13 @@ button.fc-today-button.fc-button.fc-button-primary {
         display: flex !important;
         margin-left: 10px;
         background-color: transparent !important;
-        border-color: transparent !important; 
+        border-color: transparent !important;
         color: white !important;
     }
     .menu_toggle_btn.mobile_view .line_menu{
         background-color: white !important;
     }
-    
+
 }
 
 @media (max-width:430px){
@@ -1695,7 +1700,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .form_add_managers{
         display: none;
     }
-    
+
     .navbar-nav.align-items-center.newTop_menu_ul {
         flex-direction: column !important;
         align-items: flex-start !important;
@@ -1715,7 +1720,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     .menu_toggle_btn {
         width: 31px;
         height: 31px;
-        
+
     }
     .page_btn{
         display: block;

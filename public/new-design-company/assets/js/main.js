@@ -65,7 +65,6 @@ $(function(){
 
 
     //hideshownav
-    $('.next-tabs').hide();
     $('.tabs_links_btns[href^="#"]').on('click', function(event) {
         $('.tabs_links_btns').removeClass('active');
         $(this).addClass('active');

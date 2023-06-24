@@ -10,7 +10,7 @@
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="index.php">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('company.rides') }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
@@ -24,17 +24,20 @@
                                             <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="">Settings</a>
+                                            <a class="nav-link" href="{{ route('company.settings') }}">Settings</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('logout') }}?company=true">Logout</a>
                                         </li>
                                     </ul>
                                 </nav>
                             </div>
                             @yield('header_button')
                             <div class="viewUser_content d-flex align-items-center">
-                                <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
+                                <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <span class="user_name">Jameson</span>
-                                    <span class="user_position">Admin</span>
+                                    <span class="user_name">{{ Auth::user()->name }}</span>
+                                    <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span>
                                 </div>
                             </div>
                             {{-- <button type="button" class="btn addNewBtn_cs me-4">
