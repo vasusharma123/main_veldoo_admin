@@ -1199,11 +1199,21 @@ class UserController extends Controller
 
 	public function change_password(Request $request)
 	{
-		$request->validate([
-			'current_password' => ['required', new MatchOldPassword],
+        $validator = Validator::make($request->all(), [
+            'current_password' => ['required', new MatchOldPassword],
 			'new_password' => ['required'],
 			'new_confirm_password' => ['same:new_password'],
-		]);
+        ]);
+        if ($validator->fails())
+        {
+            $fields =['current_password','new_password','new_confirm_password'];
+            $error_message = "";
+            foreach ($fields as $field) {
+                if (isset($validator->errors()->getMessages()[$field][0]) && !empty($validator->errors()->getMessages()[$field][0])) {
+                    return response()->json(['success' => 0, 'message' => __($validator->errors()->getMessages()[$field][0])]);
+                }
+            }
+        }
 		User::find(auth()->user()->id)->update(['password' => $request->new_password]);
 		return response()->json(['message' => __('Password changed.')], $this->successCode);
 	}
@@ -3067,7 +3077,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 				}
 			}
-			
+
 			if ($request->status == 3 && empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
 				$SMSTemplate = SMSTemplate::find(6);
@@ -3078,7 +3088,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			}
-			
+
 			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			Log::info($exception->getMessage()."--".$exception->getLine());
