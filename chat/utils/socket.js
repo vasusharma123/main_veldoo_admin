@@ -590,9 +590,21 @@ class Socket{
 				}
 				var ridedata = await helper.RideData(ride_id);
 				if (ridedata.length) {
-					this.io.emit(`ride-update-response`, ridedata);
+					if(data.change_for_all){
+						ridedata[0].change_for_all = 1;
+					} else if(data.delete_for_all){
+						ridedata[0].delete_for_all = 1;
+					} else {
+						this.io.emit(`ride-update-response`, ridedata);
+					}
 				} else {
-					this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1}]);
+					if(data.change_for_all){
+						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
+					} else if(data.delete_for_all){
+						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
+					} else {
+						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1}]);
+					}
 				}
 
 				var master_drivers = await helper.masterDriverList();
