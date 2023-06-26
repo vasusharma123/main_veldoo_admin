@@ -98,39 +98,35 @@
             }
         </script>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                if ($('#calendar').length > 0)
-                {
-                    var calendarEl = document.getElementById('calendar');
-                    var calendar = new FullCalendar.Calendar(calendarEl, {
-                        themeSystem: 'bootstrap5',
-                        initialView: 'dayGridMonth',
-                        headerToolbar: {
-                            start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
-                            center: '',
-                            end: '' // will normally be on the right. if RTL, will be on the left
-                        }
-                    });
-                    calendar.render();
-                }
-            });
-            document.addEventListener('DOMContentLoaded', function() {
-                if ($('#calendar').length > 0)
-                {
-                    var calendarEl = document.getElementById('calendar2');
-                    var calendar = new FullCalendar.Calendar(calendarEl, {
+            if ($('#calendar').length > 0)
+            {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    themeSystem: 'bootstrap5',
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                        center: '',
+                        end: '' // will normally be on the right. if RTL, will be on the left
+                    }
+                });
+                calendar.render();
+            }
+            if ($('#calendar2').length > 0)
+            {
+                var calendarEl = document.getElementById('calendar2');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
 
-                        themeSystem: 'bootstrap5',
-                        initialView: 'timeGridWeek',
-                        headerToolbar: {
-                            start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
-                            center: '',
-                            end: '' // will normally be on the right. if RTL, will be on the left
-                        }
-                    });
-                    calendar.render();
-                }
-            });
+                    themeSystem: 'bootstrap5',
+                    initialView: 'timeGridWeek',
+                    headerToolbar: {
+                        start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                        center: '',
+                        end: '' // will normally be on the right. if RTL, will be on the left
+                    }
+                });
+                calendar.render();
+            }
         </script>
         @yield('footer_scripts')
     </body>

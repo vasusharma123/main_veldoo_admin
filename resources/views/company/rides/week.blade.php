@@ -21,66 +21,13 @@
             <h1 class="main_heading">History</h1>
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
-                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('company.rides','list') }}">List View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','list') }}">List View</a></li>
                     <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','month') }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','week') }}">Week View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('company.rides','week') }}">Week View</a></li>
                 </ol>
             </nav>
-            <div id="listView" class="resume list_names">
-                {{-- <div class="cln_header d-flex align-items-center">
-                    <div class="action_next_prev d-flex align-items-center">
-                        <button class="sm_btn prevSm"><i class="bi bi-chevron-left"></i></button>
-                        <span class="schd_time">Today</span>
-                        <button class="sm_btn nextSm"><i class="bi bi-chevron-right"></i></button>
-                    </div>
-                    <h3 class="sub_heading ms-3">May-Jun 2023</h3>
-                </div> --}}
-                <div class="table_box">
-                    <table class="table table-responsive table-stripes custom_table_view">
-                        <thead>
-                            <tr>
-                                <th>DateTime</th>
-                                <th>Pickup Point</th>
-                                <th class="sm_hide">Car</th>
-                                <th class="sm_hide">Customer</th>
-                                <th class="sm_hide"><span class="status_title">Status</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($rides as $ride)
-                                <tr>
-                                    <td class="btn_view_booking">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}</td>
-                                    <td style="max-width:200px">{{ $ride->pickup_address }}</td>
-                                    <td class="sm_hide">{{ @$ride->vehicle->vehicle_number_plate }}</td>
-                                    <td class="sm_hide">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>
-                                    <td class="sm_hide">
-                                        @if($ride->status == -2)
-                                            <span class="status_box bg-danger">Cancelled</span>
-                                        @elseif($ride->status == -1)
-                                            <span class="status_box bg-danger">Rejected</span>
-                                        @elseif($ride->status == 1)
-                                            <span class="status_box bg-info">Accepted</span>
-                                        @elseif($ride->status == 2)
-                                            <span class="status_box bg-info">Started</span>
-                                        @elseif($ride->status == 4)
-                                            <span class="status_box bg-info">Driver Reached</span>
-                                        @elseif($ride->status == 3)
-                                            <span class="status_box bg-success">Completed</span>
-                                        @elseif($ride->status == -3)
-                                            <span class="status_box bg-danger">Cancelled by you</span>
-                                        @elseif($ride->status == 0)
-                                            <span class="status_box bg-warning">Pending</span>
-                                        @elseif(Date.parse($ride->ride_time) < Date.parse(Date()))
-                                            <span class="status_box bg-warning">Upcoming</span>
-                                        @endif
-
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                {{ $rides->links('pagination.new_design') }}
+            <div id="weekView" class="resume">
+                <div id='calendar2'></div>
             </div>
         </article>
     </section>

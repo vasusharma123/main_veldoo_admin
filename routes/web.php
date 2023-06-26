@@ -192,7 +192,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'
 });
 
 Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permission:Company']], function(){
-	Route::get('/rides','Company\RidesController@index')->name('company.rides');
+	Route::get('/rides/{type?}','Company\RidesController@index')->name('company.rides');
 	Route::delete('ride/delete_multiple','Company\RidesController@delete_multiple')->name('company.rides.delete_multiple');
 	// Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	// Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');

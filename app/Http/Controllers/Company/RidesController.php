@@ -27,7 +27,28 @@ class RidesController extends Controller
     protected $errorCode = 401;
     protected $warningCode = 500;
 
-    public function index(Request $request)
+    public function index(Request $request,$type=null)
+    {
+        $type = ($type?$type:'list').'View';
+        $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+        return $this->$type($data);
+    }
+
+    public function listView($data)
+    {
+        $data = array('page_title' => 'Rides', 'action' => 'Rides');
+        $company = Auth::user();
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+                            ->where(function($query){
+                                $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->where('company_id','!=',null)->orderBy('rides.id')->with(['vehicle','user:id,first_name,last_name'])->paginate(20);
+        // dd($data['rides']);
+        return view('company.rides.index')->with($data);
+    }
+
+    public function monthView($data)
     {
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
@@ -37,7 +58,20 @@ class RidesController extends Controller
                             })->where('company_id','!=',null)->orderBy('rides.id')->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
-        return view('company.rides.index')->with($data);
+        return view('company.rides.month')->with($data);
+    }
+
+    public function weekView($data)
+    {
+        $data = array('page_title' => 'Rides', 'action' => 'Rides');
+        $company = Auth::user();
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status')->where(['company_id' => Auth::user()->company_id])
+                            ->where(function($query){
+                                $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->where('company_id','!=',null)->orderBy('rides.id')->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+        return view('company.rides.week')->with($data);
     }
 
     public function ride_booking(Request $request)

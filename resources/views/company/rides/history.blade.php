@@ -26,7 +26,7 @@
                                         <span class="point_list position-relative">
                                             <input type="checkbox" name="selectedPoint" style="cursor: pointer" class="input_radio_selected">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }}
                                         </span> {{ date('H:i',strtotime($ride->ride_time)) }}
-                                    </a> 
+                                    </a>
                                     {{-- <span class="action_button"> <i class="bi bi-trash3 dlt_list_btn"></i></span> --}}
                                 </li>
                             @endforeach
@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
                             <div class="name active_username createdBy">
-                                <div>Created By: Kapil</div> 
+                                <div>Created By: Kapil</div>
                             </div>
                         </div>
                         <div class="col-xl-8 col-lg-8 col-md-7 col-sm-8 col-12">
@@ -80,7 +80,7 @@
                             <li class="list-group-item stop_process ride_user_end_location" >Zurich</li>
                         </ul>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-6 col-6 align-self-center">
                             <div class="userBox mt-3">
@@ -97,7 +97,7 @@
                             <div class="usercounting d-flex mt-3 position-relative">
                                 <label class="label_input_cash ">CHF</label>
                                 <input type="text" class="form-control inside_input_field p-1 ps-4 me-2 ride_car_price" style="padding-left: 30px !important" value="200.0">
-                                
+
                                 <div class="payment_option d-flex align-items-center">
                                     <img src="{{ asset('company/assets/imgs/sideBarIcon/cash.png')}}" alt="userCount" class="img-fluid cash_count me-2 "> <span class="ride_payment_type fw-normal name active_username">Cash</span>
                                 </div>
@@ -121,7 +121,7 @@
                     </div>
                     <div class="row m-0 w-100">
                         <div class="col-lg-6 col-md-12 col-xs-12">
-                            
+
                             <div class="form-group">
                                 <textarea class="form-control inside_input_field mb-2 ride_notes" required rows="2">Note</textarea>
                             </div>
@@ -209,7 +209,7 @@
             $('.rideDetails').removeClass('selected');
             $(this).addClass('selected');
             $('.ride_user_image').hide();
-            if (booking.user) 
+            if (booking.user)
             {
                 $('.ride_user_image').show();
                 if(booking.user.image_with_url){
@@ -219,7 +219,7 @@
                 }
             }
             $('.ride_user_name').html('');
-            if (booking.user && booking.user.first_name) 
+            if (booking.user && booking.user.first_name)
             {
                 $('.ride_user_name').html(booking.user.first_name+' '+booking.user.last_name);
             }
@@ -252,9 +252,9 @@
                 $('.ride_notes').html(booking.note);
             }
             $('.ride_driver_details').hide();
-            if (booking.driver!=null) 
+            if (booking.driver!=null)
             {
-                if (booking.driver.image_with_url) 
+                if (booking.driver.image_with_url)
                 {
                     $('.ride_driver_image').attr('src',booking.driver.image_with_url);
                 } else {
@@ -267,9 +267,9 @@
 
             $('.ride_car_image').hide();
             $('.ride_car_details').hide();
-            if (booking.vehicle!=null) 
+            if (booking.vehicle!=null)
             {
-                if (booking.vehicle.image_with_url) 
+                if (booking.vehicle.image_with_url)
                 {
                     $('.ride_car_image').attr('src',booking.vehicle.image_with_url);
                     $('.ride_car_image').show();
@@ -285,11 +285,11 @@
 
             // map
 
-            if (booking.dest_lat=="") 
+            if (booking.dest_lat=="")
             {
                 // alert('dest null');
                 // console.log(markers);
-                
+
                 if (directionsDisplay != null) {
                     directionsDisplay.setMap(null);
                     directionsDisplay = null;
@@ -303,7 +303,7 @@
                 marker = new google.maps.Marker({
                     position: pt,
                     map: map
-                });   
+                });
                 markers.push(marker);
             }
             else
@@ -339,7 +339,7 @@
                     provideRouteAlternatives: true,
                     avoidFerries: true
                 };
-                for (i = 0; i < locations.length; i++) 
+                for (i = 0; i < locations.length; i++)
                 {
                     marker = new google.maps.Marker({
                         position: new google.maps.LatLng(locations[i].Latitude.toString(), locations[i].Longitude
@@ -431,8 +431,8 @@
                 creator_type = "";
                 if (booking.creator.user_type=="4") {
                     creator_type = " (Admin)";
-                } 
-                else if(booking.creator.user_type=="5") 
+                }
+                else if(booking.creator.user_type=="5")
                 {
                     creator_type = " (Manager)";
                 }
@@ -445,7 +445,7 @@
             $('.details_box').show();
         });
 
-        function setShortestRoute(response) 
+        function setShortestRoute(response)
         {
             shortestRouteArr = [];
             $.each(response.routes, function( index, route ) {
@@ -453,7 +453,7 @@
             });
             return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
         }
-        
+
         socket.on('ride-update-response', function(response) {
             if(response && response[0] && response[0].id){
                 if(selected_ride_id == response[0].id){
@@ -464,7 +464,7 @@
         });
         // console.log(bookingsArray);
         // driver_detail_update(2386);
-        // function driver_detail_update(id) 
+        // function driver_detail_update(id)
         // {
         //     route = "{{ route('company.ride_detail','~') }}";
         //     route = route.replace('~',id);
@@ -476,7 +476,7 @@
         //         },
         //         success: function(response) {
         //             for (let i = 0; i < bookingsArray.length; i++) {
-        //                 if (bookingsArray[i].id=id) 
+        //                 if (bookingsArray[i].id=id)
         //                 {
         //                     bookingsArray[i] = response.data;
         //                 }
