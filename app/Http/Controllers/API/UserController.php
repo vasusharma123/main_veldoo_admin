@@ -1210,7 +1210,7 @@ class UserController extends Controller
             $error_message = "";
             foreach ($fields as $field) {
                 if (isset($validator->errors()->getMessages()[$field][0]) && !empty($validator->errors()->getMessages()[$field][0])) {
-                    return response()->json(['success' => 0, 'message' => __($validator->errors()->getMessages()[$field][0])]);
+                    return response()->json(['success' => 0, 'message' => __($validator->errors()->getMessages()[$field][0])], $this->warningCode);
                 }
             }
         }
