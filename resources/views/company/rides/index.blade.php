@@ -49,7 +49,7 @@
                         <tbody>
                             @foreach ($rides as $ride)
                                 <tr>
-                                    <td class="btn_view_booking">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}</td>
+                                    <td class="btn_view_booking" style="cursor: pointer">{{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}</td>
                                     <td style="max-width:200px">{{ $ride->pickup_address }}</td>
                                     <td class="sm_hide">{{ @$ride->vehicle->vehicle_number_plate }}</td>
                                     <td class="sm_hide">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>

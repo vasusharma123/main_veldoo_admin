@@ -1,4 +1,10 @@
 @extends('company.layouts.app')
+<style>
+    .fc-h-event {
+        background-color: #fc4c02 !important;
+        border: 1px solid #fc4c02 !important;
+    }
+</style>
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
@@ -336,4 +342,44 @@
         </article>
     </section>
     <!-- /Section View Booking -->
-@stop
+@endsection
+@section('footer_scripts')
+    <script>
+        if ($('#calendar').length > 0)
+        {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                events:
+                [
+                    @foreach ($rides as $ride)
+                        {
+                            title: '{{ @$ride->user->first_name.' '.@$ride->user->last_name }} {{ @$ride->vehicle->vehicle_number_plate?' - '.@$ride->vehicle->vehicle_number_plate:'' }} ({{ date('H:i',strtotime($ride->ride_time)) }})',
+                            start: "{{ date('Y-m-d',strtotime($ride->ride_time)) }}",
+                            end: "{{ date('Y-m-d',strtotime($ride->ride_time)) }}"
+                        },
+                    @endforeach
+                ],
+                initialDate: "{{ $date }}",
+                themeSystem: 'bootstrap5',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                    center: '',
+                    end: '' // will normally be on the right. if RTL, will be on the left
+                }
+            });
+            calendar.render();
+            $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
+                var currentDate = calendar.view.currentStart;
+                var year = currentDate.getFullYear();
+                var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
+                            minimumIntegerDigits: 2,
+                            useGrouping: false
+                        });
+
+                // alert('Year is ' + year + ' Month is ' + month);
+                window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+            });
+        }
+    </script>
+@endsection

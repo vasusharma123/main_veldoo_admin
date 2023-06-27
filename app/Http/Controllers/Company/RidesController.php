@@ -33,10 +33,10 @@ class RidesController extends Controller
         $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
-        return $this->$type($data);
+        return $this->$type($data,$request->all());
     }
 
-    public function listView($data)
+    public function listView($data,$request)
     {
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
@@ -48,20 +48,30 @@ class RidesController extends Controller
         return view('company.rides.index')->with($data);
     }
 
-    public function monthView($data)
+    public function monthView($data,$request)
     {
+        $date = date('Y-m-d');
+        if(isset($request['m']) && !empty($request['m']))
+        {
+            $date = $request['m'];
+        }
+        $month = date('m',strtotime($date));
+        $year = date('Y',strtotime($date));
+
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
-        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status')->where(['company_id' => Auth::user()->company_id])
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
                             ->where(function($query){
                                 $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                            })->where('company_id','!=',null)->orderBy('rides.id')->get();
+                            })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        // dd($data['rides']);
+        $data['date'] = $date;
         return view('company.rides.month')->with($data);
     }
 
-    public function weekView($data)
+    public function weekView($data,$request)
     {
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
