@@ -592,8 +592,10 @@ class Socket{
 				if (ridedata.length) {
 					if(data.change_for_all){
 						ridedata[0].change_for_all = 1;
+						this.io.emit(`ride-update-response`, ridedata);
 					} else if(data.delete_for_all){
 						ridedata[0].delete_for_all = 1;
+						this.io.emit(`ride-update-response`, ridedata);
 					} else {
 						this.io.emit(`ride-update-response`, ridedata);
 					}
@@ -613,9 +615,23 @@ class Socket{
 					var driverdatanew = JSON.parse(JSON.stringify(driverdata));
 					var driversocketid = driverdatanew[0]['socket_id'];
 					if (ridedata.length) {
-						this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
+						if(data.change_for_all){
+							ridedata[0].change_for_all = 1;
+							this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
+						} else if(data.delete_for_all){
+							ridedata[0].delete_for_all = 1;
+							this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
+						} else {
+							this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
+						}
 					} else {
-						this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1}]);
+						if(data.change_for_all){
+							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
+						} else if(data.delete_for_all){
+							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
+						} else {
+							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1}]);
+						}
 					}
 				});
 			});
