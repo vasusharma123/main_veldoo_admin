@@ -2927,7 +2927,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Ride Started Successfully';
 					$type = 3;
 					$ride->status = 2;
-					$ride->route = $request->route??"";
                     if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
                     	$message_content = "";
                     	$SMSTemplate = SMSTemplate::find(6);
@@ -2969,6 +2968,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Ride Completed Successfully';
 					$type = 4;
 					$ride->status = 3;
+					$ride->route = $request->route??"";
 
 					if (!empty($request->ride_cost)) {
 						$ride->ride_cost = $request->ride_cost;
