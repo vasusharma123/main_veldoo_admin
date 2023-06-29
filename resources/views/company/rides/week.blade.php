@@ -193,141 +193,57 @@
         </article>
     </section>
     <!-- /Section Add New Booking -->
-    <!-- Section View Booking -->
-    <section class="add_booking_modal view_booking" id="view_booking">
-        <article class="booking_container_box">
-            <a href="#" class="back_btn_box mobile_view close_modal_action_view">
-                <img src="{{ asset('new-design-company/assets/images/back_icon.svg') }}" class="img-fluid back_btn" alt="Back arrow" />
-                <span class="btn_text ">Back</span>
-            </a>
-            <div class="header_top view_header">
-                <h4 class="sub_heading">Booking Details</h4>
-                <span class="close_modal desktop_view close_modal_action_view">&times;</span>
-            </div>
-            <form class="addBooking_form">
-                <div class="map_frame">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7927.826256700516!2d3.367378340734855!3d6.532655273840193!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8daf1c3e700d%3A0x75727c8869185d88!2sOnipanu%2C%20Somolu%20102216%2C%20Ikeja%2C%20Lagos%2C%20Nigeria!5e0!3m2!1sen!2sin!4v1685382393051!5m2!1sen!2sin" width="370" height="211" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-                <div class="pickup_Drop_box">
-                    <div class="area_details">
-                        <div class=" area_box pickUp_area veiw_pickup">
-                            <img src="{{ asset('new-design-company/assets/images/pickuppoint.png') }}" class="img-fluid pickup_icon" alt="pick up icon"/>
-                            <div class="location_box">
-                                <label class="form_label">Pickup Point</label>
-                                <p class="pickup_field mb-0">2972 Westheimer</p>
-                            </div>
-                        </div>
-                        <div class=" area_box dropUp_area">
-                            <img src="{{ asset('new-design-company/assets/images/drop_point.png') }}" class="img-fluid pickup_icon" alt="Drop up icon"/>
-                            <div class="location_box">
-                                <label class="form_label">Drop Point</label>
-                                <p class="pickup_field mb-0">Rd. Santa Ana, Illinois 85486</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+@endsection
+@section('footer_scripts')
+<script>
+    if ($('#calendar2').length > 0)
+    {
 
-                <div class="date_picker_box">
-                    <div class="date_area_box d-flex justify-content-between">
-                        <div class=" area_box pickUp_area">
-                            <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
-                            <div class="location_box">
-                                <label class="form_label">Pick a Date</label>
-                                <label class="pickupdate">08/02/2023</label>
-                            </div>
+        var calendarEl = document.getElementById('calendar2');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            events:
+            [
+                @foreach ($rides as $ride)
+                    {
+                        ride_id: "{{ $ride->id }}",
+                        title: '{{ @$ride->user->first_name.' '.@$ride->user->last_name }} {{ @$ride->vehicle->vehicle_number_plate?' - '.@$ride->vehicle->vehicle_number_plate:'' }} ({{ date('H:i',strtotime($ride->ride_time)) }})',
+                        start: "{{ date('Y-m-d',strtotime($ride->ride_time)) }}T{{ date('H:i:s',strtotime($ride->ride_time)) }}",
+                        end: "{{ date('Y-m-d',strtotime($ride->ride_time)) }}T{{ date('H:i:s',strtotime($ride->ride_time)) }}"
+                    },
+                @endforeach
+            ],
+            themeSystem: 'bootstrap5',
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+                start: 'prev,today,next title', // will normally be on the left. if RTL, will be on the right
+                center: '',
+                end: '' // will normally be on the right. if RTL, will be on the left
+            },
+            eventClick: function(info)
+            {
+                showRideModal(info.event.extendedProps.ride_id,'rideDetails');
+            }
+        });
+        var year = parseInt("{{ $year }}");
+        var month = parseInt("{{ $month }}"); // August (0-indexed, so 7 represents August)
+        var day = parseInt("{{ $day }}");
+        calendar.gotoDate(new Date(year, month, day));
+        calendar.render();
+        $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
+            var currentDate = calendar.view.currentStart;
+            var year = currentDate.getFullYear();
+            var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
+                        minimumIntegerDigits: 2,
+                        useGrouping: false
+                    });
+            var day =  (currentDate.getDate()).toLocaleString('en-US', {
+                        minimumIntegerDigits: 2,
+                        useGrouping: false
+                    });
 
-                        </div>
-                        <div class="divider_form_area vrt view_port">
-                            <span class="divider_area vrt "></span>
-                        </div>
-                        <div class=" area_box dropUp_area timer_picker mb-3">
-                            <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
-                            <div class="location_box">
-                                <label class="form_label">Pick a Time</label>
-                                <label class="pickTimes">06:00 PM</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="driver_date_picker">
-                    <div class="date_area_box d-flex justify-content-between">
-                        <div class=" area_box pickUp_area">
-                            <div class="location_box">
-                                <label class="form_label">Driver Details</label>
-                                <div class="viewuser_sidebar d-flex align-items-center">
-                                    <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
-                                    <div class="name_occupation d-flex flex-column">
-                                        <span class="user_name">Raman Kumar</span>
-                                        <a href="tel:+91 9563256484" class="user_position side_mob_link">+91 9563256484</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="divider_form_area vrt view_port">
-                            <span class="divider_area vrt "></span>
-                        </div>
-                        <div class=" area_box dropUp_area timer_picker">
-                            <div class="location_box">
-                                <label class="form_label">Pick a Time</label>
-                                <div class="viewuser_sidebar d-flex align-items-center">
-                                    <img src="{{ asset('new-design-company/assets/images/business.png') }}" alt="Selected Car" class="img-fluid car_selectImg"/>
-                                    <div class="name_occupation d-flex flex-column">
-                                        <span class="user_name">Business</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="passengers_box_details">
-                    <div class="passenger_box_content row justify-content-between">
-                        <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
-                            <div class="number_psnger d-flex">
-                                <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                <div class="location_box">
-                                    <label class="form_label">No. Of Passengers</label>
-                                    <label class="user_name">1</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-6 col-6 pe-0">
-                            <div class="name_psnger d-flex">
-                                <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                <div class="location_box">
-                                    <label class="form_label">Name of Passenger</label>
-                                    <label class="user_name">Aman Verma</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form_payment_box">
-                    <div class="row w-100 m-0">
-                        <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0 method_box">
-                            <div class="form_box">
-                                <label class="form_label down_form_label d-block">Payment Method</label>
-                                <label class="user_name"><img src="{{ asset('new-design-company/assets/images/card.svg') }}" class="img-fluid card_img me-2" alt="payment Image"><span>Cash</span></label>
-                            </div>
-                        </div>
-                        <div class="col-lg-5 col-md-5 col-sm-6 col-6 pe-0 amount_box">
-                            <div class="form_box">
-                                <label class="form_label down_form_label d-block">Amount</label>
-                                <label class="user_name"><img src="{{ asset('new-design-company/assets/images/card.svg') }}" class="img-fluid card_img me-2" alt="payment Image"><span>$ 35</span></label>
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
-                            <div class="form_box add_note">
-                                <label class="form_label down_form_label d-block">Add Note</label>
-                                <label class="user_name">Be on time. Don’t want to get late.</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </article>
-    </section>
-    <!-- /Section View Booking -->
-@stop
+            // alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
+            window.location.href = "{{ route('company.rides','week') }}?w="+year+"-"+month+"-"+day;
+        });
+    }
+</script>
+@endsection

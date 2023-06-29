@@ -108,11 +108,6 @@ $(function(){
             $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
         }
     });
-    $(document).on('click','.btn_view_booking',function(){
-            $('.close_modal_action_view').addClass('show');
-            $('#view_booking').css({'margin-right':'0px','transition':'all 400ms linear'});
-
-    });
 //slider Table
 $(window).on('load',function(){
     if($(window).width() < 430 ){

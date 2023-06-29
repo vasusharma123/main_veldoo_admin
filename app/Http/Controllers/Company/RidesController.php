@@ -74,13 +74,31 @@ class RidesController extends Controller
     public function weekView($data,$request)
     {
         $data = array('page_title' => 'Rides', 'action' => 'Rides');
-        $company = Auth::user();
-        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status')->where(['company_id' => Auth::user()->company_id])
-                            ->where(function($query){
-                                $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                            })->where('company_id','!=',null)->orderBy('rides.id')->get();
+        $data['year'] = Carbon::now()->startOfWeek()->format('Y');
+        $data['month'] = Carbon::now()->startOfWeek()->format('m')-1;
+        $data['day'] = Carbon::now()->startOfWeek()->format('d');
+        if(isset($request['w']) && !empty($request['w']))
+        {
+            $data['year'] = date('Y',strtotime($request['w']));
+            $data['month'] = date('m',strtotime($request['w']))-1;
+            $data['day'] = date('d',strtotime($request['w']));
+        }
+
+        $startOfWeek = $data['year'].'-'.($data['month']+1).'-'.$data['day']; // Example start date of the week
+        // Convert the start date to a Carbon instance
+        $startOfWeekDate = Carbon::parse($startOfWeek)->startOfDay();
+
+        // Calculate the end date of the week by adding 6 days to the start date
+        $endOfWeekDate = $startOfWeekDate->copy()->addDays(6)->endOfDay();
+        // dd($endOfWeekDate);
+
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+                        ->where(function($query){
+                            $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                        })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        // dd($data['rides']);
         return view('company.rides.week')->with($data);
     }
 
