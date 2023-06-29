@@ -6745,9 +6745,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$driverData = User::find($previousRideData->driver_id);
 					$deviceToken = $driverData['device_token'] ?? "";
 					$deviceType = $driverData['device_type'] ?? "";
-					$title = 'Ride Cancelled';
-					$message = "Your ride has been cancelled.";
-					$type = 5;
+					$title = 'Ride Reassign';
+					$message = "Your ride has been reassigned";
+					$type = 17;
 
 					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
 					if (!empty($deviceToken)) {
