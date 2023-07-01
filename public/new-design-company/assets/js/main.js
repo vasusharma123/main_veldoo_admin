@@ -88,16 +88,9 @@ $(function(){
         }
     });
     $(document).on('click','.add_new_booking_btn',function(){
-            $('.close_modal_action').addClass('show');
-            $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
-
+        $('.close_modal_action').addClass('show');
+        $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
     });
-    $(document).on('click','.addNewBtn_cs ',function(){
-            $('.close_modal_action').addClass('show');
-            $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
-
-    });
-
     // Side Menu View
     $(document).on('click','.close_modal_action_view',function(){
         $(this).stop().toggleClass('show');
