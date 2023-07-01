@@ -2968,6 +2968,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Ride Completed Successfully';
 					$type = 4;
 					$ride->status = 3;
+					$ride->route = $request->route??"";
 
 					if (!empty($request->ride_cost)) {
 						$ride->ride_cost = $request->ride_cost;
@@ -3113,7 +3114,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
 		try {
-			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
 			$ride_detail['waiting_time'] = $settingValue->waiting_time;
@@ -6744,9 +6745,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$driverData = User::find($previousRideData->driver_id);
 					$deviceToken = $driverData['device_token'] ?? "";
 					$deviceType = $driverData['device_type'] ?? "";
-					$title = 'Ride Cancelled';
-					$message = "Your ride has been cancelled.";
-					$type = 5;
+					$title = 'Ride Reassign';
+					$message = "Your ride has been reassigned";
+					$type = 17;
 
 					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
 					if (!empty($deviceToken)) {
