@@ -2055,20 +2055,14 @@ class UserController extends Controller
 			$rating->rating = $request->rating;
 			$rating->ride_id = $request->ride_id;
 			$rating->from_id = $userId;
-			if (!empty($request->comment)) {
-				$rating->comment = $request->comment;
-			}
-
-			unset($rating->created_at);
-			unset($rating->updated_at);
-			//print_r($place); die;
-			$rating->save();
+			$rating->comment = $request->comment??"";
 			$rating->save();
 			return response()->json(['message' => 'Rating Added successfully'], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
+			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
+			Log::info($exception->getMessage()."--".$exception->getLine());
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
