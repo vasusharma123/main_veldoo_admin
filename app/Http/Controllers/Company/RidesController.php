@@ -38,13 +38,14 @@ class RidesController extends Controller
 
     public function listView($data,$request)
     {
-        $data = array('page_title' => 'Rides', 'action' => 'Rides');
         $company = Auth::user();
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
                             ->where(function($query){
                                 $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
                             })->where('company_id','!=',null)->orderBy('rides.id')->with(['vehicle','user:id,first_name,last_name'])->paginate(20);
-        // dd($data['rides']);
+        // dd($data);
         return view('company.rides.index')->with($data);
     }
 
@@ -58,7 +59,8 @@ class RidesController extends Controller
         $month = date('m',strtotime($date));
         $year = date('Y',strtotime($date));
 
-        $data = array('page_title' => 'Rides', 'action' => 'Rides');
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
         $company = Auth::user();
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
                             ->where(function($query){
@@ -73,7 +75,8 @@ class RidesController extends Controller
 
     public function weekView($data,$request)
     {
-        $data = array('page_title' => 'Rides', 'action' => 'Rides');
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
         $data['year'] = Carbon::now()->startOfWeek()->format('Y');
         $data['month'] = Carbon::now()->startOfWeek()->format('m')-1;
         $data['day'] = Carbon::now()->startOfWeek()->format('d');
@@ -379,7 +382,9 @@ class RidesController extends Controller
     public function ride_detail($id)
     {
         $now = Carbon::now();
-        $ride = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
+        $ride = Ride::where(['company_id' => Auth::user()->company_id])
+                            // ->where('ride_time','<',$now)
+                            ->where(function($query){
                             $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
                         })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->find($id);
         // $ride->status = 2;
