@@ -590,14 +590,18 @@ class Socket{
 				}
 				var ridedata = await helper.RideData(ride_id);
 				if (ridedata.length) {
-					if(data.change_for_all){
+					if(data.is_newly_created){
+						ridedata[0].is_newly_created = 1;
+					} else if(data.change_for_all){
 						ridedata[0].change_for_all = 1;
 					} else if(data.delete_for_all){
 						ridedata[0].delete_for_all = 1;
 					}
 					this.io.emit(`ride-update-response`, ridedata);
 				} else {
-					if(data.change_for_all){
+					if(data.is_newly_created){
+						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1, "is_newly_created" : 1}]);
+					} else if(data.change_for_all){
 						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
 					} else if(data.delete_for_all){
 						this.io.emit(`ride-update-response`, [{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
@@ -612,14 +616,18 @@ class Socket{
 					var driverdatanew = JSON.parse(JSON.stringify(driverdata));
 					var driversocketid = driverdatanew[0]['socket_id'];
 					if (ridedata.length) {
-						if(data.change_for_all){
+						if(data.is_newly_created){
+							ridedata[0].is_newly_created = 1;
+						} else if(data.change_for_all){
 							ridedata[0].change_for_all = 1;
 						} else if(data.delete_for_all){
 							ridedata[0].delete_for_all = 1;
 						}
 						this.io.to(driversocketid).emit(`master-driver-response`, ridedata);
 					} else {
-						if(data.change_for_all){
+						if(data.is_newly_created){
+							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1, "is_newly_created" : 1}]);
+						} else if(data.change_for_all){
 							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
 						} else if(data.delete_for_all){
 							this.io.to(driversocketid).emit(`master-driver-response`, [{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}]);
