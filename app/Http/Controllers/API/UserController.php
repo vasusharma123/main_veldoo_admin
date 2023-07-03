@@ -2058,12 +2058,12 @@ class UserController extends Controller
 			$rating->comment = $request->comment??"";
 			$rating->save();
 			return response()->json(['message' => 'Rating Added successfully'], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
-		} catch (\Exception $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 
@@ -3085,12 +3085,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
-		} catch (\Exception $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::error('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['success' => false, 'message' => $e->getMessage()."--".$e->getLine()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::error('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['success' => false, 'message' => $e->getMessage()."--".$e->getLine()], $this->warningCode);
 		}
 	}
 
@@ -5695,12 +5695,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} else {
 				return response()->json(['message' => 'Record not found'], $this->errorCode);
 			}
-		} catch (\Illuminate\Database\QueryException $exception) {
-			Log::info($exception->getMessage()."---".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
-		} catch (\Exception $exception) {
-			Log::info($exception->getMessage()."---".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 
