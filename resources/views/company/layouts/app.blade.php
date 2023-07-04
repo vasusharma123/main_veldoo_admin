@@ -89,14 +89,14 @@
                                 <div class="area_details">
                                     <div class=" area_box pickUp_area veiw_pickup">
                                         <img src="{{ asset('new-design-company/assets/images/pickuppoint.png') }}" class="img-fluid pickup_icon" alt="pick up icon"/>
-                                        <div class="location_box">
+                                        <div class="location_box" style="width: 100%">
                                             <label class="form_label">Pickup Point</label>
                                             <p class="pickup_field mb-0 ride_user_start_location"></p>
                                         </div>
                                     </div>
                                     <div class=" area_box dropUp_area ride_user_end_location_box">
                                         <img src="{{ asset('new-design-company/assets/images/drop_point.png') }}" class="img-fluid pickup_icon" alt="Drop up icon"/>
-                                        <div class="location_box">
+                                        <div class="location_box" style="width: 100%">
                                             <label class="form_label">Drop Point</label>
                                             <p class="pickup_field mb-0 ride_user_end_location"></p>
                                         </div>
@@ -216,19 +216,21 @@
                             <span class="btn_text ">Back</span>
                         </a>
                         <div class="header_top">
-                            <h4 class="sub_heading">Book a Ride</h4>
+                            <h4 class="sub_heading bookRideTitle">Book a Ride</h4>
                             <span class="close_modal desktop_view close_modal_action">&times;</span>
                         </div>
                         <form method="post" class="add_details_form" id="booking_list_form">
                             @csrf
                             <div class="save_btn_box desktop_view">
-                                <button type="submit" class="btn save_form_btn save_booking">Book Ride</button>
+                                <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="submit">{{ __('Book')}}</button>
+                                <button class="btn save_btn edit_booking save_form_btn" type="submit" style="display:none">{{ __('Update')}}</button>
+                                <button class="btn save_btn cancel_ride" type="button" style="display:none">{{ __('Cancel')}}</button>
                             </div>
                             <div class="pickup_Drop_box">
                                 <div class="area_details">
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/pickuppoint.png') }}" class="img-fluid pickup_icon" alt="pick up icon"/>
-                                        <div class="location_box">
+                                        <div class="location_box" style="width: 100%">
                                             <label class="form_label">Pickup Point</label>
                                             <input type="text" class="form_control borderless_form_field pickup_field" name="pickup_address" id="pickupPoint" placeholder="Enter pickup point" required autocomplete="off">
                                             <input type="hidden" id="pickup_latitude" name="pick_lat" value="">
@@ -242,7 +244,7 @@
                                     </div>
                                     <div class=" area_box dropUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/drop_point.png') }}" class="img-fluid pickup_icon" alt="Drop up icon"/>
-                                        <div class="location_box">
+                                        <div class="location_box" style="width: 100%">
                                             <label class="form_label">Drop Point</label>
                                             <input type="text" class="form_control borderless_form_field dropup_field" name="dest_address" id="dropoffPoint" autocomplete="off" placeholder="Enter drop point">
                                             <input type="hidden" id="dropoff_latitude" name="dest_lat" value="">
@@ -542,7 +544,7 @@
                     {
                         ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
                     }
-                    $('.booking_details_with_status').html("Booking Details "+ride_status);
+                    $('.booking_details_with_status').html("Booking Details "+ride_status+` <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button>`);
 
                     if (booking.dest_lat=="")
                     {
@@ -670,6 +672,13 @@
                     }
                 });
                 $(document).on('click','.addNewBtn_cs ',function(){
+                    newBookingMapPoints = [];
+                    newBookingMarkers = [];
+                    cur_lat = "";
+                    cur_lng = "";
+                    document.getElementById("booking_list_form").reset();
+                    autocomplete_initialize();
+                    $("input[name='car_type']:first").attr('checked', 'checked').change();
                     $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
                     $('.close_modal_action').addClass('show');
                     $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
@@ -1064,6 +1073,109 @@
                         }]);
                     }
                     calculate_amount();
+                });
+
+                //edit ride
+                $(document).on('click','.editRideBtn',function () {
+                    var ride_id = $(this).data('rideid');
+                    selected_ride_id = ride_id;
+                    $(document).find(".save_booking").hide();
+                    $.ajax({
+                        url: "{{ route('company.rides.edit') }}",
+                        type: 'get',
+                        data: {
+                            ride_id: ride_id
+                        },
+                        success: function(response) {
+                            // console.log(response);
+                            if (response.status) {
+                                $("#ride_id").val(ride_id);
+                                // $('.bookRideTitle').html('Edit Ride');
+                                // $('.bookRideSBtn').html('Edit Ride');
+                                $("#pickupPoint").val(response.data.ride_detail.pickup_address);
+                                $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
+                                $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
+                                $("#dropoffPoint").val(response.data.ride_detail.dest_address);
+                                $("#dropoff_latitude").val(response.data.ride_detail.dest_lat);
+                                $("#dropoff_longitude").val(response.data.ride_detail.dest_lng);
+                                $("input[name='ride_date']").val(response.data.ride_detail.ride_date_new_modified_n);
+                                $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
+                                $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
+                                $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+                                if(response.data.ride_detail.user_id == 0){
+                                    $("#users").val("").change();
+                                } else {
+                                    $("#users").val(response.data.ride_detail.user_id).change();
+                                }
+                                $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
+                                $("#distance_calculated_input").val(response.data.ride_detail.distance);
+                                $("#payment_type").val(response.data.ride_detail.payment_type);
+                                $("#note").val(response.data.ride_detail.note);
+
+                                if (response.data.ride_detail.pick_lat) {
+                                    newBookingMapPoints = [{
+                                        Latitude: response.data.ride_detail.pick_lat,
+                                        Longitude: response.data.ride_detail.pick_lng,
+                                        AddressLocation: response.data.ride_detail
+                                            .pickup_address
+                                    }];
+                                    if (response.data.ride_detail.dest_lat) {
+                                        newBookingMapPoints.push({
+                                            Latitude: response.data.ride_detail.dest_lat,
+                                            Longitude: response.data.ride_detail.dest_lng,
+                                            AddressLocation: response.data.ride_detail
+                                                .dest_address
+                                        });
+                                    }
+                                    initializeMapReport(newBookingMapPoints);
+                                }
+                                // driver_detail_update(ride_id);
+                                $("#users").attr("disabled",true);
+                                $("#ride_time").attr("readonly",true);
+                                $("#pickupPoint").attr("disabled",true);
+                                $("#dropoffPoint").attr("disabled",true);
+                                $(".pickupPointCloseBtn").attr("disabled",true);
+                                $(".dropoffPointCloseBtn").attr("disabled",true);
+                                $("input[name='car_type']").attr("disabled",true);
+                                $("#numberOfPassenger").attr("disabled",true);
+                                $("#note").attr("readonly",true);
+
+                                if(response.data.ride_detail.status == 0){
+                                    $("#users").removeAttr("disabled");
+                                    $("#ride_time").removeAttr("readonly");
+                                    $("#pickupPoint").removeAttr("disabled");
+                                    $("#dropoffPoint").removeAttr("disabled");
+                                    $(".pickupPointCloseBtn").removeAttr("disabled");
+                                    $(".dropoffPointCloseBtn").removeAttr("disabled");
+                                    $("input[name='car_type']").removeAttr("disabled");
+                                    $("#numberOfPassenger").removeAttr("disabled");
+                                    $("#note").removeAttr("readonly");
+                                    $(document).find(".cancel_ride").hide();
+                                    $(document).find(".edit_booking").show();
+                                } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
+                                    $(document).find(".edit_booking").hide();
+                                    $(document).find(".cancel_ride").show();
+                                    $("#users").attr("disabled",true);
+                                    $("#ride_time").attr("readonly",true);
+                                    $("#pickupPoint").attr("disabled",true);
+                                    $("#dropoffPoint").attr("disabled",true);
+                                    $(".pickupPointCloseBtn").attr("disabled",true);
+                                    $(".dropoffPointCloseBtn").attr("disabled",true);
+                                    $("input[name='car_type']").attr("disabled",true);
+                                    $("#numberOfPassenger").attr("disabled",true);
+                                    $("#note").attr("readonly",true);
+                                }
+                                $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                                $('.close_modal_action').addClass('show');
+                                $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
+                            } else if (response.status == 0) {
+                                swal.fire("{{ __('Error') }}", response.message, "error");
+                            }
+                        },
+                        error(response) {
+                            swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    });
                 });
             </script>
         @endif

@@ -393,8 +393,11 @@ class RidesController extends Controller
 
     public function edit(Request $request)
     {
-        try {
+        try
+        {
             $ride_detail = Ride::find($request->ride_id);
+            $ride_detail->ride_date_new_modified_n = date('Y-m-d',strtotime($ride_detail->ride_time));
+            $ride_detail->ride_time_new_modified_n = date('H:i',strtotime($ride_detail->ride_time));
             return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["ride_detail" => $ride_detail]], $this->successCode);
         } catch (\Exception $exception) {
             DB::rollback();
