@@ -111,6 +111,7 @@ class RidesController extends Controller
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
+        $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
         if ($now->diffInMinutes($request->ride_time) <= 15) {
             $jsonResponse = $this->create_ride_driver($request);
         } else {
@@ -385,7 +386,7 @@ class RidesController extends Controller
         $ride = Ride::where(['company_id' => Auth::user()->company_id])
                             // ->where('ride_time','<',$now)
                             ->where(function($query){
-                            $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
+                            // $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
                         })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->find($id);
         // $ride->status = 2;
         return response()->json(['status'=>1,'data'=>$ride]);
@@ -410,12 +411,12 @@ class RidesController extends Controller
 		$now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
+        $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
 		if ($now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $this->create_ride_driver_edit($request);
 		} else {
 			$jsonResponse = $this->book_ride_edit($request);
 		}
-
 		return $jsonResponse;
 	}
 

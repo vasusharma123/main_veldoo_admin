@@ -224,7 +224,7 @@
                             <div class="save_btn_box desktop_view">
                                 <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="submit">{{ __('Book')}}</button>
                                 <button class="btn save_btn edit_booking save_form_btn" type="submit" style="display:none">{{ __('Update')}}</button>
-                                <button class="btn save_btn cancel_ride" type="button" style="display:none">{{ __('Cancel')}}</button>
+                                <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button>
                             </div>
                             <div class="pickup_Drop_box">
                                 <div class="area_details">
@@ -235,6 +235,7 @@
                                             <input type="text" class="form_control borderless_form_field pickup_field" name="pickup_address" id="pickupPoint" placeholder="Enter pickup point" required autocomplete="off">
                                             <input type="hidden" id="pickup_latitude" name="pick_lat" value="">
                                             <input type="hidden" id="pickup_longitude" name="pick_lng" value="">
+                                            <input type="hidden" name="ride_id" id="ride_id">
                                         </div>
                                         <span class="empty_field pickupPointCloseBtn">&times;</span>
                                     </div>
@@ -678,6 +679,21 @@
                     cur_lng = "";
                     document.getElementById("booking_list_form").reset();
                     autocomplete_initialize();
+                    $(document).find(".save_booking").show();
+                    $(document).find(".cancel_ride").hide();
+                    $(document).find(".edit_booking").hide();
+                    $('.bookRideTitle').html('Book a Ride');
+
+                    $("#users").attr("disabled",false);
+                    $("#ride_time").attr("readonly",false);
+                    $("#pickupPoint").attr("disabled",false);
+                    $("#dropoffPoint").attr("disabled",false);
+                    $(".pickupPointCloseBtn").attr("disabled",false);
+                    $(".dropoffPointCloseBtn").attr("disabled",false);
+                    $("input[name='car_type']").attr("disabled",false);
+                    $("#numberOfPassenger").attr("disabled",false);
+                    $("#note").attr("readonly",false);
+
                     $("input[name='car_type']:first").attr('checked', 'checked').change();
                     $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
                     $('.close_modal_action').addClass('show');
@@ -1080,6 +1096,8 @@
                     var ride_id = $(this).data('rideid');
                     selected_ride_id = ride_id;
                     $(document).find(".save_booking").hide();
+                    $(document).find(".cancel_ride").show();
+                    $(document).find(".edit_booking").show();
                     $.ajax({
                         url: "{{ route('company.rides.edit') }}",
                         type: 'get',
@@ -1090,8 +1108,7 @@
                             // console.log(response);
                             if (response.status) {
                                 $("#ride_id").val(ride_id);
-                                // $('.bookRideTitle').html('Edit Ride');
-                                // $('.bookRideSBtn').html('Edit Ride');
+                                $('.bookRideTitle').html('Edit Ride');
                                 $("#pickupPoint").val(response.data.ride_detail.pickup_address);
                                 $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
                                 $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
@@ -1177,6 +1194,93 @@
                         }
                     });
                 });
+
+                $(document).on("click", ".edit_booking", function(e) {
+                    e.preventDefault();
+                    form_validate_res = calculate_route();
+                    if (form_validate_res) {
+                        Swal.fire({
+                            title: "{{ __('Please Confirm') }}",
+                            text: "{{ __('You want to update this ride!') }}",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: "{{ __('Update Ride') }}"
+                        }).then((result) => {
+                            if (result.value) {
+                                $(document).find(".edit_booking").attr('disabled', true);
+                                $.ajax({
+                                    url: "{{ route('company.ride_booking_update') }}",
+                                    type: 'post',
+                                    dataType: 'json',
+                                    data: $('form#booking_list_form').serialize(),
+                                    success: function(response) {
+                                        if (response.status) {
+                                            swal.fire("{{ __('Success') }}", response.message,
+                                                "success");
+                                            setTimeout(function() {
+                                                window.location.reload();
+                                            }, 2000);
+                                        } else if (response.status == 0) {
+                                            swal.fire("{{ __('Error') }}", response.message,
+                                                "error");
+                                            $(document).find(".edit_booking").removeAttr('disabled');
+                                        }
+                                    },
+                                    error(response) {
+                                        swal.fire("{{ __('Error') }}", response.message, "error");
+                                        $(document).find(".edit_booking").removeAttr('disabled');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+
+                //cancel ride
+                $(document).on('click', '.cancel_ride', function(e) {
+                    e.preventDefault();
+                    delete_cancel_ride(selected_ride_id);
+                });
+
+                function delete_cancel_ride(ride_id){
+                    Swal.fire({
+                        title: "{{ __('Please Confirm') }}",
+                        text: "{{ __('You want to delete this ride!') }}",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: "{{ __('Yes, delete it') }}"
+                    }).then((result) => {
+                        if (result.value) {
+                            $.ajax({
+                                url: "{{ route('company.cancel_booking') }}",
+                                type: 'post',
+                                dataType: 'json',
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    'ride_id': ride_id
+                                },
+                                success: function(response) {
+                                    if (response.status) {
+                                        $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
+                                        Swal.fire("Success", response.message, "success");
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 2000);
+                                    } else if (response.status == 0) {
+                                        Swal.fire("{{ __('Error') }}", response.message, "error");
+                                    }
+                                },
+                                error(response) {
+                                    Swal.fire("{{ __('Error') }}", response.message, "error");
+                                }
+                            });
+                        }
+                    });
+                }
             </script>
         @endif
     </body>
