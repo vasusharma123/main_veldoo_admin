@@ -1000,7 +1000,7 @@
                                                 "success");
                                             setTimeout(function() {
                                                 window.location.reload();
-                                            }, 2000);
+                                            }, 1000);
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1221,7 +1221,7 @@
                                                 "success");
                                             setTimeout(function() {
                                                 window.location.reload();
-                                            }, 2000);
+                                            }, 1000);
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1269,7 +1269,7 @@
                                         Swal.fire("Success", response.message, "success");
                                         setTimeout(function() {
                                             window.location.reload();
-                                        }, 2000);
+                                        }, 1000);
                                     } else if (response.status == 0) {
                                         Swal.fire("{{ __('Error') }}", response.message, "error");
                                     }
