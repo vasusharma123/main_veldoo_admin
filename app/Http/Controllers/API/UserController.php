@@ -1134,7 +1134,7 @@ class UserController extends Controller
 		$userdata = $userdata[0];
 		$driver_car = DriverChooseCar::where(['user_id' => $id, 'logout' => 0])->orderBy('id', 'desc')->first();
 		if (!empty($driver_car)) {
-			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
+			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate','category_id')->with(['carType:id,price_per_km,basic_fee'])->where('id', $driver_car['car_id'])->first();
 			if (!empty($car_data)) {
 				$userdata->cardata = $car_data;
 			} else {
@@ -5283,6 +5283,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				if (!empty($request->ride_type)) {
 					$ride->ride_type = 1;
+				}
+				if (!empty($request->route)) {
+					$ride->route = $request->route;
 				}
 
 				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
