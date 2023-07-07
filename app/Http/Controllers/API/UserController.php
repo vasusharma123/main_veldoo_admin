@@ -5285,7 +5285,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->ride_type)) {
 					$ride->ride_type = 1;
 				}
-				if (!empty($request->route)) {
+				if ($request->has('route')) {
 					$ride->route = $request->route;
 				}
 
@@ -5308,7 +5308,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			}
 			DB::commit();
-			$ride_data = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+			$ride_data = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'route', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
 			if (!empty($ride_data->user_id)) {
 				$ride_data['user_data'] = User::find($ride_data->user_id);
 			} else {
