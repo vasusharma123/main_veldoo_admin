@@ -5285,7 +5285,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->ride_type)) {
 					$ride->ride_type = 1;
 				}
-				if (!empty($request->route)) {
+				if (isset($request->route)) {
 					$ride->route = $request->route;
 				}
 
