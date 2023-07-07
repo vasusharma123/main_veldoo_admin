@@ -1134,8 +1134,9 @@ class UserController extends Controller
 		$userdata = $userdata[0];
 		$driver_car = DriverChooseCar::where(['user_id' => $id, 'logout' => 0])->orderBy('id', 'desc')->first();
 		if (!empty($driver_car)) {
-			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate')->where('id', $driver_car['car_id'])->first();
+			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate','category_id')->with(['carType:id,price_per_km,basic_fee'])->where('id', $driver_car['car_id'])->first();
 			if (!empty($car_data)) {
+				$car_data->mileage = $driver_car->mileage;
 				$userdata->cardata = $car_data;
 			} else {
 				$userdata->cardata = null;
@@ -2055,21 +2056,15 @@ class UserController extends Controller
 			$rating->rating = $request->rating;
 			$rating->ride_id = $request->ride_id;
 			$rating->from_id = $userId;
-			if (!empty($request->comment)) {
-				$rating->comment = $request->comment;
-			}
-
-			unset($rating->created_at);
-			unset($rating->updated_at);
-			//print_r($place); die;
-			$rating->save();
+			$rating->comment = $request->comment??"";
 			$rating->save();
 			return response()->json(['message' => 'Rating Added successfully'], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			$errorCode = $exception->errorInfo[1];
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
-		} catch (\Exception $exception) {
-			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 
@@ -2968,6 +2963,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notifiMessage = 'Ride Completed Successfully';
 					$type = 4;
 					$ride->status = 3;
+					$ride->route = $request->route??"";
 
 					if (!empty($request->ride_cost)) {
 						$ride->ride_cost = $request->ride_cost;
@@ -3090,12 +3086,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			return response()->json(['success' => true, 'message' => $responseMessage, 'data' => $ride_detail], $this->successCode);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
-		} catch (\Exception $exception) {
-			Log::info($exception->getMessage()."--".$exception->getLine());
-			return response()->json(['success' => false, 'message' => $exception->getMessage()."--".$exception->getLine()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::error('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['success' => false, 'message' => $e->getMessage()."--".$e->getLine()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::error('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['success' => false, 'message' => $e->getMessage()."--".$e->getLine()], $this->warningCode);
 		}
 	}
 
@@ -3113,7 +3109,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
 		try {
-			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
 			$settings = \App\Setting::first();
 			$settingValue = json_decode($settings['value']);
 			$ride_detail['waiting_time'] = $settingValue->waiting_time;
@@ -5289,6 +5285,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->ride_type)) {
 					$ride->ride_type = 1;
 				}
+				if (!empty($request->route)) {
+					$ride->route = $request->route;
+				}
 
 				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 					$ride->alert_notification_date_time = $alert_notification_date_time;
@@ -5700,12 +5699,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} else {
 				return response()->json(['message' => 'Record not found'], $this->errorCode);
 			}
-		} catch (\Illuminate\Database\QueryException $exception) {
-			Log::info($exception->getMessage()."---".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
-		} catch (\Exception $exception) {
-			Log::info($exception->getMessage()."---".$exception->getLine());
-			return response()->json(['message' => $exception->getMessage()."---".$exception->getLine()], $this->warningCode);
+		} catch (\Illuminate\Database\QueryException $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
+		} catch (\Exception $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return response()->json(['message' => $e->getMessage()], $this->warningCode);
 		}
 	}
 
@@ -6677,6 +6676,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
+			$previousRideData = Ride::find($request->ride_id);
 			$ride_data = Ride::find($request->ride_id);
 			$ride_data->driver_id = $request->driver_id;
 			$ride_data->status = 0;
@@ -6734,31 +6734,37 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 					RideHistory::create(['ride_id' => $request->ride_id, 'driver_id' => $request->driver_id, 'status' => '2']);
 				}
+				$ride_detail = new RideResource(Ride::find($request->ride_id));
+				if (!empty($previousRideData->driver_id) && ($previousRideData->driver_id != $request->driver_id) && $previousRideData->status != 0) {
+					$settings = Setting::first();
+                    $settingValue = json_decode($settings['value']);
+                    $ride_detail['waiting_time'] = $settingValue->waiting_time;
 
-				// $title = 'Ride Accepted';
-				// $message = 'Your booking accepted by the driver please check the driver detail';
-				// $userdata = User::find($ride['user_id']);
-				// $deviceToken = $userdata['device_token'];
-				// $ride_id = $request->ride_id;
-				// $type = 2;
+					$driverData = User::find($previousRideData->driver_id);
+					$deviceToken = $driverData['device_token'] ?? "";
+					$deviceType = $driverData['device_type'] ?? "";
+					$title = 'Ride Reassign';
+					$message = "Your ride has been reassigned";
+					$type = 17;
 
-				// $deviceType = $userdata['device_type'];
-				// $additional = ['type' => $type, 'ride_id' => $ride_id, 'ride_data' => $ride];
-				// if (!empty($deviceToken)) {
-				// 	if ($deviceType == 'android') {
-				// 		bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
-				// 	}
-				// 	if ($deviceType == 'ios') {
-				// 		bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
-				// 	}
-				// }
-				// $notification = new Notification();
-				// $notification->title = $title;
-				// $notification->description = $message;
-				// $notification->type = $type;
-				// $notification->user_id = $userdata['id'];
-				// $notification->save();
-				$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
+					$additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
+					if (!empty($deviceToken)) {
+						if ($deviceType == 'android') {
+							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						}
+						if ($deviceType == 'ios') {
+							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+						}
+					}
+
+					$notification = new Notification();
+					$notification->title = $title;
+					$notification->description = $message;
+					$notification->type = $type;
+					$notification->user_id = $driverData->id;
+					$notification->additional_data = json_encode($additional);
+					$notification->save();
+				}
 				return response()->json(['message' => 'Driver Assigned Successfully', 'data' => $ride_detail], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Something went wrong'], $this->warningCode);

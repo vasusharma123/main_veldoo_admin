@@ -2020,10 +2020,12 @@ class RideController extends Controller
             return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
         }
         try {
+            $previousRideData = Ride::find($request->ride_id);
             $ride = Ride::find($request->ride_id);
 
             if (!empty($ride)) {
                 $userdata = User::find($ride['user_id']);
+                $driverData = User::find($ride['driver_id']);
                 $deviceToken = $userdata['device_token'] ?? "";
                 $deviceType = $userdata['device_type'] ?? "";
                 $title = 'Ride Cancelled';
@@ -2042,11 +2044,10 @@ class RideController extends Controller
                         $rideObj->save();
                     }
                     $ride_detail = new RideResource(Ride::find($request->ride_id));
+                    $settings = Setting::first();
+                    $settingValue = json_decode($settings['value']);
+                    $ride_detail['waiting_time'] = $settingValue->waiting_time;
                     if (!empty($userdata)) {
-                        $settings = \App\Setting::first();
-                        $settingValue = json_decode($settings['value']);
-                        $ride_detail['waiting_time'] = $settingValue->waiting_time;
-
                         $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
                         if (!empty($deviceToken)) {
                             if ($deviceType == 'android') {
@@ -2065,17 +2066,42 @@ class RideController extends Controller
                         $notification->additional_data = json_encode($additional);
                         $notification->save();
                     }
+                    if (!empty($driverData) && $previousRideData->status != 0) {
+                        $deviceToken = $driverData['device_token'] ?? "";
+                        $deviceType = $driverData['device_type'] ?? "";
+                        $title = 'Ride Cancelled';
+                        $message = "Your ride has been cancelled.";
+                        $type = 5;
+
+                        $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
+                        if (!empty($deviceToken)) {
+                            if ($deviceType == 'android') {
+                                bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                            }
+                            if ($deviceType == 'ios') {
+                                bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+                            }
+                        }
+
+                        $notification = new Notification();
+                        $notification->title = $title;
+                        $notification->description = $message;
+                        $notification->type = $type;
+                        $notification->user_id = $driverData->id;
+                        $notification->additional_data = json_encode($additional);
+                        $notification->save();
+                    }
                     return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
                 }
             } else {
                 return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
             }
-        } catch (\Illuminate\Database\QueryException $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
-        } catch (\Exception $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
+        } catch (\Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
         }
     }
 
