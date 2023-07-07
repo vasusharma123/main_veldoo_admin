@@ -1136,6 +1136,7 @@ class UserController extends Controller
 		if (!empty($driver_car)) {
 			$car_data = Vehicle::select('id', 'model', 'vehicle_image', 'vehicle_number_plate','category_id')->with(['carType:id,price_per_km,basic_fee'])->where('id', $driver_car['car_id'])->first();
 			if (!empty($car_data)) {
+				$car_data->mileage = $driver_car->mileage;
 				$userdata->cardata = $car_data;
 			} else {
 				$userdata->cardata = null;
