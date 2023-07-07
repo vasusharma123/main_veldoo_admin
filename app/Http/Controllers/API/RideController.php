@@ -2062,7 +2062,7 @@ class RideController extends Controller
                         $notification->title = $title;
                         $notification->description = $message;
                         $notification->type = $type;
-                        $notification->user_id = $driverData->id;
+                        $notification->user_id = $userdata['id'];
                         $notification->additional_data = json_encode($additional);
                         $notification->save();
                     }
@@ -2087,7 +2087,7 @@ class RideController extends Controller
                         $notification->title = $title;
                         $notification->description = $message;
                         $notification->type = $type;
-                        $notification->user_id = $driverData['id'];
+                        $notification->user_id = $driverData->id;
                         $notification->additional_data = json_encode($additional);
                         $notification->save();
                     }
@@ -2096,12 +2096,12 @@ class RideController extends Controller
             } else {
                 return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
             }
-        } catch (\Illuminate\Database\QueryException $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
-        } catch (\Exception $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
+        } catch (\Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
         }
     }
 
