@@ -206,10 +206,10 @@ class Helper{
 		return new Promise((resolve, reject) => {
 			console.log(process.env.APP_URL + "/api/user/ride_detail");
 			axios({
-				url: "http://localhost:8000/api/user/ride_detail",
+				url: process.env.APP_URL + "/api/user/ride_detail",
 				headers: {
 					'Accept': 'application/json',
-					'Authorization': 'Bearer ' + token
+					'Authorization': token
 				},
 				method: "POST",
 				async: "true",
