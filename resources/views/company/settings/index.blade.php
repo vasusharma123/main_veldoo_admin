@@ -1,5 +1,16 @@
 @extends('company.layouts.app')
 @section('content')
+<style>
+    input
+    {
+        color: black !important;
+        font-weight: 600 !important;
+    }
+    input::placeholder
+    {
+        font-weight: 100 !important;
+    }
+</style>
     <section class="add_booking_section">
         <article class="add_new_booking_box">
             <div class="action_btn text-end page_btn" style="margin-top: 100px">
@@ -20,7 +31,6 @@
                         <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
                     @endcan
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
-                    {{-- <li class="breadcrumb-item"><a class="tabs_links_btns" href="#weekView">Design</a></li> --}}
                 </ol>
             </nav>
             @can('isCompany')
@@ -65,15 +75,15 @@
                                                 <div class="col-3">
                                                     <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
                                                         <h6 class="smalltxt">Logo</h6>
-                                                        <input type="file" class="photo form-control main_field position-relative" name="logo">
-                                                        <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="imgPreview"/>
+                                                        <input type="file" class="photo form-control main_field position-relative" id="cLogo" name="logo">
+                                                        <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
                                                     </div>
                                                 </div>
                                                 <div class="col-3">
                                                     <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
                                                         <h6 class="smalltxt">Background</h6>
-                                                        <input type="file" class="photo form-control main_field position-relative" name="background_image">
-                                                        <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="imgPreview"/>
+                                                        <input type="file" class="photo form-control main_field position-relative" id="cBackgroundImage" name="background_image">
+                                                        <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -116,8 +126,8 @@
                                     </div>
                                     <div class="col-lg-5 col-md-5 col-sm-12 col-12">
                                         <div class="img_preview position-relative desktop_view">
-                                            <input type="file" class="photo form-control main_field position-relative" name="image">
-                                            <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview imgPreview" alt="Select Avatar" />
+                                            <input type="file" class="photo form-control main_field position-relative" name="image" id="cImage">
+                                            <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview imgPreview" id="cImageImgPreview" alt="Select Avatar" />
                                         </div>
                                         <div class="form_btn text-end mobile_margin">
                                             <button type="submit" class="btn save_form_btn">Save Changes</button>

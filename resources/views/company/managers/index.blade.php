@@ -1,5 +1,20 @@
 @extends('company.layouts.app')
 @section('content')
+<style>
+    input
+    {
+        color: black !important;
+        font-weight: 600 !important;
+    }
+    input::placeholder
+    {
+        font-weight: 100 !important;
+    }
+    input[type="file"] {
+        opacity: 0;
+        z-index: 1;
+    }
+</style>
 <section class="add_booking_section">
     <article class="add_new_booking_box">
         <div class="action_btn text-end page_btn">
@@ -19,7 +34,7 @@
 <section class="">
     <article class="form_inside">
         <div class="form_add_managers">
-            <form class="add_managers inside_custom_form " action="{{ route('managers.store') }}" method="POST" enctype="multipart/form-data">
+            <form class="add_managers inside_custom_form " action="{{ route('managers.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate>
                 @csrf
                 <div class="container-fluid form_container">
                     <div class="row m-0 w-100">
@@ -27,8 +42,8 @@
                             <div class="row w-100 m-0 gx-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
                                     <div class="img_preview position-relative mobile_avatar">
-                                        <input type="file" id="photo" class="form-control main_field position-relative" name="image">
-                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                                        <input type="file" id="mPhoto" class="form-control main_field position-relative" name="image">
+                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="mPhotoImgPreview"/>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -48,8 +63,8 @@
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
                             <div class="img_preview position-relative desktop_view">
-                                <input type="file" id="photo" class="form-control main_field position-relative" name="image">
-                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                                <input type="file" id="photo3" class="form-control main_field position-relative" name="image">
+                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo3imgPreview"/>
                             </div>
                             <div class="form_btn text-end mobile_margin">
                                 <button type="submit" class="btn save_form_btn">Save Changes</button>
@@ -59,45 +74,49 @@
                 </div>
             </form>
         </div>
-        <div class="edit_box inside_custom_form" style="display: none">
-            <div class="container-fluid form_container">
-                <div class="row m-0 w-100">
-                    <div class="col-lg-7 col-md-7 col-sm-12 col-12">
-                        <div class="row w-100 m-0 gx-2">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
-                                <div class="img_preview position-relative mobile_avatar">
-                                    <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
-                                    <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview1"/>
+        <form action="{{ route('managers.update','~') }}" id="updateForm" method="POST" enctype="multipart/form-data" data-parsley-validate>
+            @method('put')
+            @csrf
+            <div class="edit_box inside_custom_form" style="display: none">
+                <div class="container-fluid form_container">
+                    <div class="row m-0 w-100">
+                        <div class="col-lg-7 col-md-7 col-sm-12 col-12">
+                            <div class="row w-100 m-0 gx-2">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
+                                    <div class="img_preview position-relative mobile_avatar">
+                                        <input type="file" id="photo1" class="form-control main_field position-relative" name="image" form="updateForm">
+                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo1imgPreview1"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="text" class="form-control main_field" form="updateForm" name="name" placeholder="Name" aria-label="Name" required>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
+                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+                                    <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
+                                    <span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
                                 </div>
                             </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="text" class="form-control main_field" form="updateForm" name="name" placeholder="Name" aria-label="Name" required>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
-                                <span class="text-gray" style="font-size: 12px">Enter Password If you want to change</span>
-                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
-                        <div class="img_preview position-relative desktop_view">
-                            <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
-                            <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview2"/>
-                        </div>
-                        <div class="form_btn text-end mobile_margin">
-                            <button type="submit" form="updateForm" class="btn save_form_btn">Update Changes</button>
+                        <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
+                            <div class="img_preview position-relative desktop_view">
+                                <input type="file" id="photo2" class="form-control main_field position-relative" name="image" form="updateForm">
+                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo2imgPreview2"/>
+                            </div>
+                            <div class="form_btn text-end mobile_margin">
+                                <button type="submit" form="updateForm" class="btn save_form_btn">Update Changes</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </article>
 </section>
 <section class="table_all_content mt-3 ms-0">
@@ -135,12 +154,8 @@
         </div>
         {{ $managers->links('pagination.new_design') }}
     </article>
-    <form onsubmit="return confirm('Are you sure?')" action="{{ route('managers.destroy','~') }}" id="deleteForm" method="POST">
+    <form  action="{{ route('managers.destroy','~') }}" id="deleteForm" method="POST">
         @method('delete')
-        @csrf
-    </form>
-    <form action="{{ route('managers.update','~') }}" id="updateForm" method="POST" enctype="multipart/form-data">
-        @method('put')
         @csrf
     </form>
 </section>
@@ -150,8 +165,21 @@
     $(document).on('click','.deleteButton',function(){
         action = $('#deleteForm').attr('action');
         action = action.replace('~',$(this).data('id'));
-        $('#deleteForm').attr('action',action);
-        $('#deleteForm').submit();
+        Swal.fire({
+            title: "Delete Manager",
+            text: "Are you sure you want to delete?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel please!",
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $('#deleteForm').attr('action',action);
+                $('#deleteForm').submit();     // submitting the form when user press yes
+            }
+        });
     });
     $(document).ready(function(){
         $("a").tooltip();
