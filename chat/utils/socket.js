@@ -633,7 +633,8 @@ class Socket{
 				});
 			});
 
-			socket.on('master-driver-update-2', async (data) => {
+			socket.on('master-driver-update-2', async (datas) => {
+				let data = datas.data;
 				var ride_id = data.ride_id;
 				let ridedata = await helper.masterRideDetail(token,ride_id);
 				var master_drivers = await helper.masterDriverList();
