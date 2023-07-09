@@ -14,7 +14,7 @@ class Socket{
     }
     socketEvents(){
         this.io.on('connection', (socket) => {
-			let token = socket.handshake.query.access_token;
+			// let token = socket.handshake.query.access_token;
 			
           // socket on
             (async () => {
@@ -636,6 +636,7 @@ class Socket{
 			socket.on('master-driver-update-2', async (datas) => {
 				let data = datas.data;
 				var ride_id = data.ride_id;
+				let token = data.access_token;
 				let ridedata = await helper.masterRideDetail(token,ride_id);
 				var master_drivers = await helper.masterDriverList();
 				master_drivers.forEach(async (master_driver, index) => {
