@@ -2165,8 +2165,8 @@ class UserController extends Controller
 			$settingValue = json_decode($settings['value']);
 
 			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			$ride = new RideResource(Ride::find($ride->id));
 			if (!empty($masterDriverIds)) {
-				$ride = new RideResource(Ride::find($ride->id));
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
 				$ride['waiting_time'] = $settingValue->waiting_time;
@@ -2195,7 +2195,7 @@ class UserController extends Controller
 			// 	}
 			// 	$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			// }
-			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
+			return response()->json(['message' => 'Ride Booked successfully', 'data' => $ride], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
@@ -3110,10 +3110,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 		try {
 			$ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
-			$settings = \App\Setting::first();
-			$settingValue = json_decode($settings['value']);
-			$ride_detail['waiting_time'] = $settingValue->waiting_time;
 			if (!empty($ride_detail)) {
+				$settings = \App\Setting::first();
+				$settingValue = json_decode($settings['value']);
+				$ride_detail['waiting_time'] = $settingValue->waiting_time;
 				return response()->json(['message' => 'Ride Detail Got Successfully', 'data' => $ride_detail], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Ride Not found'], $this->warningCode);

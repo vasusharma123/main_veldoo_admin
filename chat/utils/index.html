@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket.IO chat</title>
+    <style>
+        body {
+            margin: 0;
+            padding-bottom: 3rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        #form {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 0.25rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            height: 3rem;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+        
+        #input {
+            border: none;
+            padding: 0 1rem;
+            flex-grow: 1;
+            border-radius: 2rem;
+            margin: 0.25rem;
+        }
+        
+        #input:focus {
+            outline: none;
+        }
+        
+        #form>button {
+            background: #333;
+            border: none;
+            padding: 0 1rem;
+            margin: 0.25rem;
+            border-radius: 3px;
+            outline: none;
+            color: #fff;
+        }
+        
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #messages>li {
+            padding: 0.5rem 1rem;
+        }
+        
+        #messages>li:nth-child(odd) {
+            background: #efefef;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+</body>
+
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha512-59oxERSDGj1eMzmFW3acSaBHEMNi2GaeQC7nQYcTqM0vgcnavi4BpUhLkcJQE2G6fdtn8JVj7brt0EZuBV0ogQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    var params = new window.URLSearchParams(window.location.search);
+    var data_user = params.get('name')
+    var socket = io('http://localhost:3000', {
+        query: {
+            "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZmRmMmYyY2JiMDA2MzY1ODA1MDVkYjlmNDk2ODU0NWUzZDBjNmUzNTFhYmQxYzk1MGY1OGNkODVjMGFkM2E4ZjE4ZjNiZDAwM2RiMjc2MmIiLCJpYXQiOjE2ODg3NDIyNTUsIm5iZiI6MTY4ODc0MjI1NSwiZXhwIjoxNjg5NjA2MjU1LCJzdWIiOiI4MzgiLCJzY29wZXMiOltdfQ.eDuSy7BKAmem70Oo04DcWxbThrhVdkGXgr_IWU8UPqlmKRG1_jcvTpNqu-gRLY_GUqfOJ88iDhJNjJEJTbodTBHGfvZsT5v3E10cvF6MfXrkmD80mc2cqdbyTGrcVPZjXxVt3NDIFSr_GZuwKojgw4wxZ5G4aiLvMM3AbsnyI9VL9Ej5LtLoCSy-6WBZigUyl2sD5VUXO672b8qXksuvOPZ4gJWIJ9UYjFfsOKIFHpN9hhhljpgQDCtydCNLcy0tWFdNCPYeoJNpv2Mrm1-sR4D4wsQNJzvd0PyHr_mC9xW2q-96mSsSNdfh--HHJYaLMjjITZG1mznDM0szXz-IQNQiGjXdfkBE4mplexJtRUSh5qXPg0SD1pzY79WW-4gJQys1b6s2tywltBsDpdXZ9U4u8SX8_BEf_gpnsJBmjjGShkp68MDmPdfkWKwvDsOh0h_JTOkXgR8kjn5SEhYeH-czQgdDAlo4ShHtXsd7AGqe7LDD2nFGzblhtAOLJQw_uJdEL0EMdBaJAHM2Ncz_2pxUTrWpR81i8viyAULtAbpTp-XZyFQ6WdxzkH4NXeLKNhvkMeqJcV4mogPS8UE6YRogS-a4c7eS_-yKI7efZ7eVRy8zYobI8K-ekSV3MmTo2_hqM4zrbtwF47Lvfl5lHAeWk42eGype7yPkwxRuomA"
+        }
+    });
+
+    socket.emit('master-driver-update-2', {"ride_id":1,"is_newly_created":1});
+
+    
+    // var socket = io('http://localhost:3000?token=abc');
+    //console.log();
+    var messages = document.getElementById('messages');
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+            socket.emit('chat message', input.value);
+            input.value = '';
+        }
+    });
+
+    socket.on('chat message', function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
