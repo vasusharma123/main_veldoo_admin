@@ -5,6 +5,15 @@
     {
         display: none;
     }
+    input
+    {
+        color: black !important;
+        font-weight: 600 !important;
+    }
+    input::placeholder
+    {
+        font-weight: 100 !important;
+    }
 </style>
 <section class="add_booking_section">
     <article class="add_new_booking_box">
@@ -126,7 +135,7 @@
         </div>
         {{ $users->links('pagination.new_design') }}
     </article>
-    <form onsubmit="return confirm('Are you sure?')" action="{{ route('company-users.destroy','~') }}" id="deleteForm" method="POST">
+    <form  action="{{ route('company-users.destroy','~') }}" id="deleteForm" method="POST">
         @method('delete')
         @csrf
     </form>
@@ -179,8 +188,22 @@
     $(document).on('click','.deleteButton',function(){
         action = $('#deleteForm').attr('action');
         action = action.replace('~',$(this).data('id'));
-        $('#deleteForm').attr('action',action);
-        $('#deleteForm').submit();
+
+        Swal.fire({
+            title: "Delete User",
+            text: "Are you sure you want to delete?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel please!",
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $('#deleteForm').attr('action',action);
+                $('#deleteForm').submit();     // submitting the form when user press yes
+            }
+        });
     });
     $(document).ready(function(){
         $("a").tooltip();

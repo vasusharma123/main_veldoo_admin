@@ -40,32 +40,32 @@
                         </thead>
                         <tbody>
                             @foreach ($rides as $ride)
-                                <tr>
-                                    <td class="btn_view_booking rideDetails" data-id="{{ $ride->id }}" style="cursor: pointer">
+                                <tr class="rideDetails" data-id="{{ $ride->id }}" style="cursor: pointer">
+                                    <td class="btn_view_booking dateTimeList{{ $ride->id }}">
                                         {{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </td>
-                                    <td style="max-width:200px">{{ $ride->pickup_address }}</td>
-                                    <td class="sm_hide">{{ @$ride->vehicle->vehicle_number_plate }}</td>
-                                    <td class="sm_hide">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>
-                                    <td class="sm_hide">
+                                    <td style="max-width:200px" class="pickupPointList{{ $ride->id }}">{{ $ride->pickup_address }}</td>
+                                    <td class="sm_hide carList{{ $ride->id }}">{{ @$ride->vehicle->vehicle_number_plate }}</td>
+                                    <td class="sm_hide customerList{{ $ride->id }}">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>
+                                    <td class="sm_hide statusList{{ $ride->id }}">
                                         @if($ride->status == -2)
-                                            <span class="status_box bg-danger">Cancelled</span>
+                                            <span class="status_box text-white bg-danger">Cancelled</span>
                                         @elseif($ride->status == -1)
-                                            <span class="status_box bg-danger">Rejected</span>
+                                            <span class="status_box text-white bg-danger">Rejected</span>
                                         @elseif($ride->status == 1)
-                                            <span class="status_box bg-info">Accepted</span>
+                                            <span class="status_box text-white bg-info">Accepted</span>
                                         @elseif($ride->status == 2)
-                                            <span class="status_box bg-info">Started</span>
+                                            <span class="status_box text-white bg-info">Started</span>
                                         @elseif($ride->status == 4)
-                                            <span class="status_box bg-info">Driver Reached</span>
+                                            <span class="status_box text-white bg-info">Driver Reached</span>
                                         @elseif($ride->status == 3)
-                                            <span class="status_box bg-success">Completed</span>
+                                            <span class="status_box text-white bg-success">Completed</span>
                                         @elseif($ride->status == -3)
-                                            <span class="status_box bg-danger">Cancelled by you</span>
+                                            <span class="status_box text-white bg-danger">Cancelled by you</span>
                                         @elseif($ride->status == 0)
-                                            <span class="status_box bg-warning">Pending</span>
+                                            <span class="status_box text-white bg-warning">Pending</span>
                                         @elseif(Date.parse($ride->ride_time) < Date.parse(Date()))
-                                            <span class="status_box bg-warning">Upcoming</span>
+                                            <span class="status_box text-white bg-warning">Upcoming</span>
                                         @endif
                                     </td>
                                 </tr>

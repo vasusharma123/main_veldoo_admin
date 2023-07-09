@@ -530,6 +530,10 @@ span.menu_icons.arrow {
     background-color: var(--login-input-bg);
     border-color: var(--secondary-color);
 }
+.rideDetails :hover,.rideDetails :focus{
+    background-color: var(--login-input-bg);
+    border-color: var(--secondary-color);
+}
 .view_icon {
     max-width: 15px;
     margin-right: 6px;

@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
         <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     </head>
     <body>
         <style>
@@ -62,6 +63,12 @@
             .fc-event
             {
                 cursor: pointer;
+            }
+            .parsley-errors-list
+            {
+                color: red;
+                padding: 0px;
+                list-style: none;
             }
         </style>
         @include('company.elements.header')
@@ -170,7 +177,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 pe-0" style="padding-left: 0px;margin-top: 10px;">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 10px;">
                                         <div class="name_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -304,7 +311,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Passenger</label>
-                                            <select name="user_id" class="form_control borderless_form_field psnger_no" required id="users">
+                                            <select name="user_id" class="form_control borderless_form_field psnger_no" id="users">
                                                 <option value="">--Select User--</option>
                                                 @foreach ($users as $user)
                                                     <option value="{{ $user->id }}">
@@ -322,7 +329,7 @@
                                         <div class="form_box">
                                             <label class="form_label down_form_label ">Amount (CHF)</label>
                                             <div class="form-dollar position-relative">
-                                                <input type="number" min="0" class="form-control down_form price_calculated_input" name="ride_cost" value="0" readonly placeholder="CHF"/>
+                                                <input type="text" min="0" class="form-control down_form price_calculated_input" name="ride_cost" value="0" readonly placeholder="CHF"/>
                                                 <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
                                                 <input type="hidden" name="payment_type" value="Cash" id="payment_type">
                                             </div>
@@ -365,6 +372,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script>
             //Swiper Slider Car
             var swiper = new Swiper(".carSwiper", {
@@ -452,6 +460,10 @@
                             swal.fire("{{ __('Error') }}", response.message, "error");
                         }
                     });
+
+                    $('.dateTimeList'+selected_ride_id).html(booking.ride_time_modified);
+                    $('.pickupPointList'+selected_ride_id).html(booking.pickup_address);
+
                     $('.'+Dclass).removeClass('selected');
                     $('.'+Dclass+'[data-id="'+rideId+'"]').addClass('selected');
                     // console.log(booking);
@@ -470,11 +482,12 @@
                     $('.ride_driver_details_div_driver_na').show();
                     if (booking.driver!=null)
                     {
+                        // console.log(booking.driver);
                         $('.ride_driver_details_div').show();
                         $('.ride_driver_details_div').addClass('d-flex');
                         $('.ride_driver_details_div_user_na').hide();
                         if(booking.driver.image_with_url){
-                            $('.ride_driver_details_div_image').attr('src',booking.user.image_with_url);
+                            $('.ride_driver_details_div_image').attr('src',booking.driver.image_with_url);
                         } else {
                             $('.ride_driver_details_div_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
                         }
@@ -497,11 +510,13 @@
                         }
                         $('.ride_car_div_type').html(booking.vehicle.model);
                         $('.ride_car_div_number').html(booking.vehicle.vehicle_number_plate);
+                        $('.carList'+selected_ride_id).html(booking.vehicle.vehicle_number_plate);
                     }
 
                     $('.no_of_passengers').html(booking.passanger);
                     if (booking.user && booking.user.first_name)
                     {
+                        $('.customerList'+selected_ride_id).html(booking.user.first_name+' '+booking.user.last_name);
                         $('.passenger_details').html(booking.user.first_name+' '+booking.user.last_name+"  (+"+booking.user.country_code+'-'+booking.user.phone+")");
                     }
                     $('.ride_payment_type').html(booking.payment_type);
@@ -531,7 +546,7 @@
                     }
                     else if(booking.status == 3)
                     {
-                        ride_status = `<p class="infomation_update done">Completed</p>`;
+                        ride_status = `<p class="infomation_update done bg-success">Completed</p>`;
                     }
                     else if(booking.status == -3)
                     {
@@ -539,13 +554,14 @@
                     }
                     else if(booking.status == 0)
                     {
-                        ride_status = `<p class="infomation_update done bg-warning">Pending</p>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button>`;
                     }
                     else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
                         ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
                     }
-                    $('.booking_details_with_status').html("Booking Details "+ride_status+` <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button>`);
+                    $('.statusList'+selected_ride_id).html(ride_status);
+                    $('.booking_details_with_status').html("Booking Details "+ride_status);
 
                     if (booking.dest_lat=="")
                     {
@@ -976,6 +992,27 @@
 
                 $(document).on("submit", "#booking_list_form", function(e) {
                     e.preventDefault();
+                    if ($('#pickup_latitude').val()=="")
+                    {
+                        swal.fire("{{ __('Error') }}", "Pickup Point is required", "error");
+                        return false;
+                    }
+                    if ($('input[name="ride_date"]').val()=="")
+                    {
+                        swal.fire("{{ __('Error') }}", "Please select pick up", "error");
+                        return false;
+                    }
+                    if ($('input[name="ride_time"]').val()=="")
+                    {
+                        swal.fire("{{ __('Error') }}", "Please select pick time", "error");
+                        return false;
+                    }
+                    if ($('#users').val()=="")
+                    {
+                        swal.fire("{{ __('Error') }}", "Please select a Passenger", "error");
+                        return false;
+                    }
+                    // alert($('#users').val());
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
                         Swal.fire({
@@ -1281,6 +1318,22 @@
                         }
                     });
                 }
+                $(document).on('keypress','#phone',function(e) {
+                    var keyCode = e.which ? e.which : e.keyCode;
+                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+
+                    if (!isValid) {
+                        e.preventDefault();
+                    }
+                });
+                $(document).on('keypress','#phone_edit',function(e) {
+                    var keyCode = e.which ? e.which : e.keyCode;
+                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+
+                    if (!isValid) {
+                        e.preventDefault();
+                    }
+                });
             </script>
         @endif
     </body>
