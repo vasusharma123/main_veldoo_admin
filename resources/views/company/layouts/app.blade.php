@@ -1336,5 +1336,154 @@
                 });
             </script>
         @endif
+        <script>
+            $(document).on('change','#cLogo',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#cLogoImgPreview').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#cBackgroundImage',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#cBackgroundImageImgPreview').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#cImage',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#cImageImgPreview').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#mPhoto',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#mPhotoImgPreview').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#photo3',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#photo3imgPreview').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#photo1',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#photo1imgPreview1').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+            $(document).on('change','#photo2',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#photo2imgPreview2').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+        </script>
     </body>
 </html>

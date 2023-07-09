@@ -10,6 +10,10 @@
     {
         font-weight: 100 !important;
     }
+    input[type="file"] {
+        opacity: 0;
+        z-index: 1;
+    }
 </style>
 <section class="add_booking_section">
     <article class="add_new_booking_box">
@@ -38,8 +42,8 @@
                             <div class="row w-100 m-0 gx-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
                                     <div class="img_preview position-relative mobile_avatar">
-                                        <input type="file" id="photo" class="form-control main_field position-relative" name="image">
-                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                                        <input type="file" id="mPhoto" class="form-control main_field position-relative" name="image">
+                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="mPhotoImgPreview"/>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -59,8 +63,8 @@
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
                             <div class="img_preview position-relative desktop_view">
-                                <input type="file" id="photo" class="form-control main_field position-relative" name="image">
-                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview"/>
+                                <input type="file" id="photo3" class="form-control main_field position-relative" name="image">
+                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo3imgPreview"/>
                             </div>
                             <div class="form_btn text-end mobile_margin">
                                 <button type="submit" class="btn save_form_btn">Save Changes</button>
@@ -80,8 +84,8 @@
                             <div class="row w-100 m-0 gx-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
                                     <div class="img_preview position-relative mobile_avatar">
-                                        <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
-                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview1"/>
+                                        <input type="file" id="photo1" class="form-control main_field position-relative" name="image" form="updateForm">
+                                        <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo1imgPreview1"/>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -102,8 +106,8 @@
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
                             <div class="img_preview position-relative desktop_view">
-                                <input type="file" id="photo" class="form-control main_field position-relative" name="image" form="updateForm">
-                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="imgPreview2"/>
+                                <input type="file" id="photo2" class="form-control main_field position-relative" name="image" form="updateForm">
+                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="photo2imgPreview2"/>
                             </div>
                             <div class="form_btn text-end mobile_margin">
                                 <button type="submit" form="updateForm" class="btn save_form_btn">Update Changes</button>
