@@ -2165,8 +2165,8 @@ class UserController extends Controller
 			$settingValue = json_decode($settings['value']);
 
 			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			$ride = new RideResource(Ride::find($ride->id));
 			if (!empty($masterDriverIds)) {
-				$ride = new RideResource(Ride::find($ride->id));
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
 				$ride['waiting_time'] = $settingValue->waiting_time;
@@ -2195,7 +2195,7 @@ class UserController extends Controller
 			// 	}
 			// 	$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			// }
-			return response()->json(['message' => 'Ride Booked successfully'], $this->successCode);
+			return response()->json(['message' => 'Ride Booked successfully', 'data' => $ride], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		} catch (\Exception $exception) {
