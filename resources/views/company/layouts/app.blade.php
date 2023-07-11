@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
         <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
     </head>
     <body>
         <style>
@@ -69,6 +70,17 @@
                 color: red;
                 padding: 0px;
                 list-style: none;
+            }
+            .clockpicker-popover
+            {
+                position: absolute !important;
+                top: 60% !important;
+                /* left: 50% !important; */
+                transform: translate(-50%, -50%) !important;
+            }
+            .clockpicker-popover > .arrow
+            {
+                display: none !important;
             }
         </style>
         @include('company.elements.header')
@@ -278,7 +290,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Time</label>
-                                            <input type="time" class="form_control borderless_form_field dropup_field" required name="ride_time">
+                                            <input type="text" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" id="timeInput" required name="ride_time" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -290,7 +302,7 @@
                                             <div class="swiper-slide">
                                                 <div class="car_option position-relative">
                                                     <input type="radio" class="car_checked" value="{{ $vehicle_type->id }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
-                                                    <img src="{{ asset($vehicle_type->car_image) }}" class="img-fluid car_img" alt="Small" />
+                                                    <img src="{{ $vehicle_type->image_with_url }}" class="img-fluid car_img" alt="Small" />
                                                     <label class="car_lable">{{ $vehicle_type->car_type }}</label>
                                                 </div>
                                             </div>
@@ -354,6 +366,28 @@
                 </section>
             <!-- /Section Add New Booking -->
         @endif
+        <!-- ClockPicker Modal -->
+        <div class="modal fade" id="clockModal" tabindex="-1" role="dialog" aria-labelledby="clockModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="clockModalLabel">Select Time</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                <div class="clockpicker">
+                    <input type="text" class="form-control" id="timeInputM" placeholder="Select time">
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTime">Save</button>
+                </div>
+            </div>
+            </div>
+        </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script>
@@ -415,6 +449,7 @@
             }
         </script>
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
         @if (\Request::route()->getName()=='company.rides')
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
@@ -1483,6 +1518,13 @@
                 // Read the file as a Data URL
                 reader.readAsDataURL(file);
                 }
+            });
+            $(document).on('click','#timeInput',function(){
+                $('#timeInput').clockpicker({
+                    autoclose: true,
+                    placement: 'bottom',
+                    align: 'right'
+                });
             });
         </script>
     </body>

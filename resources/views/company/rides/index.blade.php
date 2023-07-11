@@ -64,7 +64,7 @@
                                             <span class="status_box text-white bg-danger">Cancelled by you</span>
                                         @elseif($ride->status == 0)
                                             <span class="status_box text-white bg-warning">Pending</span>
-                                        @elseif(Date.parse($ride->ride_time) < Date.parse(Date()))
+                                        @elseif(strtotime($ride->ride_time) < strtotime('now'))
                                             <span class="status_box text-white bg-warning">Upcoming</span>
                                         @endif
                                     </td>
