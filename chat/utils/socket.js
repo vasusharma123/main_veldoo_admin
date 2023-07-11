@@ -638,9 +638,9 @@ class Socket{
 				var ride_id = data.ride_id;
 				let token = data.access_token;
 				let ridedata = await helper.masterRideDetail(token,ride_id);
-				var master_drivers = await helper.masterDriverList();
-				master_drivers.forEach(async (master_driver, index) => {
-					var driversocketid = master_driver['socket_id'];
+				// var master_drivers = await helper.masterDriverList();
+				// master_drivers.forEach(async (master_driver, index) => {
+					// var driversocketid = master_driver['socket_id'];
 					if (ridedata.data) {
 						if(data.is_newly_created){
 							ridedata.data.is_newly_created = 1;
@@ -649,19 +649,19 @@ class Socket{
 						} else if(data.delete_for_all){
 							ridedata.data.delete_for_all = 1;
 						}
-						this.io.to(driversocketid).emit(`master-driver-response-2`, ridedata);
+						this.io.emit(`master-driver-response-2`, ridedata);
 					} else {
 						if(data.is_newly_created){
-							this.io.to(driversocketid).emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "is_newly_created" : 1, "parent_ride_id" : data.parent_ride_id??''}});
+							this.io.emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "is_newly_created" : 1, "parent_ride_id" : data.parent_ride_id??''}});
 						} else if(data.change_for_all){
-							this.io.to(driversocketid).emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}});
+							this.io.emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "change_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}});
 						} else if(data.delete_for_all){
-							this.io.to(driversocketid).emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}});
+							this.io.emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1, "delete_for_all" : 1, "parent_ride_id" : data.parent_ride_id??''}});
 						} else {
-							this.io.to(driversocketid).emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1}});
+							this.io.emit(`master-driver-response-2`, {"data":{"id":data.ride_id,"is_ride_deleted":1}});
 						}
 					}
-				});
+				// });
 			});
 
 			socket.on('get-remaining-driver-notification', async (datas) => {
