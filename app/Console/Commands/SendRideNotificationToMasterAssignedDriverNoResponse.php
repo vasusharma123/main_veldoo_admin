@@ -53,11 +53,15 @@ class SendRideNotificationToMasterAssignedDriverNoResponse extends Command
             foreach ($rides as $ride) {
                 $masterDriverIds=User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
                 if(!empty($masterDriverIds)){
+                    $ride->driver_id = null;
+                    $ride->check_assigned_driver_ride_acceptation = null;
+                    $ride->status = -4;
+                    $ride->save();
                     $title = 'No Driver Found';
                     $message = 'Sorry No driver found at this time for your booking';
-                    $ride = new RideResource(Ride::find($ride->id));
-                    $ride['waiting_time'] = $settingValue->waiting_time;
-                    $additional = ['type' => 9, 'ride_id' => $ride->id, 'ride_data' => $ride];
+                    $rideData = new RideResource(Ride::find($ride->id));
+                    $rideData['waiting_time'] = $settingValue->waiting_time;
+                    $additional = ['type' => 9, 'ride_id' => $rideData->id, 'ride_data' => $rideData];
                     $ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                     if (!empty($ios_driver_tokens)) {
                         bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
@@ -71,11 +75,6 @@ class SendRideNotificationToMasterAssignedDriverNoResponse extends Command
                         $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '3', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                     }
                     RideHistory::insert($ridehistory_data);
-                    $rideData = Ride::find($ride->id);
-                    $rideData->driver_id = null;
-                    $rideData->check_assigned_driver_ride_acceptation = null;
-                    $rideData->status = -4;
-                    $rideData->save();
                 } else {
                     $ride->driver_id = null;
                     $ride->check_assigned_driver_ride_acceptation = null;
