@@ -727,9 +727,14 @@ class UserController extends Controller
             return view('admin.drivers.index_element')->with($data);
         }
         */
+        // dd(Auth::user()->id);
 		if ($request->ajax()) {
 			$users = ServiceProviderDriver::where(['service_provider_id'=>Auth::user()->id])->with('user:id,first_name,is_master,last_name,email,phone,status,name,country_code')->get();
 			$data = $users->pluck('user')->flatten();
+            if(isset($data[0]) && empty($data[0]))
+            {
+                $data = [];
+            }
 			// $data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 			// <a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 			return Datatables::of($data)

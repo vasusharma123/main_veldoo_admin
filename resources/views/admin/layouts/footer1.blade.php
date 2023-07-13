@@ -42,25 +42,25 @@
         @if (Auth::check())
  		<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
-		
+
 		@else
-		  
+
 		@endif
 
 {{Html::script('//cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js
-')}} 
-{{Html::script('//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')}} 
+')}}
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js')}}
 {{Html::script('//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js')}}
-{{Html::script('//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js')}} 
-{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js')}} 
-{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js')}} 
+{{Html::script('//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js')}}
+{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js')}}
+{{Html::script('//cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js')}}
 
 {{Html::style('//cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css')}}
 {{Html::script('//code.jquery.com/ui/1.13.2/jquery-ui.js')}}
 {{Html::script('//cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js')}}
-{{Html::style('//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css')}} 
-{{Html::style('assets/css/intlTelInput.css')}} 
-{{Html::script('assets/js/intlTelInput.js')}} 
+{{Html::style('//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css')}}
+{{Html::style('assets/css/intlTelInput.css')}}
+{{Html::script('assets/js/intlTelInput.js')}}
 
 		<script type="text/javascript">
 		function getParameterByName(name, url) {
@@ -77,7 +77,7 @@
 			$('body').on('click', '.pagination:not(.laravel_pagination) a', function(e) {
 				e.preventDefault();
 				$("#loading").fadeIn("slow");
-				var url = $(this).attr('href');  
+				var url = $(this).attr('href');
 				paginate(url);
 				// window.history.pushState("", "", url);
 			});
@@ -99,13 +99,13 @@
 					swal("Server Timeout!", "Please try again", "warning");
 				});
 			}
-				
+
 			if ($(".textarea").length > 0) {
 				tinymce.init({
 					selector: "textarea.textarea",
 					theme: "modern",
-					
-					
+
+
 					height: 300,
 					resize:false,
 					plugins: [
@@ -117,22 +117,24 @@
 					toolbar: " bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
 
 				});
-				
-				
+
+
 			}
 		});
-		
+
 $(document).ready(function(){
   $(".nav-tabs a").click(function(){
     $(this).tab('show');
   });
 });
 
- CKEDITOR.replace( 'ckeditor',
-         {
-          customConfig : 'config.js',
-          toolbar : 'simple'
-          })
+if ($('#ckeditor').length > 0)
+{
+    CKEDITOR.replace( 'ckeditor',{
+            customConfig : 'config.js',
+            toolbar : 'simple'
+    });
+}
 
 jQuery("#Regphones").intlTelInput({
 		initialCountry:"us",
@@ -141,7 +143,7 @@ jQuery("#Regphones").intlTelInput({
 		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
 			return "";
 		},
-});  
+});
 jQuery("#CRegphones").intlTelInput({
 		initialCountry:"us",
 		separateDialCode: true,
@@ -149,7 +151,7 @@ jQuery("#CRegphones").intlTelInput({
 		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
 			return "";
 		},
-});  
+});
 jQuery("#admin_phone").intlTelInput({
 		initialCountry:"us",
 		separateDialCode: true,
@@ -157,7 +159,7 @@ jQuery("#admin_phone").intlTelInput({
 		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
 			return "";
 		},
-});  
+});
 jQuery("#RegAlterenatePhones").intlTelInput({
 		initialCountry:"us",
 		separateDialCode: true,
@@ -165,7 +167,7 @@ jQuery("#RegAlterenatePhones").intlTelInput({
 		customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
 			return "";
 		},
-});  
+});
 </script>
 		 @yield ('footer_scripts')
 	</body>

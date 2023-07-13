@@ -59,21 +59,21 @@ class RideController extends Controller
      * @return object after send reset password token
      * This function use to list of latest ride detail
      */
- 
+
     public function driverUpdateLocation(Request $request){
-      
+
         $userObj = Auth::user();
-         
+
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-         
+
          $rules = [
             'latitude' => 'required',
             'longitude' => 'required',
-          
+
         ];
-        
+
         $inputArr = $request->all();
         $validator = Validator::make($inputArr, $rules);
         if ($validator->fails()) {
@@ -84,14 +84,14 @@ class RideController extends Controller
         $updateUser['current_lat']=($inputArr['latitude'])?$inputArr['latitude']:null;
         $updateUser['current_lng']=($inputArr['longitude'])?$inputArr['longitude']:null;
         $updateUser['last_driver_location_update_time']= Carbon::now();
-              
-        $hasUpdate = $userObj->updateUser($userObj->id, $updateUser);  
-          
+
+        $hasUpdate = $userObj->updateUser($userObj->id, $updateUser);
+
           if($hasUpdate){
 
               return $this->successResponse([], 'Location updated successfully!');
             }
-        
+
         return $this->notAuthorizedResponse('Something went wrong.');
 
 
@@ -103,13 +103,13 @@ class RideController extends Controller
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-                 
+
          $rules = [
             'type' => 'required',
             // 'longitude' => 'required',
-          
+
         ];
-        
+
         $inputArr = $request->all();
         $validator = Validator::make($inputArr, $rules);
         if ($validator->fails()) {
@@ -121,15 +121,15 @@ class RideController extends Controller
         if(!in_array($inputArr['type'],$typeArr)){
             return $this->validationErrorResponse('Please enter valid type.');
         }
-       
+
         $limit = 10;  //set  Number of entries to show in a page.
-            // Look for a GET variable page if not found default is 1.        
-            if (isset($inputArr["page"])) {    
-            $page  = $inputArr["page"];    
-            }    
-            else { $page=1;    
+            // Look for a GET variable page if not found default is 1.
+            if (isset($inputArr["page"])) {
+            $page  = $inputArr["page"];
             }
-          //determine the sql LIMIT starting number for the results on the displaying page  
+            else { $page=1;
+            }
+          //determine the sql LIMIT starting number for the results on the displaying page
             $inputArr['page_index'] = ($page-1) * $limit;      // 0
              $inputArr['limit'] = $limit;
             $queryData=$rides->getRideHistory($userObj,$inputArr);
@@ -140,20 +140,25 @@ class RideController extends Controller
             array_push($currentData,(object)$data);
         }
 
-        $user_count=count($currentData); 
-                
-            $total_records = $user_count;   //9
-            $total_pages = ceil($total_records / $limit); 
-        $arrayData=array('data_count'=>$user_count,'total'=>$total_pages,'per_page'=>$limit,'current_page'=>$page,'data'=>$currentData);   
+        $user_count=count($currentData);
 
-             return $this->successResponse($arrayData, 'Get ride list successfully');  
+            $total_records = $user_count;   //9
+            $total_pages = ceil($total_records / $limit);
+        $arrayData=array('data_count'=>$user_count,'total'=>$total_pages,'per_page'=>$limit,'current_page'=>$page,'data'=>$currentData);
+
+             return $this->successResponse($arrayData, 'Get ride list successfully');
     }
 
     public function upcoming_rides_count(){
         $userObj = Auth::user();
         $current_time = Carbon::now()->toDateTimeString();
         $after12Hours = Carbon::now()->addHours(12)->toDateTimeString();
-        $rides_count = Ride::whereIn('status', [0,1,2,4])->whereBetween('ride_time', [$current_time, $after12Hours])->count();
+        $rides_count = Ride::whereIn('status', [0,1,2,4])->whereBetween('ride_time', [$current_time, $after12Hours]);
+        if($userObj->service_provider_id)
+        {
+            $rides_count->where('service_provider_id',$userObj->service_provider_id);
+        }
+        $rides_count = $rides_count->count();
         return response()->json(['message' => 'Count of upcoming rides in next 12 hrs', 'data' => ['rides_count' => $rides_count]], $this->successCode);
     }
 
@@ -192,10 +197,10 @@ class RideController extends Controller
                 $lon = $ride->pick_lng;
                 $query = User::select(
                     "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                        * cos(radians(users.current_lat)) 
-                        * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                        + sin(radians(" . $lat . ")) 
+                    DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                        * cos(radians(users.current_lat))
+                        * cos(radians(users.current_lng) - radians(" . $lon . "))
+                        + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
             } else {

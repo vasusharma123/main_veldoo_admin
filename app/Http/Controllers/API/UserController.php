@@ -1196,7 +1196,7 @@ class UserController extends Controller
                 }
             }
         }
-		User::find(auth()->user()->id)->update(['password' => $request->new_password]);
+		User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
 		return response()->json(['message' => __('Password changed.')], $this->successCode);
 	}
 	public function reset_password(Request $request)
@@ -1206,7 +1206,7 @@ class UserController extends Controller
 			'new_password' => ['required'],
 			'new_confirm_password' => ['same:new_password'],
 		]);
-		User::find(auth()->user()->id)->update(['password' => $request->new_password]);
+		User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
 		return response()->json(['message' => __('Password changed.')], $this->successCode);
 	}
 	public function update_profile(Request $request)
@@ -6578,15 +6578,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
 
-		try {
+		try
+        {
 			$ride_data = Ride::find($request->ride_id);
-			if (!$ride_data) {
+			if (!$ride_data)
+            {
 				return response()->json(['message' => 'No such ride exist'], $this->warningCode);
 			}
 			$lat = $ride_data['pick_lat'];
 			$lon = $ride_data['pick_lng'];
 
-			$settings = Setting::first();
+			$settings = Setting::where('service_provider_id',$user->service_provider_id)->first();
 			$settingValue = json_decode($settings['value']);
 			$driverlimit = $settingValue->driver_requests;
 
@@ -6886,17 +6888,24 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return $this->notAuthorizedResponse('User is not authorized');
 		}
 
-		$resultArr['count'] = User::where('user_type', 2)->where('availability', 1)->get()->count();
-
+		$resultArr['count'] = User::where('user_type', 2)->where('availability', 1);
+        if($userObj->service_provider_id)
+        {
+            $resultArr['count']->where('service_provider_id',$userObj->service_provider_id);
+        }
+        $resultArr['count'] = $resultArr['count']->count();
 		$resultArr['data'] = User::select(['users.*', 'vehicles.model', 'vehicles.vehicle_number_plate', 'vehicles.vehicle_image'])
 			->leftJoin('driver_choose_cars', function ($join) {
 				$join->on('users.id', '=', 'driver_choose_cars.user_id')->where('driver_choose_cars.logout', '=', '0');
 			})
 			->leftJoin('vehicles', function ($join) {
 				$join->on('driver_choose_cars.car_id', '=', 'vehicles.id');
-			})
-			->where('users.availability', 1)
-			->orderBy('users.id', 'DESC')->get();
+			})->where('users.availability', 1);
+        if($userObj->service_provider_id)
+        {
+            $resultArr['data']->where('users.service_provider_id',$userObj->service_provider_id);
+        }
+        $resultArr['data'] = $resultArr['data']->orderBy('users.id', 'DESC')->get();
 		// $end_date_time = Carbon::now()->addMinutes(2)->format("Y-m-d H:i:s");
 		// ->where('ride_time', '<=', $end_date_time)
 		foreach ($resultArr['data'] as $driver_key => $driver_value) {
