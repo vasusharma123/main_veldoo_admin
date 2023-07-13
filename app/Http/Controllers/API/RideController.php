@@ -33,6 +33,7 @@ class RideController extends Controller
     protected $warningCode = 500;
     protected $limit;
     protected $calendar_rides_limit = 80;
+    protected $calendar_rides_limit_exceed = 160;
 
     public function __construct(Request $request = null)
 	{
@@ -2019,10 +2020,12 @@ class RideController extends Controller
             return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
         }
         try {
+            $previousRideData = Ride::find($request->ride_id);
             $ride = Ride::find($request->ride_id);
 
             if (!empty($ride)) {
                 $userdata = User::find($ride['user_id']);
+                $driverData = User::find($ride['driver_id']);
                 $deviceToken = $userdata['device_token'] ?? "";
                 $deviceType = $userdata['device_type'] ?? "";
                 $title = 'Ride Cancelled';
@@ -2041,11 +2044,10 @@ class RideController extends Controller
                         $rideObj->save();
                     }
                     $ride_detail = new RideResource(Ride::find($request->ride_id));
+                    $settings = Setting::first();
+                    $settingValue = json_decode($settings['value']);
+                    $ride_detail['waiting_time'] = $settingValue->waiting_time;
                     if (!empty($userdata)) {
-                        $settings = \App\Setting::first();
-                        $settingValue = json_decode($settings['value']);
-                        $ride_detail['waiting_time'] = $settingValue->waiting_time;
-
                         $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
                         if (!empty($deviceToken)) {
                             if ($deviceType == 'android') {
@@ -2064,17 +2066,42 @@ class RideController extends Controller
                         $notification->additional_data = json_encode($additional);
                         $notification->save();
                     }
+                    if (!empty($driverData) && $previousRideData->status != 0) {
+                        $deviceToken = $driverData['device_token'] ?? "";
+                        $deviceType = $driverData['device_type'] ?? "";
+                        $title = 'Ride Cancelled';
+                        $message = "Your ride has been cancelled.";
+                        $type = 5;
+
+                        $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
+                        if (!empty($deviceToken)) {
+                            if ($deviceType == 'android') {
+                                bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                            }
+                            if ($deviceType == 'ios') {
+                                bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+                            }
+                        }
+
+                        $notification = new Notification();
+                        $notification->title = $title;
+                        $notification->description = $message;
+                        $notification->type = $type;
+                        $notification->user_id = $driverData->id;
+                        $notification->additional_data = json_encode($additional);
+                        $notification->save();
+                    }
                     return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
                 }
             } else {
                 return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
             }
-        } catch (\Illuminate\Database\QueryException $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
-        } catch (\Exception $exception) {
-            Log::info($exception->getMessage() . "--" . $exception->getLine());
-            return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
+        } catch (\Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], $this->warningCode);
         }
     }
 
@@ -2155,6 +2182,344 @@ class RideController extends Controller
             DB::rollback();
             Log::info($exception->getMessage() . "--" . $exception->getLine());
             return response()->json(['success' => false, 'message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
+    public function calendarViewRidesUpDownLimited(Request $request)
+    {
+        try {
+            $rules = [
+                'type' => 'required',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+            }
+            $userId = Auth::user()->id;
+            $user = User::find($userId);
+            if (!empty($request->date)) {
+                $startDate = $request->date . " 00:00:00";
+            } else {
+                $startDate = Carbon::today()->format('Y-m-d H:i:s');
+            }
+            $rides = [];
+            $previous_available_ride = 0;
+            $next_available_ride = 0;
+            $take = $this->calendar_rides_limit_exceed;
+            if (!empty($request->page) && $request->page > 1) {
+                $skip = ($request->page-1) * $this->calendar_rides_limit_exceed;
+                $nextskip = ($request->page) * $this->calendar_rides_limit_exceed;
+                $prevSkip = ($request->page-2) * $this->calendar_rides_limit_exceed;
+                $compareVariable = ">=";
+                $nextCompareVariable = ">=";
+                $prevCompareVariable = ">=";
+                $ride_order = "asc";
+            } else if (!empty($request->page) && $request->page < 0) {
+                $skip = (abs($request->page)-1) * $this->calendar_rides_limit_exceed;
+                $prevSkip = (abs($request->page)) * $this->calendar_rides_limit_exceed;
+                $compareVariable = "<";
+                $prevCompareVariable = "<";
+                $ride_order = "desc";
+                if($request->page == -1){
+                    $nextskip = 0;
+                    $nextCompareVariable = ">=";
+                } else {
+                    $nextskip = (abs($request->page)-2) * $this->calendar_rides_limit_exceed;
+                    $nextCompareVariable = "<";
+                }
+            } else {
+                $skip = 0;
+                $nextskip = $this->calendar_rides_limit_exceed;
+                $prevSkip = 0;
+                $compareVariable = ">=";
+                $nextCompareVariable = ">=";
+                $prevCompareVariable = "<";
+                $ride_order = "asc";
+            }
+
+            if (!empty($user)) {
+                if ($request->type == 1) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where(function ($query) use ($user) {
+                                $query->where(['status' => -4])->orWhere(['status' => 0]);
+                                $query->orWhere(function ($query1) use ($user) {
+                                    $query1->whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query2) {
+                                        $query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    });
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where(function ($query) use ($user) {
+                                $query->where(['status' => -4])->orWhere(['status' => 0]);
+                                $query->orWhere(function ($query1) use ($user) {
+                                    $query1->whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query2) {
+                                        $query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    });
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where(function ($query) use ($user) {
+                                $query->where(['status' => -4])->orWhere(['status' => 0]);
+                                $query->orWhere(function ($query1) use ($user) {
+                                    $query1->whereNotNull('driver_id')->where(['waiting' => 1])->where(function ($query2) {
+                                        $query2->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                                    });
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
+                    } else {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where([['status', '=', 0]]);
+                                $query->orWhere(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->where(['status' => 1, 'waiting' => 1]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where([['status', '=', 0]]);
+                                $query->orWhere(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->where(['status' => 1, 'waiting' => 1]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                        $next_available_ride = $futureRides ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where([['status', '=', 0]]);
+                                $query->orWhere(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->where(['status' => 1, 'waiting' => 1]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
+                        $previous_available_ride = $pastRides ? 1 : 0;
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                } elseif ($request->type == 2) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
+                    } else {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where('driver_id', $userId)->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where('driver_id', $userId)->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                        $next_available_ride = $futureRides ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where('driver_id', $userId)->where('status', 3)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
+                        $previous_available_ride = $pastRides ? 1 : 0;
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                } elseif ($request->type == 3) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where(function ($query) {
+                                $query->whereIn('status', [-2]);
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where(function ($query) {
+                                $query->whereIn('status', [-2]);
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where(function ($query) {
+                                $query->whereIn('status', [-2]);
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
+                    } else {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->whereIn('status', [-2]);
+                                });
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->whereIn('status', [-2]);
+                                });
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                        $next_available_ride = $futureRides ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->where(function ($query1) use ($userId) {
+                                    $query1->where('driver_id', $userId);
+                                    $query1->whereIn('status', [-2]);
+                                });
+                                $query->orWhere(function ($query1) {
+                                    $query1->where(['status' => -3]);
+                                });
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
+                        $previous_available_ride = $pastRides ? 1 : 0;
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                } else if ($request->type == 4) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
+                                $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
+                    } else {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                        $next_available_ride = $futureRides ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
+                                $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
+                        $previous_available_ride = $pastRides ? 1 : 0;
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                } else if ($request->type == 5) {
+                    if ($user->is_master == 1) {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->get();
+                        $next_available_ride = (!empty($futureRides) && count($futureRides) > 0) ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
+                        $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
+                    } else {
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        ->whereDate('rides.ride_time', $compareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->orWhere('status', 0);
+                                $query->orWhere('driver_id', $userId);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
+                        $futureRides = Ride::whereDate('rides.ride_time', $nextCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->orWhere('status', 0);
+                                $query->orWhere('driver_id', $userId);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($nextskip)->count();
+                        $next_available_ride = $futureRides ? 1 : 0;
+                        $pastRides = Ride::whereDate('rides.ride_time', $prevCompareVariable, $startDate)
+                            ->where(function ($query) use ($userId) {
+                                $query->orWhere('status', 0);
+                                $query->orWhere('driver_id', $userId);
+                            })
+                            ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->count();
+                        $previous_available_ride = $pastRides ? 1 : 0;
+                        if (!empty($request->page) && $request->page < 0) {
+                            $rides = array_reverse($rides->toArray());
+                        }
+                    }
+                }
+                if(!empty($rides)){
+                    foreach ($rides as $ride_key => $ride_value) {
+                        if(!empty($rides[$ride_key]->driver)){
+                            $rides[$ride_key]->driver->car_data = $ride_value->driver->car_data;
+                        }
+                    }
+                }
+                return response()->json(['success' => true, 'message' => 'Rides List', 'data' => $rides, 'next_available_ride' => $next_available_ride, 'previous_available_ride' => $previous_available_ride], $this->successCode);
+            } else {
+                return response()->json(['message' => 'Record Not found'], $this->warningCode);
+            }
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
         }
     }
 

@@ -60,7 +60,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('reset_password', 'UserController@reset_password');
 	Route::post('admin_contact', 'UserController@adminContact');
 	Route::post('logout', 'UserController@logout');
-	
+
 	Route::post('get_notification', 'UserController@get_notification');
 	Route::post('get_users', 'UserController@get_users');
 	Route::post('get_users_by_id', 'UserController@getUserById');
@@ -71,18 +71,18 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('newRides', 'UserController@newRides');
 	Route::post('menu_list', 'UserController@menu_list');
 	Route::post('add_fav', 'UserController@addFav');
-	Route::post('addPlace', 'UserController@addPlace'); 
-	Route::post('addCard', 'UserController@addCard'); 
-	Route::post('addPersonal', 'UserController@addPersonal'); 
-	Route::post('addVehicle', 'UserController@addVehicle'); 
-	Route::post('updateVehicle', 'UserController@updateVehicle'); 
-	Route::post('rideStatusChange', 'UserController@rideStatusChange'); 
-	Route::post('scheduleRide', 'UserController@scheduleRide'); 
-	//Route::post('shareRide', 'UserController@shareRide'); 
-	Route::post('driverDetail', 'UserController@driverDetail'); 
-	Route::post('customerDetail', 'UserController@customerDetail'); 
-	// Route::post('phoneVerify', 'UserController@phoneVerify'); 
-	Route::post('update_profile', 'UserController@update_profile'); 
+	Route::post('addPlace', 'UserController@addPlace');
+	Route::post('addCard', 'UserController@addCard');
+	Route::post('addPersonal', 'UserController@addPersonal');
+	Route::post('addVehicle', 'UserController@addVehicle');
+	Route::post('updateVehicle', 'UserController@updateVehicle');
+	Route::post('rideStatusChange', 'UserController@rideStatusChange');
+	Route::post('scheduleRide', 'UserController@scheduleRide');
+	//Route::post('shareRide', 'UserController@shareRide');
+	Route::post('driverDetail', 'UserController@driverDetail');
+	Route::post('customerDetail', 'UserController@customerDetail');
+	// Route::post('phoneVerify', 'UserController@phoneVerify');
+	Route::post('update_profile', 'UserController@update_profile');
 	Route::post('add_cart', 'UserController@addCart');
 	Route::post('add_booking', 'UserController@addBooking');
 	Route::get('cart_list', 'UserController@cart_list');
@@ -99,12 +99,12 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('deletePlace', 'UserController@deletePlace');
 	Route::post('deleteCard', 'UserController@deleteCard');
 	Route::post('addwallet', 'UserController@addwallet');
-	
+
 	Route::post('giveRating', 'UserController@giveRating');
 	Route::post('userRideList', 'UserController@userRideList');
 	Route::post('invoice', 'UserController@invoice');
 	Route::post('updateBankdetail', 'UserController@updateBankdetail');
-	
+
 	Route::get('drivercompletedRide', 'UserController@drivercompleted_ride');
 	Route::get('drivercancelledRide', 'UserController@drivercancelled_ride');
 	Route::get('onlineDrivers', 'UserController@onlineDrivers');
@@ -121,7 +121,7 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('ride_list','user\RideController@ride_list');
 	Route::post('add_stopover', 'UserController@addStopover');
 	Route::post('sendRidetoMaster', 'UserController@sendRidetoMaster');
-	
+
 	Route::post('update_user_data', 'UserController@updateUserData');
 	Route::post('ride_edit', 'UserController@rideEdit');
 	Route::post('joinRideList', 'UserController@joinRideList');
@@ -187,7 +187,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('calendarBasedRides', 'RideController@calendarBasedRides');
 		Route::post('cancel_ride', 'RideController@cancel_ride');
 		Route::post('make_driver_logout', 'UserController@make_driver_logout');
-		
+		Route::post('calendarViewRidesUpDownLimited', 'RideController@calendarViewRidesUpDownLimited');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });

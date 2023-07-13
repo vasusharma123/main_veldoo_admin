@@ -218,6 +218,9 @@ class Routes{
 			 
 		});
 
+		this.app.get('/', (req, res) => {
+			res.sendFile(__dirname + '/index.html');
+		});
 
 		this.app.get('*',(request,response) =>{
 			response.send('chat server working . veldoo server');

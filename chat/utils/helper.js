@@ -5,6 +5,10 @@
 
 'user strict';
 const DB = require('./db');
+var axios = require('axios');
+require('dotenv').config({
+    path: './../.env'
+});
 
 class Helper{
 	
@@ -197,6 +201,39 @@ class Helper{
 			return null;
 		}
 	}
+
+	masterRideDetail = async (token, ride_id) => {
+		return new Promise((resolve, reject) => {
+			console.log(process.env.APP_URL + "/api/user/ride_detail");
+			axios({
+				url: process.env.APP_URL + "/api/user/ride_detail",
+				headers: {
+					'Accept': 'application/json',
+					'Authorization': token
+				},
+				method: "POST",
+				async: "true",
+				data: { ride_id: ride_id }
+			}).then(function (response) {
+				try {
+					if (response.data) {
+						resolve(response.data);
+					} else {
+						throw { message: 'Something went wrong.' };
+					}
+				}
+				catch (err) {
+					resolve(err);
+				}
+			}
+			).catch(error => {
+				if (error.response && error.response.data) {
+					resolve(error.response.data);
+				}
+			});
+		});
+	}
+
 	async getRideHistoryData(ride_id){
 
 		try {

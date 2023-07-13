@@ -167,12 +167,9 @@ class UserController extends Controller
         }
         */
 
-         if ($request->ajax()) {
+        if ($request->ajax()) {
 
-            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)
-			// ->where('service_provider_id',Auth::user()->id)
-			->orderBy('id','DESC')->get();
-
+            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)->where('service_provider_id',Auth::user()->id)->orderBy('id','DESC')->get();
             return Datatables::of($data)
                             ->addIndexColumn()
                             ->addColumn('action', function ($row) {
@@ -653,21 +650,21 @@ class UserController extends Controller
 		foreach($input as $key=>$value){
 			$setting["value->$key"] = $value;
 		}
-		$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 0;
-		$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 0;
-		$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 0;
-		if ($request->has('want_send_sms_to_user_when_ride_accepted_by_driver'))
-		{
-			$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 1;
-		}
-		if ($request->has('want_send_sms_to_user_when_driver_reached_to_pickup_point'))
-		{
-			$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 1;
-		}
-		if ($request->has('want_send_sms_to_user_when_driver_cancelled_the_ride'))
-		{
-			$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 1;
-		}
+		// $setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 0;
+		// $setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 0;
+		// $setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 0;
+		// if ($request->has('want_send_sms_to_user_when_ride_accepted_by_driver'))
+		// {
+		// 	$setting["value->want_send_sms_to_user_when_ride_accepted_by_driver"] = 1;
+		// }
+		// if ($request->has('want_send_sms_to_user_when_driver_reached_to_pickup_point'))
+		// {
+		// 	$setting["value->want_send_sms_to_user_when_driver_reached_to_pickup_point"] = 1;
+		// }
+		// if ($request->has('want_send_sms_to_user_when_driver_cancelled_the_ride'))
+		// {
+		// 	$setting["value->want_send_sms_to_user_when_driver_cancelled_the_ride"] = 1;
+		// }
 		// dd($input);
 		$setting->save();
 		return back()->with('success', __('Record updated!'));
@@ -1159,16 +1156,14 @@ class UserController extends Controller
 
 	public function serviceProviderVerify($token)
 	{
-		// dd($token);
 		$verifyUser = User::where('is_email_verified_token', $token)->first();
-        if(!is_null($verifyUser) ){
-
+        if(!is_null($verifyUser))
+        {
 			$password = Str::random(8);
 			$verifyUser->is_email_verified = 1;
 			$verifyUser->is_email_verified_token = "";
 			$verifyUser->password = Hash::make($password);
 			$verifyUser->update();
-
 
 			$driver = new User();
 			$driver->fill([

@@ -620,7 +620,7 @@
                     };
                 });
                 $('#dropoff_latitude').val('');
-                $('#dropoff_longitude').val(''); 
+                $('#dropoff_longitude').val('');
                 $('.price_calculated').html('CHF ---');
                 $('.distance_calculated').html('KM ---');
                 directionsDisplay.setMap(null);
@@ -632,9 +632,9 @@
                 map.setCenter(pt);
                 setTimeout(() => {
                     map.setZoom(8);
-                }, 500);  
+                }, 500);
                 $('#dropoff_latitude').val('');
-                $('#dropoff_longitude').val(''); 
+                $('#dropoff_longitude').val('');
                 $('.price_calculated').html('CHF ---');
                 $('.distance_calculated').html('KM ---');
                 directionsDisplay.setMap(null);
@@ -664,7 +664,7 @@
                     };
                 });
                 $('#dropoff_latitude').val('');
-                $('#dropoff_longitude').val(''); 
+                $('#dropoff_longitude').val('');
                 $('.price_calculated').html('CHF ---');
                 $('.distance_calculated').html('KM ---');
                 directionsDisplay.setMap(null);
@@ -677,15 +677,15 @@
                     map.setCenter(pt);
                     setTimeout(() => {
                         map.setZoom(8);
-                    }, 500);  
+                    }, 500);
                     $('#dropoff_latitude').val('');
-                    $('#dropoff_longitude').val(''); 
+                    $('#dropoff_longitude').val('');
                     $('.price_calculated').html('CHF ---');
                     $('.distance_calculated').html('KM ---');
                     directionsDisplay.setMap(null);
                 }
             }
-           
+
         });
 
 
@@ -782,7 +782,7 @@
             //     var price_calculation = 0;
             // } else {
             //     var price_calculation = Math.round((vehicle_basic_fee + (distance_calculated * vehicle_price_per_km))* 100) / 100;
-            // }            
+            // }
             // $(".price_calculated").text(price_calculation +
             //     " CHF");
             // $(".price_calculated_input").val(price_calculation);
@@ -802,7 +802,8 @@
             $("#booking_dropoff_address").val(dropoff_address);
             $("#booking_dropoff_latitude").val(dropoff_latitude);
             $("#booking_dropoff_longitude").val(dropoff_longitude);
-            $("#booking_carType").val(carType);
+            // $("#booking_carType").val(carType);
+            $("#booking_carType").val($('#carType').val());
             $("#booking_numberOfPassenger").val($('#numberOfPassenger').val());
             return true;
         }
@@ -902,7 +903,7 @@
             }
         }
 
-        function setShortestRoute(response) 
+        function setShortestRoute(response)
         {
             shortestRouteArr = [];
             $.each(response.routes, function( index, route ) {

@@ -17,7 +17,7 @@ use DB;
 class RideV1Export implements FromCollection, WithHeadings, WithTitle, WithMapping, ShouldAutoSize
 {
 	protected  $data;
-	protected $ride_status = [0 => "Process", 1 => "Accepted By Driver", 2 => "Ride Start", 3 => "Completed", 4 => "Driver Reached To Customer", -2 => "Cancelled", -4 => "Pending"];
+	protected $ride_status = [0 => "Process", 1 => "Accepted By Driver", 2 => "Ride Start", 3 => "Completed", 4 => "Driver Reached To Customer", -2 => "Cancelled", -3 => "Cancelled By Customer", -4 => "Pending"];
 
 	function __construct($data)
 	{
