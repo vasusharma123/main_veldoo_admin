@@ -2198,7 +2198,11 @@ class RideController extends Controller
             $userId = Auth::user()->id;
             $user = User::find($userId);
             if (!empty($request->date)) {
-                $startDate = $request->date . " 00:00:00";
+                if (!empty($request->time)) {
+                    $startDate = $request->date . " " . $request->time;
+                } else {
+                    $startDate = $request->date . " 00:00:00";
+                }
             } else {
                 $startDate = Carbon::today()->format('Y-m-d H:i:s');
             }
