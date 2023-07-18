@@ -2132,6 +2132,7 @@ class UserController extends Controller
 				$ride->creator_id = Auth::user()->id;
 				$ride->status = 0;
 				$ride->platform = Auth::user()->device_type;
+                $ride->service_provider_id = Auth::user()->service_provider_id;
 				$ride->save();
 				$all_ride_ids[] = $ride->id;
 			}
@@ -2141,10 +2142,10 @@ class UserController extends Controller
 			}
 
 			/* When a planned ride is created by any driver, send a notification to all master drivers about this */
-			$settings = Setting::first();
+			$settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
 			$settingValue = json_decode($settings['value']);
 
-			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1, 'service_provider_id'=>Auth::user()->service_provider_id])->pluck('id')->toArray();
 			$ride = new RideResource(Ride::find($ride->id));
 			if (!empty($masterDriverIds)) {
 				$title = 'Ride is planned';
@@ -2836,7 +2837,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$settings = Setting::first();
+		$settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
         $settingValue = json_decode($settings['value']);
 		try {
 			$rideDetail = Ride::find($request->ride_id);
@@ -2904,7 +2905,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 2;
                     if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
                     	$message_content = "";
-                    	$SMSTemplate = SMSTemplate::find(6);
+                    	$SMSTemplate = SMSTemplate::where(['service_provider_id'=>Auth::user()->service_provider_id,'unique_key'=>'send_otp_create_booking'])->first();
                     	if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
                     		$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->german_content));
                     	} else {
@@ -3056,7 +3057,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			if ($request->status == 3 && empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
-				$SMSTemplate = SMSTemplate::find(6);
+				// $SMSTemplate = SMSTemplate::find(6);
+                $SMSTemplate = SMSTemplate::where(['service_provider_id'=>Auth::user()->service_provider_id,'unique_key'=>'send_otp_create_booking'])->first();
 				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
 					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->german_content));
 				} else {
@@ -4581,6 +4583,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
 		$ride->creator_id = Auth::user()->id;
+        if(Auth::user()->service_provider_id)
+        {
+            $ride->service_provider_id = Auth::user()->service_provider_id;
+        }
 		if (!empty($request->ride_time)) {
 			$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
 		} else {
@@ -4612,7 +4618,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$lon = $request->pick_lng;
 		}
 		$driverids = array();
-		$settings = Setting::first();
+		$settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
 		$settingValue = json_decode($settings['value']);
 
 		if(!empty($request->driver_id)){
@@ -4636,7 +4642,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				});
 			}])->with(['all_rides' => function ($query3) {
 				$query3->where(['status' => 1, 'waiting' => 1]);
-			}])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
+			}])->where([['user_type', '=', 2], ['availability', '=', 1]])->where('users.service_provider_id',Auth::user()->service_provider_id)->orderBy('distance', 'asc');
 			$drivers = $query->get()->toArray();
 
 			$rideObj = new Ride;
@@ -5279,13 +5285,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
-				$SMSTemplate = SMSTemplate::find(6);
-				if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->german_content));
-				} else {
-					$message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->english_content));
-				}
-				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+				// $SMSTemplate = SMSTemplate::find(6);
+                $SMSTemplate = SMSTemplate::where(['service_provider_id'=>$rideDetail->service_provider_id,'unique_key'=>'send_otp_create_booking'])->first();
+                if($SMSTemplate)
+                {
+                    if ($ride->user->country_code == "41" || $ride->user->country_code == "43" || $ride->user->country_code == "49") {
+                        $message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->german_content));
+                    } else {
+                        $message_content = str_replace('#LINK#', "\n". 'Android : https://play.google.com/store/apps/details?id=com.dev.veldoouser'."\n\n".'iOS : https://apps.apple.com/in/app/id1597936025', str_replace('#SERVICE_PROVIDER#', "Taxi2000", $SMSTemplate->english_content));
+                    }
+                    $this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
+                }
 			}
 			DB::commit();
 			$ride_data = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'route', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
@@ -5763,8 +5773,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} else {
 				unset($input['user_id']);
 			}
-			//print_r($input); die;
 			$ride->driver_id = $userId;
+            if(Auth::user()->service_provider_id)
+            {
+                $ride->service_provider_id = Auth::user()->service_provider_id;
+            }
 			if (empty($request->ride_time)) {
 				$ride->ride_time = date('Y-m-d H:i:s');
 			} else {
@@ -6609,15 +6622,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$query->leftJoin('driver_choose_cars', function ($join) {
 					$join->on('users.id', '=', 'driver_choose_cars.user_id')->where('driver_choose_cars.logout', '=', '0');
 				})
-					->leftJoin('vehicles', function ($join) {
-						$join->on('driver_choose_cars.car_id', '=', 'vehicles.id');
-					});
-				$query->where([['user_type', '=', 2]])->orderBy('distance', 'asc');
+                ->leftJoin('vehicles', function ($join) {
+                    $join->on('driver_choose_cars.car_id', '=', 'vehicles.id');
+                });
+				$query->where([['user_type', '=', 2]])->where('users.service_provider_id',$user->service_provider_id)->orderBy('distance', 'asc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
 				$drivers = $query->get();
 			} else {
-				$query = User::where([['user_type', '=', 2]])->orderBy('created_at', 'desc');
+				$query = User::where([['user_type', '=', 2]])->where('users.service_provider_id',$user->service_provider_id)->orderBy('created_at', 'desc');
 				// ->limit($driverlimit);
 				//$query->where('user_type', '=',2)->orderBy('distance','asc');
 				$drivers = $query->get();

@@ -173,7 +173,7 @@ class RideController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
         }
-        DB::beginTransaction();
+        // DB::beginTransaction();
 
         $ride = Ride::find($request->ride_id);
         if ($ride->driver_id != $userObj->id) {
@@ -188,7 +188,7 @@ class RideController extends Controller
         RideHistory::where(['ride_id' => $ride->id])->delete();
 
         try {
-            $settings = Setting::first();
+            $settings = Setting::where('service_provider_id',$userObj->service_provider_id)->first();
             $settingValue = json_decode($settings['value']);
             $driverlimit = $settingValue->driver_requests;
             $driver_radius = $settingValue->radius;
@@ -214,7 +214,7 @@ class RideController extends Controller
                 });
             }])->with(['all_rides' => function ($query3) {
                 $query3->where(['status' => 1, 'waiting' => 1]);
-            }])->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc');
+            }])->where([['user_type', '=', 2], ['availability', '=', 1]])->where('service_provider_id',$userObj->service_provider_id)->orderBy('distance', 'asc');
             $drivers = $query->get()->toArray();
 
             $rideObj = new Ride;
@@ -2049,52 +2049,55 @@ class RideController extends Controller
                         $rideObj->save();
                     }
                     $ride_detail = new RideResource(Ride::find($request->ride_id));
-                    $settings = Setting::first();
-                    $settingValue = json_decode($settings['value']);
-                    $ride_detail['waiting_time'] = $settingValue->waiting_time;
-                    if (!empty($userdata)) {
-                        $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
-                        if (!empty($deviceToken)) {
-                            if ($deviceType == 'android') {
-                                bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                    $settings = Setting::where('service_provider_id',$ride->service_provider_id)->first();
+                    if($settings)
+                    {
+                        $settingValue = json_decode($settings['value']);
+                        $ride_detail['waiting_time'] = $settingValue->waiting_time;
+                        if (!empty($userdata)) {
+                            $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
+                            if (!empty($deviceToken)) {
+                                if ($deviceType == 'android') {
+                                    bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                                }
+                                if ($deviceType == 'ios') {
+                                    bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
+                                }
                             }
-                            if ($deviceType == 'ios') {
-                                bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $userdata['user_type']);
-                            }
+
+                            $notification = new Notification();
+                            $notification->title = $title;
+                            $notification->description = $message;
+                            $notification->type = $type;
+                            $notification->user_id = $userdata['id'];
+                            $notification->additional_data = json_encode($additional);
+                            $notification->save();
                         }
+                        if (!empty($driverData) && $previousRideData->status != 0) {
+                            $deviceToken = $driverData['device_token'] ?? "";
+                            $deviceType = $driverData['device_type'] ?? "";
+                            $title = 'Ride Cancelled';
+                            $message = "Your ride has been cancelled.";
+                            $type = 5;
 
-                        $notification = new Notification();
-                        $notification->title = $title;
-                        $notification->description = $message;
-                        $notification->type = $type;
-                        $notification->user_id = $userdata['id'];
-                        $notification->additional_data = json_encode($additional);
-                        $notification->save();
-                    }
-                    if (!empty($driverData) && $previousRideData->status != 0) {
-                        $deviceToken = $driverData['device_token'] ?? "";
-                        $deviceType = $driverData['device_type'] ?? "";
-                        $title = 'Ride Cancelled';
-                        $message = "Your ride has been cancelled.";
-                        $type = 5;
+                            $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
+                            if (!empty($deviceToken)) {
+                                if ($deviceType == 'android') {
+                                    bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+                                }
+                                if ($deviceType == 'ios') {
+                                    bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+                                }
+                            }
 
-                        $additional = ['type' => $type, 'ride_id' => $ride->id, 'ride_data' => $ride_detail];
-                        if (!empty($deviceToken)) {
-                            if ($deviceType == 'android') {
-                                bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
-                            }
-                            if ($deviceType == 'ios') {
-                                bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
-                            }
+                            $notification = new Notification();
+                            $notification->title = $title;
+                            $notification->description = $message;
+                            $notification->type = $type;
+                            $notification->user_id = $driverData->id;
+                            $notification->additional_data = json_encode($additional);
+                            $notification->save();
                         }
-
-                        $notification = new Notification();
-                        $notification->title = $title;
-                        $notification->description = $message;
-                        $notification->type = $type;
-                        $notification->user_id = $driverData->id;
-                        $notification->additional_data = json_encode($additional);
-                        $notification->save();
                     }
                     return response()->json(['success' => true, 'message' => $message, 'data' => $ride_detail], $this->successCode);
                 }
