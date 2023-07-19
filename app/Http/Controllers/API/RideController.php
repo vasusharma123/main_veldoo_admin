@@ -54,13 +54,7 @@ class RideController extends Controller
         return $this->successResponse($ride, 'Get latest ride successfully');
     }
 
-    /**
-     * Created By Anil Dogra
-     * Created At 28-07-2022
-     * @var $request object of request class
-     * @var $user object of user class
-     * This function use to list of latest ride detail
-     */
+    /* This function is used to get the latest ongoing ride details on behalf of the user */
 
     public function onGoingRide(Request $request)
     {
