@@ -20,12 +20,10 @@ use App\Http\Resources\RideResource;
 class RideController extends Controller
 {
    /**
-     * Created By Anil Dogra
-     * Created At 28-07-2022
      * @var $request object of request class
      * @var $user object of user class
      * @return object after send reset password token
-     * This function use to list of latest ride detail
+     * This function use to get on going ride
      */
 
     protected $successCode = 200;
@@ -46,10 +44,47 @@ class RideController extends Controller
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-        $ride = Ride::with(['user', 'driver', 'company_data'])->where('driver_id', $userObj->id)->where(function ($query) {
-            $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+        $ride = Ride::with(['user', 'driver', 'company_data'])
+           ->where('driver_id', $userObj->id)
+           ->where(function ($query) {
+            $query->where(['status' => 1])
+            ->orWhere(['status' => 2])
+            ->orWhere(['status' => 4]);
         })->orderBy('ride_time')->get();
         return $this->successResponse($ride, 'Get latest ride successfully');
+    }
+
+    /**
+     * Created By Anil Dogra
+     * Created At 28-07-2022
+     * @var $request object of request class
+     * @var $user object of user class
+     * This function use to list of latest ride detail
+     */
+
+    public function onGoingRide(Request $request)
+    {
+
+        try {	
+            $userObj = Auth::user();
+            if (!$userObj) {
+                return $this->notAuthorizedResponse('User is not authorized');
+            }
+            $rides = Ride::where('user_id', $userObj->id)
+            ->where(function ($query) {
+                $query->where(['status' => 1])
+                ->orWhere(['status' => 2])
+                ->orWhere(['status' => 4]);
+            })->orderBy('ride_time')
+            ->first();
+            $ride = new RideResource(Ride::find($rides->id));
+
+            return $this->successResponse($ride, 'Get on going ride successfully');
+
+        } catch(\Exception $e){
+			return back()->with('error',$e->getMessage());
+		}
+
     }
     /**
      * Created By Anil Dogra
