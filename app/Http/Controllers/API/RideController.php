@@ -20,12 +20,10 @@ use App\Http\Resources\RideResource;
 class RideController extends Controller
 {
    /**
-     * Created By Anil Dogra
-     * Created At 28-07-2022
      * @var $request object of request class
      * @var $user object of user class
      * @return object after send reset password token
-     * This function use to list of latest ride detail
+     * This function use to get on going ride
      */
 
     protected $successCode = 200;
@@ -46,10 +44,38 @@ class RideController extends Controller
         if (!$userObj) {
             return $this->notAuthorizedResponse('User is not authorized');
         }
-        $ride = Ride::with(['user', 'driver', 'company_data'])->where('driver_id', $userObj->id)->where(function ($query) {
-            $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+        $ride = Ride::with(['user', 'driver', 'company_data'])
+           ->where('driver_id', $userObj->id)
+           ->where(function ($query) {
+            $query->where(['status' => 1])
+            ->orWhere(['status' => 2])
+            ->orWhere(['status' => 4]);
         })->orderBy('ride_time')->get();
         return $this->successResponse($ride, 'Get latest ride successfully');
+    }
+
+    /* This function is used to get the latest ongoing ride details on behalf of the user */
+
+    public function onGoingRide(Request $request)
+    {
+        try {
+            $userObj = Auth::user();
+            $rides = Ride::where('user_id', $userObj->id)
+                ->where(function ($query) {
+                    $query->where(['status' => 1])
+                        ->orWhere(['status' => 2])
+                        ->orWhere(['status' => 4]);
+                })->orderBy('ride_time')
+                ->first();
+            if ($rides) {
+                $ride = new RideResource(Ride::find($rides->id));
+                return $this->successResponse($ride, 'On-going ride detail');
+            } else {
+                return $this->successResponse($rides, 'No on-going ride was found');
+            }
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
     }
     /**
      * Created By Anil Dogra
