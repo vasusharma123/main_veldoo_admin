@@ -64,7 +64,6 @@ class RideController extends Controller
 
     public function onGoingRide(Request $request)
     {
-
         try {	
             $userObj = Auth::user();
             if (!$userObj) {
@@ -83,12 +82,10 @@ class RideController extends Controller
             }
             else {
                 return $this->successResponse([], 'No on going ride fond');
-
             }
         } catch(\Exception $exception){
 			return response()->json(['message'=>$exception->getMessage()], $this->warningCode);
 		}
-
     }
     /**
      * Created By Anil Dogra
