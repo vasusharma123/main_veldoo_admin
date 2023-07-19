@@ -169,15 +169,22 @@ class Notifications
 
     public static function sendRideNotificationToMasters($ride_id)
     {
-        $ride = new RideResource(Ride::find($ride_id));
-        $settings = Setting::first();
-        $settingValue = json_decode($settings['value']);
+        $ride = Ride::find($ride_id);
+        $ride->request_time = null;
+        $ride->alert_notification_date_time = null;
+        $ride->status = -4;
+        $ride->save();
+
         $masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
         if (!empty($masterDriverIds)) {
             $title = 'No Driver Found';
             $message = 'Sorry No driver found at this time for your booking';
-            $ride['waiting_time'] = $settingValue->waiting_time;
-            $additional = ['type' => 9, 'ride_id' => $ride->id, 'ride_data' => $ride];
+            
+            $rideData = new RideResource(Ride::find($ride_id));
+            $settings = Setting::first();
+            $settingValue = json_decode($settings['value']);
+            $rideData['waiting_time'] = $settingValue->waiting_time;
+            $additional = ['type' => 9, 'ride_id' => $ride_id, 'ride_data' => $rideData];
             $ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
             if (!empty($ios_driver_tokens)) {
                 bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
@@ -188,19 +195,9 @@ class Notifications
             }
             $ridehistory_data = [];
             foreach ($masterDriverIds as $driverid) {
-                $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '3', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                $ridehistory_data[] = ['ride_id' => $ride_id, 'driver_id' => $driverid, 'status' => '3', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
             }
             RideHistory::insert($ridehistory_data);
-            $rideData = Ride::find($ride->id);
-            $rideData->request_time = null;
-            $rideData->alert_notification_date_time = null;
-            $rideData->status = -4;
-            $rideData->save();
-        } else {
-            $ride->request_time = null;
-            $ride->alert_notification_date_time = null;
-            $ride->status = -4;
-            $ride->save();
         }
     }
 
