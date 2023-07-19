@@ -81,8 +81,8 @@ class RideController extends Controller
 
             return $this->successResponse($ride, 'Get on going ride successfully');
 
-        } catch(\Exception $e){
-			return back()->with('error',$e->getMessage());
+        } catch(\Exception $exception){
+			return response()->json(['message'=>$exception->getMessage()], $this->warningCode);
 		}
 
     }
