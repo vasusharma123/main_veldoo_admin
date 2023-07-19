@@ -64,28 +64,24 @@ class RideController extends Controller
 
     public function onGoingRide(Request $request)
     {
-        try {	
+        try {
             $userObj = Auth::user();
-            if (!$userObj) {
-                return $this->notAuthorizedResponse('User is not authorized');
-            }
             $rides = Ride::where('user_id', $userObj->id)
-            ->where(function ($query) {
-                $query->where(['status' => 1])
-                ->orWhere(['status' => 2])
-                ->orWhere(['status' => 4]);
-            })->orderBy('ride_time')
-            ->first();
-            if(!empty($rides) && $rides->id > 0){
+                ->where(function ($query) {
+                    $query->where(['status' => 1])
+                        ->orWhere(['status' => 2])
+                        ->orWhere(['status' => 4]);
+                })->orderBy('ride_time')
+                ->first();
+            if ($rides) {
                 $ride = new RideResource(Ride::find($rides->id));
-                return $this->successResponse($ride, 'Get on going ride successfully');
+                return $this->successResponse($ride, 'On-going ride detail');
+            } else {
+                return $this->successResponse($rides, 'No on-going ride was found');
             }
-            else {
-                return $this->successResponse([], 'No on going ride fond');
-            }
-        } catch(\Exception $exception){
-			return response()->json(['message'=>$exception->getMessage()], $this->warningCode);
-		}
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
     }
     /**
      * Created By Anil Dogra
