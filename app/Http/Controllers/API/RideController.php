@@ -2240,7 +2240,7 @@ class RideController extends Controller
             if (!empty($user)) {
                 if ($request->type == 1) {
                     if ($user->is_master == 1) {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($user) {
                                 $query->where(['status' => -4])->orWhere(['status' => 0]);
@@ -2277,7 +2277,7 @@ class RideController extends Controller
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
                         $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
                                 $query->where([['status', '=', 0]]);
@@ -2313,7 +2313,7 @@ class RideController extends Controller
                     }
                 } elseif ($request->type == 2) {
                     if ($user->is_master == 1) {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where('status', 3)
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
@@ -2329,7 +2329,7 @@ class RideController extends Controller
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
                         $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where('driver_id', $userId)->where('status', 3)
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
@@ -2347,7 +2347,7 @@ class RideController extends Controller
                     }
                 } elseif ($request->type == 3) {
                     if ($user->is_master == 1) {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) {
                                 $query->whereIn('status', [-2]);
@@ -2378,7 +2378,7 @@ class RideController extends Controller
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
                         $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
                                 $query->where(function ($query1) use ($userId) {
@@ -2420,7 +2420,7 @@ class RideController extends Controller
                     }
                 } else if ($request->type == 4) {
                     if ($user->is_master == 1) {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->whereNotNull('driver_id')->where(['waiting' => 0])->where(function ($query) {
                                 $query->where(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
@@ -2442,7 +2442,7 @@ class RideController extends Controller
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
                         $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where('driver_id', $userId)->where(['waiting' => 0])->where(function ($query) {
                                 $query->where([['status', '=', 1]])->orWhere([['status', '=', 2]])->orWhere([['status', '=', 4]]);
@@ -2466,7 +2466,7 @@ class RideController extends Controller
                     }
                 } else if ($request->type == 5) {
                     if ($user->is_master == 1) {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
                         if (!empty($request->page) && $request->page < 0) {
@@ -2479,7 +2479,7 @@ class RideController extends Controller
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($prevSkip)->get();
                         $previous_available_ride = (!empty($pastRides) && count($pastRides) > 0) ? 1 : 0;
                     } else {
-                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at')->with(['driver:id,first_name,last_name,country_code,phone,image'])
+                        $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
                                 $query->orWhere('status', 0);
