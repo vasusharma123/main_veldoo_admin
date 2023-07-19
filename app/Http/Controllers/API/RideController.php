@@ -77,10 +77,14 @@ class RideController extends Controller
                 ->orWhere(['status' => 4]);
             })->orderBy('ride_time')
             ->first();
-            $ride = new RideResource(Ride::find($rides->id));
+            if(!empty($rides) && $rides->id > 0){
+                $ride = new RideResource(Ride::find($rides->id));
+                return $this->successResponse($ride, 'Get on going ride successfully');
+            }
+            else {
+                return $this->successResponse([], 'No on going ride fond');
 
-            return $this->successResponse($ride, 'Get on going ride successfully');
-
+            }
         } catch(\Exception $exception){
 			return response()->json(['message'=>$exception->getMessage()], $this->warningCode);
 		}
