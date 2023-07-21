@@ -131,6 +131,8 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('getVouchers', 'UserController@getVouchers');
 
 	Route::get('latest_ride_detail','RideController@latest_ride_detail');
+	Route::get('on_going_ride','RideController@onGoingRide');
+
 	Route::post('ride/detail','user\RideController@ride_detail');
 	Route::post('ride/status_change','user\RideController@statusChange');
 
