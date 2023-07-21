@@ -27,17 +27,82 @@ class RidesController extends Controller
     protected $errorCode = 401;
     protected $warningCode = 500;
 
-    public function index(Request $request)
+    public function index(Request $request,$type=null)
     {
-        $data = array('page_title' => 'Rides', 'action' => 'Rides');
-        $company = Auth::user();
-        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status')->where(['company_id' => Auth::user()->company_id])
-                            ->where(function($query){
-                                $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                            })->where('company_id','!=',null)->orderBy('rides.id')->get();
+        $type = ($type?$type:'list').'View';
+        $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        return $this->$type($data,$request->all());
+    }
+
+    public function listView($data,$request)
+    {
+        $company = Auth::user();
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+                            ->where(function($query){
+                                // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->where('company_id','!=',null)->orderBy('rides.id')->with(['vehicle','user:id,first_name,last_name'])->paginate(20);
+        // dd($data);
         return view('company.rides.index')->with($data);
+    }
+
+    public function monthView($data,$request)
+    {
+        $date = date('Y-m-d');
+        if(isset($request['m']) && !empty($request['m']))
+        {
+            $date = $request['m'];
+        }
+        $month = date('m',strtotime($date));
+        $year = date('Y',strtotime($date));
+
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
+        $company = Auth::user();
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+                            ->where(function($query){
+                                // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+        // dd($data['rides']);
+        $data['date'] = $date;
+        return view('company.rides.month')->with($data);
+    }
+
+    public function weekView($data,$request)
+    {
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'Rides';
+        $data['year'] = Carbon::now()->startOfWeek()->format('Y');
+        $data['month'] = Carbon::now()->startOfWeek()->format('m')-1;
+        $data['day'] = Carbon::now()->startOfWeek()->format('d');
+        if(isset($request['w']) && !empty($request['w']))
+        {
+            $data['year'] = date('Y',strtotime($request['w']));
+            $data['month'] = date('m',strtotime($request['w']))-1;
+            $data['day'] = date('d',strtotime($request['w']));
+        }
+
+        $startOfWeek = $data['year'].'-'.($data['month']+1).'-'.$data['day']; // Example start date of the week
+        // Convert the start date to a Carbon instance
+        $startOfWeekDate = Carbon::parse($startOfWeek)->startOfDay();
+
+        // Calculate the end date of the week by adding 6 days to the start date
+        $endOfWeekDate = $startOfWeekDate->copy()->addDays(6)->endOfDay();
+        // dd($endOfWeekDate);
+
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+                        ->where(function($query){
+                            // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                        })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+        // dd($data['rides']);
+        return view('company.rides.week')->with($data);
     }
 
     public function ride_booking(Request $request)
@@ -46,6 +111,7 @@ class RidesController extends Controller
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
+        $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
         if ($now->diffInMinutes($request->ride_time) <= 15) {
             $jsonResponse = $this->create_ride_driver($request);
         } else {
@@ -74,7 +140,7 @@ class RidesController extends Controller
             $ride = new Ride();
             $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
-            if ($rideUser) 
+            if ($rideUser)
             {
                 $ride->user_country_code = $rideUser->country_code;
                 $ride->user_phone = $rideUser->phone;
@@ -131,10 +197,10 @@ class RidesController extends Controller
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
                     "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                        * cos(radians(users.current_lat)) 
-                        * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                        + sin(radians(" . $lat . ")) 
+                    DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                        * cos(radians(users.current_lat))
+                        * cos(radians(users.current_lng) - radians(" . $lon . "))
+                        + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
                 $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
@@ -241,7 +307,7 @@ class RidesController extends Controller
             $ride = new Ride();
             $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);
-            if ($rideUser) 
+            if ($rideUser)
             {
                 $ride->user_country_code = $rideUser->country_code;
                 $ride->user_phone = $rideUser->phone;
@@ -317,8 +383,10 @@ class RidesController extends Controller
     public function ride_detail($id)
     {
         $now = Carbon::now();
-        $ride = Ride::where(['company_id' => Auth::user()->company_id])->where('ride_time','<',$now)->where(function($query){
-                            $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
+        $ride = Ride::where(['company_id' => Auth::user()->company_id])
+                            // ->where('ride_time','<',$now)
+                            ->where(function($query){
+                            // $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
                         })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->find($id);
         // $ride->status = 2;
         return response()->json(['status'=>1,'data'=>$ride]);
@@ -326,8 +394,11 @@ class RidesController extends Controller
 
     public function edit(Request $request)
     {
-        try {
+        try
+        {
             $ride_detail = Ride::find($request->ride_id);
+            $ride_detail->ride_date_new_modified_n = date('Y-m-d',strtotime($ride_detail->ride_time));
+            $ride_detail->ride_time_new_modified_n = date('H:i',strtotime($ride_detail->ride_time));
             return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["ride_detail" => $ride_detail]], $this->successCode);
         } catch (\Exception $exception) {
             DB::rollback();
@@ -340,12 +411,12 @@ class RidesController extends Controller
 		$now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
+        $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
 		if ($now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $this->create_ride_driver_edit($request);
 		} else {
 			$jsonResponse = $this->book_ride_edit($request);
 		}
-
 		return $jsonResponse;
 	}
 
@@ -397,10 +468,10 @@ class RidesController extends Controller
                 $driverlimit = $settingValue->driver_requests;
                 $query = User::select(
                     "users.*",
-                    DB::raw("3959 * acos(cos(radians(" . $lat . ")) 
-                        * cos(radians(users.current_lat)) 
-                        * cos(radians(users.current_lng) - radians(" . $lon . ")) 
-                        + sin(radians(" . $lat . ")) 
+                    DB::raw("3959 * acos(cos(radians(" . $lat . "))
+                        * cos(radians(users.current_lat))
+                        * cos(radians(users.current_lng) - radians(" . $lon . "))
+                        + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
                 $query->where([['user_type', '=', 2], ['availability', '=', 1]])->orderBy('distance', 'asc')->limit($driverlimit);
@@ -601,5 +672,5 @@ class RidesController extends Controller
         }
         return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
     }
-    
+
 }
