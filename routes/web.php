@@ -88,7 +88,7 @@ Route::group(['middleware' => 'guest'], function(){
 	Route::get('/password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 	Route::post('/password/reset/{token}', 'Auth\ResetPasswordController@reset');
 	Route::get('/password/success', ['as'=>'password.success','uses'=>'UserController@guest_message']);
-}); 
+});
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
 	Route::get('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
@@ -126,11 +126,11 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('driver/edit/{id}','UserController@editDriver');
 	Route::match(['put', 'patch'],'driver/update/{id}','UserController@updateDriver');
 	Route::get('driver/create','UserController@createDriver');
-	
+
 	Route::get('driver/{id}','UserController@showDriver')->name('showDriver');
 	Route::post('driver/delete','DriverController@destroy')->name('admin.driver.delete');
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
-	
+
 
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController','notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);
@@ -151,7 +151,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::post('users/invoice_status','UserController@invoice_change_status');
 	Route::post('vehicle/delete','VehicleController@destroy');
 	Route::post('vehicle/carFree','VehicleController@carFree');
-	
+
 	Route::get('scheduled-rides','BookingController@scheduledRide');
 	Route::get('scheduled-ride/{id}','BookingController@scheduledRideShow');
 	Route::get('get_users','ContactSupportController@getUsers');
@@ -162,7 +162,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::post('store-promotional-offer','NotificationController@storePromotionalOffer');
 	Route::get('payment-setting','SettingController@paymentSetting');
 	Route::post('payment-setting-store','SettingController@paymentSettingStore');
-	
+
 	Route::get('/page/about',  ['as'=>'page.about','uses'=>'PageController@about']);
 	Route::get('/page/terms',  ['as'=>'page.terms','uses'=>'PageController@terms']);
 	Route::get('/page/policy',  ['as'=>'page.policy','uses'=>'PageController@policy']);
@@ -176,7 +176,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);
 });
-Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){	
+Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
 	Route::get('past-bookings','BookingController@pastBooking');
 	Route::get('upcoming-bookings','BookingController@upcomingBooking');
@@ -192,7 +192,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'
 });
 
 Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permission:Company']], function(){
-	Route::get('/rides','Company\RidesController@index')->name('company.rides');
+	Route::get('/rides/{type?}','Company\RidesController@index')->name('company.rides');
 	Route::delete('ride/delete_multiple','Company\RidesController@delete_multiple')->name('company.rides.delete_multiple');
 	// Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	// Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
@@ -202,12 +202,12 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');
 	Route::get('/rides-history','Company\RidesController@history')->name('company.rides.history');
-	Route::get('rides/edit','Company\RidesController@edit')->name('company.rides.edit');
-	Route::get('rides/driver_detail','Company\RidesController@ride_driver_detail')->name('company.rides.driver_detail');
+	Route::get('rides-edit','Company\RidesController@edit')->name('company.rides.edit');
+	Route::get('rides-driver_detail','Company\RidesController@ride_driver_detail')->name('company.rides.driver_detail');
 	Route::post('rides/detail/{id}','Company\RidesController@ride_detail')->name('company.ride_detail');
 	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
-	
+
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
 Route::post('company-users/check-user-info-btn','Company\UsersController@checkUserInfoBtn')->name('checkUserInfoBtn')->middleware(['auth','role_or_permission:Company']);

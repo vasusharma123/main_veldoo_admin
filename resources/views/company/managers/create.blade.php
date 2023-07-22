@@ -27,7 +27,8 @@
 						</div>
 						<div class="card-body">
 							@include('admin.layouts.flash-message')
-							{{ Form::open(array('url' => route('managers.store'),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
+                            <form action="{{ route('managers.store') }}" class="form-horizontal form-material" id="store" enctype="multipart/form-data" method="POST" data-parsley-validate>
+                                @csrf
 								<div class="form-body">
 									<div class="row p-t-4">
 										<div class="col-md-8">
@@ -53,7 +54,8 @@
 								</div>
 								<div class="form-actions">
 									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-							{{ Form::close() }}
+                                </div>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -66,10 +68,10 @@
 		<!-- End Container fluid  -->
 @endsection
 @section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
 <script type="text/javascript">
 	$('.flag-container').click(function(){
 		var data = $('.selected-dial-code').html();

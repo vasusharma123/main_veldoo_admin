@@ -19,11 +19,23 @@ class Ride extends Model
 	protected $appends = [
 		'stop_over',
 		'ride_time_modified',
+		'ride_time_new_modified',
+		'ride_date_new_modified',
 	];
 
 	public function getRideTimeModifiedAttribute()
 	{
 		return date('D d.m.Y H:i',strtotime($this->ride_time));//10.01.2023 19:45
+	}
+
+	public function getRideTimeNewModifiedAttribute()
+	{
+		return date('H:i A',strtotime($this->ride_time));//10.01.2023 19:45
+	}
+
+	public function getRideDateNewModifiedAttribute()
+	{
+		return date('d/m/Y',strtotime($this->ride_time));//10.01.2023 19:45
 	}
 
 	public function user()
@@ -284,7 +296,7 @@ class Ride extends Model
 	{
 		return $this->belongsTo(User::class, 'creator_id');
 	}
-	  
+
 	public function getCreatedByUserTypeAttribute()
 	{
 		switch ($this->created_by) {

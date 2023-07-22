@@ -27,8 +27,7 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $data = array('page_title' => 'Users', 'action' => 'Users');
-        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->get();
-        // dd($data['users']->toArray());
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
         return view('company.company-users.index')->with($data);
     }
 
@@ -45,14 +44,14 @@ class UsersController extends Controller
             'phone' => 'required',
         ]);
         DB::beginTransaction();
-        try 
+        try
         {
             $data['country_code'] = $request->country_code;
             $data['phone'] = str_replace(' ','',$request->phone);
             $data['user_type'] = 1;
             $user = Auth::user();
             $user = User::where($data)->first();
-            if ($user) 
+            if ($user)
             {
                 // $user->fill(['company_id'=>Auth::user()->company_id]);
                 // $user->update();
@@ -67,17 +66,17 @@ class UsersController extends Controller
             return response()->json(['status'=>0]);
         }
     }
-    
+
     public function store(Request $request)
     {
         // dd($request->all());
-        if ($request->user_status==1) 
+        if ($request->user_status==1)
         {
             $data['country_code'] = $request->country_code;
             $data['phone'] = str_replace(' ','',$request->phone);
             $data['user_type'] = 1;
             $user = User::where($data)->first();
-            if ($user) 
+            if ($user)
             {
                 $user->fill(['company_id'=>Auth::user()->company_id,'first_name'=>$request->first_name,'last_name'=>$request->last_name,'email'=>$request->email]);
                 $user->update();
@@ -94,9 +93,9 @@ class UsersController extends Controller
                 'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
             ]);
         }
-        
+
         DB::beginTransaction();
-        try 
+        try
         {
             $data = collect($request->all())->forget(['_token','image_tmp','password','second_phone_number','second_country_code'])->toArray();
             $data['user_type'] = 1;
@@ -104,11 +103,11 @@ class UsersController extends Controller
             $data['company_id'] = Auth::user()->company_id;
             $data['created_by'] = Auth::user()->id;
             $data['phone'] = str_replace(' ','',$request->phone);
-            if ($request->password) 
+            if ($request->password)
             {
                 $data['password'] = Hash::make($request->password);
             }
-            if ($request->second_phone_number) 
+            if ($request->second_phone_number)
             {
                 $data['second_phone_number'] = str_replace(' ','',$request->second_phone_number);
                 $data['second_country_code'] = $request->second_country_code;
@@ -118,16 +117,15 @@ class UsersController extends Controller
             $user->fill($data);
             $user->save();
 
-            if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid())
-            {
-                $imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
-                $image = Storage::disk('public')->putFileAs(
-                    'user/'.$user->id, $request->image_tmp, $imageName
-                );
-                $user = User::find($user->id);
-                $user->fill(['image'=>$image]);
-                $user->update();
-            }
+            if ($request->image_tmp) {
+				$imageName = 'profile-image'.time().'.' . $request->image_tmp->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'users/' . $user->id,
+					$request->image_tmp,
+					$imageName
+				);
+				User::where('id', $user->id)->update(['image' => $image]);
+			}
             DB::commit();
             return redirect()->route('company-users.index')->with('success','User successfully created');
         } catch (Exception $e) {
@@ -174,28 +172,30 @@ class UsersController extends Controller
             // 'password' => 'required',
         ]);
         DB::beginTransaction();
-        try 
+        try
         {
             $data = collect($request->all())->forget(['_token','image_tmp','password','second_phone_number','second_country_code'])->toArray();
             // $data['user_type'] = 1;
             // $data['company_id'] = Auth::user()->company_id;
-            if ($request->password) 
+            if ($request->password)
             {
                 $data['password'] = Hash::make($request->password);
             }
             $data['phone'] = str_replace(' ','',$request->phone);
-            if ($request->second_phone_number) 
+            if ($request->second_phone_number)
             {
                 $data['second_phone_number'] = str_replace(' ','',$request->second_phone_number);
                 $data['second_country_code'] = $request->second_country_code;
             }
-            if($request->hasFile('image_tmp') && $request->file('image_tmp')->isValid())
-            {
-                $imageName = 'profile-image'.time().'.'.$request->image_tmp->extension();
-                $data['image'] = Storage::disk('public')->putFileAs(
-                    'user/'.$user->id, $request->image_tmp, $imageName
-                );
-            }
+            if ($request->image_tmp) {
+				$imageName = 'profile-image'.time().'.' . $request->image_tmp->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'users/' . $id,
+					$request->image_tmp,
+					$imageName
+				);
+				User::where('id', $id)->update(['image' => $image]);
+			}
             $user = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id,'id'=>$id])->first();
             $user->fill($data);
             $user->update();
