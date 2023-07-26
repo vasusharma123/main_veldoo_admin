@@ -18,7 +18,7 @@
                 <form method="post" action="{{ url('doLogin')}}" class="login_form">
                     @csrf
                     @include('company.company_flash_message')
-                    <h3 class="form_title">Sign In</h3>
+                    <h3 class="form_title">Log In</h3>
                     <div class="form_inputs_fields">
                         <div class="form-group">
                             <input type="email" name="email" class="form-control input_fields" placeholder="Email" required>

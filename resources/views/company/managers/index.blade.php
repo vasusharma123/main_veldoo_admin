@@ -34,7 +34,7 @@
 <section class="">
     <article class="form_inside">
         <div class="form_add_managers">
-            <form class="add_managers inside_custom_form " action="{{ route('managers.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate>
+            <form class="add_managers inside_custom_form " action="{{ route('managers.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
                 @csrf
                 <div class="container-fluid form_container">
                     <div class="row m-0 w-100">
@@ -42,7 +42,7 @@
                             <div class="row w-100 m-0 gx-2">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
                                     <div class="img_preview position-relative mobile_avatar">
-                                        <input type="file" id="mPhoto" class="form-control main_field position-relative" name="image">
+                                        <input type="file"  id="mPhoto" class="form-control main_field position-relative" name="image">
                                         <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid avtar_preview" alt="Select Avatar" id="mPhotoImgPreview"/>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@
                 </div>
             </form>
         </div>
-        <form action="{{ route('managers.update','~') }}" id="updateForm" method="POST" enctype="multipart/form-data" data-parsley-validate>
+        <form action="{{ route('managers.update','~') }}" id="updateForm" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
             @method('put')
             @csrf
             <div class="edit_box inside_custom_form" style="display: none">
@@ -96,7 +96,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" autocomplete="off" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">

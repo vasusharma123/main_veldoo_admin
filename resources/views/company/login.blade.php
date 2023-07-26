@@ -12,7 +12,7 @@
                             <div class="col-12 p-0">
                                 <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
                                 <div class="form_title text-center">
-                                    <h4 class="sub_title">Sign In</h4>
+                                    <h4 class="sub_title">Log In</h4>
                                     <p class="tagline">Please login to continue</p>
                                     <hr class="divider_form" />
                                 </div>
@@ -48,7 +48,7 @@
                                 </div>
                                 <div class="form-group position-relative">
                                     <button type="submit" class="btn submit_btn">
-                                        <span class="btn_text">Sign In</span>
+                                        <span class="btn_text">Log In</span>
                                     </button>
                                 </div>
                             </div>

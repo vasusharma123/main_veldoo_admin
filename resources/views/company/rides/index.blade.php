@@ -39,8 +39,22 @@
                             </tr>
                         </thead>
                         <tbody>
+
                             @foreach ($rides as $ride)
-                                <tr class="rideDetails" data-id="{{ $ride->id }}" style="cursor: pointer">
+
+                               @php
+                                if($ride->ride_time > date("Y-m-d")){
+                                    $upcomingAndPastBooking = 'upcoming-and-past-booking';
+                                }
+                                else if($ride->ride_time < date("Y-m-d")) {
+                                    $upcomingAndPastBooking = 'upcoming-and-past-booking';
+                                }
+                                else {
+                                    $upcomingAndPastBooking = '';
+                                }
+                                @endphp
+: 
+                                <tr class="rideDetails {{$upcomingAndPastBooking}}" data-id="{{ $ride->id }}" style="cursor: pointer">
                                     <td class="btn_view_booking dateTimeList{{ $ride->id }}">
                                         {{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </td>

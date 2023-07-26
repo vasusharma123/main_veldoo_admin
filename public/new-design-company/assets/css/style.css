@@ -526,14 +526,29 @@ span.menu_icons.arrow {
     font-weight: 500;
     color: var(--secondary-color);
 } */
-.btn_view_booking:hover,.btn_view_booking:focus{
+
+/* .btn_view_booking:hover,.btn_view_booking:focus{
     background-color: var(--login-input-bg);
     border-color: var(--secondary-color);
-}
+} */
+
+/* .custom_table_view tbody :hover, .custom_table_view tbody :focus {
+    background-color: #f9f9f9;
+    border-color: var(--secondary-color);
+} */
+
+
+  table.custom_table_view tr:hover td {
+    background-color: var(--login-input-bg);
+    border-color: var(--secondary-color);
+  }
+
 .rideDetails :hover,.rideDetails :focus{
     background-color: var(--login-input-bg);
     border-color: var(--secondary-color);
+    
 }
+
 .view_icon {
     max-width: 15px;
     margin-right: 6px;

@@ -25,7 +25,7 @@
 					@include('admin.layouts.flash-message')
 					
 					{{ Form::open(array('url' => 'doLogin','class'=>'form-horizontal form-material','id'=>'loginform')) }}
-                        <h3 class="box-title m-b-20">Sign In</h3>
+                        <h3 class="box-title m-b-20">Log In</h3>
                         <div class="form-group ">
                             <div class="col-xs-12">
                                 <input class="form-control" name="email" type="text" required="" placeholder="Email"> </div>

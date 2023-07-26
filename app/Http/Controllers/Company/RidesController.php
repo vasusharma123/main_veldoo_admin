@@ -41,10 +41,15 @@ class RidesController extends Controller
         $company = Auth::user();
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
-        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')
+        ->where(['company_id' => Auth::user()->company_id])
                             ->where(function($query){
                                 // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                            })->where('company_id','!=',null)->orderBy('rides.id')->with(['vehicle','user:id,first_name,last_name'])->paginate(20);
+                            })->where('company_id','!=',null)
+                           // ->orderBy('rides.id')
+                            ->orderBy('rides.ride_time', 'ASC')
+                            ->with(['vehicle','user:id,first_name,last_name'])
+                            ->paginate(20);
         // dd($data);
         return view('company.rides.index')->with($data);
     }
@@ -662,6 +667,20 @@ class RidesController extends Controller
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
+
+    public function delete_booking(Request $request)
+    { 
+        try {
+            DB::beginTransaction();
+            Ride::where(['id' => $request->ride_id])->delete();
+            RideHistory::where(['ride_id' => $request->ride_id])->delete();
+            DB::commit();
+			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.')]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);
+        }
+    }
 
     public function ride_driver_detail(Request $request){
         $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);

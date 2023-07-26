@@ -55,6 +55,7 @@
             }
             .infomation_update
             {
+                width:80px;
                 margin-left: 10px;
                 border-radius: 10px;
                 padding: 5px;
@@ -280,7 +281,8 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <input type="date" class="form_control borderless_form_field pickup_field" required name="ride_date">
+                                            <input type="date" value="<?php echo date('d/m/Y') ?>" class="form_control borderless_form_field pickup_field" required name="ride_date">
+                                            
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt">
@@ -290,7 +292,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Time</label>
-                                            <input type="text" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" id="timeInput" required name="ride_time" readonly>
+                                            <input type="time" value="<?php echo date("h:i:sa") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
                                         </div>
                                     </div>
                                 </div>
@@ -389,13 +391,13 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script> -->
         <!-- /Scripts -->
         <!-- Select text js -->
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
         <!-- Swiper Js -->
-        <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script> -->
         <!-- Calendar -->
         <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.8/index.global.min.js'></script>
         <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js'></script>
@@ -407,6 +409,17 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script>
+        if ($('.datetimepicker').length > 0) 
+        {
+            $(".datetimepicker").datetimepicker({
+                format: 'ddd DD-MM-YYYY HH:mm',
+                minDate: "{{ date('Y-m-d') }}",
+                sideBySide: true,
+            });
+        }
+    </script>
         <script>
             //Swiper Slider Car
             var swiper = new Swiper(".carSwiper", {
@@ -589,7 +602,7 @@
                     }
                     else if(booking.status == 0)
                     {
-                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button>`;
                     }
                     else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
@@ -1042,11 +1055,11 @@
                         swal.fire("{{ __('Error') }}", "Please select pick time", "error");
                         return false;
                     }
-                    if ($('#users').val()=="")
-                    {
-                        swal.fire("{{ __('Error') }}", "Please select a Passenger", "error");
-                        return false;
-                    }
+                    // if ($('#users').val()=="")
+                    // {
+                    //     swal.fire("{{ __('Error') }}", "Please select a Passenger", "error");
+                    //     return false;
+                    // }
                     // alert($('#users').val());
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
@@ -1353,6 +1366,46 @@
                         }
                     });
                 }
+
+                $(document).on('click', '.delete_record', function() {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then((result) => {
+                        if (result.value) {
+                            var ride_id = $(this).attr('data-id');
+                            $.ajax({
+                                url: "{{ route('company.delete_booking') }}",
+                                type: 'post',
+                                dataType: 'json',
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    'ride_id': ride_id
+                                },
+                                success: function(response) {
+                                    if (response.status) {
+                                        $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
+                                        Swal.fire("Success", response.message, "success");
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1000);
+                                    } else if (response.status == 0) {
+                                        Swal.fire("{{ __('Error') }}", response.message, "error");
+                                    }
+                                },
+                                error(response) {
+                                    Swal.fire("{{ __('Error') }}", response.message, "error");
+                                }
+                            });
+                        }
+                    });
+                });
+
                 $(document).on('keypress','#phone',function(e) {
                     var keyCode = e.which ? e.which : e.keyCode;
                     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
