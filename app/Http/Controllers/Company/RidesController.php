@@ -47,10 +47,10 @@ class RidesController extends Controller
                                 // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
                             })->where('company_id','!=',null)
                            // ->orderBy('rides.id')
-                            ->orderBy('rides.ride_time', 'ASC')
+                            ->orderBy('rides.ride_time', 'DESC')
                             ->with(['vehicle','user:id,first_name,last_name'])
                             ->paginate(20);
-        // dd($data);
+    // dd($data);
         return view('company.rides.index')->with($data);
     }
 

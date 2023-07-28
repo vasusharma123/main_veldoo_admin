@@ -5,20 +5,44 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         <!-- Select Text CSS-->
         <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
         <!-- Swiper Slider -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <!-- Custom CSS -->
+
         <link href="{{ asset('new-design-company/assets/css/style.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
+
         <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+
+
+        
     </head>
     <body>
+    <style type="text/css">
+       
+
+        
+        .without_ampm::-webkit-datetime-edit-ampm-field {
+            display: none;
+            }
+            input[type=time]::-webkit-clear-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            -o-appearance: none;
+            -ms-appearance:none;
+            appearance: none;
+            margin: -10px; 
+            }
+    </style>
         <style>
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
@@ -281,7 +305,8 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <input type="date" value="<?php echo date('d/m/Y') ?>" class="form_control borderless_form_field pickup_field" required name="ride_date">
+                                            <input type="text" value="<?php echo date("d/m/Y") ?>" id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+
                                             
                                         </div>
                                     </div>
@@ -292,15 +317,21 @@
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Time</label>
-                                            <input type="time" value="<?php echo date("h:i:sa") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
+                                            
+                                            <!-- <input type="time" value="<?php echo date("h:i") ?>" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
+                                            
+
+                                            <input type="text" id="time" value="<?php echo date("h:i") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
+
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                 ̰            </div>
                             <div class="cars_selection">
                                 <div class="swiper carSwiper">
                                     <div class="swiper-wrapper">
                                         @foreach ($vehicle_types as $key=>$vehicle_type)
+                                        
                                             <div class="swiper-slide">
                                                 <div class="car_option position-relative">
                                                     <input type="radio" class="car_checked" value="{{ $vehicle_type->id }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
@@ -308,6 +339,7 @@
                                                     <label class="car_lable">{{ $vehicle_type->car_type }}</label>
                                                 </div>
                                             </div>
+
                                         @endforeach
                                     </div>
                                 </div>
@@ -391,6 +423,8 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        
+
         <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script> -->
         <!-- /Scripts -->
@@ -409,17 +443,55 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> -->
 
+        <script src="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css" rel="stylesheet"/>
+
+        
         <script>
-        if ($('.datetimepicker').length > 0) 
-        {
-            $(".datetimepicker").datetimepicker({
-                format: 'ddd DD-MM-YYYY HH:mm',
-                minDate: "{{ date('Y-m-d') }}",
-                sideBySide: true,
+
+        var timepicker = new TimePicker('time', {
+        lang: 'en',
+        theme: 'dark'
+        });
+        timepicker.on('change', function(evt) {
+        
+        var value = (evt.hour || '00') + ':' + (evt.minute || '00');
+        evt.element.value = value;
+
+        });
+           
+
+
+        $('#pickUpDateRide').datepicker({
+                dateFormat: 'dd/mm/y',//check change
+
+        });
+
+       
+        </script>
+       
+        <script>
+
+            if ($('.datetimepicker').length > 0) 
+            {
+                $(".datetimepicker").datetimepicker({
+                    format: 'ddd DD-MM-YYYY HH:mm',
+                    minDate: "{{ date('Y-m-d') }}",
+                    sideBySide: true,
+                });
+            }
+        </script>
+        <script type="text/javascript">
+            $(function () {
+                $('#timepicker').timepicker({
+                    showMeridian: false,
+                    showInputs: true
+                });
             });
-        }
-    </script>
+        </script>
         <script>
             //Swiper Slider Car
             var swiper = new Swiper(".carSwiper", {
@@ -822,6 +894,7 @@
                     var autocomplete_pickup = new google.maps.places.Autocomplete(pickup_input, options);
                     google.maps.event.addListener(autocomplete_pickup, 'place_changed', function() {
                         var place = autocomplete_pickup.getPlace();
+
                         // document.getElementById('city2').value = place.name;
                         document.getElementById('pickup_latitude').value = place.geometry.location.lat();
                         document.getElementById('pickup_longitude').value = place.geometry.location.lng();
@@ -1332,7 +1405,7 @@
                 function delete_cancel_ride(ride_id){
                     Swal.fire({
                         title: "{{ __('Please Confirm') }}",
-                        text: "{{ __('You want to delete this ride!') }}",
+                        text: "{{ __('Cancel the ride ?') }}",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
@@ -1370,7 +1443,7 @@
                 $(document).on('click', '.delete_record', function() {
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        text: "Delete the ride ?",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
