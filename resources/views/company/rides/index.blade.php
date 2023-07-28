@@ -53,7 +53,7 @@
                                     $upcomingAndPastBooking = '';
                                 }
                                 @endphp
-: 
+                                
                                 <tr class="rideDetails {{$upcomingAndPastBooking}}" data-id="{{ $ride->id }}" style="cursor: pointer">
                                     <td class="btn_view_booking dateTimeList{{ $ride->id }}">
                                         {{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}
@@ -83,6 +83,7 @@
                                         @endif
                                     </td>
                                 </tr>
+
                             @endforeach
                         </tbody>
                     </table>
