@@ -13,7 +13,8 @@
                                 <div class="col-12">
                                     <h2 class="m-b-0"><i class="mdi mdi-car text-success"></i></h2>
                                     <h3 class="">{{$rider_count}}</h3>
-                                    <h6 class="card-subtitle">Total Users</h6></div>
+                                    <h6 class="card-subtitle">Total Users</h6>
+                                </div>
                                 <div class="col-12">
                                     <div class="progress">
                                         <div class="progress-bar bg-success" role="progressbar" style="width: 40%; height: 6px;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
@@ -41,7 +42,7 @@
                             </div>
                         </div>
                     </a>
-                </div> 
+                </div>
                 <div class="card">
                     <a href="{{url('admin/rides')}}">
                     <div class="card-body">
@@ -149,7 +150,7 @@
                             </a>
                         </div>
                     </div>
-                
+
         <!-- ============================================================== -->
         <!-- End PAge Content -->
         <!-- ============================================================== -->
@@ -163,12 +164,12 @@
             $(function(){
         if (navigator.geolocation) {
             navigator.geolocation.watchPosition(showPosition);
-        } else { 
+        } else {
             x.innerHTML = "Geolocation is not supported by this browser.";
         }
             });
         //}
-            
+
         function showPosition(position) {
             var lat=position.coords.latitude;
             var lng=position.coords.longitude;
@@ -177,10 +178,10 @@
                 url: "{{url('admin/update-lat-long')}}",
                 data : {lat:lat,lng:lng},
                 success: function (data) {
-                    
+
                 }
             });
-        
+
         }
     </script>
 @stop

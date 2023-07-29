@@ -44,7 +44,7 @@ class VehicleTypeController extends Controller
                                 Action
                             </button>
                             <div class="dropdown-menu">
-                              
+
                                 <a class="dropdown-item" href="' . route('vehicle-type.show', $row->id) . '">' . trans("admin.View") . '</a>
                                 <a class="dropdown-item" href="' . route('vehicle-type.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
                                 <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
@@ -80,7 +80,7 @@ class VehicleTypeController extends Controller
     public function change_status(Request $request){
         DB::table('prices')->where('service_provider_id',Auth::user()->id)->update(['status'=>0]);
         $status = ($request->status)?0:1;
-           $updateUser = Price::where('id',$request->vtype_id)->where('service_provider_id',Auth::user()->id)->update(['status'=>$status]);
+        $updateUser = Price::where('id',$request->vtype_id)->where('service_provider_id',Auth::user()->id)->update(['status'=>$status]);
        
         if ($updateUser) {
             echo json_encode(true);
@@ -121,7 +121,7 @@ class VehicleTypeController extends Controller
          // 'pick_time_from'=>'required',
           //'pick_time_to'=>'required'
          ];
-        
+
         $request->validate($rules);
         $input = $request->all();
         $input['service_provider_id'] = Auth::user()->id;
@@ -129,14 +129,14 @@ class VehicleTypeController extends Controller
       //  unset($input['basic_fee']);
         $result=\App\Price::create($input);
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
-            
+
             $imageName = 'image-'.time().'.'.$request->car_image->extension();
             $input['car_image'] = Storage::disk('public')->putFileAs(
                 'car_type/'.$result->id, $request->car_image, $imageName
             );
             \App\Price::where('id', $result->id)->update($input);
         }
-        
+
          return back()->with('success', __('Record created!'));
     }
 
@@ -152,14 +152,14 @@ class VehicleTypeController extends Controller
         $data = [];
         $where = array('id' => $id,'service_provider_id'=>Auth::user()->id);
         $record = \App\Price::where($where)->first();
-        
+
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
         }
         $data['status'] = array(1=>'Active',0=>'In-active');
         $data['record'] = $record;
         $data = array_merge($breadcrumb,$data);
-        
+
         return view("admin.{$this->folder}.show")->with($data);
     }
 
@@ -178,7 +178,7 @@ class VehicleTypeController extends Controller
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
         }
-                  
+
         $data['record'] = $record;
         $data['car_types'] =\App\Category::where('status',1)->get();
         $data = array_merge($breadcrumb,$data);
@@ -195,7 +195,7 @@ class VehicleTypeController extends Controller
     public function update(Request $request, $id)
     {
             $vehicle = \App\Price::where(['id'=>$id])->first();;
-        
+
         $rules = [
           'car_type'=>'required',
           'basic_fee'=>'required',
@@ -206,13 +206,13 @@ class VehicleTypeController extends Controller
         //  'pick_time_from'=>'required',
          // 'pick_time_to'=>'required'
          ];
-        
+
         $request->validate($rules);
         $input = $request->all();
         unset($input['_method'],$input['_token']);
-        
+
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
-            
+
             $imageName = 'image-'.time().'.'.$request->car_image->extension();
             if(!empty($vehicle->car_image)){
                 Storage::disk('public')->delete($vehicle->car_image);
@@ -232,11 +232,11 @@ class VehicleTypeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
-    { 
+    {
         $price = Price::deleteData($request->type_id);
         // $price->delete();
 
-        
+
         echo json_encode(true);
         exit();
     }

@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use Hash;
+use Storage;
 
 class ManagersController extends Controller
 {
@@ -27,7 +28,7 @@ class ManagersController extends Controller
     {
         $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->get();
+        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->paginate(20);
         return view('company.managers.index')->with($data);
     }
 
@@ -38,27 +39,38 @@ class ManagersController extends Controller
 		$data = array_merge($breadcrumb, $data);
 		return view("company.managers.create")->with($data);
 	}
-    
+
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'email' => 'email|required|unique:users',
             'name' => 'required',
             'password' => 'required',
         ]);
         DB::beginTransaction();
-        try 
+        try
         {
             $data = ['service_provider_id'=>Auth::user()->service_provider_id,'name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'user_type'=>5,'company_id'=>Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
-            if ($request->phone) 
+            if ($request->phone)
             {
-                $data['phone'] = $request->phone;
+                $data['phone'] = str_replace(' ', '', $request->phone);
                 $data['country_code'] = $request->country_code;
             }
             $manager = new User();
             $manager->fill($data);
             $manager->save();
+
+            if ($request->image) {
+				$imageName = 'profile-image'.time().'.' . $request->image->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'manager/' . $manager->id,
+					$request->image,
+					$imageName
+				);
+				User::where('id', $manager->id)->update(['image' => $image]);
+			}
             DB::commit();
             return redirect()->route('managers.index')->with('success','Manager successfully created');
         } catch (Exception $e) {
@@ -96,18 +108,27 @@ class ManagersController extends Controller
             // 'password' => 'required',
         ]);
         DB::beginTransaction();
-        try 
+        try
         {
             $data = ['name'=>$request->name,'email'=>$request->email];
-            if ($request->phone) 
+            if ($request->phone)
             {
-                $data['phone'] = $request->phone;
+                $data['phone'] = str_replace(' ', '', $request->phone);
                 $data['country_code'] = $request->country_code;
             }
-            if ($request->password) 
+            if ($request->password)
             {
                 $data['password'] = Hash::make($request->password);
             }
+            if ($request->image) {
+				$imageName = 'profile-image'.time().'.' . $request->image->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'manager/' . $id,
+					$request->image,
+					$imageName
+				);
+				User::where('id', $id)->update(['image' => $image]);
+			}
             // dd($data);
             $manager = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->find($id);
             $manager->fill($data);

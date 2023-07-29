@@ -15,7 +15,7 @@
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link dotnot">My Booking</a>
+                                            <a class="nav-link dotnot" href="{{ route('company.rides') }}">My Booking</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
