@@ -184,6 +184,50 @@
     $(document).ready(function(){
         $("a").tooltip();
     });
+
+
+
+
+        $("#phone, #phone_edit").on("blur", function(e){
+
+
+        // var phoneNumber =  $(this).val();
+         var conuntrycode = $('#country_code').val();
+
+        // console.log(conuntrycode)
+        // console.log(phoneNumber)
+
+        // var value = "+91 99 16 489165";
+        // var number = phoneNumber.replace(/\D/g, '').slice(-10);
+
+        var mobNum = $(this).val();
+        var filter = /^\d*(?:\.\d{1,2})?$/;
+          if (filter.test(mobNum)) {
+            if(mobNum.length==10){
+                return true;  
+            }   else {
+                    $(this).val('')
+                    return false;
+               }
+            }
+            else {
+                if(mobNum.startsWith("+")){
+
+                    var temp = mobNum.substring(mobNum.length, mobNum.length);
+                    mobile = temp;
+                    $(this).val(mobile)
+                    //Mobile number:
+                    console.log(mobile);
+                    return true; 
+                } else {
+                    $(this).val('')
+                    return false;
+                }
+                
+           }
+    });
+
+
     var input = document.querySelector("#phone");
     var iti = window.intlTelInput(input, {
         initialCountry: "auto",
@@ -202,6 +246,7 @@
             return "";
         },
     });
+
     iti.promise.then(function() {
         input.addEventListener("countrychange", function() {
             var selectedCountryData = iti.getSelectedCountryData();

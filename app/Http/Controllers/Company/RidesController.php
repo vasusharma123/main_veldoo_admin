@@ -112,7 +112,6 @@ class RidesController extends Controller
 
     public function ride_booking(Request $request)
     {
-        // dd($request->all());
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;

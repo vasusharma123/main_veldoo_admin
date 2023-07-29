@@ -103,7 +103,7 @@ This page is used to inform visitors regarding my policies with the collection, 
                 <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the revised policy in the App or through other communication channels. We encourage you to review this Privacy Policy periodically for any updates.</p>
                 <p>This policy is effective as of 2022-11-01</p>
 
-                <h3>8.Contact Us</h3>
+                <h3>9.Contact Us</h3>
                 <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our privacy practices, do not hesitate to contact us at aca.pavlovic@bluewin.ch.</p>
                 <p>By continuing to use our App, you acknowledge that you have read and understood this Privacy Policy and consent to the collection, use, and disclosure of your personal information as described herein.</p>
 

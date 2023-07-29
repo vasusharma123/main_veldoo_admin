@@ -27,22 +27,7 @@
         
     </head>
     <body>
-    <style type="text/css">
-        .without_ampm::-webkit-datetime-edit-ampm-field {
-            display: none;
-            }
-            input[type=time]::-webkit-clear-button {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            -o-appearance: none;
-            -ms-appearance:none;
-            appearance: none;
-            margin: -10px; 
-            }
-
-            .upcoming-and-past-booking { position: relative; border-bottom: 2px solid #000; }
-
-    </style>
+   
         <style>
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
@@ -305,7 +290,8 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <input type="text" value="<?php echo date("d/m/Y") ?>" id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <!-- <input type="date" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date"> -->
 
                                             
                                         </div>
@@ -318,7 +304,7 @@
                                         <div class="location_box">
                                             <label class="form_label">Pick a Time</label>
                                             
-                                            <!-- <input type="time" value="<?php echo date("h:i") ?>" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
+                                            <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
 
                                             <input type="text" id="time" value="<?php echo date("h:i") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
@@ -446,32 +432,30 @@
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
-        <script src="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.js"></script>
-        <link href="https://cdn.jsdelivr.net/timepicker.js/latest/timepicker.min.css" rel="stylesheet"/>
+        <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
 
 
-        
         <script>
-
-        var timepicker = new TimePicker('time', {
-        lang: 'en',
-        theme: 'dark'
-        });
-        timepicker.on('change', function(evt) {
-        
-        var value = (evt.hour || '00') + ':' + (evt.minute || '00');
-        evt.element.value = value;
-
-        });
-           
-
-
+    $(function(){
+      
+      $('input[id$="time"]').inputmask(
+        "hh:mm", {
+        placeholder: "HH:MM", 
+        insertMode: false, 
+        showMaskOnHover: false,
+      }
+      );
+      
+      
+    });
+  </script>
+        <script>
         $('#pickUpDateRide').datepicker({
-                dateFormat: 'dd/mm/y',//check change
-
+            dateFormat: 'yy-mm-dd',//check change
+            minDate: 0
         });
 
-       
+
         </script>
        
         <script>
@@ -1411,7 +1395,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: "{{ __('Yes, delete it') }}"
+                        confirmButtonText: "{{ __('Yes, cancel it') }}"
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
@@ -1481,6 +1465,7 @@
                 });
 
                 $(document).on('keypress','#phone',function(e) {
+
                     var keyCode = e.which ? e.which : e.keyCode;
                     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
@@ -1488,6 +1473,7 @@
                         e.preventDefault();
                     }
                 });
+
                 $(document).on('keypress','#phone_edit',function(e) {
                     var keyCode = e.which ? e.which : e.keyCode;
                     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
