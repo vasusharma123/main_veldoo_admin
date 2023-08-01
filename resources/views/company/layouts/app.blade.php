@@ -469,14 +469,6 @@
                 });
             }
         </script>
-        <script type="text/javascript">
-            $(function () {
-                $('#timepicker').timepicker({
-                    showMeridian: false,
-                    showInputs: true
-                });
-            });
-        </script>
         <script>
             //Swiper Slider Car
             var swiper = new Swiper(".carSwiper", {
@@ -631,35 +623,35 @@
                     ride_status = ""
                     if(booking.status == -2)
                     {
-                        ride_status = `<p class="infomation_update done bg-danger">Cancelled</p>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Cancelled</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> `;
                     }
                     else if(booking.status == -1)
                     {
-                        ride_status = `<p class="infomation_update done bg-danger">Rejected</p>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Rejected</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 1)
                     {
-                        ride_status = `<p class="infomation_update done bg-info">Accepted</p>`;
+                        ride_status = `<p class="infomation_update done bg-info">Accepted</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 2)
                     {
-                        ride_status = `<p class="infomation_update done bg-info">Started</p>`;
+                        ride_status = `<p class="infomation_update done bg-info">Started</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 4)
                     {
-                        ride_status = `<p class="infomation_update done bg-info">Driver Reached</p>`;
+                        ride_status = `<p class="infomation_update done bg-info">Driver Reached</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 3)
                     {
-                        ride_status = `<p class="infomation_update done bg-success">Completed</p>`;
+                        ride_status = `<p class="infomation_update done bg-success">Completed</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == -3)
                     {
-                        ride_status = `<p class="infomation_update done bg-danger">Cancelled by you</p>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Cancelled by you</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 0)
                     {
-                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
@@ -773,10 +765,120 @@
                     $('.close_modal_action_view').addClass('show');
                     $('#view_booking').css({'margin-right':'0px','transition':'all 400ms linear'});
                 }
+
+                
                 $(document).on('click','.rideDetails',function()
                 {
                     showRideModal($(this).data('id'),'rideDetails');
                 });
+
+
+                $(document).on('click','.clone_record',function () {
+                    var ride_id = $(this).data('rideid');
+                    selected_ride_id = ride_id;
+                    $(document).find(".cancel_ride").hide();
+                    $(document).find(".edit_booking").text('kkkkk');
+                    $(document).find(".save_booking").show();
+
+                    $.ajax({
+                        url: "{{ route('company.rides.edit') }}",
+                        type: 'get',
+                        data: {
+                            ride_id: ride_id
+                        },
+                        success: function(response) {
+                            // console.log(response);
+                            if (response.status) {
+                                $("#ride_id").val(ride_id);
+                                $('.bookRideTitle').html('Clone Booking');
+                                $("#pickupPoint").val(response.data.ride_detail.pickup_address);
+                                $("#pickup_latitude").val(response.data.ride_detail.pick_lat);
+                                $("#pickup_longitude").val(response.data.ride_detail.pick_lng);
+                                $("#dropoffPoint").val(response.data.ride_detail.dest_address);
+                                $("#dropoff_latitude").val(response.data.ride_detail.dest_lat);
+                                $("#dropoff_longitude").val(response.data.ride_detail.dest_lng);
+                                $("input[name='ride_date']").val(response.data.ride_detail.ride_date_new_modified_n);
+                                $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
+                                $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
+                                $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+                                if(response.data.ride_detail.user_id == 0){
+                                    $("#users").val("").change();
+                                } else {
+                                    $("#users").val(response.data.ride_detail.user_id).change();
+                                }
+                                $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
+                                $("#distance_calculated_input").val(response.data.ride_detail.distance);
+                                $("#payment_type").val(response.data.ride_detail.payment_type);
+                                $("#note").val(response.data.ride_detail.note);
+
+                                if (response.data.ride_detail.pick_lat) {
+                                    newBookingMapPoints = [{
+                                        Latitude: response.data.ride_detail.pick_lat,
+                                        Longitude: response.data.ride_detail.pick_lng,
+                                        AddressLocation: response.data.ride_detail
+                                            .pickup_address
+                                    }];
+                                    if (response.data.ride_detail.dest_lat) {
+                                        newBookingMapPoints.push({
+                                            Latitude: response.data.ride_detail.dest_lat,
+                                            Longitude: response.data.ride_detail.dest_lng,
+                                            AddressLocation: response.data.ride_detail
+                                                .dest_address
+                                        });
+                                    }
+                                    initializeMapReport(newBookingMapPoints);
+                                }
+                                // driver_detail_update(ride_id);
+                                $("#users").attr("disabled",true);
+                                $("#ride_time").attr("readonly",true);
+                                $("#pickupPoint").attr("disabled",true);
+                                $("#dropoffPoint").attr("disabled",true);
+                                $(".pickupPointCloseBtn").attr("disabled",true);
+                                $(".dropoffPointCloseBtn").attr("disabled",true);
+                                $("input[name='car_type']").attr("disabled",true);
+                                $("#numberOfPassenger").attr("disabled",true);
+                                $("#note").attr("readonly",true);
+
+                                if(response.data.ride_detail.status == 0){
+                                    $("#users").removeAttr("disabled");
+                                    $("#ride_time").removeAttr("readonly");
+                                    $("#pickupPoint").removeAttr("disabled");
+                                    $("#dropoffPoint").removeAttr("disabled");
+                                    $(".pickupPointCloseBtn").removeAttr("disabled");
+                                    $(".dropoffPointCloseBtn").removeAttr("disabled");
+                                    $("input[name='car_type']").removeAttr("disabled");
+                                    $("#numberOfPassenger").removeAttr("disabled");
+                                    $("#note").removeAttr("readonly");
+                                    $(document).find(".cancel_ride").hide();
+                                    $(document).find(".edit_booking").hide();
+                                } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
+                                    $(document).find(".edit_booking").hide();
+                                    $(document).find(".cancel_ride").hide();
+                                    $("#users").attr("disabled",true);
+                                    $("#ride_time").attr("readonly",true);
+                                    $("#pickupPoint").attr("disabled",true);
+                                    $("#dropoffPoint").attr("disabled",true);
+                                    $(".pickupPointCloseBtn").attr("disabled",true);
+                                    $(".dropoffPointCloseBtn").attr("disabled",true);
+                                    $("input[name='car_type']").attr("disabled",true);
+                                    $("#numberOfPassenger").attr("disabled",true);
+                                    $("#note").attr("readonly",true);
+                                }
+                                $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                                $('.close_modal_action').addClass('show');
+                                $('#add_new_bookings').css({'margin-right':'0px','transition':'all 400ms linear'});
+                            } else if (response.status == 0) {
+                                swal.fire("{{ __('Error') }}", response.message, "error");
+                            }
+                        },
+                        error(response) {
+                            swal.fire("{{ __('Error') }}", response.message, "error");
+                        }
+                    });
+                });
+
+
+
                 function setShortestRoute(response)
                 {
                     shortestRouteArr = [];
@@ -785,14 +887,9 @@
                     });
                     return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
                 }
-                socket.on('ride-update-response', function(response) {
-                    if(response && response[0] && response[0].id){
-                        if(selected_ride_id == response[0].id)
-                        {
-                            showRideModal(selected_ride_id,'rideDetails');
-                        }
-                    }
-                });
+
+                
+
                 $(document).on('click','.addNewBtn_cs ',function(){
                     newBookingMapPoints = [];
                     newBookingMarkers = [];
@@ -1138,12 +1235,15 @@
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
-                                        if (response.status) {
-                                            swal.fire("{{ __('Success') }}", response.message,
-                                                "success");
-                                            setTimeout(function() {
-                                                window.location.reload();
-                                            }, 1000);
+
+                                        if (response.status) {          
+
+                                            socket.emit('master-driver-update-web', {"data":response.data});
+
+                                            swal.fire("{{ __('Success') }}", response.message,"success");
+                                            // setTimeout(function() {
+                                            //     window.location.reload();
+                                            // }, 1000);
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1159,6 +1259,19 @@
                         });
                     }
                 });
+
+                socket.on('master-driver-response-2', async (response) => {
+                    if(response && response.data.id){
+
+                         setTimeout(function() {
+                            window.location.reload();
+                         }, 1000);
+
+                       // $("#add_new_bookings").hide();
+                       // $("#listView").load(location.href + " #listView");
+                    }
+                });
+
 
                 $(document).on('click','.pickupPointCloseBtn',function(){
                     $('#pickupPoint').val('');
