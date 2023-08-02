@@ -190,6 +190,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('cancel_ride', 'RideController@cancel_ride');
 		Route::post('make_driver_logout', 'UserController@make_driver_logout');
 		Route::post('calendarViewRidesUpDownLimited', 'RideController@calendarViewRidesUpDownLimited');
+		Route::post('calendarViewRideLimitedDataTimeBased', 'RideController@calendarViewRideLimitedDataTimeBased');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
