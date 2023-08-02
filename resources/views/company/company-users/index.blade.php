@@ -85,8 +85,10 @@
                                 <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
+
                                 <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
                                 <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+
                             </div>
                         </div>
                     </div>
@@ -147,6 +149,35 @@
 @endsection
 @section('footer_scripts')
 <script>
+
+    $('#phone, #phone_edit').keyup(function () { 
+        this.value = this.value.replace(/[^0-9+\.]/g,'');
+    });
+
+    $("#phone, #phone_edit").on("blur", function(e){
+
+    var conuntrycode = $('#country_code').val();
+    var mobNum = $(this).val();
+    var filter = /^\d*(?:\.\d{1,2})?$/;
+    if (filter.test(mobNum)) {
+        if(mobNum.length==10){
+            return true;  
+        } else {
+            $(this).val('')
+            return false;
+        }
+    }
+    else if(mobNum.startsWith("+")){
+        var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
+        mobile = temp;
+        $(this).val(mobile)
+        return true; 
+    } else {
+        $(this).val('')
+        return false;
+    }
+
+    });
      $(document).on('click','.check_user_info_btn',function(){
         country_code = $('#country_code').val();
         phone = $('#phone').val();

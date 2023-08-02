@@ -187,7 +187,10 @@
 
 
 
-
+    $('#phone, #phone_edit').keyup(function () { 
+        this.value = this.value.replace(/[^0-9+\.]/g,'');
+    });
+    
     $("#phone, #phone_edit").on("blur", function(e){
 
         var conuntrycode = $('#country_code').val();
@@ -210,7 +213,7 @@
             $(this).val('')
             return false;
         }
-        
+
     });
 
 

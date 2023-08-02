@@ -777,7 +777,7 @@
                     var ride_id = $(this).data('rideid');
                     selected_ride_id = ride_id;
                     $(document).find(".cancel_ride").hide();
-                    $(document).find(".edit_booking").text('kkkkk');
+                    $(document).find(".edit_booking").hide();
                     $(document).find(".save_booking").show();
 
                     $.ajax({
