@@ -6,6 +6,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
                         <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                        
                             <div class="menus cs_menus me-auto">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">
@@ -61,11 +62,11 @@
                                     <span class="user_position">Admin</span>
                                 </div>
                             </div> --}}
-                            {{-- <a href="#" class="btn menu_toggle_btn mobile_view">
+                            <a href="#" class="btn menu_toggle_btn mobile_view">
                                 <span class="line_menu"></span>
                                 <span class="line_menu"></span>
                                 <span class="line_menu"></span>
-                            </a> --}}
+                            </a> 
                         </div>
                     </div>
                 </div>
