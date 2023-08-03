@@ -29,9 +29,6 @@
     <body>
    
         <style>
-            .pending-ride-class-row{
-                background-color: var(--primary-color);
-            }
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
                 --bs-alert-bg: #fc4c02 !important;
@@ -96,7 +93,7 @@
                 display: none !important;
             }
         </style>
-        @include('company.elements.header')
+        @include('company.elements.privacy-policy-header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">
                 @yield('content')
@@ -1269,17 +1266,13 @@
 
                 socket.on('master-driver-response-2', async (response) => {
                     if(response && response.data.id){
-                        
+
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
 
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } else if (response && response.data.delete_for_all) {
-                        setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
                     }
                 });
 
@@ -1484,15 +1477,11 @@
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
                                         if (response.status) {
-
-                                            socket.emit('master-driver-update-web', {"data":response.data});
-
                                             swal.fire("{{ __('Success') }}", response.message,
                                                 "success");
-                                            // setTimeout(function() {
-                                            //     window.location.reload();
-                                            // }, 1000);
-
+                                            setTimeout(function() {
+                                                window.location.reload();
+                                            }, 1000);
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1537,13 +1526,10 @@
                                 success: function(response) {
                                     if (response.status) {
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
-                                       
-                                        socket.emit('master-driver-update-web', {"data":response.data});
-
                                         Swal.fire("Success", response.message, "success");
-                                        // setTimeout(function() {
-                                        //     window.location.reload();
-                                        // }, 1000);
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1000);
                                     } else if (response.status == 0) {
                                         Swal.fire("{{ __('Error') }}", response.message, "error");
                                     }
@@ -1579,15 +1565,10 @@
                                 success: function(response) {
                                     if (response.status) {
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
-                                       
-                                        console.log(response.data);
-
-                                        socket.emit('master-driver-update-web', {"data":response.data});
-
                                         Swal.fire("Success", response.message, "success");
-                                        // setTimeout(function() {
-                                        //     window.location.reload();
-                                        // }, 1000);
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1000);
                                     } else if (response.status == 0) {
                                         Swal.fire("{{ __('Error') }}", response.message, "error");
                                     }

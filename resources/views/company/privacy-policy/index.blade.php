@@ -1,12 +1,12 @@
-@extends('company.layouts.app')
+@extends('company.layouts.privacy-policy-app')
 @section('header_button')
-    <button type="button" class="btn addNewBtn_cs me-4">
+    <!-- <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
         <span class="text_button">Book a ride</span>
-    </button>
+    </button> -->
 @endsection
 @section('content')
-    <section class="add_booking_section">
+    <!-- <section class="add_booking_section">
         <article class="add_new_booking_box">
             <div class="action_btn text-end page_btn">
                 <button type="button" class="btn add_new_booking_btn">
@@ -15,7 +15,7 @@
                 </button>
             </div>
         </article>
-    </section>
+    </section> -->
 
     <div class="container">
         <div class="row">

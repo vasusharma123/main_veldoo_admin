@@ -54,7 +54,7 @@
                                 }
                                 @endphp
                                 
-                                <tr class="rideDetails {{$upcomingAndPastBooking}}" data-id="{{ $ride->id }}" style="cursor: pointer">
+                                <tr class="rideDetails {{$upcomingAndPastBooking}} {{ $ride->status == -4 ? 'pending-ride-class-row' : ''}}" data-id="{{ $ride->id }}" style="cursor: pointer">
                                     <td class="btn_view_booking dateTimeList{{ $ride->id }}">
                                         {{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </td>
@@ -77,6 +77,8 @@
                                         @elseif($ride->status == -3)
                                             <span class="status_box text-white bg-danger">Cancelled by you</span>
                                         @elseif($ride->status == 0)
+                                        <span class="status_box text-white bg-warning">Upcoming</span>
+                                        @elseif($ride->status == -4)
                                             <span class="status_box text-white bg-warning">Pending</span>
                                         @elseif(strtotime($ride->ride_time) < strtotime('now'))
                                             <span class="status_box text-white bg-warning">Upcoming</span>
