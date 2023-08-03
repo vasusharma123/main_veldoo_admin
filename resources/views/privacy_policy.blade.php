@@ -77,7 +77,7 @@
                 <p>Information the author publishes on the World Wide Web may contain references or cross references to the author's products, programmes and services that are not announced or available in your country. Such references do not imply that the author intends to announce or make available such products or services in your country.</p>
 
                 <h3>4.Usage of sensitive permissions in app</h3>
-                <p>&#x2022; Call Logs - We are using this permission so the driver can easily save rider's phone number whom he was in communication over a phone call in recent times. We will never share any of these phone numbers from recent call list to any of the third party services. </p>
+                <p>&#x2022; Call Logs - This permission is optional, and is only used by the app user (the driver) to quickly interact with customers that called them directly. The content of the logs is not transferred from the device, except for the mobile number selected by the driver.</p>
 
                 <h3>5.Data deletion</h3>
                 <h4>Users may request deletion of their accounts at any time. Taxi2000 may retain user data after a deletion request due to legal or regulatory requirements or for reasons stated in this policy.</h4>
