@@ -1268,8 +1268,9 @@
                 });
 
                 socket.on('master-driver-response-2', async (response) => {
+
+                    console.log('client' + response);
                     if(response && response.data.id){
-                        
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
