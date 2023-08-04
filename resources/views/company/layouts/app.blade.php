@@ -30,7 +30,7 @@
    
         <style>
             .pending-ride-class-row{
-                background-color: var(--primary-color);
+                background-color: var(--primary-color) !important;
             }
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
