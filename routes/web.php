@@ -227,4 +227,4 @@ Route::group([ 'middleware' => 'auth'], function(){
 });
 
 Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
-Route::get('/privacy-policy','CompanyController@privacy_policy')->name('company.privacy_policy');
+Route::get('/privacy_policy','PageController@privacy_policy');

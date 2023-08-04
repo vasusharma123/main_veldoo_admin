@@ -1037,4 +1037,8 @@ if($_REQUEST['cm'] == 2)
 		print_r($responses);
 	}
 
+	public function privacy_policy(){
+	    return view('privacy_policy');
+    }
+
 }
