@@ -664,7 +664,7 @@
                     {
                         ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-warning">Upcoming</span></span>`;
                     }
-                    $('.statusList'+selected_ride_id).html(ride_status);
+                   //  $('.statusList'+selected_ride_id).html(ride_status); if we need to show all button on ride row 
                     $('.booking_details_with_status').html("Booking Details "+ride_status);
 
                     if (booking.dest_lat=="")
@@ -1524,7 +1524,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: "{{ __('Yes, cancel it') }}"
+                        confirmButtonText: "{{ __('Confirm') }}"
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
@@ -1565,7 +1565,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        confirmButtonText: 'Confirm'
                     }).then((result) => {
                         if (result.value) {
                             var ride_id = $(this).attr('data-id');
