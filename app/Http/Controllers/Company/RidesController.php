@@ -702,7 +702,7 @@ class RidesController extends Controller
             RideHistory::where(['ride_id' => $request->ride_id])->delete();
 
             $ride_detail_socket['id'] = $request->ride_id;
-            $ride_detail_socket['delete_for_all'] = 1;
+            $ride_detail_socket['is_ride_deleted'] = 1;
 
             DB::commit();
 			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $ride_detail_socket]);
