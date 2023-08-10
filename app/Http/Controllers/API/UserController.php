@@ -2119,7 +2119,7 @@ class UserController extends Controller
 				if (!empty($request->alert_time)) {
 					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($ride_date_time)));
 				} else {
-					$ride->alert_notification_date_time = $ride_date_time;
+					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride_date_time)));
 				}
 				$ride->alert_time = $request->alert_time ?? null;
 				if (!empty($request->pick_lat)) {
@@ -5103,7 +5103,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($request->alert_time)) {
 				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->time)));
 			} else {
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->time));
+				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->time)));
 			}
 			$ride->alert_time = $request->alert_time;
 
@@ -5289,7 +5289,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->route = $request->route;
 				}
 
-				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
+				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $alert_notification_date_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 					$ride->alert_notification_date_time = $alert_notification_date_time;
 					$ride->notification_sent = 0;
 					$ride->alert_send = 0;
@@ -6687,7 +6687,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if(!empty($ride->alert_time)){
 					$rideAlertTime = date('Y-m-d H:i:s', strtotime('-' . $ride->alert_time . ' minutes', strtotime($ride->ride_time)));
 				} else {
-					$rideAlertTime = $ride->ride_time;
+					$rideAlertTime = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride->ride_time)));
 				}
 				if ($rideAlertTime > $currentTime) {
 					$rideDetail = Ride::find($request->ride_id);
