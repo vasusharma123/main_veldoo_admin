@@ -9,7 +9,7 @@ use App\UserData;
 use App\Category;
 use App\Setting;
 use App\Voucher;
-use Str;
+use Illuminate\Support\Str;
 use Session;
 use Config;
 use Illuminate\Http\Request;
@@ -968,293 +968,92 @@ class UserController extends Controller
 		return view('admin.register')->with($data);
 	}
 
-	public function doRegister(Request $request){
-
-		$rules = [
-			'email' =>  [
-				'required',
-				'email',
-				Rule::unique('users')->where(function ($query) {
-					return $query->where('user_type',3);
-				}),
-			],
-			'phone' =>  [
-				'required',
-				Rule::unique('users')->where(function ($query) {
-					return $query->where('user_type',3);
-				}),
-			],
-			// 'password' => 'required|min:6',
-			// 'confirm_password' => 'required|min:6',
-			// 'phone'=>'required',
-			'country_code'=>'required',
-			'site_name'=>'required',
-			'first_name'=>'required',
-			'last_name'=>'required'
-		];
-		$request->validate($rules);
-		$input = $request->all();
-		$serviceProvider = new User();
-		$serviceProvider->fill([
-			'email'=>$request->email,
-			'first_name'=>$request->first_name,
-			'last_name'=>$request->last_name,
-			'name' => $request->site_name,
-			'country_code'=>$request->country_code,
-			'phone'=>$request->phone,
-			'user_type'=>3,
-		]);
-		$serviceProvider->save();
-		$token = Str::random(64).'-'.$serviceProvider->id;
-		$serviceProvider->is_email_verified_token = $token;
-		$serviceProvider->update();
-
-		$settingValue = [
-			"admin_logo"=> "",
-			"radius"=> "50",
-			"site_name"=> $request->site_name,
-			"first_x_free_users"=> "1",
-			"admin_free_subscription_days"=> "1",
-			"copyright"=> $request->site_name,
-			"admin_primary_color"=> "#fc4c02",
-			"ad_interval"=> "2",
-			"topic_title_limit"=> "2",
-			"admin_background"=> "",
-			"admin_favicon"=> "",
-			"admin_sidebar_logo"=> "",
-			"_token"=> "",
-			"facebook_link"=> "",
-			"twitter_link"=> "",
-			"instagram_link"=> "",
-			"paypal_email"=> "",
-			"admin_commission"=> "21",
-			"base_delivery_price"=> "21",
-			"base_delivery_distance"=> "21",
-			"tax"=> "21",
-			"credit_card_fee"=> "21",
-			"stripe_mode"=> "",
-			"stripe_test_secret_key"=> "",
-			"stripe_test_publish_key"=> "",
-			"ride_type"=> "1",
-			"pickup_address"=> "sec 10 chandigarh",
-			"dest_address"=> "sec 12 chandigarh",
-			"additional_notes"=> "test",
-			"notification"=> 0,
-			"number_of_drivers_get_notification"=> "1",
-			"currency_symbol"=> "CHF",
-			"currency_name"=> "Franken",
-			"interval_time"=> "1",
-			"driver_requests"=> "3",
-			"waiting_time"=> "30",
-			"pickup_distance"=> "1",
-			"join_radius"=> "5",
-			"first_request_send"=> "2",
-			"driver_idle_time"=> "60",
-			"current_ride_distance_addition"=> "10",
-			"waiting_ride_distance_addition"=> "15"
-		];
-		$setting = new Setting();
-		$setting->fill(['key' => '_configuration','service_provider_id'=>$serviceProvider->id,'value'=>json_encode($settingValue)]);
-		$setting->save();
-
-		// SMS templates
-		SMSTemplate::insert([
-			[
-				"title" => "Send OTP (create booking)",
-				"english_content" => "Dear User, your Veldoo verification code is #OTP#. Use this password to complete your booking",
-				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#. Verwenden Sie dieses Passwort, um Ihre Buchung abzuschließen",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "send_otp_create_booking",
-			],
-			[
-				"title" => "Send booking details after create booking",
-				"english_content" => "Your Booking has been confirmed with Veldoo, for time - #TIME#. To view the status of your ride go to: #LINK#",
-				"german_content" => "Ihre Buchung wurde mit Veldoo für die Zeit bestätigt - #TIME#. Um den Status Ihrer Fahrt anzuzeigen, gehen Sie zu: #LINK#",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "send_booking_details_after_create_booking",
-			],
-			[
-				"title" => "Send OTP for my bookings",
-				"english_content" => "Dear User, your Veldoo verification code is #OTP#",
-				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "send_otp_for_my_bookings",
-			],
-			[
-				"title" => "Send OTP before ride edit",
-				"english_content" => "Dear User, your Veldoo verification code is #OTP#. Use this password to complete your booking",
-				"german_content" => "Sehr geehrter Benutzer, Ihr Veldoo-Bestätigungscode lautet #OTP#. Verwenden Sie dieses Passwort, um Ihre Buchung abzuschließen",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "send_otp_before_ride_edit",
-			],
-			[
-				"title" => "Send booking details after edit booking",
-				"english_content" => "Your Booking has been confirmed with Veldoo, for time - #TIME#. To view the status of your ride go to: #LINK#",
-				"german_content" => "Ihre Buchung wurde mit Veldoo für die Zeit bestätigt - #TIME#. Um den Status Ihrer Fahrt anzuzeigen, gehen Sie zu: #LINK#",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "send_booking_details_after_edit_booking",
-			],
-			[
-				"title" => "Ride Accepted By driver",
-				"english_content" => "Ride Accepted By driver",
-				"german_content" => "Fahrt vom Fahrer akzeptiert",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "ride_accepted_by_driver",
-			],
-			[
-				"title" => "Driver reached to pickup point",
-				"english_content" => "Driver reached to pickup point",
-				"german_content" => "Der Fahrer erreichte den Abholpunkt",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "driver_reached_to_pickup_point",
-			],
-			[
-				"title" => "Ride cancelled by driver",
-				"english_content" => "Ride cancelled by driver",
-				"german_content" => "Fahrt vom Fahrer abgesagt",
-				"service_provider_id" => $serviceProvider->id,
-				"unique_key" => "ride_cancelled_by_driver",
-			]
-		]);
-
-		Page::insert([
-			[
-				"title" => "About",
-				"content" => "Veldoo",
-				"type" => "1",
-				"service_provider_id" => $serviceProvider->id,
-			],
-			[
-				"title" => "Privacy Policy",
-				"content" => "Veldoo",
-				"type" => "2",
-				"service_provider_id" => $serviceProvider->id,
-			],
-			[
-				"title" => "Terms",
-				"content" => "Veldoo",
-				"type" => "3",
-				"service_provider_id" => $serviceProvider->id,
-			]
-		]);
-
-		$voucherValue = [
-			"mile_per_ride"=> "10",
-			"mile_to_currency"=> "1",
-			"mile_on_invitation"=> "5"
-		];
-		Voucher::insert([
-			[
-				"key" => "_configuration",
-				"value" => json_encode($voucherValue),
-				"service_provider_id" => $serviceProvider->id,
-			]
-		]);
-
-		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
-		// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
-		Mail::send('email.emailVerificationEmail', ['token' => $token], function($message) use($request){
-			$message->to($request->email);
-			$message->subject('Email Verification Mail');
-		});
-		return redirect()->route('adminLogin')->with('success', 'You need to confirm your account. We have sent you an activation code, please check your email.');
-	}
-
-
-	public function serviceProviderVerify($token)
+	public function doRegister(Request $request)
 	{
-		$verifyUser = User::where('is_email_verified_token', $token)->first();
-        if(!is_null($verifyUser))
-        {
-			$password = Str::random(8);
-			$verifyUser->is_email_verified = 1;
-			$verifyUser->is_email_verified_token = "";
-			$verifyUser->password = Hash::make($password);
-			$verifyUser->update();
-
-			$driver = new User();
-			$driver->fill([
-				'email'=>'driver_'.$verifyUser->email,
-				'first_name'=>$verifyUser->first_name,
-				'last_name'=>$verifyUser->last_name,
-				'country_code'=>$verifyUser->country_code,
-				'phone'=>$verifyUser->phone,
-				'is_master'=>1,
-				'user_type'=>2,
-				'password'=>Hash::make($password),
-				'service_provider_id'=>$verifyUser->id,
+			$input = $request->all();
+			$rules = [
+				'first_name' => 'required',
+				'last_name' => 'required',
+				'site_name' => 'required',
+				'addresses' => 'required',
+				'zip' => 'required',
+				'city' => 'required',
+				'country' => 'required',
+				'email' =>  [
+					'required',
+					'email',
+					Rule::unique('users')->where(function ($query) {
+						return $query->where('user_type', 3);
+					}),
+				],
+				'country_code' => 'required',
+				'phone' =>  [
+					'required',
+					Rule::unique('users')->where(function ($query) {
+						return $query->where('user_type', 3);
+					}),
+				],
+				// 'password' => 'required|min:6',
+				// 'confirm_password' => 'required|min:6',
+			];
+			$request->validate(
+				$rules,
+				[
+					'site_name.required' => 'Please enter your company name',
+					'addresses.required' => 'You have to choose the file!',
+					'zip.required' => 'Please enter your zip code'
+				]
+			);
+			try {
+			$serviceProvider = new User();
+			$serviceProvider->fill([
+				'first_name' => $request->first_name,
+				'last_name' => $request->last_name,
+				'name' => $request->site_name,
+				'addresses' => $request->addresses,
+				'city' => $request->city,
+				'country' => $request->country,
+				'country_code' => $request->country_code,
+				'phone' => $request->phone,
+				'email' => $request->email,
+				'user_type' => 3,
 			]);
-			$driver->save();
-            $serviceProviderDriver = new ServiceProviderDriver();
-            $serviceProviderDriver->fill(['service_provider_id'=>$verifyUser->id,'driver_id'=>$driver->id]);
-            $serviceProviderDriver->save();
-			//customer
-			$user = new User();
-			$user->fill([
-				'email'=>'user_'.$verifyUser->email,
-				'first_name'=>$verifyUser->first_name,
-				'last_name'=>$verifyUser->last_name,
-				'country_code'=>$verifyUser->country_code,
-				'phone'=>$verifyUser->phone,
-				'user_type'=>1,
-				'verify'=>1,
-				'password'=>Hash::make($password),
-				'service_provider_id'=>$verifyUser->id,
-			]);
-			$user->save();
+			$serviceProvider->save();
+			$token = Str::random(64) . '-' . $serviceProvider->id;
+			$serviceProvider->is_email_verified_token = $token;
+			$serviceProvider->save();
 
-			//vehicle-type
-			$vehicleType = new Price();
-			$vehicleType->fill([
-								'car_type'=>'Regular',
-								'price_per_km'=>'3.6',
-								'basic_fee'=>'6',
-								'seating_capacity'=>'4',
-								'alert_time'=>'15',
-								'status'=>'1',
-								'sort'=>'0',
-								'service_provider_id'=>$verifyUser->id,
-							]);
-			$vehicleType->save();
+			// Page::insert([
+			// 	[
+			// 		"title" => "About",
+			// 		"content" => "Veldoo",
+			// 		"type" => "1",
+			// 		"service_provider_id" => $serviceProvider->id,
+			// 	],
+			// 	[
+			// 		"title" => "Privacy Policy",
+			// 		"content" => "Veldoo",
+			// 		"type" => "2",
+			// 		"service_provider_id" => $serviceProvider->id,
+			// 	],
+			// 	[
+			// 		"title" => "Terms",
+			// 		"content" => "Veldoo",
+			// 		"type" => "3",
+			// 		"service_provider_id" => $serviceProvider->id,
+			// 	]
+			// ]);
 
-			//vehicle
-			$vehicle = new Vehicle();
-			$vehicle->fill([
-								'user_id'=>$driver->id,
-								'category_id'=>$vehicleType->id,
-								'year'=>date('Y'),
-								'model'=>'Volkswagen',
-								'color'=>'Orange',
-								'insurance_company'=>'',
-								'certificate_number'=>'',
-								'policy_number'=>'',
-								'issue_date'=>'',
-								'expiry_date'=>'',
-								'driving_license'=>'',
-								'vehicle_rc'=>'',
-								'vehicle_image'=>'',
-								'vehicle_number_plate'=>Str::random(6),
-								'mileage'=>'',
-								'service_provider_id'=>$verifyUser->id,
-							]);
-			$vehicle->save();
-
-			$data['user'] = $user;
-			$data['driver'] = $driver;
-			$data['serviceProvider'] = $verifyUser;
-			$data['password'] = $password;
-			// dd($data);
-			$message = "Your e-mail is verified. We sent a mail with your login details.";
-			Mail::send('email.sendLoginDetailsToServiceProvider', ['data' => $data], function($message) use($verifyUser){
-				$message->to($verifyUser->email);
-				$message->subject('Welcome Mail');
+			// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
+			// $configuration =  Setting::firstOrNew(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->value;
+			Mail::send('email.emailVerificationEmail', ['token' => $token], function ($message) use ($request) {
+				$message->to($request->email);
+				$message->subject('Email Verification Mail');
 			});
-			return redirect()->route('adminLogin')->with('success', $message);
-        }
-		else
-		{
-			$message = 'Sorry your email cannot be identified.';
-			return redirect()->route('adminLogin')->with('error', $message);
+			return redirect()->back()->with('success', __('You need to confirm your account. We have sent you an activation code, please check your email.'));
+		} catch (Exception $e) {
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
+			return redirect()->back()->withInput($input)->with('error', $e->getMessage());
 		}
 	}
 
