@@ -44,7 +44,10 @@ Route::get('/cron/notification',  ['uses'=>'CronController@notification']);
 Route::get('/cron/shareRideExecute',  ['uses'=>'CronController@shareRideExecute']);
 
 Route::group(['middleware' => 'locale'], function(){
-	Route::get('/taxisteinemann/booking',  ['uses'=>'PageController@booking'])->name('booking_taxisteinemann');
+
+	//Route::get('/rides/{type?}','PageController@booking')->name('guest.rides');
+
+	// Route::get('/taxisteinemann/booking',  ['uses'=>'PageController@booking'])->name('booking_taxisteinemann');
 	Route::post('/taxisteinemann/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form_taxisteinemann');
 	Route::get('/taxisteinemann/list_of_booking/{token?}',  ['uses' => 'PageController@list_of_booking'])->name('list_of_booking_taxisteinemann');
 	Route::get('/taxisteinemann/booking_details/{id}',  ['uses' => 'PageController@booking_details'])->name('booking_details_taxisteinemann');
@@ -62,7 +65,12 @@ Route::group(['middleware' => 'locale'], function(){
 	// Route::get('/booking_form',  ['uses'=>'PageController@booking_form']);
 	// Route::post('/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form');
 	Route::post('/send_otp_before_ride_booking',  ['uses'=>'PageController@send_otp_before_ride_booking'])->name('send_otp_before_ride_booking');
+	Route::post('/send_otp_before_register',  ['uses'=>'PageController@send_otp_before_register'])->name('send_otp_before_register');
+	Route::post('/verify_otp_before_register',  ['uses'=>'PageController@verify_otp_before_register'])->name('verify_otp_before_register');
+
 	Route::post('/verify_otp_and_ride_booking',  ['uses'=>'PageController@verify_otp_and_ride_booking'])->name('verify_otp_and_ride_booking');
+	Route::post('/without_otp_ride_booking',  ['uses'=>'PageController@without_otp_ride_booking'])->name('without_otp_ride_booking');
+
 	Route::get('/my-booking',  ['uses' => 'PageController@myBooking']);
 	Route::post('/send_otp_for_my_bookings',  ['uses' => 'PageController@send_otp_for_my_bookings'])->name('send_otp_for_my_bookings');
 	Route::post('/verify_otp_and_ride_list',  ['uses' => 'PageController@verify_otp_and_ride_list'])->name('verify_otp_and_ride_list');
@@ -79,16 +87,27 @@ Route::group(['middleware' => 'guest'], function(){
 	// Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
     Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
+	Route::post('/do-login-guest',  ['uses'=>'UserController@doLoginGuest']);
+
     Route::get('/register',  ['as'=>'companyRegister','uses'=>'UserController@register']);
-    // Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
-     Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
-	 Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
+   // Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
+    Route::post('/do-register-guest',  ['uses'=>'UserController@doRegisterGuest']);
+
+    Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
+	Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
+
+	Route::get('/verify-otp',  ['as'=>'verify','uses'=>'UserController@verifyOtpGuest']);
+	Route::post('/otp-verification',  ['uses'=>'UserController@otpVerification']);
+
 	Route::get('/password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 	Route::post('/password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 	Route::get('/password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 	Route::post('/password/reset/{token}', 'Auth\ResetPasswordController@reset');
 	Route::get('/password/success', ['as'=>'password.success','uses'=>'UserController@guest_message']);
 });
+
+
+
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
 	Route::get('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
@@ -209,9 +228,31 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
 	Route::post('/delete_booking','Company\RidesController@delete_booking')->name('company.delete_booking');
 
-	
-
 });
+
+Route::group(['prefix' => 'guest'], function(){
+
+	Route::get('/taxisteinemann/booking',  'Guest\RidesController@index')->name('booking_taxisteinemann');
+	Route::get('/rides/{type?}','Guest\RidesController@index')->name('guest.rides');
+
+	Route::delete('ride/delete_multiple','Guest\RidesController@delete_multiple')->name('guest.rides.delete_multiple');
+	
+	Route::post('/ride_booking','Guest\RidesController@ride_booking')->name('guest.ride_booking');
+
+	Route::post('/user_exist','Guest\RidesController@user_exist')->name('guest.user_exist');
+
+
+	Route::get('/rides-history','Guest\RidesController@history')->name('guest.rides.history');
+	Route::get('rides-edit','Guest\RidesController@edit')->name('guest.rides.edit');
+	Route::get('rides-driver_detail','Guest\RidesController@ride_driver_detail')->name('guest.rides.driver_detail');
+	Route::post('rides/detail/{id}','Guest\RidesController@ride_detail')->name('guest.ride_detail');
+	Route::post('/ride_booking_update','Guest\RidesController@ride_booking_update')->name('guest.ride_booking_update');
+	Route::post('/cancel_booking','Guest\RidesController@cancel_booking')->name('guest.cancel_booking');
+	Route::post('/delete_booking','Guest\RidesController@delete_booking')->name('guest.delete_booking');
+});
+
+
+
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
 Route::post('company-users/check-user-info-btn','Company\UsersController@checkUserInfoBtn')->name('checkUserInfoBtn')->middleware(['auth','role_or_permission:Company']);
 
@@ -227,4 +268,7 @@ Route::group([ 'middleware' => 'auth'], function(){
 });
 
 Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
+Route::get('guest-login',  'UserController@guestLogin')->name('guest.login');;
+Route::get('guest-register',  'UserController@guestRegister')->name('guest.register');;
+
 Route::get('/privacy_policy','PageController@privacy_policy');

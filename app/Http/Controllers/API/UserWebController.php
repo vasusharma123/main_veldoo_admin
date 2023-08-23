@@ -29,7 +29,7 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           /// 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
@@ -106,7 +106,7 @@ class UserWebController extends Controller
             $ride->platform = "web";
             $ride->save();
             DB::commit();
-            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully'),'user_data'=>$user], $this->successCode);
+            return response()->json(['status' => 1, 'booking_status' => 'direct', 'message' => __('Ride Booked successfully'),'user_data'=>$user], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -136,7 +136,7 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           //'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
@@ -287,7 +287,7 @@ class UserWebController extends Controller
             $rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
             $rideData->save();
             DB::commit();
-            return response()->json(['status' => 1, 'message' => __('Instant ride created successfully.'), 'data' => $ride,'user_data'=>$user], $this->successCode);
+            return response()->json(['status' => 1,'booking_status' => 'direct', 'message' => __('Instant ride created successfully.'), 'data' => $ride,'user_data'=>$user], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -302,7 +302,7 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           // 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
@@ -371,7 +371,7 @@ class UserWebController extends Controller
             'ride_id' => 'required',
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           // 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',

@@ -22,6 +22,10 @@
     --open-sans-font : 'Open Sans', sans-serif;
 }
 
+
+
+
+
 *,html,body{
     margin: 0;
     padding: 0;
@@ -82,6 +86,71 @@ body{
     left: 50%;
     transform: translate(-50%,-50%);
 }
+
+.login_form_guest {
+    max-width: 550px;
+    margin: auto;
+    position: relative;
+    top: 50%;
+    left: 00%;
+    transform: translate(0%,0%);
+}
+
+.cs_link{
+    text-decoration: none;
+}
+
+.cs_link:hover, .cs_link:focus {
+    color: white;
+}
+
+
+.modalClose {
+    background: white;
+    opacity: 1;
+    font-size: 35px;
+    padding: 0;
+    padding: 4px;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 0px;
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    border-radius: 200px;
+    height: 40px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,.5);
+}
+
+.login_form_box_cover {
+    padding: 50px 0px;
+    min-height: 100vh;
+    display: flex;
+}
+
+.login_form {
+    width: 100%;
+    max-width: 550px;
+    margin: auto;
+    position: relative;
+    top: 50%;
+    left: 00%;
+    transform: translate(0%,0%);
+}
+
+.login_form .form-row {
+    background: rgba(234, 235, 239, 0.75);
+    padding: 24px;
+    border-radius: 10px;
+    background: rgba(234, 235, 239, 0.75);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+}
+#otpModal .login_form .form-row {
+    background: rgb(234 235 239 / 98%) !important;
+}
 .login_form .form-row {
     background: rgba(234, 235, 239, 0.75);
     padding: 24px;
@@ -91,7 +160,17 @@ body{
     border-radius: 16px;
 }
 
+.position-relative {
+    position: relative!important;
+}
+.iti.iti--allow-dropdown {
+    width: 100%;
+}
 
+label.form-lable.boldlable {
+    font-size: 20px;
+    font-weight: 500;
+}
 .logo_img {
     max-width: 223px;
     margin-bottom: 40.5px;
@@ -122,6 +201,36 @@ body{
     color: var(--secondary-color);
     margin-bottom: 16px;
 }
+.otpfil {
+    text-indent: 0;
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #9B9B9B !important;
+    border-radius: 0 !important;
+    margin: 0px 2px 20px;
+}
+
+.erro {
+    display: block !important;
+    color: #F33342;
+    margin: 10px 10px 24px 10px !important;
+}
+
+.hyperinline {
+    color: #356681;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.hyperinline:hover, .hyperinline:focus {
+    color: var(--primary-color);
+}
+.sign-up-account:hover, .sign-up-account:focus {
+    color: var(--primary-color);
+}
+
+
+
 .loginField {
     padding: 16px 24px;
     border-radius: 70px;

@@ -29,6 +29,11 @@ use App\DriverStayActiveNotification;
 use App\DriverChooseCar;
 use Exception;
 use Illuminate\Support\Facades\Log;
+use App\SMSTemplate;
+use App\Http\Requests\GuestRegisterRequest;
+use App\Price;
+
+
 
 class UserController extends Controller
 {
@@ -48,6 +53,25 @@ class UserController extends Controller
 
 	public function guest_message(){
 		 return view('admin.guest_message');
+	}
+
+
+	public function guestLogin(){
+		$breadcrumb = array('title'=>'Home','action'=>'Login');
+		$vehicle_types = Price::orderBy('sort')->get();
+
+
+		$data = [];
+		$data = array_merge($breadcrumb,$data);
+		$data['vehicle_types'] = $vehicle_types;
+		return view('guest.auth.login')->with($data);
+	}
+
+	public function guestRegister(){
+		$breadcrumb = array('title'=>'Home','action'=>'Login');
+		$data = [];
+		$data = array_merge($breadcrumb,$data);
+		return view('guest.auth.register')->with($data);
 	}
 
 	public function login(){
@@ -70,6 +94,32 @@ class UserController extends Controller
 			if (in_array(Auth::user()->user_type,[4,5])) {
 				Auth::user()->syncRoles('Company');
 				return redirect()->route('company.rides');
+			}
+            return redirect()->route('users.dashboard');
+        } else{
+			Auth::logout();
+			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+		}
+
+	}
+
+	public function doLoginGuest(Request $request){
+		$rules = [
+			'phone' => 'required',
+			'country_code' => 'required',
+			'password' => 'required|min:6',
+		];
+		$request->validate($rules);
+		$input = $request->all();
+
+		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
+		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
+		$user = User::where('phone', $request->phone)->first();
+		if ($user === null || !Hash::check($request->password, $user->password)) {
+			\Auth::login($user);
+			if (in_array(Auth::user()->user_type,[1])) {
+				Auth::user()->syncRoles('Customer');
+				return redirect()->route('booking_taxisteinemann');
 			}
             return redirect()->route('users.dashboard');
         } else{
@@ -998,12 +1048,98 @@ public function register(){
 			return redirect()->to(url('verify/'.$request->email));
 	}
 
+	public function doRegisterGuest(GuestRegisterRequest $request) {
+		try {
+			if ($request->isMethod('post')) {
+				DB::beginTransaction();
+				$input = $request->all();
+				$input['password']=Hash::make($request->input('password'));
+				$input['user_type']=1;
+
+				//$otp = rand(1000,9999);
+				unset($input['_token']);
+				unset($input['confirm_password']);
+				$user=User::updateOrCreate($input);
+		
+				// $expiryMin = config('app.otp_expiry_minutes');
+				// $SMSTemplate = SMSTemplate::find(3);
+				// $body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
+				// if (app()->getLocale()!="en")
+				// {
+				// 	$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
+				// }
+				// $this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $body);
+				// $endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+				// \App\OtpVerification::create(
+				// 	['phone'=> ltrim($request->phone, "0"),
+				// 	'otp' => $otp,
+				// 	'expiry'=>$endTime,
+				// 	'country_code'=>$request->country_code
+				// 	]
+				// );
+
+				DB::commit();
+				return redirect()->route('guest.login')->with('success', __('Register successfully!'));
+				//return redirect()->to(url('verify-otp?phone='.$request->phone.'&code='.$request->country_code));
+			}
+			return view('guest.register');
+		} catch (\Exception $e) {
+            DB::rollback();
+            echo $e->getMessage();
+			die;
+            // something went wrong
+        }
+
+	}
+	
+	public function otpVerification(Request $request) {
+
+		try {
+			$rules = ['otp'=>'required'];
+			$request->validate($rules);
+			$input = $request->all();
+			$now = Carbon::now();
+			$haveOtp = \App\OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp ,'device_type' => 'web'])->first();
+			if (empty($haveOtp)) {
+				return redirect()->back()->withErrors(['message' => 'Verification code is incorrect, please try again']);			
+			}
+			if ($now->diffInMinutes($haveOtp->expiry) < 0) {
+				return redirect()->back()->withErrors(['message' => 'Verification code has expired']);
+			}
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+			if($user){
+				$user->verify = 1;
+				$user->save();
+				//\App\OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->delete();
+				return redirect()->route('guest.login')->with('success', __('Register successfully!'));
+			} 
+			else {
+				return redirect()->back()->withErrors(['message' => 'No such number exists in our record']);
+			}
+		} catch (Exception $e) {
+			return response()->json(['status' => 0, 'message' => $e->getMessage()]);
+			
+		}
+
+	}
+
+
+	public function verifyOtpGuest(Request $request) {
+		$breadcrumb = array('title'=>'Home','action'=>'Register');
+		$data = [];
+		$data['phone']=$request->phone;
+		$data['code']=$request->code;
+		$data = array_merge($breadcrumb,$data);
+		return view('admin.verify-otp')->with($data);
+	}
+
+
 	public function verify($email){
 	$breadcrumb = array('title'=>'Home','action'=>'Register');
-			$data = [];
-			$data['email']=$email;
-			$data = array_merge($breadcrumb,$data);
-			return view('admin.verify')->with($data);
+		$data = [];
+		$data['email']=$email;
+		$data = array_merge($breadcrumb,$data);
+		return view('admin.verify')->with($data);
 	}
 
 
@@ -1047,13 +1183,13 @@ public function register(){
 	}
 
 	public function logout(Request $request){
-		// dd($request->all());
         Session::flush();
         Auth::logout();
 		$route = "adminLogin";
-		if ($request->has('company'))
-		{
+		if ($request->has('company')) {
 			$route = "company_login";
+		} else if ($request->has('customer')) {
+			$route = "guest.login";
 		}
         return redirect()->route($route);
 	}

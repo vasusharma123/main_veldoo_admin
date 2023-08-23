@@ -26,6 +26,8 @@ use Pushok\Payload;
 use Pushok\Payload\Alert;
 use Edujugon\PushNotification\PushNotification;
 use App\Http\Resources\RideResource;
+use Illuminate\Support\Facades\Auth;
+
 
 class PageController extends Controller
 {
@@ -316,12 +318,21 @@ if($_REQUEST['cm'] == 2)
 		echo "<h1>".__("Sorry Your Payment is Canceled")."</h1>"; die;
 	}
 
-	public function booking() {
-		// app()->setLocale("de");
-		// App::setLocale('de');
-		$vehicle_types = Price::orderBy('sort')->get();
-		return view('booking')->with(['vehicle_types' => $vehicle_types]);
+	// public function booking() {
+	// 	// app()->setLocale("de");
+	// 	// App::setLocale('de');
+	// 	$vehicle_types = Price::orderBy('sort')->get();
+	// 	return view('booking')->with(['vehicle_types' => $vehicle_types]);
+	// }
+
+	public function booking(Request $request,$type=null) {
+		$type = ($type?$type:'list').'View';
+        $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
+       // $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+        return $this->$type($data,$request->all());
 	}
+
 
 	public function booking_form(Request $request) {
 		if(empty($request->carType)){
@@ -332,7 +343,9 @@ if($_REQUEST['cm'] == 2)
 		return view('booking_form')->with(['vehicle_type' => $vehicle_type, 'input' => $input]);
 	}
 
-	public function send_otp_before_ride_booking(Request $request)
+
+
+	public function send_otp_before_register(Request $request)
 	{
 		try
 		{
@@ -346,7 +359,6 @@ if($_REQUEST['cm'] == 2)
 			{
 				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
 			}
-			// dd($request->all());
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
@@ -389,12 +401,97 @@ if($_REQUEST['cm'] == 2)
 		}
 	}
 
-	public function verify_otp_and_ride_booking(Request $request)
+
+
+	public function verify_otp_before_register(Request $request)
 	{
-		// dd($request->all());
+
 		$expiryMin = config('app.otp_expiry_minutes');
 		$now = Carbon::now();
 		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+
+		if (empty($haveOtp))
+		{
+			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
+		}
+
+		if ($now->diffInMinutes($haveOtp->expiry) < 0) {
+			return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
+		}
+		$haveOtp->delete();
+		//return redirect()->to(url('verify-otp?phone='.$request->phone.'&code='.$request->country_code));
+
+		return response()->json(['status' => 2, 'message' => __('Verified'), 'code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp ]);
+	}
+
+
+	// first function
+	public function send_otp_before_ride_booking(Request $request)
+	{
+		try
+		{
+			if (!$request->has('g-recaptcha-response'))
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$captcha = $request['g-recaptcha-response'];
+			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			if(!is_array($response) && isset($response) && $response['success'] == false)
+			{
+				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			}
+			$expiryMin = config('app.otp_expiry_minutes');
+			$otp = rand(1000, 9999);
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+			$now = Carbon::now();
+			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+			if ($haveOtp)
+			{
+				if ($now->gt($haveOtp->expiry))
+				{
+					OtpVerification::updateOrCreate(
+						['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+						['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
+					);
+				}
+				else
+				{
+					$otp = $haveOtp->otp;
+				}
+			}
+			else
+			{
+				OtpVerification::updateOrCreate(
+					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
+				);
+			}
+
+			$SMSTemplate = SMSTemplate::find(1);
+			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
+			if (app()->getLocale()!="en")
+			{
+				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
+			}
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $body);
+			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		} catch (\Exception $exception) {
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
+
+
+	// secoond function
+	public function verify_otp_and_ride_booking(Request $request)
+	{
+
+
+		$expiryMin = config('app.otp_expiry_minutes');
+		$now = Carbon::now();
+		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+
 		if (empty($haveOtp))
 		{
 			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
@@ -412,6 +509,50 @@ if($_REQUEST['cm'] == 2)
 			$request->dest_lng = "";
 		}
 
+
+		$webobj = new UserWebController;
+		if ($now->diffInMinutes($request->ride_time) <= 15) {
+			$jsonResponse = $webobj->create_ride_driver($request);
+		} else {
+			$jsonResponse = $webobj->book_ride($request);
+		}
+		$content = $jsonResponse->getContent();
+		$responseObj = json_decode($content, true);
+		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		if($responseObj['status'] == 1){
+			$message_content = "Your Booking has been confirmed with Veldoo, for time";
+			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			$SMSTemplate = SMSTemplate::find(2);
+			if ($request->url_type=="taxisteinemann") {
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en")
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
+			} else {
+				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+				if (app()->getLocale()!="en")
+				{
+					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				}
+			}
+			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+		}
+		return $jsonResponse;
+	}
+
+
+
+	public function without_otp_ride_booking(Request $request)
+	{
+		$now = Carbon::now();
+
+		if ($request->pick_lat==$request->dest_lat)
+		{
+			$request->dest_address = "";
+			$request->dest_lat = "";
+			$request->dest_lng = "";
+		}
 		$webobj = new UserWebController;
 		if ($now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $webobj->create_ride_driver($request);

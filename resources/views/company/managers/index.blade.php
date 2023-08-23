@@ -267,6 +267,7 @@
             $('#country_code_edit').val(selectedCountryData.dialCode);
         });
     });
+    
     $(document).on('click','.editButton',function(){
 
         user = $(this).data('user');
