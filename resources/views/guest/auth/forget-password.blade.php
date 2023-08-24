@@ -16,8 +16,11 @@
 
                             <div class="login_form_box_cover">
 
-                                <form class="login_form" action="{{ url('do-register-guest')}}" method="post" autocomplete="off">
+                                <form class="login_form" action="{{ route('change.forget.password')}}" method="post" autocomplete="off">
                                 @csrf
+
+                                <input type="hidden" name="country_code" value="{{ \Request::get('code') }}" placeholder="Enter New Password " />
+                                <input type="hidden" name="phone" value="{{ \Request::get('phone') }}"  placeholder="Enter New Password " />
 
                                     <div class="form-row">
 
@@ -28,8 +31,8 @@
 
 
                                             <div class="form_title text-center">
-                                                <h4 class="sub_title">Register</h4>
-                                                <p class="tagline">Register to create an account</p>
+                                                <h4 class="sub_title">Reset Password</h4>
+                                                <!-- <p class="tagline">Register to create an account</p> -->
                                                 <hr class="divider_form" />
                                             </div>
                                             <!-- /Form Title -->
@@ -38,65 +41,12 @@
                                         <!-- /Col -->
 
                                         <div class="col-12">
-
-                                        
                                             <div class="form-group position-relative has_validation">
-                                                <label class="form-lable">Name</label>
+                                                <label class="form-lable">New Password</label>
                                                 <div class="field position-relative">
-                                                    <input type="text" name="first_name" class="form-control loginField" value="{{ old('first_name') }}" placeholder="Enter your name" />
-                                                    <img src="{{ asset('new-design-company/assets/images/user2.png') }}" class="img-fluid loginFieldIcon" alt="Email envelope"/>
-                                                </div>
-                                                @error('first_name')
-                                                    <p class="erro d-none mb-0">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-
-                                            <div class="form-group position-relative has_validation">
-                                                <label class="form-lable">Surname</label>
-                                                <div class="field position-relative">
-                                                    <input type="text" name="last_name" class="form-control loginField" value="{{ old('last_name') }}" placeholder="Enter your surname" />
-                                                    <img src="{{ asset('new-design-company/assets/images/user2.png') }}" class="img-fluid loginFieldIcon" alt="Email envelope"/>
-
-                                                </div>
-                                                @error('last_name')
-                                                    <p class="erro d-none mb-0">{{ $message }}</p>
-                                                @enderror 
-                                            </div>
-
-                                            <div class="form-group position-relative has_validation">
-                                                <label class="form-lable">Mobile Number</label>
-                                                <div class="field position-relative">
-                                                <input type="hidden" value="+1" class="country_code" value="{{ old('country_code') }}" id="country_code" name="country_code" />
-                                                    <input type="text" id="phone" name="phone" value="{{ old('phone') ? old('phone') : \Request::get('phone') }}" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number" readonly>
-                                                    <!-- <input type="email" name="username" class="form-control loginField" placeholder="Enter username or email" required/> -->
-                                                    <!-- <img src="assets/images/envelope.png" class="img-fluid loginFieldIcon" alt="Email envelope"/> -->
-                                                </div>
-                                                @error('phone')
-                                                    <p class="erro d-none mb-0">{{ $message }}</p>
-                                                @enderror 
-                                                @error('country_code')
-                                                    <p class="erro d-none mb-0">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                            
-                                            <div class="form-group position-relative has_validation">
-                                                <label class="form-lable">Email</label>
-                                                <div class="field position-relative">
-                                                    <input type="email" name="email" value="{{ old('email') }}" class="form-control loginField" placeholder="Enter your email" />
-                                                    <img src="{{ asset('new-design-company/assets/images/envelope.png') }}" class="img-fluid loginFieldIcon" alt="Email envelope"/>
-                                                </div>
-                                                @error('email')
-                                                    <p class="erro d-none mb-0">{{ $message }}</p>
-                                                @enderror
-                                            </div>
-                                           
-                                            
-                                            <div class="form-group position-relative has_validation">
-                                                <label class="form-lable">Password</label>
-                                                <div class="field position-relative">
-                                                    <input type="password" name="password" value="{{ old('password') }}" class="form-control loginField" placeholder="Enter Password" />
+                                                    <input type="password" name="password" value="{{ old('password') }}" class="form-control loginField" placeholder="Enter New Password " />
                                                     <img src="{{ asset('new-design-company/assets/images/password_lock.png') }}" class="img-fluid loginFieldIcon" alt="Password Lock"/>
-                                        <img src="{{ asset('new-design-company/assets/images/see_password.png') }}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock"/>
+                                                    <img src="{{ asset('new-design-company/assets/images/see_password.png') }}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock"/>
                                                 </div>
                                                 @error('password')
                                                     <p class="erro d-none mb-0">{{ $message }}</p>
@@ -115,21 +65,10 @@
                                                     <p class="erro d-none mb-0">{{ $message }}</p>
                                                 @enderror                                            </div>
 
-                                            <div class="form-group position-relative">
-                                                <div class="option_fields">
-                                                    <div class="form-check d-flex w-100 align-items-center">
-                                                        <input class="form-check-input form_checkbox" type="checkbox" value="" id="remember_me">
-                                                        <label class="form-check-label form-lable w-100" for="remember_me">
-                                                            Agree with terms and conditions.
-                                                            <a href="{{route('guest.login')}}" class="link_hyper">Already have an account?</a>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
 
                                             <div class="form-group position-relative">
                                                 <div class="row w-100 m-0">
-                                                    <div class="col-lg-6 col-sm-6 col-12">
+                                                <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="button" class="btn submit_btn">
                                                             <!-- <span class="btn_text">Back</span> -->
                                                             <a href="{{route('booking_taxisteinemann')}}" class="btn_text">Back</a>
@@ -137,7 +76,7 @@
                                                     </div>
                                                     <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="submit" class="btn submit_btn voilet_bg">
-                                                            <span class="btn_text">Register</span>
+                                                            <span class="btn_text">Update</span>
                                                         </button>
                                                     </div>
                                                 </div>

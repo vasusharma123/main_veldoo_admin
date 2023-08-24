@@ -349,16 +349,25 @@ if($_REQUEST['cm'] == 2)
 	{
 		try
 		{
-			if (!$request->has('g-recaptcha-response'))
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// if (!$request->has('g-recaptcha-response'))
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
+			// $captcha = $request['g-recaptcha-response'];
+			// $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			// if(!is_array($response) && isset($response) && $response['success'] == false)
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
+
+
+			if(!empty($request->forget_password)) {
+				$userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
+				if(!$userInfo) {
+					return response()->json(['status' => 0, 'message' => 'Mobile number does not match with out records']);
+				}
 			}
-			$captcha = $request['g-recaptcha-response'];
-			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-			if(!is_array($response) && isset($response) && $response['success'] == false)
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			}
+
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
@@ -420,7 +429,9 @@ if($_REQUEST['cm'] == 2)
 		}
 		$haveOtp->delete();
 		//return redirect()->to(url('verify-otp?phone='.$request->phone.'&code='.$request->country_code));
-
+		if($request->forget_password) {
+			return response()->json(['status' => 3, 'message' => __('Verified'), 'code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp ]);
+		} 
 		return response()->json(['status' => 2, 'message' => __('Verified'), 'code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp ]);
 	}
 
@@ -430,16 +441,16 @@ if($_REQUEST['cm'] == 2)
 	{
 		try
 		{
-			if (!$request->has('g-recaptcha-response'))
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			}
-			$captcha = $request['g-recaptcha-response'];
-			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-			if(!is_array($response) && isset($response) && $response['success'] == false)
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			}
+			// if (!$request->has('g-recaptcha-response'))
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
+			// $captcha = $request['g-recaptcha-response'];
+			// $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			// if(!is_array($response) && isset($response) && $response['success'] == false)
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
 			$expiryMin = config('app.otp_expiry_minutes');
 			$otp = rand(1000, 9999);
 			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();

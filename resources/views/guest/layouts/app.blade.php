@@ -272,6 +272,7 @@
                                             <input type="hidden" id="pickup_latitude" name="pick_lat" value="">
                                             <input type="hidden" id="pickup_longitude" name="pick_lng" value="">
                                             <input type="hidden" name="ride_id" id="ride_id">
+                                            <input type="hidden" name="user_id" id="user_id" value="{{ auth()->check() ? auth()->user()->id : '' }}">
                                             <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
                                         </div>
@@ -1546,8 +1547,8 @@
                                             dataType: 'json',
                                             data: $('form#booking_list_form').serialize(),
                                             success: function(response) {
+
                                                 if(response.booking_status == 'direct' && response.user_data) {
-                                                    console
                                                     if (response.status) {    
                                                         swal.fire("{{ __('Success') }}", response.message,"success");
                                                         setTimeout(function() {
@@ -1705,7 +1706,7 @@
                             ride_id: ride_id
                         },
                         success: function(response) {
-                            // console.log(response);
+                             console.log(response);
                             if (response.status) {
                                 $("#ride_id").val(ride_id);
                                 $('.bookRideTitle').html('Edit Ride');

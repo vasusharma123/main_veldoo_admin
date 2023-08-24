@@ -174,18 +174,18 @@ class RidesController extends Controller
 
         try
 		{
-			if (!$request->has('g-recaptcha-response'))
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			}
-			$captcha = $request['g-recaptcha-response'];
+			// if (!$request->has('g-recaptcha-response'))
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
+			// $captcha = $request['g-recaptcha-response'];
 
-			$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+			// $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
 
-			if(!is_array($response) && isset($response) && $response['success'] == false)
-			{
-				return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			}
+			// if(!is_array($response) && isset($response) && $response['success'] == false)
+			// {
+			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
+			// }
 			$userExit = Ride::where(['user_country_code' => $request->country_code, 'user_phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
 			$userData = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
 
@@ -459,7 +459,6 @@ class RidesController extends Controller
             }
             $ride->status = 0;
             $ride->platform = "web";
-
             $ride->save();
 
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
@@ -477,7 +476,7 @@ class RidesController extends Controller
                 $this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
             }
 
-            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully'), 'data' => $ride_detail], $this->successCode);
+            return response()->json(['status' => 1, 'booking_status' => 'direct', 'message' => __('Ride Booked successfully'), 'data' => $ride_detail], $this->successCode);
 
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();

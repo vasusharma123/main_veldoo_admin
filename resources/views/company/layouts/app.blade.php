@@ -660,7 +660,7 @@
                     {
                         ride_status = `<p class="infomation_update done bg-warning">Upcoming</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
-                    else if(Date.parse(booking.ride_time) < Date.parse(Date()))ff
+                    else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
                         ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-warning">Upcoming</span></span>`;
                     }

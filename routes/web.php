@@ -269,6 +269,11 @@ Route::group([ 'middleware' => 'auth'], function(){
 
 Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
 Route::get('guest-login',  'UserController@guestLogin')->name('guest.login');;
-Route::get('guest-register',  'UserController@guestRegister')->name('guest.register');;
+Route::get('guest-register',  'UserController@guestRegister')->name('guest.register');
+
+Route::get('forget-password',  'UserController@forgetPassword')->name('forget.password');;
+Route::post('forget-password',  'UserController@changeForgetPassword')->name('change.forget.password');;
+
+
 
 Route::get('/privacy_policy','PageController@privacy_policy');

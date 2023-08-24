@@ -115,7 +115,8 @@ class UserController extends Controller
 		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
 		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
 		$user = User::where('phone', $request->phone)->first();
-		if ($user === null || !Hash::check($request->password, $user->password)) {
+		//dd(Hash::check($request->password, $user->password));
+		if (Hash::check($request->password, $user->password)) {
 			\Auth::login($user);
 			if (in_array(Auth::user()->user_type,[1])) {
 				Auth::user()->syncRoles('Customer');
@@ -600,6 +601,23 @@ class UserController extends Controller
 		return back()->with('success', __('Password updated successfully.'));
 	}
 
+	public function changeForgetPassword(Request $request)
+    {
+
+	   $rules = [
+			'password' => 'required|min:6',
+			'confirm_password' => 'required|min:6|same:password',
+		];
+		$request->validate($rules);
+		$userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
+		if(!$userInfo) {
+			return redirect()->back()->withErrors(['message' => 'No such number exists in our record']);
+		}	
+		User::find($userInfo->id)->update(['password'=> $request->password]);
+		return redirect()->route('guest.login')->with('success', __('Password updated successfully.'));
+	
+	}
+
 
     public function settings()
     {
@@ -1012,10 +1030,18 @@ class UserController extends Controller
     }
 
 public function register(){
-		$breadcrumb = array('title'=>'Home','action'=>'Register');
+		$breadcrumb = array('title'=>'Register','action'=>'Register');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		return view('admin.register')->with($data);
+
+}
+
+public function forgetPassword(){
+	$breadcrumb = array('title'=>'Forget','action'=>'ForgetPassword');
+	$data = [];
+	$data = array_merge($breadcrumb,$data);
+	return view('guest.auth.forget-password')->with($data);
 
 }
 
