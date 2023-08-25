@@ -1105,7 +1105,7 @@ public function forgetPassword(){
 				// );
 
 				DB::commit();
-				return redirect()->route('guest.login')->with('success', __('Register successfully!'));
+				return redirect()->route('booking_taxisteinemann')->with('success', __('Register successfully!'));
 				//return redirect()->to(url('verify-otp?phone='.$request->phone.'&code='.$request->country_code));
 			}
 			return view('guest.register');
@@ -1215,7 +1215,7 @@ public function forgetPassword(){
 		if ($request->has('company')) {
 			$route = "company_login";
 		} else if ($request->has('customer')) {
-			$route = "guest.login";
+			$route = "booking_taxisteinemann";
 		}
         return redirect()->route($route);
 	}

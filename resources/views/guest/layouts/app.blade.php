@@ -687,9 +687,13 @@
 
     iti.promise.then(function() {
         input.addEventListener("countrychange", function() {
+
             var selectedCountryData = iti.getSelectedCountryData();
             $('#country_code').val(selectedCountryData.dialCode);
             $('#otpCountryCode').val(selectedCountryData.dialCode);
+
+            console.log(selectedCountryData);
+
         });
     });
 
@@ -1080,8 +1084,11 @@
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
 
-                                $("#phone").val(response.data.ride_detail.user_phone);
                                 iti.setNumber("+"+response.data.ride_detail.user_country_code + response.data.ride_detail.user_phone);
+                                $("#phone").val(response.data.ride_detail.user_phone);
+
+                               // console.log(response.data.ride_detail.user_country_code + response.data.ride_detail.user_phone);
+
 
                                // $('#country_code').val(response.data.ride_detail.user_country_code).change();
 
@@ -1199,8 +1206,8 @@
                     if(cCode && uPhone) {
                         $("#otpPhone").val(uPhone);
                         $("#otpCountryCode").val(cCode);
-                        $("#phone").val(uPhone);
                         iti.setNumber("+"+cCode + uPhone);
+                        $("#phone").val(uPhone);
 
                     }
 
@@ -1733,8 +1740,8 @@
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
 
+                                iti.setNumber("+"+response.data.ride_detail.user_country_code);
                                 $("#phone").val(response.data.ride_detail.user_phone);
-                                iti.setNumber("+"+response.data.ride_detail.user_country_code + response.data.ride_detail.user_phone);
 
 
                                 if (response.data.ride_detail.pick_lat) {
