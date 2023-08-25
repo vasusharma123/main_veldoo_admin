@@ -80,7 +80,7 @@
                         });
 
                 // alert('Year is ' + year + ' Month is ' + month);
-                window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+                window.location.href = "{{ route('guest.rides','month') }}?m="+year+"-"+month+"-01";
             });
         }
     </script>
