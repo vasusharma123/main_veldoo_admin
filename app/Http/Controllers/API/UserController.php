@@ -2883,6 +2883,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (empty($request->car_id)) {
 						return $this->validationErrorResponse('The car id is required !');
 					}
+					if ($ride->status == 3 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride already completed or cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$ride->status = $request->status;
 					$ride->vehicle_id = $request->car_id;
 					$ride->waiting = $request->waiting;
@@ -2917,6 +2920,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if ($ride['status'] == 2) {
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
+					if ($ride->status == 3 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride already completed or cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$title = 'Ride Started';
 					$responseMessage = 'Ride Started Successfully';
 					$notifiMessage = 'Ride Started Successfully';
@@ -2936,6 +2942,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 4) {
 					if ($ride['status'] == 4) {
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
+					}
+					if ($ride->status == 3 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride already completed or cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = 'Driver Reached';
 					$responseMessage = 'Driver Reached Successfully';
@@ -2957,6 +2966,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 3) {
 					if ($ride['status'] == 3) {
 						return response()->json(['success' => true, 'message' => "Ride already Completed"], $this->successCode);
+					}
+					if ($ride->status == 3 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride already completed or cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = "Ride Completed";
 					$responseMessage = 'Ride Completed Successfully';
@@ -3031,7 +3043,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// }
 				}
 			} else {
-				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
+				return response()->json(['success' => false, 'message' => "No such ride exist", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 			}
 
 			$ride->save();
