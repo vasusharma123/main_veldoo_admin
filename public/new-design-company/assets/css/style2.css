@@ -26,6 +26,11 @@
     color: var(--primary-color);
 }
 
+.back-btn-text {
+    color: #ffffff;
+    text-decoration: none !important;
+}
+
 *,html,body{
     margin: 0;
     padding: 0;

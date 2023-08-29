@@ -53,13 +53,18 @@
                         </div>
                         <!-- /Col -->
 
+
+
+
                         <div class="col-12">
                             
+
+
                             <div class="form-group position-relative has_validation">
                                 <label class="form-lable">Mobile Number</label>
                                 <div class="field position-relative">
-                                <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
-                                    <input type="text" id="phone" name="phone" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number">
+                                <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+1' }}" class="country_code" id="country_code" name="country_code" />
+                                    <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number">
                                     <!-- <input type="email" name="username" class="form-control loginField" placeholder="Enter username or email" required/> -->
                                     <!-- <img src="assets/images/envelope.png" class="img-fluid loginFieldIcon" alt="Email envelope"/> -->
                                 </div>
@@ -95,7 +100,7 @@
                                         <input class="form-check-input form_checkbox" type="checkbox" value="" id="remember_me">
                                         <label class="form-check-label form-lable w-100" for="remember_me">
                                             Remember Me 
-                                            <a href="javascript:void(0)" class="link_hyper sd d-block tagline sign-up-account" data-bs-toggle="modal" data-bs-target="#otpModalForgetPassword">Forgot Password?</a>
+                                            <a href="javascript:void(0)" class="link_hyper sd d-block tagline sign-up-account" id="formModalForgetPassword" data-toggle="modal" data-target="#otpModalForgetPassword">Forgot Password?</a>
 
                                         </label>
                                     </div>
@@ -104,7 +109,7 @@
 
                             <div class="form-group position-relative">
                                 <button type="submit" class="btn submit_btn">
-                                    <span class="btn_text">Sign In</span>
+                                    <span class="btn_text">Log In</span>
                                 </button>
                             </div>
 
@@ -204,10 +209,10 @@
                                     <div class="form-group position-relative has_validation text-center otpcode_box">
                                         <label class="form-lable boldlable">OTP code</label>
                                         <div class="field position-relative otp-box d-flex">
-                                        <input type="text" id="digit-1" name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-2" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-3" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-4" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-1" maxlength="1"  name="digit-1"  class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-2" maxlength="1"  name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-3" maxlength="1"  name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-4" maxlength="1"  name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
                                         </div>
                                         <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline">Resend OTP</a> 90 sec.</p> -->
                                         <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
@@ -255,7 +260,8 @@
 
 
 
-<div class="modal fade" id="otpModalForgetPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true" >
+<div class="modal fade" id="otpModalForgetPassword" role="dialog">
+    
 <button type="button" class="btn-close modalClose" data-bs-dismiss="modal" aria-label="Close">&times;</button>
      
 <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -317,10 +323,10 @@
                                     <div class="form-group position-relative has_validation text-center otpcode_box">
                                         <label class="form-lable boldlable">OTP code</label>
                                         <div class="field position-relative otp-box d-flex">
-                                        <input type="text" id="digit-1-forget-password" name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-2-forget-password" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-3-forget-password" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-4-forget-password" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-1-forget-password" name="digit-1" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-2-forget-password" name="digit-2" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-3-forget-password" name="digit-3" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                        <input type="text" id="digit-4-forget-password" name="digit-4" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
                                         </div>
                                         <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline">Resend OTP</a> 90 sec.</p> -->
                                         <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtpForgetPassword">Resend OTP</a></p>
@@ -366,12 +372,16 @@
   </div>
 </div>
 
+
 @endsection
 
 @section('footer_scripts')
 <script>
 
-    $('#phone, #phone_edit').keyup(function () { 
+    
+
+
+    $('#phone, #phone_edit, .otpfil').keyup(function () { 
         this.value = this.value.replace(/[^0-9+\.]/g,'');
     });
     
@@ -811,6 +821,112 @@
             }
         });
     })
+
+
+    $( document ).ready(function() {
+
+        var code  = $("#country_code").val();
+        var phone = "{{ old('phone') }}";
+        iti.setNumber("+"+code);
+        $("#phone").val(phone);
+
+
+
+        $("#formModalForgetPassword").click(function(){
+
+            var forget_code  = $("#country_code").val();
+            var forget_phone = $("#phone").val();
+
+            console.log(forget_code);
+            itiForget.setNumber("+"+forget_code);
+
+            $("#phoneNumberForgetPassword").val(forget_phone);
+            $("#countryCodeIdForgetPassword").val(forget_code);
+
+            $('#otpModalForgetPassword').modal('show');
+
+        });
+
+    });
+
+
+    $(document).ready(function () {
+
+        $(".to-continue-login-form-forget-passord *:input[type!=hidden]:first").focus();
+        let otp_fields = $(".to-continue-login-form-forget-passord .otpfil"),
+            otp_value_field = $(".to-continue-login-form-forget-passord .otp-value");
+        otp_fields
+		.on("input", function (e) {
+			$(this).val(
+				$(this)
+					.val()
+					.replace(/[^0-9]/g, "")
+			);
+			let opt_value = "";
+			otp_fields.each(function () {
+				let field_value = $(this).val();
+				if (field_value != "") opt_value += field_value;
+			});
+			otp_value_field.val(opt_value);
+		})
+		.on("keyup", function (e) {
+			let key = e.keyCode || e.charCode;
+			if (key == 8 || key == 46 || key == 37 || key == 40) {
+				// Backspace or Delete or Left Arrow or Down Arrow
+				$(this).prev().focus();
+			} else if (key == 38 || key == 39 || $(this).val() != "") {
+				// Right Arrow or Top Arrow or Value not empty
+				$(this).next().focus();
+			}
+		})
+		.on("paste", function (e) {
+			let paste_data = e.originalEvent.clipboardData.getData("text");
+			let paste_data_splitted = paste_data.split("");
+			$.each(paste_data_splitted, function (index, value) {
+				otp_fields.eq(index).val(value);
+			});
+		});
+        
+    });
+
+    $(document).ready(function () {
+        $(".to-continue-login-form *:input[type!=hidden]:first").focus();
+        let otp_fields = $(".to-continue-login-form .otpfil"),
+            otp_value_field = $(".to-continue-login-form .otp-value");
+        otp_fields
+        .on("input", function (e) {
+            $(this).val(
+                $(this)
+                    .val()
+                    .replace(/[^0-9]/g, "")
+            );
+            let opt_value = "";
+            otp_fields.each(function () {
+                let field_value = $(this).val();
+                if (field_value != "") opt_value += field_value;
+            });
+            otp_value_field.val(opt_value);
+        })
+        .on("keyup", function (e) {
+            let key = e.keyCode || e.charCode;
+            if (key == 8 || key == 46 || key == 37 || key == 40) {
+                // Backspace or Delete or Left Arrow or Down Arrow
+                $(this).prev().focus();
+            } else if (key == 38 || key == 39 || $(this).val() != "") {
+                // Right Arrow or Top Arrow or Value not empty
+                $(this).next().focus();
+            }
+        })
+        .on("paste", function (e) {
+            let paste_data = e.originalEvent.clipboardData.getData("text");
+            let paste_data_splitted = paste_data.split("");
+            $.each(paste_data_splitted, function (index, value) {
+                otp_fields.eq(index).val(value);
+            });
+        });
+
+    });
+
 
 </script>
 @endsection

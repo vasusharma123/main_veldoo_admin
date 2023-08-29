@@ -69,7 +69,7 @@
                                     </td>
                                     <td style="max-width:200px; text-overflow:ellipsis; overflow:hidden;" class="pickupPointList{{ $ride->id }}">{{ $ride->pickup_address }}</td>
                                     <td class="sm_hide carList{{ $ride->id }}">{{ @$ride->vehicle->vehicle_number_plate }}</td>
-                                    <td class="sm_hide customerList{{ $ride->id }}">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>
+                                    <td class="sm_hide customerList{{ $ride->id }}">{{ @$ride->user->first_name .' '. @$ride->user->last_name }}</td>
                                     <td class="sm_hide statusList{{ $ride->id }}">
                                         @if($ride->status == -2)
                                             <span class="status_box text-white bg-danger">Cancelled</span>

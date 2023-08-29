@@ -114,20 +114,21 @@ class UserController extends Controller
 
 		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
 		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
-		$user = User::where('phone', $request->phone)->first();
+		$user = User::where('phone', $request->phone)->where('country_code', $request->country_code)->first();
 		//dd(Hash::check($request->password, $user->password));
-		if (Hash::check($request->password, $user->password)) {
+		if (!empty($user) && Hash::check($request->password, $user->password)) {
 			\Auth::login($user);
 			if (in_array(Auth::user()->user_type,[1])) {
 				Auth::user()->syncRoles('Customer');
 				return redirect()->route('booking_taxisteinemann');
 			}
-            return redirect()->route('users.dashboard');
-        } else{
+			return redirect()->route('users.dashboard');
+		} else{
 			Auth::logout();
-			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
-
+		
+		
 	}
 
 	public function dashboard(){

@@ -574,10 +574,10 @@
                                                 <div class="form-group position-relative has_validation text-center otpcode_box invalid_field">
                                                     <label class="form-lable boldlable">OTP code</label>
                                                     <div class="field position-relative otp-box d-flex">
-                                                        <input type="text" id="digit-1" name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-2" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-3" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-4" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-1" maxlength="1"  name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-2" maxlength="1" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
                                                     </div>
                                                     <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline confirmOTPModalTimer">Resend OTP</a> 30 sec.</p> -->
                                                     <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
@@ -634,7 +634,7 @@
 
 
         <script>
-    $('#phone, #phone_edit').keyup(function () { 
+    $('#phone, #phone_edit, .otpfil').keyup(function () { 
         this.value = this.value.replace(/[^0-9+\.]/g,'');
     });
     
@@ -2210,6 +2210,46 @@
                 }
             });
         })
+
+
+
+        $(document).ready(function () {
+        $(".otp_form *:input[type!=hidden]:first").focus();
+        let otp_fields = $(".otp_form .otpfil"),
+            otp_value_field = $(".otp_form .otp-value");
+        otp_fields
+        .on("input", function (e) {
+            $(this).val(
+                $(this)
+                    .val()
+                    .replace(/[^0-9]/g, "")
+            );
+            let opt_value = "";
+            otp_fields.each(function () {
+                let field_value = $(this).val();
+                if (field_value != "") opt_value += field_value;
+            });
+            otp_value_field.val(opt_value);
+        })
+        .on("keyup", function (e) {
+            let key = e.keyCode || e.charCode;
+            if (key == 8 || key == 46 || key == 37 || key == 40) {
+                // Backspace or Delete or Left Arrow or Down Arrow
+                $(this).prev().focus();
+            } else if (key == 38 || key == 39 || $(this).val() != "") {
+                // Right Arrow or Top Arrow or Value not empty
+                $(this).next().focus();
+            }
+        })
+        .on("paste", function (e) {
+            let paste_data = e.originalEvent.clipboardData.getData("text");
+            let paste_data_splitted = paste_data.split("");
+            $.each(paste_data_splitted, function (index, value) {
+                otp_fields.eq(index).val(value);
+            });
+        });
+
+    });
         </script>
     </body>
 </html>
