@@ -2883,6 +2883,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (empty($request->car_id)) {
 						return $this->validationErrorResponse('The car id is required !');
 					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride  is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$ride->status = $request->status;
 					$ride->vehicle_id = $request->car_id;
 					$ride->waiting = $request->waiting;
@@ -2917,6 +2923,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if ($ride['status'] == 2) {
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$title = 'Ride Started';
 					$responseMessage = 'Ride Started Successfully';
 					$notifiMessage = 'Ride Started Successfully';
@@ -2936,6 +2948,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 4) {
 					if ($ride['status'] == 4) {
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
+					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = 'Driver Reached';
 					$responseMessage = 'Driver Reached Successfully';
@@ -2957,6 +2975,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 3) {
 					if ($ride['status'] == 3) {
 						return response()->json(['success' => true, 'message' => "Ride already Completed"], $this->successCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = "Ride Completed";
 					$responseMessage = 'Ride Completed Successfully';
@@ -3031,7 +3052,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// }
 				}
 			} else {
-				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
+				return response()->json(['success' => false, 'message' => "No such ride exist", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 			}
 
 			$ride->save();
@@ -5387,10 +5408,42 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$user = Auth::user()->id;
-		$result = Ride::where('id', $request->ride_id)->where('user_id', $user)->update(['status' => -1]);
-		if ($result > 0) {
+		$logged_in_user = Auth::user();
+		$rideDetail = Ride::where(['id' => $request->ride_id, 'user_id' => $logged_in_user->id])->first();
+		if ($rideDetail) {
+			$rideDetail->status = -1;
+			$rideDetail->save();
+			if(!empty($rideDetail->driver_id)){
+				$driverData = User::find($rideDetail->driver_id);
+				if ($driverData) {
+					$deviceToken = $driverData['device_token'];
+					$deviceType = $driverData['device_type'];
+					$title = 'Ride Cancelled';
+					$message = "The ride has been cancelled by the user.";
+					$type = 5;
+					$ride_detail = new RideResource(Ride::find($request->ride_id));
+					$additional = ['type' => $type, 'ride_id' => $request->ride_id, 'ride_data' => $ride_detail];
+					if (!empty($deviceToken)) {
+						if ($deviceType == 'android') {
+							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						}
+						if ($deviceType == 'ios') {
+							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+						}
+					}
+
+					$notification = new Notification();
+					$notification->title = $title;
+					$notification->description = $message;
+					$notification->type = $type;
+					$notification->user_id = $driverData->id;
+					$notification->additional_data = json_encode($additional);
+					$notification->save();
+				}
+			}
 			return response()->json(['success' => true, 'message' => 'Ride cancelled successfully.'], $this->successCode);
+		} else {
+			return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
 		}
 	}
 
