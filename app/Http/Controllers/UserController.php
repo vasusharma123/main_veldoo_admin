@@ -104,6 +104,9 @@ class UserController extends Controller
 	}
 
 	public function doLoginGuest(Request $request){
+
+
+
 		$rules = [
 			'phone' => 'required',
 			'country_code' => 'required',
@@ -122,7 +125,9 @@ class UserController extends Controller
 				Auth::user()->syncRoles('Customer');
 				return redirect()->route('booking_taxisteinemann');
 			}
-			return redirect()->route('users.dashboard');
+			Auth::logout();
+			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
+
 		} else{
 			Auth::logout();
 			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
@@ -132,6 +137,7 @@ class UserController extends Controller
 	}
 
 	public function dashboard(){
+		
 		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
