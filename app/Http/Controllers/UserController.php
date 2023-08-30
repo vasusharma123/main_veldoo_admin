@@ -117,7 +117,7 @@ class UserController extends Controller
 
 		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
 		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
-		$user = User::where('phone', $request->phone)->where('country_code', $request->country_code)->first();
+		$user = User::where('phone', $request->phone)->where('country_code', $request->country_code)->where('user_type', 1)->first();
 		//dd(Hash::check($request->password, $user->password));
 		if (!empty($user) && Hash::check($request->password, $user->password)) {
 			\Auth::login($user);
