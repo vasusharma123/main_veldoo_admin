@@ -126,7 +126,7 @@ class UserController extends Controller
 				return redirect()->route('booking_taxisteinemann');
 			}
 			Auth::logout();
-			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
+			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'These credentials do not match our records.']);
 
 		} else{
 			Auth::logout();
