@@ -5252,7 +5252,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				if (!empty($request->ride_time)) {
 					$onlyTime = date("H:i:s", strtotime($request->ride_time));
-					$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+					if($request->change_for_all == 1){
+						$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+					} else {
+						$onlyDate = date("Y-m-d", strtotime($request->ride_time));
+					}
 					$date_time = $onlyDate." ".$onlyTime;
 					$ride->ride_time = $date_time;
 					if (!empty($request->alert_time)) {
