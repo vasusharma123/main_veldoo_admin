@@ -437,10 +437,12 @@ class UserController extends Controller
 			if($user->verify == 0){
 				return response()->json(['message'=>'Please verify your number', 'user'=>$user, 'token'=>''], $this->successCode);
 			} */
+			
 
 			$token =  $user->createToken('auth')->accessToken;
+			
 			$user = $this->getRafrenceUser($user->id);
-
+			
 			// $driverhoosecar = DriverChooseCar::where(['user_id' => $user->id, 'logout' => 0])->orderBy('id', 'desc')->first();
 			// if (!empty($driverhoosecar)) {
 			// 	$driverhoosecar->logout = 1;
@@ -4563,12 +4565,23 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function createRideDriver(Request $request, rideHistory $rideHistory)
 	{
-		$rules = [
-			'pickup_location' => 'required',
-			//'drop_location' => 'required',
-		];
+		// $rules = [
+		// 	'pickup_location' => 'required',
+		// 	//'drop_location' => 'required',
+		// ];
 
-		$validator = Validator::make($request->all(), $rules);
+
+		$validator = Validator::make($request->all(), [
+			'pickup_location' => 'required',
+			'pick_lat' => 'required',
+			'pick_lng' => 'required',
+		], [ 
+			'pickup_location.required' => 'The pickup location field is required.',
+			'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+			'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+		]);
+
+		// $validator = Validator::make($request->all(), $rules);
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
