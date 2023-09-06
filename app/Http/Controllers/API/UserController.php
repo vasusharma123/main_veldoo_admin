@@ -2088,20 +2088,36 @@ class UserController extends Controller
 			// ];
 			// $validator = Validator::make($request->all(), $rules);
 
-			$validator = Validator::make($request->all(), [
-				'pickup_location' => 'required',
-				'pick_lat' => 'required',
-				'pick_lng' => 'required',
-				'car_type' => 'required',
-				'ride_time' => 'required',
-			], [ 
-				'pickup_location.required' => 'The pickup location field is required.',
-				'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
-				'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
-			]);
+			// $validator = Validator::make($request->all(), [
+			// 	'pickup_location' => 'required',
+			// 	'pick_lat' => 'required',
+			// 	'pick_lng' => 'required',
+			// 	'car_type' => 'required',
+			// 	'ride_time' => 'required',
+			// ], [ 
+			// 	'pickup_location.required' => 'The pickup location field is required.',
+			// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+			// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+			// ]);
 
-			if ($validator->fails()) {
-				return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
+			// if ($validator->fails()) {
+			// 	return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
+			// }
+
+			if(empty($request->pickup_location)) {
+				return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
+			}
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->car_type)) {
+				return response()->json(['message' => "The car type field is required."], $this->warningCode);
+			}
+			if(empty($request->ride_time)) {
+				return response()->json(['message' => "The ride time field is required."], $this->warningCode);
 			}
 			$all_rides_dates = [];
 			if (!empty($request->additional_dates)) {
@@ -4583,21 +4599,34 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		// ];
 
 
-		$validator = Validator::make($request->all(), [
-			'pickup_location' => 'required',
-			'pick_lat' => 'required',
-			'pick_lng' => 'required',
-		], [ 
-			'pickup_location.required' => 'The pickup location field is required.',
-			'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
-			'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
-		]);
+		// $validator = Validator::make($request->all(), [
+		// 	'pickup_location' => 'required',
+		// 	'pick_lat' => 'required',
+		// 	'pick_lng' => 'required',
+		// ], [ 
+		// 	'pickup_location.required' => 'The pickup location field is required.',
+		// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+		// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+		// ]);
 
 		// $validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// if ($validator->fails()) {
+		// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// }
+
+		if(empty($request->pickup_location)) {
+			return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
 		}
+		if(empty($request->pick_lat)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		if(empty($request->pick_lng)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		
 		$ride = new Ride();
+		$lat = '';
+	    $lon = '';
 		$ride->pickup_address = $request->pickup_location;
 		if (!empty($request->drop_location)) {
 			$ride->dest_address = $request->drop_location;
@@ -5097,21 +5126,39 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			// $validator = Validator::make($request->all(), $rules);
 
 
-			$validator = Validator::make($request->all(), [
-				'start_location' => 'required',
-				'pick_lat' => 'required',
-				'pick_lng' => 'required',
-				'car_type' => 'required',
-				'time' => 'required',
-			], [ 
-				'start_location.required' => 'The pickup location field is required.',
-				'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
-				'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
-			]);
+			// $validator = Validator::make($request->all(), [
+			// 	'start_location' => 'required',
+			// 	'pick_lat' => 'required',
+			// 	'pick_lng' => 'required',
+			// 	'car_type' => 'required',
+			// 	'time' => 'required',
+			// ], [ 
+			// 	'start_location.required' => 'The pickup location field is required.',
+			// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+			// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+			// ]);
 
-			if ($validator->fails()) {
-				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			// if ($validator->fails()) {
+			// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			// }
+
+
+			if(empty($request->start_location)) {
+				return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
 			}
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->car_type)) {
+				return response()->json(['message' => "The car type field is required."], $this->warningCode);
+			}
+			if(empty($request->time)) {
+				return response()->json(['message' => "The time field is required."], $this->warningCode);
+			}
+			
 			$input = $request->all();
 			$ride = new Ride();
 			$ride->pickup_address = $request->start_location;
@@ -5226,20 +5273,34 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		// $validator = Validator::make($request->all(), $rules);
 
-		$validator = Validator::make($request->all(), [
-			'start_location' => 'required',
-			'pick_lat' => 'required',
-			'pick_lng' => 'required',
-			'ride_id' => 'required',
-		], [ 
-			'start_location.required' => 'The pickup location field is required.',
-			'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
-			'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
-		]);
+		// $validator = Validator::make($request->all(), [
+		// 	'start_location' => 'required',
+		// 	'pick_lat' => 'required',
+		// 	'pick_lng' => 'required',
+		// 	'ride_id' => 'required',
+		// ], [ 
+		// 	'start_location.required' => 'The pickup location field is required.',
+		// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+		// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+		// ]);
 
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// if ($validator->fails()) {
+		// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// }
+
+		if(empty($request->start_location)) {
+			return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
 		}
+		if(empty($request->pick_lat)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		if(empty($request->pick_lng)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		if(empty($request->ride_id)) {
+			return response()->json(['message' => "The ride id field is required."], $this->warningCode);
+		}
+	
 		try {
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
