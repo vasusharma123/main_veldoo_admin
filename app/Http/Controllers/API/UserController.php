@@ -5363,7 +5363,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->ride_time)) {
 					$onlyTime = date("H:i:s", strtotime($request->ride_time));
 					if($request->change_for_all == 1){
-						$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+						if($request->ride_id == $ride_id){
+							$onlyDate = date("Y-m-d", strtotime($request->ride_time));
+						} else {
+							$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+						}
 					} else {
 						$onlyDate = date("Y-m-d", strtotime($request->ride_time));
 					}
@@ -5452,9 +5456,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['success' => true, 'message' => 'Ride Updated successfully.', 'data' => $ride_data], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			DB::rollback();
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $exception->getLine(). ' --- ' . $exception->getMessage());
 			return response()->json(['message' => $exception->getMessage()], 401);
 		} catch (\Exception $exception) {
 			DB::rollback();
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $exception->getLine(). ' --- ' . $exception->getMessage());
 			return response()->json(['message' => $exception->getMessage()], 401);
 		}
 	}
