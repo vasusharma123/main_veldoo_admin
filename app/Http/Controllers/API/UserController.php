@@ -5309,14 +5309,13 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		// }
 
-		if(empty($request->start_location)) {
-			return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
-		}
-		if(empty($request->pick_lat)) {
-			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
-		}
-		if(empty($request->pick_lng)) {
-			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		if(!empty($request->start_location)) {
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
 		}
 		if(empty($request->ride_id)) {
 			return response()->json(['message' => "The ride id field is required."], $this->warningCode);
