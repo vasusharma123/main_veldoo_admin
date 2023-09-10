@@ -404,14 +404,14 @@ class ServiceProviderController extends Controller
                     ]);
                     $vehicleObj->save();
                 }
-                return redirect()->route('service-provider.registeration_finish');
+                return redirect()->route('service-provider.registration_finish');
             }
         }
         return abort(404);
     }
 
-    public function registeration_finish(Request $request)
+    public function registration_finish(Request $request)
     {
-        return view('service_provider.registeration_finish');
+        return view('service_provider.registration_finish');
     }
 }

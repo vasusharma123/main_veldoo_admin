@@ -1050,7 +1050,7 @@ class UserController extends Controller
 				$message->to($request->email);
 				$message->subject('Email Verification Mail');
 			});
-			return redirect()->back()->with('success', __('You need to confirm your account. We have sent you an activation code, please check your email.'));
+			return redirect()->back()->with('success', __('You need to confirm your account. We have sent you an activation link; please check your email.'));
 		} catch (Exception $e) {
 			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine(). ' --- ' . $e->getMessage());
 			return redirect()->back()->withInput($input)->with('error', $e->getMessage());

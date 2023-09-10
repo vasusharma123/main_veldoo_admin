@@ -87,7 +87,7 @@ Route::group(['middleware' => 'guest'], function(){
 	Route::post('service-provider/register_step2_submit',  ['as'=>'service-provider.register_step2_submit','uses'=>'ServiceProviderController@register_step2_submit']);
 	Route::get('service-provider/register_step3',  ['as'=>'service-provider.register_step3','uses'=>'ServiceProviderController@register_step3']);
 	Route::post('service-provider/register_step3_submit',  ['as'=>'service-provider.register_step3_submit','uses'=>'ServiceProviderController@register_step3_submit']);
-	Route::get('service-provider/registeration_finish',  ['as'=>'service-provider.registeration_finish','uses'=>'ServiceProviderController@registeration_finish']);
+	Route::get('service-provider/registration_finish',  ['as'=>'service-provider.registration_finish','uses'=>'ServiceProviderController@registration_finish']);
 	
 	Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
 	Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
