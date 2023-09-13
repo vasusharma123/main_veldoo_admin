@@ -112,6 +112,10 @@
                         </a>
                         <div class="header_top view_header">
                             <h4 class="sub_heading booking_details_with_status d-flex">Booking Details</h4>
+
+
+                            <span>{{ Auth::user()->user_type >= 4 ? 'Manager' :
+                                'Admin' }}</span>
                             <span class="close_modal desktop_view close_modal_action_view">&times;</span>
                         </div>
                             <div class="map_frame">
@@ -1200,7 +1204,8 @@
 
                 google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
-                $(document).on("submit", "#booking_list_form", function(e) {
+                $(document).on("click", ".save_booking", function(e) {
+                // $(document).on("submit", "#booking_list_form", function(e) {
                     e.preventDefault();
                     if ($('#pickup_latitude').val()=="")
                     {

@@ -191,11 +191,13 @@ class RidesController extends Controller
 
 			if(Auth::user()) {
                 return response()->json(['status' => 1, 'route' => route('guest.ride_booking'), ]);
-            } else if ($userExit) {
-                return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
-            } else if ($userData) {
-                return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
-            } else {
+            } 
+            // else if ($userExit) {
+            //     return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
+            // } else if ($userData) {
+            //     return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
+            // }
+            else {
                 return response()->json(['status' => 1, 'route' => route('send_otp_before_ride_booking')]);
             }
 		} catch (\Illuminate\Database\QueryException $exception) {

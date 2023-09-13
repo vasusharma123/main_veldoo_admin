@@ -21,9 +21,10 @@
             <h1 class="main_heading">History</h1>
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','list') }}">List View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','month') }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('company.rides','week') }}">Week View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+
                 </ol>
             </nav>
             <div id="weekView" class="resume">

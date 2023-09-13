@@ -1489,7 +1489,8 @@
 
                 google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
-                $(document).on("submit", "#booking_list_form", function(e) {
+                // $(document).on("submit", "#booking_list_form", function(e) {
+                    $(document).on("click", ".save_booking", function(e) {
                     e.preventDefault();
                     if ($('#pickup_latitude').val()=="")
                     {
@@ -2272,6 +2273,20 @@
         });
 
     });
+
+            $(document).keydown(function(event) { 
+                if (event.keyCode == 27) { 
+                    // $('.close_modal').trigger("click");
+                    // #("#add_booking_modal").hide();
+
+                   // $('#add_booking_modal').modal();
+
+                    $('#add_new_bookings').modal({backdrop: 'static', keyboard: false})  
+
+
+                } 
+            });
+
         </script>
     </body>
 </html>

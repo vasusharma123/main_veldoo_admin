@@ -16,7 +16,7 @@
                                             </a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link dotnot" href="{{ route('company.rides') }}">My Booking</a>
+                                            <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
@@ -39,7 +39,7 @@
                                 <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
                                     <span class="user_name">{{ Auth::user()->name }}</span>
-                                    <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span>
+                                    <!-- <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span> -->
                                 </div>
                                 @endif
                             </div>

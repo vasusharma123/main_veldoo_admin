@@ -27,9 +27,10 @@
             <h1 class="main_heading">History</h1>
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','list') }}">List View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('company.rides','month') }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="{{ route('company.rides','week') }}">Week View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+
                 </ol>
             </nav>
             <!-- /List View -->
@@ -41,6 +42,7 @@
 @endsection
 @section('footer_scripts')
     <script>
+                   
         if ($('#calendar').length > 0)
         {
             var calendarEl = document.getElementById('calendar');
@@ -83,5 +85,19 @@
                 window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
             });
         }
+
+$("body").keydown(function(e) {
+
+    if(e.keyCode == 37) { // left
+        $(".button.fc-prev-button").animate({
+        left: "-=980"
+        });
+    }
+    else if(e.keyCode == 39) { // right
+        $(".button.fc-prev-button").animate({
+        left: "+=980"
+        });
+    }
+});
     </script>
 @endsection

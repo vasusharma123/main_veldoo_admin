@@ -93,7 +93,8 @@ class UserController extends Controller
         if(auth()->attempt($whereData)){
 			if (in_array(Auth::user()->user_type,[4,5])) {
 				Auth::user()->syncRoles('Company');
-				return redirect()->route('company.rides');
+				return redirect()->route('company.rides','month');
+
 			}
             return redirect()->route('users.dashboard');
         } else{
@@ -123,7 +124,7 @@ class UserController extends Controller
 			\Auth::login($user);
 			if (in_array(Auth::user()->user_type,[1])) {
 				Auth::user()->syncRoles('Customer');
-				return redirect()->route('booking_taxisteinemann');
+				return redirect()->route('guest.rides','month');
 			}
 			Auth::logout();
 			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'These credentials do not match our records.']);
