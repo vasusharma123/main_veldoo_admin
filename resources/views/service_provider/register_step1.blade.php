@@ -59,9 +59,9 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-0"></div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Password")}}</label>
+                            <label class="label_form">{{__("Password")}}</label>
                             <div class="field position-relative">
-                                <input type="password" name="password[]" class="form-control input_text" placeholder="Enter your password" required />
+                                <input type="password" name="password[]" class="form-control input_text" placeholder="Enter your password" />
                                 <img src="{{ asset('service_provider_assets/imgs/eye-outline.png')}}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock">
                             </div>
                             @error('password.0')
@@ -71,9 +71,9 @@
                             @enderror
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Confirm Password")}}</label>
+                            <label class="label_form">{{__("Confirm Password")}}</label>
                             <div class="field position-relative">
-                                <input type="password" name="password_confirmation[]" class="form-control input_text" placeholder="Re-enter your password" required />
+                                <input type="password" name="password_confirmation[]" class="form-control input_text" placeholder="Re-enter your password" />
                                 <img src="{{ asset('service_provider_assets/imgs/eye-outline.png')}}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock">
                             </div>
                             @error('password_confirmation.0')
@@ -86,12 +86,12 @@
 
                     <div class="row w-100 m-0 gx-4">
                         <div class="col-12">
-                            <h2 class="subtitle required_field">{{__("Driver 2")}}</h2>
+                            <h2 class="subtitle">{{__("Driver 2")}}</h2>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Name")}}</label>
+                            <label class="label_form">{{__("Name")}}</label>
                             <input type="hidden" name="driver_id[]" value="{{ (!empty($drivers[1]))?($drivers[1]->id):old('driver_id.1') }}">
-                            <input type="text" class="form-control input_text" name="first_name[]" value="{{ (!empty($drivers[1]))?($drivers[1]->first_name):old('first_name.1') }}" placeholder="Enter Enter driver name" required />
+                            <input type="text" class="form-control input_text" name="first_name[]" value="{{ (!empty($drivers[1]))?($drivers[1]->first_name):old('first_name.1') }}" placeholder="Enter Enter driver name" />
                             @error('first_name.1')
                             <div class="text-danger">{{ $message }}</div>
                             @else
@@ -99,8 +99,8 @@
                             @enderror
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Surname")}}</label>
-                            <input type="text" class="form-control input_text" name="last_name[]" value="{{ (!empty($drivers[1]))?($drivers[1]->last_name):old('last_name.1') }}" placeholder="Enter driver surname" required />
+                            <label class="label_form">{{__("Surname")}}</label>
+                            <input type="text" class="form-control input_text" name="last_name[]" value="{{ (!empty($drivers[1]))?($drivers[1]->last_name):old('last_name.1') }}" placeholder="Enter driver surname" />
                             @error('last_name.1')
                             <div class="text-danger">{{ $message }}</div>
                             @else
@@ -108,10 +108,10 @@
                             @enderror
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Mobile Number")}}</label>
+                            <label class="label_form">{{__("Mobile Number")}}</label>
                             <input class="form-control" name="iso2[]" type="hidden" id="iso2_1" value="{{ old('iso2.1')??'ch' }}">
                             <input class="form-control" name="country_code[]" type="hidden" id="country_code_1" value="{{ (!empty($drivers[1]))?($drivers[1]->country_code):(old('country_code.1')??41) }}">
-                            <input type="text" name="phone[]" id="phone_1" class="form-control input_text" value="{{ (!empty($drivers[1]))?($drivers[1]->phone):old('phone.1') }}" required />
+                            <input type="text" name="phone[]" id="phone_1" class="form-control input_text" value="{{ (!empty($drivers[1]))?($drivers[1]->phone):old('phone.1') }}" />
                             @error('phone.1')
                             <div class="text-danger">{{ $message }}</div>
                             @else
@@ -120,9 +120,9 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 mb-0"></div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Password")}}</label>
+                            <label class="label_form">{{__("Password")}}</label>
                             <div class="field position-relative">
-                                <input type="password" name="password[]" class="form-control input_text" placeholder="Enter your password" required />
+                                <input type="password" name="password[]" class="form-control input_text" placeholder="Enter your password" />
                                 <img src="{{ asset('service_provider_assets/imgs/eye-outline.png')}}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock">
                             </div>
                             @error('password.1')
@@ -133,9 +133,9 @@
 
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                            <label class="required_field label_form">{{__("Confirm Password")}}</label>
+                            <label class="label_form">{{__("Confirm Password")}}</label>
                             <div class="field position-relative">
-                                <input type="password" name="password_confirmation[]" class="form-control input_text" placeholder="Re-enter your password" name="password_confirmation[]" required />
+                                <input type="password" name="password_confirmation[]" class="form-control input_text" placeholder="Re-enter your password" name="password_confirmation[]" />
                                 <img src="{{ asset('service_provider_assets/imgs/eye-outline.png')}}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock">
                             </div>
                             @error('password_confirmation.1')

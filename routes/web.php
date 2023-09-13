@@ -78,8 +78,8 @@ Route::group(['middleware' => 'guest'], function(){
 	// Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
     Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
-    Route::get('/register',  ['as'=>'companyRegister','uses'=>'UserController@register']);
-    Route::post('/doRegister',  ['uses'=>'UserController@doRegister']);
+    Route::get('/register',  ['as'=>'service-provider.register','uses'=>'ServiceProviderController@register']);
+    Route::post('/service-provider/register_submit',  ['as'=>'service-provider.register_submit', 'uses'=>'ServiceProviderController@register_submit']);
 	Route::get('/service-provider/verify/{token}',  ['as'=>'serviceProviderVerify','uses'=>'ServiceProviderController@serviceProviderVerify']);
 	Route::get('service-provider/register_step1',  ['as'=>'service-provider.register_step1','uses'=>'ServiceProviderController@register_step1']);
 	Route::post('service-provider/register_step1_submit',  ['as'=>'service-provider.register_step1_submit','uses'=>'ServiceProviderController@register_step1_submit']);

@@ -34,12 +34,12 @@
                                 <label class="label_form d-block mt-4">{{__('Or click the icon below')}}</label>
                                 <div class="row w-100 m-0 gx-1 mt-5">
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-6">
-                                        <a href="https://play.google.com/store/apps/details?id=com.dev.veldoouser" class="img-link-download">
+                                        <a href="https://play.google.com/store/apps/details?id=com.veldoo.driver" class="img-link-download">
                                             <img src="{{ asset('service_provider_assets/imgs/Googleplay.png')}}" class="img-fluid store_app_img" alt="play store">
                                         </a>
                                     </div>
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-6">
-                                        <a href="https://apps.apple.com/in/app/id1597936025" class="img-link-download">
+                                        <a href="https://apps.apple.com/in/app/id1645847445" class="img-link-download">
                                             <img src="{{ asset('service_provider_assets/imgs/Istore.png')}}" class="img-fluid store_app_img" alt="Apple store">
                                         </a>
                                     </div>

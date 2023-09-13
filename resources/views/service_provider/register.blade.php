@@ -21,7 +21,7 @@
                         <h3 class="form_bold_text">Veldoo 2000 {{__('Driver App')}}</h3>
                     </div>
                     @include('service_provider.includes.flash_alerts')
-                    {{ Form::open(array('url' => 'doRegister','class'=>'input_form','id'=>'registerform','method'=>"post")) }}
+                    {{ Form::open(array('url' => 'service-provider/register_submit','class'=>'input_form','id'=>'registerform','method'=>"post")) }}
                     {{-- <form action="driverlogin.html" method="post" class="input_form"> --}}
                     <div class="row w-100 m-0 gx-4">
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -137,6 +137,8 @@
         $("#iso2").val(instance.getSelectedCountryData().iso2);
         $("#country_code").val(instance.getSelectedCountryData().dialCode);
     });
-
+    $(document).on('submit','#registerform',function(){
+        $(".submit_btn").attr('disabled',true);
+    })
 </script>
 @endsection
