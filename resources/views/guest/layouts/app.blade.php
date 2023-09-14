@@ -2274,18 +2274,7 @@
 
     });
 
-            $(document).keydown(function(event) { 
-                if (event.keyCode == 27) { 
-                    // $('.close_modal').trigger("click");
-                    // #("#add_booking_modal").hide();
-
-                   // $('#add_booking_modal').modal();
-
-                    $('#add_new_bookings').modal({backdrop: 'static', keyboard: false})  
-
-
-                } 
-            });
+           
 
         </script>
     </body>
