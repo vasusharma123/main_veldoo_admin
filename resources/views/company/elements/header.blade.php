@@ -5,8 +5,13 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
-                        <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
                         
+                        @if (Auth::check() && !empty($companyInfo->logo) )
+                        <img src="{{ config('app.url_public').'/'.$companyInfo->logo  }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                        @else
+                        <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+
+                        @endif
                             <div class="menus cs_menus me-auto">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">

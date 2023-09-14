@@ -23,9 +23,16 @@
 
     <div class="row">
 
+   
+
         <div class="login_form_content col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
+               
+                      
             <div class="login_form_box_cover">
+
+
+            
 
                 <form class="login_form" action="{{ url('do-login-guest')}}" method="post" autocomplete="off">
                         @csrf
@@ -36,6 +43,8 @@
                         <div class="col-12 p-0">
 
                             <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                            <a class="close_modal" href="{{route('guest.rides','month')}}">×</a>
+
                           
                             <!-- @if(\Request::get('token'))
                             <a href="{{ route('booking_taxisteinemann',['token' => \Request::get('token')]) }}" class="link_hyper">Back</a>

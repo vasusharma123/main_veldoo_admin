@@ -174,7 +174,7 @@
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
-                                            <p class="ride_driver_details_div_driver_na" style="display: none">N/A</p>
+                                            <p class="ride_driver_details_div_driver_na" style="display: none;">N/A</p>
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt view_port">
@@ -190,7 +190,7 @@
                                                     <span class="user_name ride_car_div_number"></span>
                                                 </div>
                                             </div>
-                                            <p class="ride_car_div_na" style="display: none">N/A</p>
+                                            <p class="ride_car_div_na" style="display:none">N/A</p>
                                         </div>
                                     </div>
                                 </div>
@@ -857,7 +857,15 @@
                             $('.ride_driver_details_div_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
                         }
                         $('.ride_driver_details_div_driver_name').html(booking.driver.first_name+' '+booking.driver.last_name);
-                        $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+
+                        
+                        if(booking.driver.country_code) {
+                            $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+                            $('.ride_driver_details_div_driver_na').text('');
+                        } else {
+                            $('.ride_driver_details_div_driver_na').text('N/A');
+                        }
+
                     }
 
                     $('.ride_car_div').hide();

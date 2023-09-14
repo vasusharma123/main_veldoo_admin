@@ -12,14 +12,25 @@
 
                     <div class="row">
 
+                    <div class="col-lg-12">
+				<div class="card" >
+					<div class="card-body">
+
+
+
+
                         <div class="login_form_content col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
                             <div class="login_form_box_cover">
+                                
 
                                 <form class="login_form" action="{{ url('do-register-guest')}}" method="post" autocomplete="off">
+                             
+
                                 @csrf
 
                                     <div class="form-row">
+                                    @include('company.company_flash_message')
 
                                         <div class="col-12 p-0">
 
@@ -156,7 +167,10 @@
 
                         </div>
                         <!-- /Login Form Content -->
+                        </div>
+</div>
 
+</div>
                     </div>
 
                 </article>

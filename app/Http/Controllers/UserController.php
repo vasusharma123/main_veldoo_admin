@@ -118,7 +118,9 @@ class UserController extends Controller
 
 		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
 		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
-		$user = User::where('phone', $request->phone)->where('country_code', $request->country_code)->where('user_type', 1)->first();
+		$phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
+
+		$user = User::where('phone', $phone_number)->where('country_code', $request->country_code)->where('user_type', 1)->first();
 		//dd(Hash::check($request->password, $user->password));
 		if (!empty($user) && Hash::check($request->password, $user->password)) {
 			\Auth::login($user);
@@ -1090,9 +1092,16 @@ public function forgetPassword(){
 				$input['password']=Hash::make($request->input('password'));
 				$input['user_type']=1;
 
+				$phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
+				$input['phone'] = $phone_number;
 				//$otp = rand(1000,9999);
 				unset($input['_token']);
 				unset($input['confirm_password']);
+
+				$user = User::where('phone', $phone_number)->where('country_code', $request->country_code)->where('user_type', 1)->first();
+				if($user) {
+					return redirect()->back()->withErrors(['message' => 'Mobile number already has been taken']);			
+				}
 				$user=User::updateOrCreate($input);
 		
 				// $expiryMin = config('app.otp_expiry_minutes');

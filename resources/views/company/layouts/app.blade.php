@@ -28,6 +28,8 @@
     </head>
     <body>
    
+
+    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
         <style>
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
@@ -95,6 +97,16 @@
             {
                 display: none !important;
             }
+
+            body{
+                background-image: url(<?php echo $logoImage ?>);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+            }
+
         </style>
         @include('company.elements.header')
         <div class="main_content">
@@ -596,7 +608,12 @@
                             $('.ride_driver_details_div_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
                         }
                         $('.ride_driver_details_div_driver_name').html(booking.driver.first_name+' '+booking.driver.last_name);
-                        $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+                        if(booking.driver.country_code) {
+                            $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+                            $('.ride_driver_details_div_driver_na').text('');
+                        } else {
+                            $('.ride_driver_details_div_driver_na').text('N/A');
+                        }
                     }
 
                     $('.ride_car_div').hide();
