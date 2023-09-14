@@ -633,6 +633,15 @@ class Socket{
 				});
 			});
 
+
+			socket.on('master-driver-update-web', async (datas) => {
+				console.log(datas);
+				this.io.emit(`master-driver-response-2`,datas);
+			});
+
+
+			
+
 			socket.on('master-driver-update-2', async (datas) => {
 				let data = datas.data;
 				var ride_id = data.ride_id;

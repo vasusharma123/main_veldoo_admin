@@ -144,6 +144,37 @@
 @endsection
 @section('footer_scripts')
     <script>
+
+
+    $('#phone, #phone_edit').keyup(function () { 
+        this.value = this.value.replace(/[^0-9+\.]/g,'');
+    });
+    
+    $("#phone, #phone_edit").on("blur", function(e){
+
+        var conuntrycode = $('#country_code').val();
+        var mobNum = $(this).val();
+        var filter = /^\d*(?:\.\d{1,2})?$/;
+        if (filter.test(mobNum)) {
+            if(mobNum.length==10){
+                return true;  
+            } else {
+                $(this).val('')
+                return false;
+            }
+        }
+        else if(mobNum.startsWith("+")){
+            var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
+            mobile = temp;
+            $(this).val(mobile)
+            return true; 
+        } else {
+            $(this).val('')
+            return false;
+        }
+
+    });
+        
         if ($('#phone').length > 0)
         {
             var input = document.querySelector("#phone");

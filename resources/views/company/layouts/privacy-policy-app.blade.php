@@ -29,9 +29,6 @@
     <body>
    
         <style>
-            .pending-ride-class-row{
-                background-color: var(--primary-color) !important;
-            }
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
                 --bs-alert-bg: #fc4c02 !important;
@@ -96,7 +93,7 @@
                 display: none !important;
             }
         </style>
-        @include('company.elements.header')
+        @include('company.elements.privacy-policy-header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">
                 @yield('content')
@@ -415,7 +412,7 @@
         
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script> -->
+        <script src="https://dunggramer.github.io/disable-devtool/disable-devtool.min.js" defer></script>
         <!-- /Scripts -->
         <!-- Select text js -->
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
@@ -626,35 +623,35 @@
                     ride_status = ""
                     if(booking.status == -2)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Cancelled</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> `;
                     }
                     else if(booking.status == -1)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Rejected</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Rejected</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 1)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Accepted</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-info">Accepted</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 2)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Started</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-info">Started</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 4)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Driver Reached</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-info">Driver Reached</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 3)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-success">Completed</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-success">Completed</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == -3)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<p class="infomation_update done bg-danger">Cancelled by you</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == -4)
                     {
-                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Pending</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(booking.status == 0)
                     {
@@ -662,9 +659,9 @@
                     }
                     else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-warning">Upcoming</span></span>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Upcoming</p>`;
                     }
-                   //  $('.statusList'+selected_ride_id).html(ride_status); if we need to show all button on ride row 
+                    $('.statusList'+selected_ride_id).html(ride_status);
                     $('.booking_details_with_status').html("Booking Details "+ride_status);
 
                     if (booking.dest_lat=="")
@@ -1268,19 +1265,14 @@
                 });
 
                 socket.on('master-driver-response-2', async (response) => {
-
-                    console.log('client' + response);
                     if(response && response.data.id){
+
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
 
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } else if (response && response.data.delete_for_all) {
-                        setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
                     }
                 });
 
@@ -1485,15 +1477,11 @@
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
                                         if (response.status) {
-
-                                            socket.emit('master-driver-update-web', {"data":response.data});
-
                                             swal.fire("{{ __('Success') }}", response.message,
                                                 "success");
-                                            // setTimeout(function() {
-                                            //     window.location.reload();
-                                            // }, 1000);
-
+                                            setTimeout(function() {
+                                                window.location.reload();
+                                            }, 1000);
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1524,7 +1512,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: "{{ __('Confirm') }}"
+                        confirmButtonText: "{{ __('Yes, cancel it') }}"
                     }).then((result) => {
                         if (result.value) {
                             $.ajax({
@@ -1538,13 +1526,10 @@
                                 success: function(response) {
                                     if (response.status) {
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
-                                       
-                                        socket.emit('master-driver-update-web', {"data":response.data});
-
                                         Swal.fire("Success", response.message, "success");
-                                        // setTimeout(function() {
-                                        //     window.location.reload();
-                                        // }, 1000);
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1000);
                                     } else if (response.status == 0) {
                                         Swal.fire("{{ __('Error') }}", response.message, "error");
                                     }
@@ -1565,7 +1550,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Confirm'
+                        confirmButtonText: 'Yes, delete it!'
                     }).then((result) => {
                         if (result.value) {
                             var ride_id = $(this).attr('data-id');
@@ -1580,15 +1565,10 @@
                                 success: function(response) {
                                     if (response.status) {
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
-                                       
-                                        console.log(response.data);
-
-                                        socket.emit('master-driver-update-web', {"data":response.data});
-
                                         Swal.fire("Success", response.message, "success");
-                                        // setTimeout(function() {
-                                        //     window.location.reload();
-                                        // }, 1000);
+                                        setTimeout(function() {
+                                            window.location.reload();
+                                        }, 1000);
                                     } else if (response.status == 0) {
                                         Swal.fire("{{ __('Error') }}", response.message, "error");
                                     }

@@ -10,8 +10,8 @@ class Db {
 			connectionLimit: 100,
 			host: 'localhost',
 			user: 'root',
-			password: 'ItauwenTo7fi7dlw',
-			database: 'veldoo_dev',
+			password: '',
+			database: 'veldoo_stag',
 			debug: false,
 			charset : 'utf8mb4'
 		});

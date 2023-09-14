@@ -41,11 +41,16 @@ class RidesController extends Controller
         $company = Auth::user();
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
-        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')
+        ->where(['company_id' => Auth::user()->company_id])
                             ->where(function($query){
                                 // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                            })->where('company_id','!=',null)->orderBy('rides.id')->with(['vehicle','user:id,first_name,last_name'])->paginate(20);
-        // dd($data);
+                            })->where('company_id','!=',null)
+                           // ->orderBy('rides.id')
+                            ->orderBy('rides.ride_time', 'DESC')
+                            ->with(['vehicle','user:id,first_name,last_name'])
+                            ->paginate(20);
+    // dd($data);
         return view('company.rides.index')->with($data);
     }
 
@@ -107,7 +112,6 @@ class RidesController extends Controller
 
     public function ride_booking(Request $request)
     {
-        // dd($request->all());
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
@@ -224,7 +228,6 @@ class RidesController extends Controller
 
             $ride->driver_id = null;
             $ride->all_drivers = $driverids;
-
             $ride->save();
             $ride_data = new RideResource(Ride::find($ride->id));
 
@@ -266,6 +269,17 @@ class RidesController extends Controller
             }
             $rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
             $rideData->save();
+
+            $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($rideData->id);
+            $ride_detail['is_newly_created'] = 1;
+           // dd($ride_detail);
+           /// Log::info('socket error', $ride_detail);
+            // if (!empty($ride_detail)) {
+			// 	$settings = \App\Setting::first();
+			// 	$settingValue = json_decode($settings['value']);
+			// 	$ride_detail['waiting_time'] = $settingValue->waiting_time;
+			// } 
+
             DB::commit();
             if (!empty($rideData->user) && empty($rideData->user->password) && !empty($rideData->user->phone)) {
                 $message_content = "";
@@ -278,7 +292,7 @@ class RidesController extends Controller
                 }
                 $this->sendSMS("+" . $rideData->user->country_code, ltrim($rideData->user->phone, "0"), $message_content);
             }
-            return response()->json(['status' => 1, 'message' => __('Instant ride created successfully.'), 'data' => $ride], $this->successCode);
+            return response()->json(['status' => 1, 'message' => __('Instant ride created successfully.'), 'data' => $ride_detail], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -350,6 +364,10 @@ class RidesController extends Controller
             $ride->status = 0;
             $ride->platform = "web";
             $ride->save();
+
+            $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
+            $ride_detail['is_newly_created'] = 1;
+
             DB::commit();
             if (!empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
                 $message_content = "";
@@ -362,7 +380,9 @@ class RidesController extends Controller
                 }
                 $this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
             }
-            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully')], $this->successCode);
+
+            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully'), 'data' => $ride_detail], $this->successCode);
+
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -540,8 +560,12 @@ class RidesController extends Controller
             }
             $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->ride_time)));
             $rideData->save();
+
+            $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($rideData->id);
+            $ride_detail['change_for_all'] = 1;
+
             DB::commit();
-            return response()->json(['status' => 1, 'message' => 'Instant ride created successfully.', 'data' => $ride], $this->successCode);
+            return response()->json(['status' => 1, 'message' => 'Instant ride created successfully.', 'data' => $ride_detail], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -595,8 +619,12 @@ class RidesController extends Controller
             $ride->status = 0;
             $ride->platform = "web";
             $ride->save();
+
+            $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
+            $ride_detail['change_for_all'] = 1;
+
             DB::commit();
-            return response()->json(['status' => 1, 'message' => 'Ride Booked successfully'], $this->successCode);
+            return response()->json(['status' => 1, 'message' => 'Ride Booked successfully', 'data' => $ride_detail], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -632,6 +660,9 @@ class RidesController extends Controller
 				// 	$ride->cancel_reason = $request->cancel_reason;
 				// }
 				$ride->save();
+                
+                $ride_detail_socket = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
+
                 $ride_detail = new RideResource(Ride::find($ride->id));
                 $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
 				$settingValue = json_decode($settings['value']);
@@ -662,12 +693,30 @@ class RidesController extends Controller
 				}
 			}
 			DB::commit();
-			return response()->json(['status' => 1, 'message' => __('The ride has been cancelled.')]);
+			return response()->json(['status' => 1, 'message' => __('The ride has been cancelled.'), 'data' => $ride_detail_socket]);
 		} catch (\Exception $exception) {
 			DB::rollBack();
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
+
+    public function delete_booking(Request $request)
+    { 
+        try {
+            DB::beginTransaction();
+            Ride::where(['id' => $request->ride_id])->delete();
+            RideHistory::where(['ride_id' => $request->ride_id])->delete();
+
+            $ride_detail_socket['id'] = $request->ride_id;
+            $ride_detail_socket['is_ride_deleted'] = 1;
+
+            DB::commit();
+			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $ride_detail_socket]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);
+        }
+    }
 
     public function ride_driver_detail(Request $request){
         $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);

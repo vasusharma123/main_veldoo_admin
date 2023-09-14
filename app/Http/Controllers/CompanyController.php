@@ -606,4 +606,14 @@ class CompanyController extends Controller
             return back()->with('error', $exception->getMessage());
         }
     }
+
+
+     /**
+     * privacy policy page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function privacy_policy(){
+	    return view('company.privacy-policy.index');
+    }
 }

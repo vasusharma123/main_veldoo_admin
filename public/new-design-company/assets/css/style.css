@@ -38,7 +38,7 @@ body{
     background-position: center;
     width: 100%;
     min-height: 100vh;
-    height: 100%;
+    height: auto;
 }
 
 .btn:focus, .form-control:focus{
@@ -254,6 +254,8 @@ body{
     object-fit: cover;
     object-position: center;
     max-height: 40px;
+    min-width: 40px;
+    min-height: 40px;
 }
 .name_occupation {
     line-height: 20px;
@@ -471,9 +473,9 @@ span.menu_icons.arrow {
     font-family: var(--lato-font);
     border-radius: 5px;
 }
-.addNewBtn_cs:hover, .addNewBtn_cs:focus{
+.addNewBtn_cs:hover, .addNewBtn_cs:focus, .save_form_btn:hover, .save_form_btn:focus{
     background-color: var(--secondary-color);
-    color: white;
+    color: white !important;
 }
 .add_icon_svg path{
     fill: var(--primary-color);
@@ -526,30 +528,82 @@ span.menu_icons.arrow {
     font-weight: 500;
     color: var(--secondary-color);
 } */
-.btn_view_booking:hover,.btn_view_booking:focus{
+
+/* .btn_view_booking:hover,.btn_view_booking:focus{
     background-color: var(--login-input-bg);
     border-color: var(--secondary-color);
-}
+} */
+
+/* .custom_table_view tbody :hover, .custom_table_view tbody :focus {
+    background-color: #f9f9f9;
+    border-color: var(--secondary-color);
+} */
+
+
+  table.custom_table_view tr:hover td {
+    background-color: var(--login-input-bg);
+    border-color: var(--secondary-color);
+  }
+
 .rideDetails :hover,.rideDetails :focus{
     background-color: var(--login-input-bg);
     border-color: var(--secondary-color);
+    
 }
+
+#weekView .fc-event-main-frame .fc-event-time{
+    display: none !important;
+}
+#weekView .fc-event-main-frame{
+    align-items: center;
+}
+#weekView .fc-event-main-frame  .fc-event-title {
+    bottom: 0px;
+    max-height: 100%;
+    overflow: hidden;
+    top: 0%;
+    display: flex;
+    transform: translateY(50%);
+}
+#weekView .fc-event-main-frame.fc-event-title-container{
+    flex-grow: unset !important;
+}
+
 .view_icon {
     max-width: 15px;
     margin-right: 6px;
 }
-span.status_box{
+.status_box{
     font-family: var(--inter-font);
     background-color: var(--secondary-color);
     font-size: 12px;
     font-weight: 500;
     color: var(--secondary-color);
-    padding: 5px 10px;
-    border-radius: 80px;
-    max-width: 79px;
-    width: 100%;
+    padding: 5px 10px !important;
+    border-radius: 80px !important;
+    max-width: 100px;
+    width: 100% !important;
     display: block;
     text-align: center;
+    margin: 0 auto !important;
+    white-space: pre;
+    flex-direction: column;
+    
+}
+.btnactions {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.btnactions button {
+    margin-top: 10px;
+}
+.booking_details_with_status span.d-flex.btnactions {
+    flex-direction: row;
+    margin-left: 20px;
+}
+.booking_details_with_status  .btnactions button {
+    margin-top: 0px;
 }
 .status_box.complete{
     background-color: white;
@@ -557,6 +611,16 @@ span.status_box{
 .status_box.pending{
     background-color: #356681;
     color: white;
+}
+.mutibtndropdown {
+    display: flex;
+}
+.mutibtndropdown .btn{
+    margin-left: 5px;
+}
+.btn.btn-sm:hover,.btn.btn-sm:focus {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
 .table_pagination .page-item .page-link {
     margin: 0px 5px;
@@ -652,6 +716,10 @@ span.status_box{
     color: var(--secondary-color);
     font-weight: 500;
 }
+ .select2-users-container, .date_picker_box .form_control {
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    width: 100%;
+}
 .form_label {
     margin-bottom: 5px;
     color: #AFAFAF;
@@ -659,6 +727,10 @@ span.status_box{
 .pickup_icon {
     max-width: 37px;
     margin-right: 15px;
+}
+span.select2.select2-container.select2-container--default {
+    width: 100%;
+    max-width: 150px
 }
 .divider_area {
     display: block;
@@ -672,6 +744,9 @@ span.status_box{
     margin: 24px 0px 20px 0px;
     width: calc(100% - 50px);
     margin-left: auto;
+}
+#add_new_bookings .divider_form_area {
+    width: unset;
 }
 .switch_area {
     cursor: pointer;
@@ -752,8 +827,11 @@ span.status_box{
     text-align: center;
     font-weight: 500;
     font-family: var(--roboto-font);
+    display: block;
 }
-
+a.btn.menu_toggle_btn.mobile_view {
+    margin-right: 0;
+}
 .car_option:hover .car_img{
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
@@ -1345,7 +1423,11 @@ button.fc-today-button.fc-button.fc-button-primary {
 }
 
 
-
+#select2-users-container {
+    color: #060f21;
+    font-weight: 500;
+    font-family: sans-serif;
+}
 
 
 
@@ -1554,7 +1636,7 @@ button.fc-today-button.fc-button.fc-button-primary {
 
     }
     .list_names{
-        margin-left: 50px;
+        margin-left: 0px;
     }
     .custom_table_view tr .sm_hide{
         display: none;
@@ -1563,6 +1645,11 @@ button.fc-today-button.fc-button.fc-button-primary {
         margin-left: 0px;
         left: -47px;
     }
+    .select2.select2-container.select2-container--default {
+        width: 100%;
+        max-width: 100%;
+    }
+    
 
 }
 @media (max-width:380px){
@@ -1570,7 +1657,9 @@ button.fc-today-button.fc-button.fc-button-primary {
         width: 23px;
         height: 23px;
     }
-
+    #listView{
+        margin-left: 0 !important;
+    }
 
 }
 @media (max-width: 300px){
@@ -1635,7 +1724,7 @@ button.fc-today-button.fc-button.fc-button-primary {
 
     }
     .list_names{
-        margin-left: 50px;
+        margin-left: 0px;
     }
     .custom_table_view tr .sm_hide{
         display: none;
@@ -1753,5 +1842,15 @@ button.fc-today-button.fc-button.fc-button-primary {
 
     .menus.me-auto{
        display: block;
+    }
+}
+@media (min-width:1020px) and  (max-width:1298px){
+    .newTop_menu_ul a {
+        font-size: 15px;
+        padding-right: 16px !important;
+        padding-left: 16px !important;
+    }
+    .notify_menus .addNewBtn_cs {
+        margin-right: 10px !important;
     }
 }

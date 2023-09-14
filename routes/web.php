@@ -218,6 +218,9 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('rides/detail/{id}','Company\RidesController@ride_detail')->name('company.ride_detail');
 	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
+	Route::post('/delete_booking','Company\RidesController@delete_booking')->name('company.delete_booking');
+
+	
 
 });
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);
@@ -235,3 +238,4 @@ Route::group([ 'middleware' => 'auth'], function(){
 });
 
 Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
+Route::get('/privacy_policy','PageController@privacy_policy');

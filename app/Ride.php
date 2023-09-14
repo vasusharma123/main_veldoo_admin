@@ -278,6 +278,11 @@ class Ride extends Model
 	/* Earth radius = 6371000 meters || 3959 miles */
 	function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 3959)
 	{
+		$latitudeFrom = !empty($latitudeFrom)?$latitudeFrom:0;
+		$longitudeFrom = !empty($longitudeFrom)?$longitudeFrom:0;
+		$latitudeTo = !empty($latitudeTo)?$latitudeTo:0;
+		$longitudeTo = !empty($longitudeTo)?$longitudeTo:0;
+		
 		// convert from degrees to radians
 		$latFrom = deg2rad($latitudeFrom);
 		$lonFrom = deg2rad($longitudeFrom);

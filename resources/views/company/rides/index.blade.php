@@ -35,16 +35,30 @@
                                 <th>Pickup Point</th>
                                 <th class="sm_hide">Car</th>
                                 <th class="sm_hide">Customer</th>
-                                <th class="sm_hide"><span class="status_title">Status</span></th>
+                                <th class="sm_hide text-center"><span class="status_title">Status</span></th>
                             </tr>
                         </thead>
                         <tbody>
+
                             @foreach ($rides as $ride)
-                                <tr class="rideDetails" data-id="{{ $ride->id }}" style="cursor: pointer">
+
+                               @php
+                                if($ride->ride_time > date("Y-m-d")){
+                                    $upcomingAndPastBooking = 'upcoming-and-past-booking';
+                                }
+                                else if($ride->ride_time < date("Y-m-d")) {
+                                    $upcomingAndPastBooking = 'upcoming-and-past-booking';
+                                }
+                                else {
+                                    $upcomingAndPastBooking = '';
+                                }
+                                @endphp
+                                
+                                <tr class="rideDetails {{$upcomingAndPastBooking}}" data-id="{{ $ride->id }}" style="cursor: pointer">
                                     <td class="btn_view_booking dateTimeList{{ $ride->id }}">
                                         {{ date('D, d.m.Y',strtotime($ride->ride_time)) }} {{ date('H:i',strtotime($ride->ride_time)) }}
                                     </td>
-                                    <td style="max-width:200px" class="pickupPointList{{ $ride->id }}">{{ $ride->pickup_address }}</td>
+                                    <td style="max-width:200px; text-overflow:ellipsis; overflow:hidden;" class="pickupPointList{{ $ride->id }}">{{ $ride->pickup_address }}</td>
                                     <td class="sm_hide carList{{ $ride->id }}">{{ @$ride->vehicle->vehicle_number_plate }}</td>
                                     <td class="sm_hide customerList{{ $ride->id }}">{{ @$ride->user->first_name.' '.@$ride->user->last_name }}</td>
                                     <td class="sm_hide statusList{{ $ride->id }}">
@@ -61,14 +75,17 @@
                                         @elseif($ride->status == 3)
                                             <span class="status_box text-white bg-success">Completed</span>
                                         @elseif($ride->status == -3)
-                                            <span class="status_box text-white bg-danger">Cancelled by you</span>
+                                            <span class="status_box text-white bg-danger">Cancelled</span>
                                         @elseif($ride->status == 0)
-                                            <span class="status_box text-white bg-warning">Pending</span>
+                                        <span class="status_box text-white bg-warning">Upcoming</span>
+                                        @elseif($ride->status == -4)
+                                            <span class="status_box text-white pending-ride-class-row">Pending</span>
                                         @elseif(strtotime($ride->ride_time) < strtotime('now'))
                                             <span class="status_box text-white bg-warning">Upcoming</span>
                                         @endif
                                     </td>
                                 </tr>
+
                             @endforeach
                         </tbody>
                     </table>

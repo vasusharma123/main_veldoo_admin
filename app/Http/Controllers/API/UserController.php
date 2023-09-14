@@ -434,10 +434,12 @@ class UserController extends Controller
 			if($user->verify == 0){
 				return response()->json(['message'=>'Please verify your number', 'user'=>$user, 'token'=>''], $this->successCode);
 			} */
+			
 
 			$token =  $user->createToken('auth')->accessToken;
+			
 			$user = $this->getRafrenceUser($user->id);
-
+			
 			// $driverhoosecar = DriverChooseCar::where(['user_id' => $user->id, 'logout' => 0])->orderBy('id', 'desc')->first();
 			// if (!empty($driverhoosecar)) {
 			// 	$driverhoosecar->logout = 1;
@@ -2053,21 +2055,49 @@ class UserController extends Controller
 		try {
 			$userId = Auth::user()->id;
 
-			$rules = [
-				//'pick_lat' => 'required',
-				//'pick_lng' => 'required',
-				//'dest_lat' => 'required',
-				//'dest_lng' => 'required',
-				'pickup_location' => 'required',
-				//'dest_address' => 'required',
-				'car_type' => 'required',
-				'ride_time' => 'required',
-				//'ride_type'=>'required',
-			];
+			// $rules = [
+			// 	//'pick_lat' => 'required',
+			// 	//'pick_lng' => 'required',
+			// 	//'dest_lat' => 'required',
+			// 	//'dest_lng' => 'required',
+			// 	'pickup_location' => 'required',
+			// 	//'dest_address' => 'required',
+			// 	'car_type' => 'required',
+			// 	'ride_time' => 'required',
+			// 	//'ride_type'=>'required',
+			// ];
+			// $validator = Validator::make($request->all(), $rules);
 
-			$validator = Validator::make($request->all(), $rules);
-			if ($validator->fails()) {
-				return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
+			// $validator = Validator::make($request->all(), [
+			// 	'pickup_location' => 'required',
+			// 	'pick_lat' => 'required',
+			// 	'pick_lng' => 'required',
+			// 	'car_type' => 'required',
+			// 	'ride_time' => 'required',
+			// ], [ 
+			// 	'pickup_location.required' => 'The pickup location field is required.',
+			// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+			// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+			// ]);
+
+			// if ($validator->fails()) {
+			// 	return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
+			// }
+
+			if(empty($request->pickup_location)) {
+				return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
+			}
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->car_type)) {
+				return response()->json(['message' => "The car type field is required."], $this->warningCode);
+			}
+			if(empty($request->ride_time)) {
+				return response()->json(['message' => "The ride time field is required."], $this->warningCode);
 			}
 			$all_rides_dates = [];
 			if (!empty($request->additional_dates)) {
@@ -2099,7 +2129,7 @@ class UserController extends Controller
 				if (!empty($request->alert_time)) {
 					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($ride_date_time)));
 				} else {
-					$ride->alert_notification_date_time = $ride_date_time;
+					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride_date_time)));
 				}
 				$ride->alert_time = $request->alert_time ?? null;
 				if (!empty($request->pick_lat)) {
@@ -2864,6 +2894,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (empty($request->car_id)) {
 						return $this->validationErrorResponse('The car id is required !');
 					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride  is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$ride->status = $request->status;
 					$ride->vehicle_id = $request->car_id;
 					$ride->waiting = $request->waiting;
@@ -2898,6 +2934,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if ($ride['status'] == 2) {
 						return response()->json(['message' => "Ride already Started"], $this->successCode);
 					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
 					$title = 'Ride Started';
 					$responseMessage = 'Ride Started Successfully';
 					$notifiMessage = 'Ride Started Successfully';
@@ -2917,6 +2959,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 4) {
 					if ($ride['status'] == 4) {
 						return response()->json(['message' => "Driver already Reached"], $this->successCode);
+					}
+					if ($ride->status == 3) {
+						return response()->json(['success' => false, 'message' => "Ride is completed", 'is_already_cancelled_deleted' => 1], $this->warningCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = 'Driver Reached';
 					$responseMessage = 'Driver Reached Successfully';
@@ -2938,6 +2986,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if ($request->status == 3) {
 					if ($ride['status'] == 3) {
 						return response()->json(['success' => true, 'message' => "Ride already Completed"], $this->successCode);
+					}
+					if ($ride->status == -1 || $ride->status == -2 || $ride->status == -3) {
+						return response()->json(['success' => false, 'message' => "Ride is cancelled", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 					}
 					$title = "Ride Completed";
 					$responseMessage = 'Ride Completed Successfully';
@@ -3012,7 +3063,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// }
 				}
 			} else {
-				return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
+				return response()->json(['success' => false, 'message' => "No such ride exist", 'is_already_cancelled_deleted' => 1], $this->warningCode);
 			}
 
 			$ride->save();
@@ -4545,16 +4596,40 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function createRideDriver(Request $request, rideHistory $rideHistory)
 	{
-		$rules = [
-			'pickup_location' => 'required',
-			//'drop_location' => 'required',
-		];
+		// $rules = [
+		// 	'pickup_location' => 'required',
+		// 	//'drop_location' => 'required',
+		// ];
 
-		$validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+
+		// $validator = Validator::make($request->all(), [
+		// 	'pickup_location' => 'required',
+		// 	'pick_lat' => 'required',
+		// 	'pick_lng' => 'required',
+		// ], [ 
+		// 	'pickup_location.required' => 'The pickup location field is required.',
+		// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+		// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+		// ]);
+
+		// $validator = Validator::make($request->all(), $rules);
+		// if ($validator->fails()) {
+		// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// }
+
+		if(empty($request->pickup_location)) {
+			return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
 		}
+		if(empty($request->pick_lat)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		if(empty($request->pick_lng)) {
+			return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+		}
+		
 		$ride = new Ride();
+		$lat = '';
+	    $lon = '';
 		$ride->pickup_address = $request->pickup_location;
 		if (!empty($request->drop_location)) {
 			$ride->dest_address = $request->drop_location;
@@ -5049,16 +5124,48 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function createTrip(Request $request)
 	{
 		try {
-			$rules = [
-				'start_location' => 'required',
-				'car_type' => 'required',
-				'time' => 'required',
-			];
+			// $rules = [
+			// 	'start_location' => 'required',
+			// 	'car_type' => 'required',
+			// 	'time' => 'required',
+			// ];
 
-			$validator = Validator::make($request->all(), $rules);
-			if ($validator->fails()) {
-				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			// $validator = Validator::make($request->all(), $rules);
+
+
+			// $validator = Validator::make($request->all(), [
+			// 	'start_location' => 'required',
+			// 	'pick_lat' => 'required',
+			// 	'pick_lng' => 'required',
+			// 	'car_type' => 'required',
+			// 	'time' => 'required',
+			// ], [ 
+			// 	'start_location.required' => 'The pickup location field is required.',
+			// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+			// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+			// ]);
+
+			// if ($validator->fails()) {
+			// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			// }
+
+
+			if(empty($request->start_location)) {
+				return response()->json(['message' => "The pickup location field is required"], $this->warningCode);
 			}
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->car_type)) {
+				return response()->json(['message' => "The car type field is required."], $this->warningCode);
+			}
+			if(empty($request->time)) {
+				return response()->json(['message' => "The time field is required."], $this->warningCode);
+			}
+			
 			$input = $request->all();
 			$ride = new Ride();
 			$ride->pickup_address = $request->start_location;
@@ -5089,7 +5196,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($request->alert_time)) {
 				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->time)));
 			} else {
-				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime($request->time));
+				$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->time)));
 			}
 			$ride->alert_time = $request->alert_time;
 
@@ -5167,14 +5274,39 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideEdit(Request $request)
 	{
-		$rules = [
-			'ride_id' => 'required',
-		];
+		// $rules = [
+		// 	'ride_id' => 'required',
+		// ];
 
-		$validator = Validator::make($request->all(), $rules);
-		if ($validator->fails()) {
-			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// $validator = Validator::make($request->all(), $rules);
+
+		// $validator = Validator::make($request->all(), [
+		// 	'start_location' => 'required',
+		// 	'pick_lat' => 'required',
+		// 	'pick_lng' => 'required',
+		// 	'ride_id' => 'required',
+		// ], [ 
+		// 	'start_location.required' => 'The pickup location field is required.',
+		// 	'pick_lat.required' => 'Pickup location data missing. Please select pickup location again.',
+		// 	'pick_lng.required' => 'Pickup location data missing. Please select pickup location again.',
+		// ]);
+
+		// if ($validator->fails()) {
+		// 	return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		// }
+
+		if(!empty($request->start_location)) {
+			if(empty($request->pick_lat)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
+			if(empty($request->pick_lng)) {
+				return response()->json(['message' => "Pickup location data missing. Please select pickup location again."], $this->warningCode);
+			}
 		}
+		if(empty($request->ride_id)) {
+			return response()->json(['message' => "The ride id field is required."], $this->warningCode);
+		}
+	
 		try {
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
@@ -5217,7 +5349,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				if (!empty($request->ride_time)) {
 					$onlyTime = date("H:i:s", strtotime($request->ride_time));
-					$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+					if($request->change_for_all == 1){
+						if($request->ride_id == $ride_id){
+							$onlyDate = date("Y-m-d", strtotime($request->ride_time));
+						} else {
+							$onlyDate = date("Y-m-d", strtotime($ride->ride_time));
+						}
+					} else {
+						$onlyDate = date("Y-m-d", strtotime($request->ride_time));
+					}
 					$date_time = $onlyDate." ".$onlyTime;
 					$ride->ride_time = $date_time;
 					if (!empty($request->alert_time)) {
@@ -5275,7 +5415,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->route = $request->route;
 				}
 
-				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
+				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $alert_notification_date_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 					$ride->alert_notification_date_time = $alert_notification_date_time;
 					$ride->notification_sent = 0;
 					$ride->alert_send = 0;
@@ -5307,9 +5447,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['success' => true, 'message' => 'Ride Updated successfully.', 'data' => $ride_data], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
 			DB::rollback();
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $exception->getLine(). ' --- ' . $exception->getMessage());
 			return response()->json(['message' => $exception->getMessage()], 401);
 		} catch (\Exception $exception) {
 			DB::rollback();
+			Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $exception->getLine(). ' --- ' . $exception->getMessage());
 			return response()->json(['message' => $exception->getMessage()], 401);
 		}
 	}
@@ -5377,10 +5519,42 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
-		$user = Auth::user()->id;
-		$result = Ride::where('id', $request->ride_id)->where('user_id', $user)->update(['status' => -1]);
-		if ($result > 0) {
+		$logged_in_user = Auth::user();
+		$rideDetail = Ride::where(['id' => $request->ride_id, 'user_id' => $logged_in_user->id])->first();
+		if ($rideDetail) {
+			$rideDetail->status = -1;
+			$rideDetail->save();
+			if(!empty($rideDetail->driver_id)){
+				$driverData = User::find($rideDetail->driver_id);
+				if ($driverData) {
+					$deviceToken = $driverData['device_token'];
+					$deviceType = $driverData['device_type'];
+					$title = 'Ride Cancelled';
+					$message = "The ride has been cancelled by the user.";
+					$type = 5;
+					$ride_detail = new RideResource(Ride::find($request->ride_id));
+					$additional = ['type' => $type, 'ride_id' => $request->ride_id, 'ride_data' => $ride_detail];
+					if (!empty($deviceToken)) {
+						if ($deviceType == 'android') {
+							bulk_firebase_android_notification($title, $message, [$deviceToken], $additional);
+						}
+						if ($deviceType == 'ios') {
+							bulk_pushok_ios_notification($title, $message, [$deviceToken], $additional, $sound = 'default', $driverData['user_type']);
+						}
+					}
+
+					$notification = new Notification();
+					$notification->title = $title;
+					$notification->description = $message;
+					$notification->type = $type;
+					$notification->user_id = $driverData->id;
+					$notification->additional_data = json_encode($additional);
+					$notification->save();
+				}
+			}
 			return response()->json(['success' => true, 'message' => 'Ride cancelled successfully.'], $this->successCode);
+		} else {
+			return response()->json(['success' => false, 'message' => "No such ride exist"], $this->warningCode);
 		}
 	}
 
@@ -6683,7 +6857,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if(!empty($ride->alert_time)){
 					$rideAlertTime = date('Y-m-d H:i:s', strtotime('-' . $ride->alert_time . ' minutes', strtotime($ride->ride_time)));
 				} else {
-					$rideAlertTime = $ride->ride_time;
+					$rideAlertTime = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride->ride_time)));
 				}
 				if ($rideAlertTime > $currentTime) {
 					$rideDetail = Ride::find($request->ride_id);

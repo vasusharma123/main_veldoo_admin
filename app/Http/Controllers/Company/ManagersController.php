@@ -26,6 +26,7 @@ class ManagersController extends Controller
      */
     public function index(Request $request)
     {
+
         $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
         $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->paginate(20);
