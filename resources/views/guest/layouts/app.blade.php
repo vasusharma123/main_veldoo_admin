@@ -2287,6 +2287,12 @@
                 } 
             });
 
+            $(document).keyup(function(e) {
+                if (e.key === "Escape") { // escape key maps to keycode `27`
+                    $(document).find('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                    $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                }
+            });
         </script>
     </body>
 </html>
