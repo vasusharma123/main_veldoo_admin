@@ -646,12 +646,13 @@
         $('#otpPhone').val(mobNum);
         var filter = /^\d*(?:\.\d{1,2})?$/;
         if (filter.test(mobNum)) {
-            if(mobNum.length==10){
-                return true;  
-            } else {
-                $(this).val('')
-                return false;
-            }
+            return true;
+            // if(mobNum.length==10){
+            //     return true;  
+            // } else {
+            //     $(this).val('')
+            //     return false;
+            // }
         }
         else if(mobNum.startsWith("+")){
             var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
