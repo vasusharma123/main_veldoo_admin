@@ -86,18 +86,6 @@
             });
         }
 
-$("body").keydown(function(e) {
-
-    if(e.keyCode == 37) { // left
-        $(".button.fc-prev-button").animate({
-        left: "-=980"
-        });
-    }
-    else if(e.keyCode == 39) { // right
-        $(".button.fc-prev-button").animate({
-        left: "+=980"
-        });
-    }
-});
-    </script>
+           
+                </script>
 @endsection

@@ -646,12 +646,13 @@
         $('#otpPhone').val(mobNum);
         var filter = /^\d*(?:\.\d{1,2})?$/;
         if (filter.test(mobNum)) {
-            if(mobNum.length==10){
-                return true;  
-            } else {
-                $(this).val('')
-                return false;
-            }
+            return true;
+            // if(mobNum.length==10){
+            //     return true;  
+            // } else {
+            //     $(this).val('')
+            //     return false;
+            // }
         }
         else if(mobNum.startsWith("+")){
             var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
@@ -2274,18 +2275,7 @@
 
     });
 
-            $(document).keydown(function(event) { 
-                if (event.keyCode == 27) { 
-                    // $('.close_modal').trigger("click");
-                    // #("#add_booking_modal").hide();
-
-                   // $('#add_booking_modal').modal();
-
-                    $('#add_new_bookings').modal({backdrop: 'static', keyboard: false})  
-
-
-                } 
-            });
+           
 
             $(document).keyup(function(e) {
                 if (e.key === "Escape") { // escape key maps to keycode `27`
