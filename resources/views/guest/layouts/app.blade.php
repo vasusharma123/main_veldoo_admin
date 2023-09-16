@@ -182,7 +182,7 @@
                                             <div class="viewuser_sidebar d-flex align-items-center ride_driver_details_div">
                                                 <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar ride_driver_details_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
-                                                    <span class="user_name ride_driver_details_div_user_name"></span>
+                                                    <span class="user_name ride_driver_details_div_driver_name"></span>
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
@@ -645,7 +645,7 @@
 
         <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
 
-        <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
+        <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script>
 
 
         <script>
@@ -732,10 +732,37 @@
             minDate: 0
         });
 
-        // $('#pickUpDateRide').multiDatesPicker({
-        //     dateFormat: 'yy-mm-dd',//check change
-        //     minDate: 0
+      
+
+        // $(function() {
+
+        //     $("#pickUpDateRide").multiDatesPicker({
+        //         dateFormat: 'yy-mm-dd',
+        //         minDate: 0
+        //     });
+
+        //     // var lastDate = new Date();
+        //     // lastDate.setDate(lastDate.getDate('mm-dd-yy'));//any date you want
+        //     // $("#pickUpDateRide").datepicker('setDate', lastDate);
+
+        //     const today = new Date();
+        //     const yyyy = today.getFullYear();
+        //     let mm = today.getMonth() + 1; // Months start at 0!
+        //     let dd = today.getDate();
+
+        //     if (dd < 10) dd = '0' + dd;
+        //     if (mm < 10) mm = '0' + mm;
+
+        //     const formattedToday = mm + '-' + dd + '-' + yyyy;
+
+        //     console.log(formattedToday);
+
+        //   //  document.getElementById('pickUpDateRide').value = formattedToday;
+
+        //     $("#pickUpDateRide").datepicker('setDate', formattedToday);
+
         // });
+
         </script>
        
         <script>

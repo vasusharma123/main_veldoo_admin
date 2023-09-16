@@ -183,7 +183,7 @@
                                             <div class="viewuser_sidebar d-flex align-items-center ride_driver_details_div">
                                                 <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar ride_driver_details_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
-                                                    <span class="user_name ride_driver_details_div_user_name"></span>
+                                                    <span class="user_name ride_driver_details_div_driver_name"></span>
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>

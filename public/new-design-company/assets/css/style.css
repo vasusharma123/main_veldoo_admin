@@ -470,6 +470,7 @@ span.menu_icons.arrow {
 .logo_mobile_top {
     max-width: 223px;
     width: 100%;
+    height: 41px;
 }
 .notify_icon_link {
     text-decoration: none;
@@ -1852,6 +1853,7 @@ button.fc-today-button.fc-button.fc-button-primary {
         max-width: 153px;
         width: 100%;
         margin-right: 15px !important;
+        height: 41px !important;
     }
     .newTop_menu_ul a {
         font-size: 16px;
