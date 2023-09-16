@@ -178,10 +178,10 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-	    $data=array();
-	    $data = array('title'=>'Users','action'=>'List Users');
+	public function index(Request $request)
+	{
+		$data = array();
+		$data = array('title' => 'Users', 'action' => 'List Users');
 		/*$data = [];
 		if($request->has('status') && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -223,71 +223,62 @@ class UserController extends Controller
         }
         */
 
-         if ($request->ajax()) {
+		if ($request->ajax()) {
 
-            $data = User::select(['id', 'first_name', 'last_name','email', 'phone','status','name','country_code','invoice_status'])->where('user_type',1)->orderBy('id','DESC')->get();
+			$data = User::select(['id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status'])->where('user_type', 1)->orderBy('id', 'DESC')->get();
 
-            return Datatables::of($data)
-                            ->addIndexColumn()
-                            ->addColumn('action', function ($row) {
-                                $btn = '<div class="btn-group dropright">
+			return Datatables::of($data)
+				->addIndexColumn()
+				->addColumn('action', function ($row) {
+					$btn = '<div class="btn-group dropright">
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Action
                             </button>
                             <div class="dropdown-menu">
 
-                                <a class="dropdown-item" href="'.route('users.show',$row->id) .'">'.trans("admin.View").'</a>
-                                <a class="dropdown-item" href="'. route('users.edit',$row->id).'">'. trans("admin.Edit").'</a>
-                                <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
+                                <a class="dropdown-item" href="' . route('users.show', $row->id) . '">' . trans("admin.View") . '</a>
+                                <a class="dropdown-item" href="' . route('users.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+                                <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
                             </div>
                         </div>';
 
-                                return $btn;
-
-                            })
-                            ->addColumn('invoice_status', function ($row) {
-                                $status=($row->invoice_status === 1)?'checked':'';
-                                $btn = '<div class="switch">
+					return $btn;
+				})
+				->addColumn('invoice_status', function ($row) {
+					$status = ($row->invoice_status === 1) ? 'checked' : '';
+					$btn = '<div class="switch">
                             <label>
-                                <input type="checkbox" class="invoice_status" data-status="'.$row->invoice_status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+                                <input type="checkbox" class="invoice_status" data-status="' . $row->invoice_status . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
                             </label>
                         </div>';
 
-                                return $btn;
-
-                            })
-                            ->addColumn('status', function ($row) {
-                                $status=($row->status === 1)?'checked':'';
-                                $btn = '<div class="switch">
+					return $btn;
+				})
+				->addColumn('status', function ($row) {
+					$status = ($row->status === 1) ? 'checked' : '';
+					$btn = '<div class="switch">
                             <label>
-                                <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
+                                <input type="checkbox" class="change_status" data-status="' . $row->status . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
                             </label>
                         </div>';
 
-                                return $btn;
-
-                            })->addColumn('first_name', function ($row) {
-
-
-                                return ucfirst($row->first_name);
-
-							})->addColumn('full_name', function ($row) {
-
-
-                                return ucfirst($row->first_name).' '.ucfirst($row->last_name);
-
-                            })
-                            ->addColumn('last_name', function ($row) {
-
-
-                                return ucfirst($row->last_name);
-
-                            })
-                            ->rawColumns(['action','status','first_name','last_name','invoice_status'])
-                            ->make(true);
-        }
-	    return view('admin.users.index')->with($data);
-    }
+					return $btn;
+				})->addColumn('first_name', function ($row) {
+					return ucfirst($row->first_name);
+				})->addColumn('full_name', function ($row) {
+					return ucfirst($row->first_name) . ' ' . ucfirst($row->last_name);
+				})
+				->addColumn('last_name', function ($row) {
+					return ucfirst($row->last_name);
+				})
+				->addColumn('phone', function ($row) {
+					return (!empty($row->country_code) ? "+".$row->country_code."-":"").$row->phone;
+				})
+				->rawColumns(['action', 'status', 'first_name', 'last_name', 'invoice_status'])
+				->make(true);
+		}
+		return view('admin.users.index')->with($data);
+	}
 
     /**
      * Show the form for creating a new resource.
@@ -858,6 +849,9 @@ class UserController extends Controller
 				})
 				->addColumn('full_name', function ($row) {
 					return ucfirst($row->first_name).' '.ucfirst($row->last_name);
+				})
+				->addColumn('phone', function ($row) {
+					return (!empty($row->country_code) ? "+".$row->country_code."-":"").$row->phone;
 				})
 				->rawColumns(['action', 'status', 'master_driver', 'first_name', 'last_name'])
 				->make(true);
