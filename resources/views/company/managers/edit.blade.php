@@ -34,7 +34,7 @@
 										<div class="col-md-8">
 											<div class="form-group">
 												<label for="" class="control-label">Name</label>
-                                                <input type="text" name="name" class="form-control" value="{{ $manager->name }}" required>
+                                                <input type="text" name="name" class="form-control" value="{{ $manager->first_name }}" required>
 											</div>
 											<div class="form-group">
 												<label for="" class="control-label">Email</label>
