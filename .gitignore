@@ -7,3 +7,4 @@ composer.lock
 chat/node_modules
 chat/utils/db.js
 storage/framework/cache/
+.DS_Store
