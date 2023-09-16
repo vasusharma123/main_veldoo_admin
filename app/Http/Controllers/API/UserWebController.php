@@ -44,10 +44,11 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+            $phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+            $user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
             if (!$user) {
                 $generateRandomString = $this->generateRandomString(16);
-                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => $phone_number, 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
             elseif ($user && !$user->random_token) {
                 $generateRandomString = $this->generateRandomString(16);
@@ -152,10 +153,11 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+            $phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+            $user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
             if (!$user) {
                 $generateRandomString = $this->generateRandomString(16);
-                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => $phone_number, 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
             elseif ($user && !$user->random_token) {
                 $generateRandomString = $this->generateRandomString(16);

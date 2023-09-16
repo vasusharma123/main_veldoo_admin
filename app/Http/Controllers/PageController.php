@@ -18,7 +18,7 @@ use App\RideHistory;
 use App;
 use App\SMSTemplate;
 use App\Setting;
-use Log;
+use Illuminate\Support\Facades\Log;
 use Pushok\AuthProvider;
 use Pushok\Client;
 use Pushok\Notification as P_Notification;
@@ -497,14 +497,11 @@ if($_REQUEST['cm'] == 2)
 	// secoond function
 	public function verify_otp_and_ride_booking(Request $request)
 	{
-
-
 		$expiryMin = config('app.otp_expiry_minutes');
 		$now = Carbon::now();
-		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
-
-		if (empty($haveOtp))
-		{
+		$phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'otp' => $request->otp])->first();
+		if (empty($haveOtp)) {
 			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
 		}
 
@@ -513,41 +510,38 @@ if($_REQUEST['cm'] == 2)
 		}
 		$haveOtp->delete();
 
-		if ($request->pick_lat==$request->dest_lat)
-		{
+		if ($request->pick_lat == $request->dest_lat) {
 			$request->dest_address = "";
 			$request->dest_lat = "";
 			$request->dest_lng = "";
 		}
 
-
 		$webobj = new UserWebController;
-		if ($now->diffInMinutes($request->ride_time) <= 15) {
+		$request['ride_time'] = $request->ride_date.' '.$request->ride_time.":00";
+		if (($request->ride_time < $now) || $now->diffInMinutes($request->ride_time) <= 15) {
 			$jsonResponse = $webobj->create_ride_driver($request);
 		} else {
 			$jsonResponse = $webobj->book_ride($request);
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
-		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
-		if($responseObj['status'] == 1){
+		$user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
+		if ($responseObj['status'] == 1) {
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			$SMSTemplate = SMSTemplate::find(2);
-			if ($request->url_type=="taxisteinemann") {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+			if ($request->url_type == "taxisteinemann") {
+				$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+				if (app()->getLocale() != "en") {
+					$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
 				}
 			} else {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+				$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+				if (app()->getLocale() != "en") {
+					$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
 				}
 			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+			$this->sendSMS("+" . $request->country_code, $phone_number, $message_content);
 		}
 		return $jsonResponse;
 	}
