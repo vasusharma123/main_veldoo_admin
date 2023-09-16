@@ -134,7 +134,7 @@
                 <tbody>
                     @foreach ($managers as $key=>$manager)
                         <tr>
-                            <td>{{ $manager->name }}</td>
+                            <td>{{ $manager->first_name }}</td>
                             <td>+{{ $manager->country_code }} {{ $manager->phone }}</td>
                             <td class="">{{ $manager->email }}</td>
                             <td class="">
@@ -283,7 +283,7 @@
         {
             $('.edit_box').find("#imgPreview1").attr('src',"{{ asset('storage') }}/"+user.image);
         }
-        $('.edit_box').find("input[name='name']").val(user.name);
+        $('.edit_box').find("input[name='name']").val(user.first_name);
         $('.edit_box').find("input[name='phone']").val(user.phone);
         $('.edit_box').find("input[name='country_code']").val(user.country_code);
         $('.edit_box').find("input[name='email']").val(user.email);

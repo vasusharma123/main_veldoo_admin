@@ -23,9 +23,15 @@
                                         <li class="nav-item">
                                             <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
+                                        
+                                        @if (Auth::check() && Auth::user()->user_type == 4)
+
+
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
                                         </li>
+
+                                        @endif
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
                                         </li>

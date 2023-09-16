@@ -293,7 +293,7 @@ body{
 .user_name{
     font-family: var(--oswald-font);
     font-size: 18px;
-    color: white;
+    color: var(--secondary-color);
     font-weight: 500;
 }
 .user_position{

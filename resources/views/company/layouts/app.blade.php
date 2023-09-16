@@ -127,8 +127,7 @@
                             <h4 class="sub_heading booking_details_with_status d-flex">Booking Details</h4>
 
 
-                            <span>{{ Auth::user()->user_type >= 4 ? 'Manager' :
-                                'Admin' }}</span>
+                            <span>{{  Auth::check() ? Auth::user()->first_name : '' }} </span>
                             <span class="close_modal desktop_view close_modal_action_view">&times;</span>
                         </div>
                             <div class="map_frame">
