@@ -86,17 +86,31 @@
                 }
             });
             calendar.render();
+
             $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
+
+                let searchParams = new URLSearchParams(window.location.search);
+                let token = searchParams.get('token');
+
                 setTimeout(() => {
                     var currentDate = calendar.view.currentStart;
                     var year = currentDate.getFullYear();
+                    
                     var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
                                 minimumIntegerDigits: 2,
                                 useGrouping: false
                             });
-                    window.location.href = "{{ route('guest.rides','month') }}?m="+year+"-"+month+"-01";
+                    
+                    if(token){
+                        window.location.href = "{{ route('guest.rides','month') }}?token="+token+"&m="+year+"-"+month+"-01";
+                    } else {
+                        window.location.href = "{{ route('guest.rides','month') }}?m="+year+"-"+month+"-01";
+                    }
+
+
                 }, 100);
             });
+
             $(document).keyup(function(e) {
                 if (e.keyCode == '37') {
                     // left arrow

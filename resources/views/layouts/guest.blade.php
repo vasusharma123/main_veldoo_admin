@@ -68,6 +68,12 @@
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
        
-       
+       <script>
+         $(document).keydown(function(event) { 
+                if (event.keyCode == 27) { 
+                    $(document).find('.modalClose').trigger('click');
+                }
+            });
+        </script>
     </body>
 </html>

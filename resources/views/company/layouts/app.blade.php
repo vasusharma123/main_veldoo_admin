@@ -30,7 +30,8 @@
    
 
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
-        <style>
+       
+       <style>
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
@@ -1623,24 +1624,24 @@
                     });
                 });
 
-                $(document).on('keypress','#phone',function(e) {
+                // $(document).on('keypress','#phone',function(e) {
 
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
 
-                $(document).on('keypress','#phone_edit',function(e) {
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                // $(document).on('keypress','#phone_edit',function(e) {
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
             </script>
         @endif
         <script>
@@ -1798,6 +1799,26 @@
                     align: 'right'
                 });
             });
+
+            $(document).keyup(function(e) {
+
+                setTimeout(() => {
+
+                    if (e.key === "Escape") { // escape key maps to keycode `27`
+                        $(document).find('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                    
+                    }
+
+                }, 100);
+
+            });
+
+
+           
+
+          
+
         </script>
     </body>
 </html>

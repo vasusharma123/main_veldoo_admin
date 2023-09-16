@@ -77,19 +77,43 @@
         calendar.gotoDate(new Date(year, month, day));
         calendar.render();
         $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
-            var currentDate = calendar.view.currentStart;
-            var year = currentDate.getFullYear();
-            var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
-                        minimumIntegerDigits: 2,
-                        useGrouping: false
-                    });
-            var day =  (currentDate.getDate()).toLocaleString('en-US', {
-                        minimumIntegerDigits: 2,
-                        useGrouping: false
-                    });
 
-            // alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
-            window.location.href = "{{ route('guest.rides','week') }}?w="+year+"-"+month+"-"+day;
+            let searchParams = new URLSearchParams(window.location.search);
+            let token = searchParams.get('token');
+
+            setTimeout(() => {
+
+                var currentDate = calendar.view.currentStart;
+                var year = currentDate.getFullYear();
+                var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
+                            minimumIntegerDigits: 2,
+                            useGrouping: false
+                        });
+
+                var day =  (currentDate.getDate()).toLocaleString('en-US', {
+                            minimumIntegerDigits: 2,
+                            useGrouping: false
+                        });
+
+               /// alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
+
+                if(token){
+                    window.location.href = "{{ route('guest.rides','week') }}?token="+token+"&w="+year+"-"+month+"-"+day;
+                } else {
+                    window.location.href = "{{ route('guest.rides','week') }}?w="+year+"-"+month+"-"+day;
+                }
+            }, 100);
+        });
+
+
+        $(document).keyup(function(e) {
+            if (e.keyCode == '37') {
+                // left arrow
+                $(document).find("button.fc-prev-button").trigger('click');
+            } else if (e.keyCode == '39') {
+                // right arrow
+                $(document).find("button.fc-next-button").trigger('click');
+            }
         });
     }
 </script>

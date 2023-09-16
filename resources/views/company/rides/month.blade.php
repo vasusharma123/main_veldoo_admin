@@ -74,15 +74,30 @@
             });
             calendar.render();
             $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
-                var currentDate = calendar.view.currentStart;
-                var year = currentDate.getFullYear();
-                var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
-                            minimumIntegerDigits: 2,
-                            useGrouping: false
-                        });
 
-                // alert('Year is ' + year + ' Month is ' + month);
-                window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+                setTimeout(() => {
+                    var currentDate = calendar.view.currentStart;
+                    var year = currentDate.getFullYear();
+                    var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
+                                minimumIntegerDigits: 2,
+                                useGrouping: false
+                            });
+
+                    // alert('Year is ' + year + ' Month is ' + month);
+                    window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+                }, 100);
+
+            });
+
+
+            $(document).keyup(function(e) {
+                if (e.keyCode == '37') {
+                    // left arrow
+                    $(document).find("button.fc-prev-button").trigger('click');
+                } else if (e.keyCode == '39') {
+                    // right arrow
+                    $(document).find("button.fc-next-button").trigger('click');
+                }
             });
         }
 

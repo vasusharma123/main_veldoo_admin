@@ -23,13 +23,15 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 
 
 
         
     </head>
     <body>
-   
+    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+
         <style>
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
@@ -97,6 +99,16 @@
             {
                 display: none !important;
             }
+
+            body{
+                background-image: url(<?php echo $logoImage ?>);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+            }
+
         </style>
         @include('guest.elements.header')
         <div class="main_content">
@@ -633,38 +645,42 @@
 
         <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
 
+       
+        <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script>
+ -->
 
         <script>
-    $('#phone, #phone_edit, .otpfil').keyup(function () { 
-        this.value = this.value.replace(/[^0-9+\.]/g,'');
-    });
+            $('#phone, #phone_edit, .otpfil').keyup(function () { 
+                this.value = this.value.replace(/[^0-9+\.]/g,'');
+            });
     
-    $("#phone, #phone_edit").on("blur", function(e){
+            $("#phone, #phone_edit").on("blur", function(e){
 
-        var conuntrycode = $('#country_code').val();
-        var mobNum = $(this).val();
-        $('#otpPhone').val(mobNum);
-        var filter = /^\d*(?:\.\d{1,2})?$/;
-        if (filter.test(mobNum)) {
-            return true;
-            // if(mobNum.length==10){
-            //     return true;  
-            // } else {
-            //     $(this).val('')
-            //     return false;
-            // }
-        }
-        else if(mobNum.startsWith("+")){
-            var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
-            mobile = temp;
-            $(this).val(mobile)
-            return true; 
-        } else {
-            $(this).val('')
-            return false;
-        }
+                var conuntrycode = $('#country_code').val();
+                var mobNum = $(this).val();
+                $('#otpPhone').val(mobNum);
+                var filter = /^\d*(?:\.\d{1,2})?$/;
+                if (filter.test(mobNum)) {
+                    return true;
+                    // if(mobNum.length==10){
+                    //     return true;  
+                    // } else {
+                    //     $(this).val('')
+                    //     return false;
+                    // }
+                }
+                else if(mobNum.startsWith("+")){
+                    var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
+                    mobile = temp;
+                    $(this).val(mobile)
+                    return true; 
+                } else {
+                    $(this).val('')
+                    return false;
+                }
 
-    });
+            });
 
 
     var input = document.querySelector("#phone");
@@ -718,7 +734,7 @@
             minDate: 0
         });
 
-
+          //  $('#pickUpDateRide').multiDatesPicker();
         </script>
        
         <script>
@@ -1958,24 +1974,25 @@
                     });
                 });
 
-                $(document).on('keypress','#phone',function(e) {
+                // $(document).on('keypress','#phone',function(e) {
 
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
 
-                $(document).on('keypress','#phone_edit',function(e) {
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                // $(document).on('keypress','#phone_edit',function(e) {
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
+
             </script>
         @endif
         <script>
@@ -2291,6 +2308,9 @@
                     $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
                 }
             });
+
+           
+
         </script>
     </body>
 </html>
