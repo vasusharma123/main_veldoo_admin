@@ -89,7 +89,7 @@ class ServiceProviderController extends Controller
                 $message->to($request->email);
                 $message->subject('Email Verification Mail');
             });
-            return redirect()->back()->with('success', __('You need to confirm your account. We have sent you an activation link; please check your email.'));
+            return redirect()->back()->with('success', __('Thank you for registering with Veldoo. Check your mail for a confirmation email.'));
         } catch (Exception $e) {
             Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
             return redirect()->back()->withInput($input)->with('error', $e->getMessage());
@@ -201,8 +201,8 @@ class ServiceProviderController extends Controller
                 $vehicle->fill([
                     'category_id' => $vehicleType->id,
                     'year' => date('Y'),
-                    'model' => Str::random(10),
-                    'vehicle_number_plate' => Str::random(6),
+                    'model' => "Car 1",
+                    'vehicle_number_plate' => "AA11",
                     'service_provider_id' => $verifyUser->id,
                 ]);
                 $vehicle->save();
@@ -210,8 +210,8 @@ class ServiceProviderController extends Controller
                 $vehicle->fill([
                     'category_id' => $vehicleType->id,
                     'year' => date('Y'),
-                    'model' => Str::random(10),
-                    'vehicle_number_plate' => Str::random(6),
+                    'model' => "Car 2",
+                    'vehicle_number_plate' => "BB22",
                     'service_provider_id' => $verifyUser->id,
                 ]);
                 $vehicle->save();
@@ -235,8 +235,8 @@ class ServiceProviderController extends Controller
                 $vehicle->fill([
                     'category_id' => $vehicleType->id,
                     'year' => date('Y'),
-                    'model' => Str::random(10),
-                    'vehicle_number_plate' => Str::random(6),
+                    'model' => "Car 3",
+                    'vehicle_number_plate' => "CC33",
                     'service_provider_id' => $verifyUser->id,
                 ]);
                 $vehicle->save();

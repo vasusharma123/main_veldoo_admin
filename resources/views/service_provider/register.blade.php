@@ -20,7 +20,7 @@
                         <p class="sm_text shadow_text mb-0">{{__('REGISTRATION')}}</p>
                         <h3 class="form_bold_text">Veldoo 2000 {{__('Driver App')}}</h3>
                     </div>
-                    @include('service_provider.includes.flash_alerts')
+                    {{-- @include('service_provider.includes.flash_alerts') --}}
                     {{ Form::open(array('url' => 'service-provider/register_submit','class'=>'input_form','id'=>'registerform','method'=>"post")) }}
                     {{-- <form action="driverlogin.html" method="post" class="input_form"> --}}
                     <div class="row w-100 m-0 gx-4">
@@ -140,5 +140,25 @@
     $(document).on('submit','#registerform',function(){
         $(".submit_btn").attr('disabled',true);
     })
+
+    @if(Session::has('success'))
+    Swal.fire({
+        icon: 'success',
+        text: "{{ Session::get('success') }}",
+        confirmButtonText: 'Back',
+        allowOutsideClick:false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "https://new.veldoo.com";
+        }
+    })
+    @endif
+    @if(Session::has('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "{{ Session::get('error') }}"
+    })
+    @endif
 </script>
 @endsection

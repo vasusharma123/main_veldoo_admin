@@ -8,6 +8,7 @@
     <script src="https://kit.fontawesome.com/9421a306f6.js" crossorigin="anonymous"></script>
     <link href="{{ asset('service_provider_assets/css/style.css')}}" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/setting/admin-favicon.png')}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     @yield('css')
 </head>
 <body>
@@ -18,6 +19,7 @@
     <script src="{{ asset('service_provider_assets/bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js')}}"></script>
     <script src="https://kit.fontawesome.com/9421a306f6.js" crossorigin="anonymous"></script>
     <script src="{{ asset('service_provider_assets/js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('script')
 </body>
 </html>
