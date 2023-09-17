@@ -28,7 +28,8 @@
         
     </head>
     <body>
-   
+    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+
        
     <div class="main_content">
             @yield('content')
@@ -76,4 +77,16 @@
             });
         </script>
     </body>
+
+    <style>
+            body{
+                background-image: url(<?php echo $logoImage ?>);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+            }
+
+        </style>
 </html>

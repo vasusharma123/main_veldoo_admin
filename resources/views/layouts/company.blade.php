@@ -10,6 +10,8 @@
         <link href="{{ asset('new-design-company/assets/css/style.css') }}" rel="stylesheet">
     </head>
     <body>
+    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+
         <div class="main_content">
             @yield('content')
         </div>
@@ -20,5 +22,16 @@
         <script src="{{ asset('new-design-company/assets/js/main.js') }}" type="application/javascript"></script>
         @yield('script')
     </body>
+    <style>
+            body{
+                background-image: url(<?php echo $logoImage ?>);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+            }
+
+        </style>
 </html>
 
