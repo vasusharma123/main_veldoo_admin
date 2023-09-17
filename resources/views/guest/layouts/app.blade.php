@@ -1544,6 +1544,8 @@
 
                 // $(document).on("submit", "#booking_list_form", function(e) {
                     $(document).on("click", ".save_booking", function(e) {
+
+
                     e.preventDefault();
                     if ($('#pickup_latitude').val()=="")
                     {
@@ -1593,9 +1595,16 @@
                             confirmButtonText: "{{ __('Book Ride') }}"
                         }).then((result) => {
                             if (result.value) {
-                                $(document).find(".save_booking").attr('disabled', true);
+
+                                var isLogin = "{{ auth()->check() }}";
+
+                                if(isLogin){
+                                    $(document).find(".save_booking").attr('disabled', true);
+                                }
+
                                 var booking_url = "{{ auth()->check() ? route('guest.ride_booking') : route('send_otp_before_ride_booking') }}";
                                 var authCheck = "{{ auth()->check() }}";
+
                                 $.ajax({
                                     url: "{{ route('guest.user_exist') }}",
                                     type: 'post',
@@ -2280,11 +2289,13 @@
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
+                        $(document).find(".bookRideSBtn").removeAttr('disabled');
                     }
                 },
                 error(response) {
                     new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
+                    $(document).find(".bookRideSBtn").removeAttr('disabled');
                 }
             });
         })

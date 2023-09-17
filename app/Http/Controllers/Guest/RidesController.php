@@ -211,6 +211,10 @@ class RidesController extends Controller
 
     public function ride_booking(Request $request)
     {
+
+       // dd($request->all());
+
+
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
@@ -329,7 +333,6 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
             $ride->save();
             $ride_data = new RideResource(Ride::find($ride->id));
-
             $driverids = explode(",", $driverids);
             $title = 'New Booking';
             $message = 'You Received new booking';
@@ -371,6 +374,8 @@ class RidesController extends Controller
 
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($rideData->id);
             $ride_detail['is_newly_created'] = 1;
+
+
            // dd($ride_detail);
            /// Log::info('socket error', $ride_detail);
             // if (!empty($ride_detail)) {
@@ -417,6 +422,9 @@ class RidesController extends Controller
 
         DB::beginTransaction();
         try {
+
+            // for multipal booking
+
             $ride = new Ride();
             $ride->user_id = $request->user_id??null;
             $rideUser = User::find($request->user_id);

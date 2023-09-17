@@ -501,7 +501,18 @@ if($_REQUEST['cm'] == 2)
 
 		$expiryMin = config('app.otp_expiry_minutes');
 		$now = Carbon::now();
-		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+
+		if(str_contains($request->phone, $request->country_code)){
+
+			$countryCode = '+'.$request->country_code;
+
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, $countryCode), 'otp' => $request->otp])->first();
+		} else {
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+		}
+
+		//$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+
 
 		if (empty($haveOtp))
 		{
