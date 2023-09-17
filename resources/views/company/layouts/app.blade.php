@@ -127,7 +127,7 @@
                             <h4 class="sub_heading booking_details_with_status d-flex">Booking Details</h4>
 
 
-                            <span>{{  Auth::check() ? Auth::user()->first_name : '' }} </span>
+                             <span class="created-by-ride-user-name"> </span>
                             <span class="close_modal desktop_view close_modal_action_view">&times;</span>
                         </div>
                             <div class="map_frame">
@@ -571,6 +571,7 @@
                         },
                         success: function(response) {
                             booking = response.data;
+                            console.log(booking.creator.first_name);
                         },
                         error(response) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
@@ -614,6 +615,8 @@
                         } else {
                             $('.ride_driver_details_div_driver_na').text('N/A');
                         }
+                        
+
                     }
 
                     $('.ride_car_div').hide();
@@ -687,7 +690,9 @@
                     }
                    //  $('.statusList'+selected_ride_id).html(ride_status); if we need to show all button on ride row 
                     $('.booking_details_with_status').html("Booking Details "+ride_status);
-
+                    if(booking.creator){
+                        $(document).find('.created-by-ride-user-name').html(booking.creator.first_name);
+                    }
                     if (booking.dest_lat=="")
                     {
                         // alert('dest null');
@@ -1267,7 +1272,9 @@
 
                                         if (response.status) {          
 
-                                            socket.emit('master-driver-update-web', {"data":response.data});
+                                            console.log(response);
+
+                                           // socket.emit('master-driver-update-web', {"data":response.data});
 
                                             swal.fire("{{ __('Success') }}", response.message,"success");
                                             // setTimeout(function() {

@@ -409,6 +409,7 @@ class RidesController extends Controller
                             // $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
                         })->orderBy('rides.created_at','Desc')->where('company_id','!=',null)->with(['user','driver','vehicle','creator'])->find($id);
         // $ride->status = 2;
+       // dd($ride->creator->first_name);
         return response()->json(['status'=>1,'data'=>$ride]);
     }
 
