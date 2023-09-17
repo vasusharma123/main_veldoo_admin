@@ -103,4 +103,13 @@ class Controller extends BaseController
             \Log::info($ex->getMessage());
         }
     }
+
+    protected function phone_number_trim($phone_number, $country_code = null)
+    {
+        $phone_number = str_replace(' ', '', ltrim($phone_number, "0"));
+        if (!empty($country_code) && str_contains($phone_number, "+" . $country_code)) {
+            $phone_number = str_replace("+" . $country_code, '', $phone_number);
+        }
+        return $phone_number;
+    }
 }

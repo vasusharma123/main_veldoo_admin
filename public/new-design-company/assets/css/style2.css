@@ -1424,9 +1424,15 @@ label.form-lable.boldlable {
     opacity: 1;
     box-shadow: none;
 }
+
 #otpModal .login_form .form-row{
     background: rgb(234 235 239 / 98%) !important;
 }
+
+#otpModalForgetPassword .login_form .form-row{
+    background: rgb(234 235 239 / 98%) !important;
+}
+
 .otpcode_box{
     display: none;
 }

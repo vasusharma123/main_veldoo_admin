@@ -1539,6 +1539,9 @@ button.fc-today-button.fc-button.fc-button-primary {
     font-family: sans-serif;
 }
 
+#confirmOTPModal .login_form .form-row{
+    background: rgb(234 235 239 / 98%) !important;
+}
 
 
 
