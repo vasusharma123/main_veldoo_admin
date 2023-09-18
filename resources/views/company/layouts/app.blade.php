@@ -1274,7 +1274,7 @@
 
                                             console.log(response);
 
-                                           // socket.emit('master-driver-update-web', {"data":response.data});
+                                            socket.emit('master-driver-update-web', {"data":response.data});
 
                                             swal.fire("{{ __('Success') }}", response.message,"success");
                                             // setTimeout(function() {

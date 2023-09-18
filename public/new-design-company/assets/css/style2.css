@@ -1433,6 +1433,12 @@ label.form-lable.boldlable {
     background: rgb(234 235 239 / 98%) !important;
 }
 
+#confirmOTPModal .login_form .form-row{
+    background: rgb(234 235 239 / 98%) !important;
+}
+
+
+
 .otpcode_box{
     display: none;
 }
