@@ -76,6 +76,7 @@
                 padding: 5px;
                 font-size: 14px;
                 color: white;
+                margin-bottom: 0px;
             }
             .fc-event
             {
@@ -124,12 +125,17 @@
                             <span class="btn_text ">Back</span>
                         </a>
                         <div class="header_top view_header">
-                            <h4 class="sub_heading booking_details_with_status d-flex">Booking Details</h4>
+                            <div class="custom_text">
+                                <h4 class="sub_heading booking_details_with_status d-flex align-items-center">Booking Details</h4>
+                                <span class="created-by-ride-user-name"> </span>
+                            </div>
+                            
 
 
-                             <span class="created-by-ride-user-name"> </span>
                             <span class="close_modal desktop_view close_modal_action_view">&times;</span>
                         </div>
+                        
+                        
                             <div class="map_frame">
                                 <div id="googleMap" class="googleMapDesktop"></div>
                             </div>
