@@ -19,6 +19,7 @@
                     <div class="top_form_heading text-center position-relative">
                         <p class="sm_text shadow_text mb-0 sm_white_space">{{__("Welcome to Veldoo APP")}}</p>
                         <h3 class="form_bold_text">{{__("Please add your Driver details to login to the Driver APP")}}</h3>
+                        <small class="sort_info normal_info">{{ __('Thank you for registering with Veldoo. Please fill out the following forms to finish your registration and begin testing the apps.')}}</small>
                     </div>
                     @include('service_provider.includes.flash_alerts')
                     {{ Form::open(array('url' => 'service-provider/register_step1_submit','class'=>'input_form position-relative','id'=>'registerform','method'=>"post")) }}

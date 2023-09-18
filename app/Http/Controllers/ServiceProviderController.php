@@ -412,6 +412,17 @@ class ServiceProviderController extends Controller
                     ]
                 );
             }
+            $phone_number0 = str_replace(' ', '', ltrim($input['phone'][0], "0"));
+            if (str_contains($phone_number0, "+" . $input['country_code'][0])) {
+                $phone_number0 = str_replace("+" . $input['country_code'][0], '', $phone_number0);
+            }
+            $phone_number1 = str_replace(' ', '', ltrim($input['phone'][1], "0"));
+            if (str_contains($phone_number1, "+" . $input['country_code'][1])) {
+                $phone_number1 = str_replace("+" . $input['country_code'][1], '', $phone_number1);
+            }
+            if($phone_number0 == $phone_number1){
+                return redirect()->back()->with('error', __("Each driver must have a unique phone number."));
+            }
         }
         if ($request->service_provider_token) {
             $user_exist = User::where(['is_email_verified_token' => $request->service_provider_token])->first();

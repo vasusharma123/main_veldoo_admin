@@ -31,7 +31,7 @@
                     <div class="row w-100 m-0 gx-4 @php if($price_key !=0 && $vehicle_key == 0){ echo 'mt-5';} elseif ($vehicle_key !=0 ) { echo 'mt-2';} @endphp">
                         @if($vehicle_key == 0)
                         <div class="col-12">
-                            <h2 class="subtitle less_left_space">{{ $price->car_type }}</h2>
+                            <h2 class="subtitle less_left_space required_field">{{ $price->car_type }}</h2>
                         </div>
                         @endif
                         <div class="col-lg-2 col-md-2 col-sm-6 col-12 offset-1 col_form_settings mb-2 align-self-end text-center">
@@ -44,16 +44,16 @@
                                             number') }}</small>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2">
-                            <label class=" label_form">{{ __('Car Model') }}</label>
+                            <label class="label_form required_field">{{ __('Car Model') }}</label>
                             <input type="hidden" name="vehicle_id[]" value="{{ $vehicle->id??old('vehicle_id.'.$loopCount) }}">
-                            <input type="text" name="model[]" class="form-control input_text" value="{{ $vehicle->model??old('model.'.$loopCount) }}" placeholder="TOYOTA PRIUS +" required />
+                            <input type="text" name="model[]" class="form-control input_text" value="{{ $vehicle->model??old('model.'.$loopCount) }}" placeholder="Car {{$vehicle_key+1}}" required />
                             @error('model.'.$loopCount)
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2">
-                            <label class=" label_form">{{ __('Plate Number') }}</label>
-                            <input type="text" name="vehicle_number_plate[]" class="form-control input_text" value="{{ $vehicle->vehicle_number_plate??old('vehicle_number_plate.'.$loopCount) }}" placeholder="ZH 123456" required />
+                            <label class=" label_form required_field">{{ __('Plate Number') }}</label>
+                            <input type="text" name="vehicle_number_plate[]" class="form-control input_text" value="{{ $vehicle->vehicle_number_plate??old('vehicle_number_plate.'.$loopCount) }}" placeholder="AA{{$vehicle_key+1}}{{$vehicle_key+1}}" required />
                             @error('vehicle_number_plate.'.$loopCount)
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
@@ -75,7 +75,7 @@
 
                         </div>
                     </div>
-                    <div class="row w-100 m-0 gx-4 sm_form_row" style="margin-top: 15vh !important;">
+                    <div class="row w-100 m-0 gx-4 sm_form_row">
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mt-3 mb-3 text-end">
                             <a class="btn submit_btn full_width_btn blue_btn" href="{{ route('service-provider.register_step2', ['token' => $token]) }}">
                                 <span class="btn_text">{{ __('Previous') }}</span>

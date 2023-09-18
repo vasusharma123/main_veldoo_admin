@@ -25,7 +25,7 @@
                     @foreach($prices as $price_key => $price)
                     <div class="row w-100 m-0 gx-4 mb-3">
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2 align-self-center text-center">
-                            <label class="bold_label label_form">{{ $price->car_type }}</label>
+                            <label class="bold_label label_form required_field">{{ $price->car_type }}</label>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2 text-left align-self-end">
                             <small class="sort_info normal_info">{{__('Set your start price and price per KM for')}} </small>
@@ -33,7 +33,7 @@
                             <label class="md_label label_form">{{ $price->car_type }}</label>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2">
-                            <label class=" label_form">{{__('Start Fee')}}</label>
+                            <label class=" label_form required_field">{{__('Start Fee')}}</label>
                             <input type="hidden" name="price_id[]" value="{{ $price->id??old('price_id.'.$price_key) }}">
                             <div class="input-group mb-3">
                                 <input type="number" class="input_text form-control" name="basic_fee[]" value="{{ $price->basic_fee??old('basic_fee.'.$price_key) }}" step=".01" placeholder="6.0" aria-label="6.0" aria-describedby="basic-addon1" required>
@@ -44,7 +44,7 @@
                             @enderror
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6 col-12 col_form_settings mb-2">
-                            <label class=" label_form">{{__('Price per KM')}}</label>
+                            <label class=" label_form required_field">{{__('Price per KM')}}</label>
                             <div class="input-group mb-3">
                                 <input type="number" class="input_text form-control" name="price_per_km[]" value="{{ $price->price_per_km??old('price_per_km.'.$price_key) }}" step=".01" placeholder="3.9" aria-label="3.9" aria-describedby="basic-addon2" required>
                                 <span class="input-group-text" id="basic-addon2">CHF</span>
