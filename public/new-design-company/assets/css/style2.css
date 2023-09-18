@@ -21,6 +21,41 @@
     --heebo-font : 'Heebo', sans-serif;
     --open-sans-font : 'Open Sans', sans-serif;
 }
+.login_form .form-row{
+    position: relative;
+}
+
+.fc-scrollgrid-sync-table  .fc-daygrid-day-frame{
+    max-height: 50px;
+    min-height: unset;
+}
+.login_form_box_cover .login_form .close_modal {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    text-decoration: none;
+    color: #000;
+}
+
+.login_form_content .tagline{
+    margin-bottom:23px;
+}
+.login_form_content .link_hyper{
+margin-bottom: 0px !important;
+}
+
+#booking_list_form .swiper-wrapper{
+    height: auto !important;
+}
+
+.sub_heading.booking_details_with_status.d-flex button {
+    width: 38px !important;
+    /* max-height: 20px; */
+    padding: 0;
+    margin-left: 6px !important;
+    display: block;
+    height: 24px !important;
+}
 
 .sign-up-account:hover, .sign-up-account:focus {
     color: var(--primary-color);
@@ -883,6 +918,7 @@ span.status_box{
 }
 #add_new_bookings, #view_booking{
     margin-right: -600px;
+    z-index: 5;
 }
 .veiw_pickup {
     margin-bottom: 40px;
@@ -1436,10 +1472,6 @@ label.form-lable.boldlable {
 .otpcode_box{
     display: none;
 }
-
-
-
-
 
 
 /* Repsonsive Sm */
