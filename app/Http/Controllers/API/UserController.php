@@ -5406,13 +5406,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->company_id)) {
 					$ride->company_id = $request->company_id;
 				}
-				$user_type = Auth::user()->user_type;
-				if ($user_type == 2) {
-					if (!empty($request->payment_type)) {
-						$ride->payment_type = $request->payment_type;
-					}
+				if (!empty($request->payment_type)) {
+					$ride->payment_type = $request->payment_type;
 				}
-
 				if (!empty($request->car_type)) {
 					$ride->car_type = $request->car_type;
 				}
