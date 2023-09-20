@@ -598,13 +598,4 @@ class CompanyController extends Controller
         }
     }
 
-
-     /**
-     * privacy policy page.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function privacy_policy(){
-	    return view('company.privacy-policy.index');
-    }
 }
