@@ -160,7 +160,7 @@ class CompanyController extends Controller
                 ($request->has('admin_password') && !empty($request->admin_password))
             ) 
             {
-                $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+                $data = ['first_name'=>$request->admin_name,'name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
                 if ($request->admin_password) 
                 {
                     $data['password'] = Hash::make($request->admin_password);
@@ -319,7 +319,7 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try {
 
-            $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+            $data = ['first_name'=>$request->admin_name,'name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
             if ($request->has('reset_password') && !empty($request->admin_password)) 
             {
                 $data['password'] = Hash::make($request->admin_password);

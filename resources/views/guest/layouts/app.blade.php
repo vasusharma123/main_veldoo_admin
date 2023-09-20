@@ -1626,6 +1626,7 @@
                                                             var part = currentURL.split("/")[1];
                                                             route = part+'?token='+response.user_data.random_token;
                                                             window.location.href = route;
+                                                            var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
                                                             socket.emit('master-driver-update-web', {"data":response.data});
                                                         }, 1000);
                                                        // socket.emit('master-driver-update-web', {"data":response.data});
@@ -1672,18 +1673,23 @@
 
                 socket.on('master-driver-response-2', async (response) => {
 
-                    console.log('client' + response);
-                    if(response && response.data.id){
-                         setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
+                    var isLoginUserId = "{{ Auth::check() ? Auth::user()->id : '' }}";
+                    console.log(response);
+                    if(response && response.data.creator_id == isLoginUserId ){
 
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
+                    } if(response.data.id = response.ride_id && response.data.is_ride_deleted){
+                        // setTimeout(function() {
+                        //     window.location.reload();
+                        // }, 1000);
                     } else if (response && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
-                         }, 1000);
+                        }, 1000);
                     }
                 });
 
@@ -1896,6 +1902,8 @@
                                     success: function(response) {
                                         if (response.status) {
 
+                                            console.log(response.data)
+
                                             socket.emit('master-driver-update-web', {"data":response.data});
 
                                             swal.fire("{{ __('Success') }}", response.message,
@@ -1991,9 +1999,7 @@
                                     if (response.status) {
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                        
-                                        console.log(response.data);
-
-                                        socket.emit('master-driver-update-web', {"data":response.data});
+                                        socket.emit('master-driver-update-web', {"data":response.data, "ride_id":ride_id});
 
                                         Swal.fire("Success", response.message, "success");
                                         // setTimeout(function() {

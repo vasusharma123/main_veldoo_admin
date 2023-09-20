@@ -1275,17 +1275,16 @@
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
+                                        if (response.status) {  
 
-                                        if (response.status) {          
-
-                                            console.log(response);
-
+                                            
                                             socket.emit('master-driver-update-web', {"data":response.data});
 
                                             swal.fire("{{ __('Success') }}", response.message,"success");
                                             // setTimeout(function() {
                                             //     window.location.reload();
                                             // }, 1000);
+
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1305,13 +1304,18 @@
                 socket.on('master-driver-response-2', async (response) => {
 
                     console.log('client' + response);
-                    if(response && response.data.id){
+                    var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
+                    if(response && response.data.company_id == isLoginUserId ){
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
 
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
+                    } if(response && response.data.is_ride_deleted){
+                         setTimeout(function() {
+                            window.location.reload();
+                         }, 1000);
                     } else if (response && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
