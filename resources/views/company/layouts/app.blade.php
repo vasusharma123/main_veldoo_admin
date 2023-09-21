@@ -696,8 +696,8 @@
                     }
                    //  $('.statusList'+selected_ride_id).html(ride_status); if we need to show all button on ride row 
                     $('.booking_details_with_status').html("Booking Details "+ride_status);
-                    if(booking.creator){
-                        $(document).find('.created-by-ride-user-name').html(booking.creator.first_name);
+                    if(booking){
+                        $(document).find('.created-by-ride-user-name').html(booking.user_first_name);
                     }
                     if (booking.dest_lat=="")
                     {
