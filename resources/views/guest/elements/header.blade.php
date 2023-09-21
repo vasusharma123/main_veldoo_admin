@@ -10,11 +10,22 @@
                             <div class="menus cs_menus me-auto">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">
+
+                                    @if(\Request::get('token'))
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('company.rides') }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
+                                        @else 
+
+                                        <li class="nav-item">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides','month') }}">
+                                                <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
+                                            </a>
+                                        </li>
+
+                                        @endif
 
                                         @if(\Request::get('token'))
                                             <li class="nav-item"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>

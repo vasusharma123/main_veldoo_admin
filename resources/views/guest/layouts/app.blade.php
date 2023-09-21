@@ -971,7 +971,7 @@
                     }
                     else if(booking.status == -4)
                     {
-                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
+                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"><button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
                     }
                     else if(booking.status == 0)
                     {
@@ -1673,8 +1673,20 @@
 
                 socket.on('master-driver-response-2', async (response) => {
 
-                    var isLoginUserId = "{{ Auth::check() ? Auth::user()->id : '' }}";
                     console.log(response);
+
+                    var token = "{{ Request::get('token') }}";
+
+                    var isLoginUserId = "{{ Auth::check() ? Auth::user()->id : '' }}";
+
+                    if(response.data.user && response.data.user.random_token == token ){
+
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
+                    // $("#add_new_bookings").hide();
+                    // $("#listView").load(location.href + " #listView");
+                    }
                     if(response && response.data.creator_id == isLoginUserId ){
 
                         setTimeout(function() {
@@ -1682,10 +1694,10 @@
                         }, 1000);
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } if(response.data.id = response.ride_id && response.data.is_ride_deleted){
-                        // setTimeout(function() {
-                        //     window.location.reload();
-                        // }, 1000);
+                    } if(response && response.ride_id && response.data.is_ride_deleted){
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
                     } else if (response && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
@@ -1855,7 +1867,7 @@
                                     $(document).find(".edit_booking").show();
                                 } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
                                     $(document).find(".edit_booking").hide();
-                                    $(document).find(".cancel_ride").show();
+                                   // $(document).find(".cancel_ride").show();
                                     $("#users").attr("disabled",true);
                                     $("#ride_time").attr("readonly",true);
                                     $("#pickupPoint").attr("disabled",true);
