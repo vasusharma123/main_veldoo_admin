@@ -276,8 +276,8 @@
                         <form method="post" class="add_details_form" id="booking_list_form">
                             @csrf
                             <div class="save_btn_box desktop_view">
-                                <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="submit">{{ __('Book')}}</button>
-                                <button class="btn save_btn edit_booking save_form_btn" type="submit" style="display:none">{{ __('Update')}}</button>
+                                <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="button">{{ __('Book')}}</button>
+                                <button class="btn save_btn edit_booking save_form_btn" type="button" style="display:none">{{ __('Update')}}</button>
                                 <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button>
                             </div>
                             <div class="pickup_Drop_box">
@@ -404,7 +404,7 @@
                                 </div>
                             </div>
                             <div class="save_btn_box mobile_view">
-                                <button type="submit" class="btn save_form_btn bottom_btn w-100">Book Ride</button>
+                                <button type="button" class="btn save_form_btn bottom_btn w-100 save_booking">Book Ride</button>
                             </div>
                         </form>
                     </article>
