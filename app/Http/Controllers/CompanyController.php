@@ -570,7 +570,7 @@ class CompanyController extends Controller
         try 
         {
             // dd($request->all());
-            $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
+            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {
                 $data['password'] = Hash::make($request->password);
