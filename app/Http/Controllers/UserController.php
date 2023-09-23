@@ -57,7 +57,12 @@ class UserController extends Controller
 
 
 	public function guestLogin(){
-		Auth::logout();
+
+		if(Auth::check() && Auth::user()->user_type == 1){
+			Auth::user()->syncRoles('Customer');
+			return redirect()->route('guest.rides','month');
+		}
+
 		$breadcrumb = array('title'=>'Home','action'=>'Login');
 		$vehicle_types = Price::orderBy('sort')->get();
 		$data = [];
