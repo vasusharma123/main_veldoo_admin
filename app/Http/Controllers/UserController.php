@@ -36,11 +36,7 @@ use App\SMSTemplate;
 use App\ServiceProviderDriver;
 use App\Page;
 use Illuminate\Support\Facades\Log;
-use App\SMSTemplate;
 use App\Http\Requests\GuestRegisterRequest;
-use App\Price;
-
-
 
 class UserController extends Controller
 {
