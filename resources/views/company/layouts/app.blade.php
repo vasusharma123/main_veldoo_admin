@@ -1304,6 +1304,7 @@
                 socket.on('master-driver-response-2', async (response) => {
 
                     console.log('client' + response);
+
                     var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
                     if(response && response.data.company_id == isLoginUserId ){
                          setTimeout(function() {
@@ -1312,10 +1313,12 @@
 
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } if(response && response.ride_id && response.data.is_ride_deleted){
+                    } if(response && response.data.is_ride_deleted){
+
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
+
                     } else if (response && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();

@@ -1694,7 +1694,7 @@
                         }, 1000);
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } if(response && response.ride_id && response.data.is_ride_deleted){
+                    } if(response && response.data.is_ride_deleted){
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
