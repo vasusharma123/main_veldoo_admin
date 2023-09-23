@@ -727,41 +727,41 @@
     });
   </script>
         <script>
-        $('#pickUpDateRide').datepicker({
-            dateFormat: 'yy-mm-dd',//check change
-            minDate: 0
-        });
+        // $('#pickUpDateRide').datepicker({
+        //     dateFormat: 'yy-mm-dd',//check change
+        //     minDate: 0
+        // });
 
       
 
-        // $(function() {
+        $(function() {
 
-        //     $("#pickUpDateRide").multiDatesPicker({
-        //         dateFormat: 'yy-mm-dd',
-        //         minDate: 0
-        //     });
+            $("#pickUpDateRide").multiDatesPicker({
+                dateFormat: 'yy-mm-dd',
+                minDate: 0
+            });
 
-        //     // var lastDate = new Date();
-        //     // lastDate.setDate(lastDate.getDate('mm-dd-yy'));//any date you want
-        //     // $("#pickUpDateRide").datepicker('setDate', lastDate);
+            // var lastDate = new Date();
+            // lastDate.setDate(lastDate.getDate('mm-dd-yy'));//any date you want
+            // $("#pickUpDateRide").datepicker('setDate', lastDate);
 
-        //     const today = new Date();
-        //     const yyyy = today.getFullYear();
-        //     let mm = today.getMonth() + 1; // Months start at 0!
-        //     let dd = today.getDate();
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            let mm = today.getMonth() + 1; // Months start at 0!
+            let dd = today.getDate();
 
-        //     if (dd < 10) dd = '0' + dd;
-        //     if (mm < 10) mm = '0' + mm;
+            if (dd < 10) dd = '0' + dd;
+            if (mm < 10) mm = '0' + mm;
 
-        //     const formattedToday = mm + '-' + dd + '-' + yyyy;
+            const formattedToday = mm + '-' + dd + '-' + yyyy;
 
-        //     console.log(formattedToday);
+            console.log(formattedToday);
 
-        //   //  document.getElementById('pickUpDateRide').value = formattedToday;
+          //  document.getElementById('pickUpDateRide').value = formattedToday;
 
-        //     $("#pickUpDateRide").datepicker('setDate', formattedToday);
+            $("#pickUpDateRide").datepicker('setDate', formattedToday);
 
-        // });
+        });
 
         </script>
        
