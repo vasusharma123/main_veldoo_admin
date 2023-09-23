@@ -177,6 +177,12 @@ class ServiceProviderController extends Controller
                     "driver_idle_time" => "60",
                     "current_ride_distance_addition" => "10",
                     "waiting_ride_distance_addition" => "15",
+                    "temporary_phone_number_users" => "40",
+                    "temporary_last_name_users" => "20",
+                    "driver_count_to_display" => "3",
+                    "want_send_sms_to_user_when_ride_accepted_by_driver" => 1,
+                    "want_send_sms_to_user_when_driver_reached_to_pickup_point" => 1,
+                    "want_send_sms_to_user_when_driver_cancelled_the_ride" => 1
                 ];
                 $setting = new Setting();
                 $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue)]);
