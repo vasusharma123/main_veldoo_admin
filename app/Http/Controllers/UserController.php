@@ -57,11 +57,11 @@ class UserController extends Controller
 
 
 	public function guestLogin(){
+		Auth::logout();
 		$breadcrumb = array('title'=>'Home','action'=>'Login');
 		$vehicle_types = Price::orderBy('sort')->get();
-
-
 		$data = [];
+
 		$data = array_merge($breadcrumb,$data);
 		$data['vehicle_types'] = $vehicle_types;
 		return view('guest.auth.login')->with($data);
@@ -105,9 +105,6 @@ class UserController extends Controller
 	}
 
 	public function doLoginGuest(Request $request){
-
-
-
 		$rules = [
 			'phone' => 'required',
 			'country_code' => 'required',
@@ -140,6 +137,7 @@ class UserController extends Controller
 	}
 
 	public function dashboard(){
+
 		
 		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
@@ -162,13 +160,18 @@ class UserController extends Controller
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company');
-            return redirect()->route("company.rides");
+            return redirect()->route('company.rides','month');
 		}
 		elseif(Auth::user()->user_type==5)
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company');
-            return redirect()->route("company.rides");
+            return redirect()->route('company.rides','month');
+		}elseif(Auth::user()->user_type == 1){
+
+			Auth::user()->syncRoles('Customer');
+			return redirect()->route('guest.rides','month');
+
 		}
 		return view('dashboards.'.Auth::user()->user_role)->with($data);
 	}
