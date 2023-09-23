@@ -41,7 +41,7 @@
                                             <input class="form-check-input form_checkbox" type="checkbox" name="remember" id="remember_me">
                                             <label class="form-check-label form-lable w-100" for="remember_me">
                                                 Remember Me
-                                                {{-- <a href="#" class="link_hyper">Forgot Password?</a> --}}
+                                                {{-- <a href="#" class="link_hyper mb-0">Forgot Password?</a> --}}
                                             </label>
                                         </div>
                                     </div>

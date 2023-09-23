@@ -31,6 +31,7 @@ class CompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index(Request $request)
     {
         $data['title'] = "Company";
@@ -136,6 +137,7 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -167,7 +169,9 @@ class CompanyController extends Controller
                 ($request->has('admin_password') && !empty($request->admin_password))
             ) 
             {
-                $data = ['service_provider_id'=>Auth::user()->id,'name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+
+                $data = ['service_provider_id' => Auth::user()->id, 'first_name' => $request->admin_name, 'name' => $request->admin_name, 'email' => $request->admin_email, 'phone' => $request->admin_phone, 'country_code' => $request->admin_country_code, 'user_type' => 4, 'status' => $request->status];
+
                 if ($request->admin_password) 
                 {
                     $data['password'] = Hash::make($request->admin_password);
@@ -328,7 +332,7 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try {
 
-            $data = ['name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
+            $data = ['first_name'=>$request->admin_name,'name'=>$request->admin_name,'email'=>$request->admin_email,'phone'=>$request->admin_phone,'country_code'=>$request->admin_country_code,'user_type'=>4,'status'=>$request->status];
             if ($request->has('reset_password') && !empty($request->admin_password)) 
             {
                 $data['password'] = Hash::make($request->admin_password);
@@ -577,7 +581,7 @@ class CompanyController extends Controller
         try 
         {
             // dd($request->all());
-            $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
+            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {
                 $data['password'] = Hash::make($request->password);
@@ -607,13 +611,4 @@ class CompanyController extends Controller
         }
     }
 
-
-     /**
-     * privacy policy page.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function privacy_policy(){
-	    return view('company.privacy-policy.index');
-    }
 }

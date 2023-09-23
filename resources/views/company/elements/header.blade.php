@@ -5,22 +5,34 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
-                        <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
                         
+                        @if (Auth::check() && !empty($companyInfo->logo) )
+                        <img src="{{ config('app.url_public').'/'.$companyInfo->logo  }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                        @else
+                        <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+
+                        @endif
                             <div class="menus cs_menus me-auto">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('company.rides') }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('company.rides','month') }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
+
                                         <li class="nav-item">
-                                            <a class="nav-link dotnot" href="{{ route('company.rides') }}">My Booking</a>
+                                            <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
+                                        
+                                        @if (Auth::check() && Auth::user()->user_type == 4)
+
+
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
                                         </li>
+
+                                        @endif
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
                                         </li>
@@ -39,7 +51,7 @@
                                 <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
                                     <span class="user_name">{{ Auth::user()->name }}</span>
-                                    <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span>
+                                    <!-- <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span> -->
                                 </div>
                                 @endif
                             </div>

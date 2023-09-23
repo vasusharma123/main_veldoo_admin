@@ -6,6 +6,8 @@ use Validator;
 use DB;
 use App\UserMeta;
 use App\Setting;
+use App\Company;
+
 use App\User;
 use Helper;
 
@@ -40,6 +42,11 @@ class AppServiceProvider extends ServiceProvider
     {
 		view()->composer('*', function($view)
 		{
+			$companyId =  Auth::user() ? Auth::user()->company_id : 0;
+			$companyInfo = '';
+			if($companyId > 0) {
+				$companyInfo = Company::find($companyId);
+			}
 			$record = Auth::user();
 			$admin = User::where(['user_type'=>1])->first();
 			$setting =  array();
@@ -56,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
 				$data['body_class'] = Helper::clean($controller).' '.Helper::clean($action);
 			}
 			$data['setting'] = $setting;
+			$data['companyInfo'] = $companyInfo;
 			$view->with($data);
 		});
 		

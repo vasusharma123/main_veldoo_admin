@@ -51,7 +51,7 @@
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                     <input type="hidden" id="country_code" name="country_code" value="{{ @$company->country_code }}">
-                                                    <input type="tel" id="phone" name="phone" value="{{ @$company->phone }}" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number">
+                                                    <input type="text" id="phone" name="phone" value="{{ @$company->phone }}" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number">
                                                 </div>
                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                     <input type="text" class="form-control main_field" name="city" value="{{ @$company->city }}" placeholder="City" aria-label="City">
@@ -156,12 +156,13 @@
         var mobNum = $(this).val();
         var filter = /^\d*(?:\.\d{1,2})?$/;
         if (filter.test(mobNum)) {
-            if(mobNum.length==10){
-                return true;  
-            } else {
-                $(this).val('')
-                return false;
-            }
+            return true;
+            // if(mobNum.length==10){
+            //     return true;  
+            // } else {
+            //     $(this).val('')
+            //     return false;
+            // }
         }
         else if(mobNum.startsWith("+")){
             var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
@@ -226,6 +227,15 @@
                 var selectedCountryData = itiAdmin.getSelectedCountryData();
                 $('#country_code_admin').val(selectedCountryData.dialCode);
             });
+        });
+
+        $(document).ready(function(){
+
+            var code = "{{@$company->country_code}}";
+            var phone = "{{@$company->phone}}";
+
+            iti.setNumber("+"+code + phone);
+            $("#phone").val(phone);
         });
     </script>
 @endsection

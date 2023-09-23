@@ -22,17 +22,24 @@ class NotificationController extends Controller
     {
         $userDetail = Auth::user();
         try {
-            $last_unseen_notification = Notification::where(['user_id' => $userDetail->id, 'status' => 0])->whereIn('type',[1,10,11])->orderBy('id','desc')->first();
-            if((!empty($last_unseen_notification->additional_data)) && (!empty($last_unseen_notification->additional_data->ride_id))){
-                $rideDetail = Ride::find($last_unseen_notification->additional_data->ride_id);
-                if(!empty($rideDetail) && $rideDetail->status == 0){
-                    return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => $last_unseen_notification], $this->successCode);
+            $last_unseen_notification = Notification::where(['user_id' => $userDetail->id, 'status' => 0])->whereIn('type',[1,10,11,12,13])->orderBy('id','desc')->first();
+            if(!empty($last_unseen_notification)){
+                if((!empty($last_unseen_notification->additional_data)) && (!empty($last_unseen_notification->additional_data->ride_id))){
+                    $rideDetail = Ride::find($last_unseen_notification->additional_data->ride_id);
+                    if(!empty($rideDetail) && $rideDetail->status == 0){
+                        return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => $last_unseen_notification], $this->successCode);
+                    } else {
+                        return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => []], $this->successCode);
+                    }
                 } else {
-                    return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => []], $this->successCode);
+                    return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => $last_unseen_notification], $this->successCode);
                 }
             } else {
                 return response()->json(['status' => 1, 'message' => 'Your last unseen notification', 'data' => []], $this->successCode);
+
             }
+            
+
             
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['status' => 0, 'message' => $exception->getMessage()], $this->warningCode);

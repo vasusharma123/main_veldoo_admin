@@ -18,7 +18,7 @@
     <!-- Bootstrap Core CSS -->
     <link href="{{ asset('/assets/plugins/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
     <!-- Custom CSS -->
-    <link href="{{ asset('/assets/css/style.css')}}" rel="stylesheet">
+    <link href="{{ asset('/assets/css/style.css?q=11')}}" rel="stylesheet">
     <!-- You can change the theme colors from here -->
     <link href="{{ asset('/assets/css/colors/blue.css')}}" id="theme" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/sweetalert/sweetalert.css')}}" id="theme" rel="stylesheet">

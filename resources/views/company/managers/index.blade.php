@@ -134,7 +134,7 @@
                 <tbody>
                     @foreach ($managers as $key=>$manager)
                         <tr>
-                            <td>{{ $manager->name }}</td>
+                            <td>{{ $manager->first_name }}</td>
                             <td>+{{ $manager->country_code }} {{ $manager->phone }}</td>
                             <td class="">{{ $manager->email }}</td>
                             <td class="">
@@ -197,12 +197,13 @@
         var mobNum = $(this).val();
         var filter = /^\d*(?:\.\d{1,2})?$/;
         if (filter.test(mobNum)) {
-            if(mobNum.length==10){
-                return true;  
-            } else {
-                $(this).val('')
-                return false;
-            }
+            return true;
+            // if(mobNum.length==10){
+            //     return true;  
+            // } else {
+            //     $(this).val('')
+            //     return false;
+            // }
         }
         else if(mobNum.startsWith("+")){
             var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
@@ -267,6 +268,7 @@
             $('#country_code_edit').val(selectedCountryData.dialCode);
         });
     });
+    
     $(document).on('click','.editButton',function(){
 
         user = $(this).data('user');
@@ -281,7 +283,7 @@
         {
             $('.edit_box').find("#imgPreview1").attr('src',"{{ asset('storage') }}/"+user.image);
         }
-        $('.edit_box').find("input[name='name']").val(user.name);
+        $('.edit_box').find("input[name='name']").val(user.first_name);
         $('.edit_box').find("input[name='phone']").val(user.phone);
         $('.edit_box').find("input[name='country_code']").val(user.country_code);
         $('.edit_box').find("input[name='email']").val(user.email);

@@ -353,6 +353,12 @@ class UserController extends Controller
 			if (!empty($request->device_token)) {
 				$user['device_token'] = $request->device_token;
 			}
+			if (!empty($request->app_version)) {
+				$user['app_version'] = $request->app_version;
+			}
+			if (!empty($request->phone_model)) {
+				$user['phone_model'] = $request->phone_model;
+			}
 			$user['updated_at'] = Carbon::now();
 			$user['app_installed'] = 1;
 			$user->save();
@@ -425,7 +431,15 @@ class UserController extends Controller
 			if (!empty($request->socket_id)) {
 				$user['socket_id'] = $request->socket_id;
 			}
+
 			$user['service_provider_id'] = $request->service_provider_id;
+			if (!empty($request->app_version)) {
+				$user['app_version'] = $request->app_version;
+			}
+			if (!empty($request->phone_model)) {
+				$user['phone_model'] = $request->phone_model;
+			}
+
 			$user['availability'] = 0;
 			$user->save();
 			/* if($user->status == 0){
@@ -497,6 +511,13 @@ class UserController extends Controller
 		if (!empty($request->device_token)) {
 			$userData->device_token = $request->device_token;
 		}
+		if (!empty($request->app_version)) {
+			$userData->app_version = $request->app_version;
+		}
+		if (!empty($request->phone_model)) {
+			$userData->phone_model = $request->phone_model;
+		}
+		
 		$userData->verify = 1;
 		$userData->availability= 0;
 		$userData->updated_at = Carbon::now();
@@ -548,6 +569,12 @@ class UserController extends Controller
 			}
 			if (!empty($request->device_token)) {
 				$userData->device_token = $request->device_token;
+			}
+			if (!empty($request->app_version)) {
+				$userData->app_version = $request->app_version;
+			}
+			if (!empty($request->phone_model)) {
+				$userData->phone_model = $request->phone_model;
 			}
 			$userData->verify = 1;
 			$userData->save();
@@ -1595,6 +1622,12 @@ class UserController extends Controller
 				}
 				if (!empty($request->device_token)) {
 					$userData->device_token = $request->device_token;
+				}
+				if (!empty($request->app_version)) {
+					$userData->app_version = $request->app_version;
+				}
+				if (!empty($request->phone_model)) {
+					$userData->phone_model = $request->phone_model;
 				}
 				$userData->verify = 1;
 				$userData->save();
@@ -4629,7 +4662,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		
 		$ride = new Ride();
 		$lat = '';
-	    $lon = '';
+	    $lon = ''; 
 		$ride->pickup_address = $request->pickup_location;
 		if (!empty($request->drop_location)) {
 			$ride->dest_address = $request->drop_location;
@@ -5306,7 +5339,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if(empty($request->ride_id)) {
 			return response()->json(['message' => "The ride id field is required."], $this->warningCode);
 		}
-	
 		try {
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
@@ -5392,13 +5424,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if (!empty($request->company_id)) {
 					$ride->company_id = $request->company_id;
 				}
-				$user_type = Auth::user()->user_type;
-				if ($user_type == 2) {
-					if (!empty($request->payment_type)) {
-						$ride->payment_type = $request->payment_type;
-					}
+				if (!empty($request->payment_type)) {
+					$ride->payment_type = $request->payment_type;
 				}
-
 				if (!empty($request->car_type)) {
 					$ride->car_type = $request->car_type;
 				}

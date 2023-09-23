@@ -29,7 +29,7 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           /// 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
@@ -44,10 +44,11 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+            $phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+            $user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
             if (!$user) {
                 $generateRandomString = $this->generateRandomString(16);
-                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => $phone_number, 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
             elseif ($user && !$user->random_token) {
                 $generateRandomString = $this->generateRandomString(16);
@@ -106,7 +107,7 @@ class UserWebController extends Controller
             $ride->platform = "web";
             $ride->save();
             DB::commit();
-            return response()->json(['status' => 1, 'message' => __('Ride Booked successfully'),'user_data'=>$user], $this->successCode);
+            return response()->json(['status' => 1, 'booking_status' => 'direct', 'message' => __('Ride Booked successfully'),'user_data'=>$user], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -136,13 +137,13 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           //'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
             'car_type' => 'required',
             'ride_time' => 'required',
-            'dest_address' => 'required'
+           // 'dest_address' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -152,10 +153,11 @@ class UserWebController extends Controller
 
         DB::beginTransaction();
         try {
-            $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+            $phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+            $user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
             if (!$user) {
                 $generateRandomString = $this->generateRandomString(16);
-                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
+                $user = User::create(['random_token'=>$generateRandomString,'country_code' => $request->country_code, 'phone' => $phone_number, 'first_name' => $request->first_name, 'last_name' => $request->last_name??'', 'user_type' => 1]);
             }
             elseif ($user && !$user->random_token) {
                 $generateRandomString = $this->generateRandomString(16);
@@ -287,7 +289,7 @@ class UserWebController extends Controller
             $rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
             $rideData->save();
             DB::commit();
-            return response()->json(['status' => 1, 'message' => __('Instant ride created successfully.'), 'data' => $ride,'user_data'=>$user], $this->successCode);
+            return response()->json(['status' => 1,'booking_status' => 'direct', 'message' => __('Instant ride created successfully.'), 'data' => $ride,'user_data'=>$user], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -302,7 +304,7 @@ class UserWebController extends Controller
         $rules = [
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           // 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
@@ -371,13 +373,13 @@ class UserWebController extends Controller
             'ride_id' => 'required',
             'country_code' => 'required',
             'phone' => 'required',
-            'first_name' => 'required',
+           // 'first_name' => 'required',
             'pick_lat' => 'required',
             'pick_lng' => 'required',
             'pickup_address' => 'required',
             'car_type' => 'required',
             'ride_time' => 'required',
-            'dest_address' => 'required'
+            //'dest_address' => 'required'
         ];
 
         $validator = Validator::make($request->all(), $rules);

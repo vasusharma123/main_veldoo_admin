@@ -52,7 +52,9 @@ class ManagersController extends Controller
         DB::beginTransaction();
         try
         {
-            $data = ['service_provider_id'=>Auth::user()->service_provider_id,'name'=>$request->name,'email'=>$request->email,'password'=>Hash::make($request->password),'user_type'=>5,'company_id'=>Auth::user()->company_id];
+
+            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => 5, 'company_id' => Auth::user()->company_id];
+
             $data['created_by'] = Auth::user()->id;
             if ($request->phone)
             {
@@ -111,7 +113,7 @@ class ManagersController extends Controller
         DB::beginTransaction();
         try
         {
-            $data = ['name'=>$request->name,'email'=>$request->email];
+            $data = ['first_name'=>$request->name,'email'=>$request->email];
             if ($request->phone)
             {
                 $data['phone'] = str_replace(' ', '', $request->phone);

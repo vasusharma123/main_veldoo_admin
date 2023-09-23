@@ -28,7 +28,10 @@
     </head>
     <body>
    
-        <style>
+
+    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+       
+       <style>
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
@@ -73,6 +76,7 @@
                 padding: 5px;
                 font-size: 14px;
                 color: white;
+                margin-bottom: 0px;
             }
             .fc-event
             {
@@ -95,6 +99,16 @@
             {
                 display: none !important;
             }
+
+            body{
+                background-image: url(<?php echo $logoImage ?>);
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+            }
+
         </style>
         @include('company.elements.header')
         <div class="main_content">
@@ -111,9 +125,17 @@
                             <span class="btn_text ">Back</span>
                         </a>
                         <div class="header_top view_header">
-                            <h4 class="sub_heading booking_details_with_status d-flex">Booking Details</h4>
+                            <div class="custom_text">
+                                <h4 class="sub_heading booking_details_with_status d-flex align-items-center">Booking Details</h4>
+                                <span class="created-by-ride-user-name"> </span>
+                            </div>
+                            
+
+
                             <span class="close_modal desktop_view close_modal_action_view">&times;</span>
                         </div>
+                        
+                        
                             <div class="map_frame">
                                 <div id="googleMap" class="googleMapDesktop"></div>
                             </div>
@@ -166,7 +188,7 @@
                                             <div class="viewuser_sidebar d-flex align-items-center ride_driver_details_div">
                                                 <img src="{{ asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar ride_driver_details_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
-                                                    <span class="user_name ride_driver_details_div_user_name"></span>
+                                                    <span class="user_name ride_driver_details_div_driver_name"></span>
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
@@ -254,8 +276,8 @@
                         <form method="post" class="add_details_form" id="booking_list_form">
                             @csrf
                             <div class="save_btn_box desktop_view">
-                                <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="submit">{{ __('Book')}}</button>
-                                <button class="btn save_btn edit_booking save_form_btn" type="submit" style="display:none">{{ __('Update')}}</button>
+                                <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="button">{{ __('Book')}}</button>
+                                <button class="btn save_btn edit_booking save_form_btn" type="button" style="display:none">{{ __('Update')}}</button>
                                 <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button>
                             </div>
                             <div class="pickup_Drop_box">
@@ -310,7 +332,7 @@
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
 
-                                            <input type="text" id="time" value="<?php echo date("h:i") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
+                                            <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
 
                                         </div>
                                     </div>
@@ -382,7 +404,7 @@
                                 </div>
                             </div>
                             <div class="save_btn_box mobile_view">
-                                <button type="submit" class="btn save_form_btn bottom_btn w-100">Book Ride</button>
+                                <button type="button" class="btn save_form_btn bottom_btn w-100 save_booking">Book Ride</button>
                             </div>
                         </form>
                     </article>
@@ -555,6 +577,7 @@
                         },
                         success: function(response) {
                             booking = response.data;
+                            console.log(booking.creator.first_name);
                         },
                         error(response) {
                             swal.fire("{{ __('Error') }}", response.message, "error");
@@ -592,7 +615,14 @@
                             $('.ride_driver_details_div_image').attr('src',"{{ asset('company/assets/imgs/sideBarIcon/accounts.png') }}");
                         }
                         $('.ride_driver_details_div_driver_name').html(booking.driver.first_name+' '+booking.driver.last_name);
-                        $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+                        if(booking.driver.country_code) {
+                            $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
+                            $('.ride_driver_details_div_driver_na').text('');
+                        } else {
+                            $('.ride_driver_details_div_driver_na').text('N/A');
+                        }
+                        
+
                     }
 
                     $('.ride_car_div').hide();
@@ -654,7 +684,7 @@
                     }
                     else if(booking.status == -4)
                     {
-                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
+                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
                     }
                     else if(booking.status == 0)
                     {
@@ -666,7 +696,9 @@
                     }
                    //  $('.statusList'+selected_ride_id).html(ride_status); if we need to show all button on ride row 
                     $('.booking_details_with_status').html("Booking Details "+ride_status);
-
+                    if(booking.creator){
+                        $(document).find('.created-by-ride-user-name').html(booking.creator.first_name);
+                    }
                     if (booking.dest_lat=="")
                     {
                         // alert('dest null');
@@ -1200,7 +1232,8 @@
 
                 google.maps.event.addDomListener(window, 'load', autocomplete_initialize);
 
-                $(document).on("submit", "#booking_list_form", function(e) {
+                $(document).on("click", ".save_booking", function(e) {
+                // $(document).on("submit", "#booking_list_form", function(e) {
                     e.preventDefault();
                     if ($('#pickup_latitude').val()=="")
                     {
@@ -1242,15 +1275,16 @@
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
+                                        if (response.status) {  
 
-                                        if (response.status) {          
-
+                                            
                                             socket.emit('master-driver-update-web', {"data":response.data});
 
                                             swal.fire("{{ __('Success') }}", response.message,"success");
                                             // setTimeout(function() {
                                             //     window.location.reload();
                                             // }, 1000);
+
                                         } else if (response.status == 0) {
                                             swal.fire("{{ __('Error') }}", response.message,
                                                 "error");
@@ -1270,13 +1304,18 @@
                 socket.on('master-driver-response-2', async (response) => {
 
                     console.log('client' + response);
-                    if(response && response.data.id){
+                    var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
+                    if(response && response.data.company_id == isLoginUserId ){
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
 
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
+                    } if(response && response.ride_id && response.data.is_ride_deleted){
+                         setTimeout(function() {
+                            window.location.reload();
+                         }, 1000);
                     } else if (response && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
@@ -1439,7 +1478,7 @@
                                     $(document).find(".edit_booking").show();
                                 } else if(response.data.ride_detail.status == 1 || response.data.ride_detail.status == 2 || response.data.ride_detail.status == 4){
                                     $(document).find(".edit_booking").hide();
-                                    $(document).find(".cancel_ride").show();
+                                   // $(document).find(".cancel_ride").show();
                                     $("#users").attr("disabled",true);
                                     $("#ride_time").attr("readonly",true);
                                     $("#pickupPoint").attr("disabled",true);
@@ -1601,24 +1640,24 @@
                     });
                 });
 
-                $(document).on('keypress','#phone',function(e) {
+                // $(document).on('keypress','#phone',function(e) {
 
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
 
-                $(document).on('keypress','#phone_edit',function(e) {
-                    var keyCode = e.which ? e.which : e.keyCode;
-                    var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
+                // $(document).on('keypress','#phone_edit',function(e) {
+                //     var keyCode = e.which ? e.which : e.keyCode;
+                //     var isValid = (keyCode >= 48 && keyCode <= 57) || keyCode === 8 || keyCode === 9;
 
-                    if (!isValid) {
-                        e.preventDefault();
-                    }
-                });
+                //     if (!isValid) {
+                //         e.preventDefault();
+                //     }
+                // });
             </script>
         @endif
         <script>
@@ -1776,6 +1815,26 @@
                     align: 'right'
                 });
             });
+
+            $(document).keyup(function(e) {
+
+                setTimeout(() => {
+
+                    if (e.key === "Escape") { // escape key maps to keycode `27`
+                        $(document).find('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                    
+                    }
+
+                }, 100);
+
+            });
+
+
+           
+
+          
+
         </script>
     </body>
 </html>
