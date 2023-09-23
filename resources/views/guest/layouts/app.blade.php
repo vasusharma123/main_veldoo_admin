@@ -1679,7 +1679,7 @@
 
                     var isLoginUserId = "{{ Auth::check() ? Auth::user()->id : '' }}";
 
-                    if(response.data.user && response.data.user.random_token == token ){
+                    if(response && response.data && response.data.user && response.data.user.random_token == token ){
 
                     setTimeout(function() {
                         window.location.reload();
@@ -1687,18 +1687,18 @@
                     // $("#add_new_bookings").hide();
                     // $("#listView").load(location.href + " #listView");
                     }
-                    if(response && response.data.creator_id == isLoginUserId ){
+                    if(response && response.data  && response.data.creator_id == isLoginUserId ){
 
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
                        // $("#add_new_bookings").hide();
                        // $("#listView").load(location.href + " #listView");
-                    } if(response.data && response.data.is_ride_deleted){
+                    } if(response && response.data  && response.data.is_ride_deleted){
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
-                    } else if (response && response.data.delete_for_all) {
+                    } else if (response && response.data  && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
