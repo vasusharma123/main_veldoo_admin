@@ -127,8 +127,8 @@
 
                             <div class="form_title text-center">
                                 <!-- <a href="{{route('guest.register')}}" class="tagline sign-up-account">Don't have an account? Sign up</a> -->
-                                <a href="javascript:void(0)" class="user_name sd d-block tagline sign-up-account" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
-                                <hr class="divider_form" />
+                                <a href="javascript:void(0)" class=" sd d-block tagline sign-up-account my-3" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
+                               
                             </div>
                             <!-- /Form Title -->
 
