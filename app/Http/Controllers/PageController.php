@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\API\UserWebController;
+use App\Http\Controllers\Guest\RidesController;
 use Exception;
 use App\Notification;
 use App\RideHistory;
@@ -497,9 +498,12 @@ if($_REQUEST['cm'] == 2)
 	// secoond function
 	public function verify_otp_and_ride_booking(Request $request)
 	{
+
 		$expiryMin = config('app.otp_expiry_minutes');
 		$now = Carbon::now();
+
 		$phone_number = $this->phone_number_trim($request->phone, $request->country_code);
+
 		$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'otp' => $request->otp])->first();
 		if (empty($haveOtp)) {
 			return response()->json(['status' => 0, 'message' => __('Verification code is incorrect, please try again')]);
@@ -517,8 +521,11 @@ if($_REQUEST['cm'] == 2)
 		}
 
 		$webobj = new UserWebController;
-		$request['ride_time'] = $request->ride_date.' '.$request->ride_time.":00";
-		if (($request->ride_time < $now) || $now->diffInMinutes($request->ride_time) <= 15) {
+
+		$dates = count(explode(",",$request->ride_date));
+
+        if ($now->diffInMinutes($request->ride_time) <= 15 && $dates <= 1) {
+			$request['ride_time'] = $request->ride_date.' '.$request->ride_time.":00";
 			$jsonResponse = $webobj->create_ride_driver($request);
 		} else {
 			$jsonResponse = $webobj->book_ride($request);

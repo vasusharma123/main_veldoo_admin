@@ -316,6 +316,8 @@
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+
                                             <!-- <input type="date" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date"> -->
 
                                             
@@ -459,6 +461,7 @@
 
         <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
 
+        <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script>
 
         <script>
     $(function(){
@@ -475,10 +478,16 @@
     });
   </script>
         <script>
-        $('#pickUpDateRide').datepicker({
-            dateFormat: 'yy-mm-dd',//check change
-            minDate: 0
-        });
+            $('#pickUpDateRideEdit').datepicker({
+                dateFormat: 'yy-mm-dd',//check change
+                minDate: 0
+            });
+
+
+            $("#pickUpDateRide").multiDatesPicker({
+                dateFormat: 'yy-mm-dd',
+                minDate: 0
+            });
 
 
         </script>
@@ -840,6 +849,12 @@
                                 $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
                                 $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
                                 $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+
+                                $("#pickUpDateRideEdit").hide();
+                                $("#pickUpDateRide").show();
+                                $("#pickUpDateRideEdit").attr("disabled",true);
+                                $("#pickUpDateRide").attr("disabled",false);
+
                                 if(response.data.ride_detail.user_id == 0){
                                     $("#users").val("").change();
                                 } else {
@@ -940,6 +955,11 @@
                     $(document).find(".cancel_ride").hide();
                     $(document).find(".edit_booking").hide();
                     $('.bookRideTitle').html('Book a Ride');
+
+                    $("#pickUpDateRideEdit").hide();
+                    $("#pickUpDateRide").show();
+                    $("#pickUpDateRideEdit").attr("disabled",true);
+                    $("#pickUpDateRide").attr("disabled",false);
 
                     $("#users").attr("disabled",false);
                     $("#ride_time").attr("readonly",false);
@@ -1303,16 +1323,12 @@
 
                 socket.on('master-driver-response-2', async (response) => {
 
-                    console.log('client' + response);
-
                     var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
                     if(response && response.data && response.data.company_id == isLoginUserId ){
                          setTimeout(function() {
                             window.location.reload();
                          }, 1000);
-
-                       // $("#add_new_bookings").hide();
-                       // $("#listView").load(location.href + " #listView");
+                       
                     } if(response && response.data && response.data.is_ride_deleted){
 
                          setTimeout(function() {
@@ -1429,6 +1445,12 @@
                                 $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
                                 $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
                                 $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+
+                                $("#pickUpDateRideEdit").show();
+                                $("#pickUpDateRide").hide();
+                                $("#pickUpDateRideEdit").attr("disabled",false);
+                                $("#pickUpDateRide").attr("disabled",true);
+
                                 if(response.data.ride_detail.user_id == 0){
                                     $("#users").val("").change();
                                 } else {
@@ -1516,15 +1538,22 @@
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
                             cancelButtonColor: '#d33',
-                            confirmButtonText: "{{ __('Update Ride') }}"
+                            confirmButtonText: "{{ __('Update Ride') }}",
+                            input: 'checkbox',
+                            inputName: 'change_for_all',
+                            inputValue: 0,
+                            inputPlaceholder:'Update all related ride',
                         }).then((result) => {
                             if (result.value) {
                                 $(document).find(".edit_booking").attr('disabled', true);
+                                var change_for_all = result.value === 0 ? 0 : 1;
+
                                 $.ajax({
                                     url: "{{ route('company.ride_booking_update') }}",
                                     type: 'post',
                                     dataType: 'json',
-                                    data: $('form#booking_list_form').serialize(),
+                                    data: $('form#booking_list_form').serialize()+ '&change_for_all=' + change_for_all,
+
                                     success: function(response) {
                                         if (response.status) {
 
@@ -1566,16 +1595,22 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: "{{ __('Confirm') }}"
+                        confirmButtonText: "{{ __('Confirm') }}",
+                        input: 'checkbox',
+                        inputName: 'delete_for_all',
+                        inputValue: 0,
+                        inputPlaceholder:'Cancel all related ride',
                     }).then((result) => {
-                        if (result.value) {
+                        if (result.value === 0 || result.value) {
                             $.ajax({
                                 url: "{{ route('company.cancel_booking') }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {
                                     "_token": "{{ csrf_token() }}",
-                                    'ride_id': ride_id
+                                    'ride_id': ride_id,
+                                    'delete_for_all' : result.value === 0 ? 0 : 1,
+
                                 },
                                 success: function(response) {
                                     if (response.status) {
@@ -1607,9 +1642,13 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Confirm'
+                        confirmButtonText: 'Confirm',
+                        input: 'checkbox',
+                        inputName: 'delete_for_all',
+                        inputValue: 0,
+                        inputPlaceholder:'Delete all related ride',
                     }).then((result) => {
-                        if (result.value) {
+                        if (result.value === 0 || result.value) {
                             var ride_id = $(this).attr('data-id');
                             $.ajax({
                                 url: "{{ route('company.delete_booking') }}",
@@ -1617,7 +1656,9 @@
                                 dataType: 'json',
                                 data: {
                                     "_token": "{{ csrf_token() }}",
-                                    'ride_id': ride_id
+                                    'ride_id': ride_id,
+                                    'delete_for_all' : result.value === 0 ? 0 : 1,
+
                                 },
                                 success: function(response) {
                                     if (response.status) {
