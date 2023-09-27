@@ -629,9 +629,6 @@ class RidesController extends Controller
 
     protected function create_ride_driver_edit(Request $request)
     {
-
-        dd($request->all());
-
         $rules = [
             'ride_id' => 'required',
             'pick_lat' => 'required',
