@@ -629,6 +629,9 @@ class RidesController extends Controller
 
     protected function create_ride_driver_edit(Request $request)
     {
+
+        dd($request->all());
+
         $rules = [
             'ride_id' => 'required',
             'pick_lat' => 'required',
@@ -1021,6 +1024,8 @@ class RidesController extends Controller
 
             //$user = Auth::user()->id;
             $rideDetail = Ride::find($request->ride_id);
+            $input = $request->all();
+
             $rideObj = new Ride;
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
@@ -1032,11 +1037,11 @@ class RidesController extends Controller
            // Ride::where(['id' => $request->ride_id])->delete();
            // RideHistory::where(['ride_id' => $request->ride_id])->delete();
 
-            $ride_detail_socket['id'] = $request->ride_id;
-            $ride_detail_socket['is_ride_deleted'] = 1;
+            $input['id'] = $request->ride_id;
+            $input['is_ride_deleted'] = 1;
 
             DB::commit();
-			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $ride_detail_socket]);
+			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $input]);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);

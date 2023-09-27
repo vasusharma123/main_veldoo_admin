@@ -1329,7 +1329,9 @@
                             window.location.reload();
                          }, 1000);
                        
-                    } if(response && response.data && response.data.is_ride_deleted){
+                    } else if(response && response.data && response.data.is_ride_deleted && response.ride_id == response.data.id){
+                        console.log(response);
+                        console.log('isLoginUserId'+isLoginUserId);
 
                          setTimeout(function() {
                             window.location.reload();
@@ -1544,7 +1546,7 @@
                             inputValue: 0,
                             inputPlaceholder:'Update all related ride',
                         }).then((result) => {
-                            if (result.value) {
+                            if (result.value === 0 || result.value) {
                                 $(document).find(".edit_booking").attr('disabled', true);
                                 var change_for_all = result.value === 0 ? 0 : 1;
 
@@ -1666,7 +1668,7 @@
                                        
                                         console.log(response.data);
 
-                                        socket.emit('master-driver-update-web', {"data":response.data});
+                                        socket.emit('master-driver-update-web', {"data":response.data, "ride_id":ride_id});
 
                                         Swal.fire("Success", response.message, "success");
                                         // setTimeout(function() {

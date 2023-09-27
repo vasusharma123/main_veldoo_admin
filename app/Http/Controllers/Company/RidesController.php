@@ -473,7 +473,7 @@ class RidesController extends Controller
                         ->where('company_id','!=',null)
                         ->with(['user','driver','vehicle','creator','company'])->find($id);
         // $ride->status = 2;
-        $ride['user_first_name'] = $ride->company->user->first_name;
+        $ride['user_first_name'] = $ride->company ? $ride->company->user->first_name : '';
         return response()->json(['status'=>1,'data'=>$ride]);
     }
 
@@ -878,7 +878,7 @@ class RidesController extends Controller
             DB::beginTransaction();
 
             $rideDetail = Ride::find($request->ride_id);
-
+            $input = $request->all();
             $rideObj = new Ride;
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
@@ -887,11 +887,11 @@ class RidesController extends Controller
             }
             $rideObj->delete();
 
-            $rideDetail['id'] = $request->ride_id;
-            $rideDetail['is_ride_deleted'] = 1;
+            $input['id'] = $request->ride_id;
+            $input['is_ride_deleted'] = 1;
 
             DB::commit();
-			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $rideDetail]);
+			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $input]);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['status' => 0, 'message' => $e->getMessage()], 400);
