@@ -464,6 +464,7 @@
         <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script>
 
         <script>
+        var deletedRideId;
     $(function(){
       
       $('input[id$="time"]').inputmask(
@@ -1325,23 +1326,27 @@
 
                     var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
                     if(response && response.data && response.data.company_id == isLoginUserId ){
-                         setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
-                       
-                    } else if(response && response.data && response.data.is_ride_deleted && response.ride_id == response.data.id){
-                        console.log(response);
-                        console.log('isLoginUserId'+isLoginUserId);
-
-                         setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
-
-                    } else if (response && response.data && response.data.delete_for_all) {
                         setTimeout(function() {
                             window.location.reload();
-                         }, 1000);
-                    }
+                        }, 1000);
+                       
+                    } else if(response && deletedRideId && response.data && response.data.is_ride_deleted && response.ride_id == deletedRideId){
+
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+
+                        // $(document).find('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        // $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        // $("#listView").load(location.href + " #listView");
+
+                    } 
+                    // else if (response && response.data && response.data.delete_for_all) {
+
+                    //     setTimeout(function() {
+                    //         window.location.reload();
+                    //     }, 1000);
+                    // }
                 });
 
 
@@ -1664,10 +1669,9 @@
                                 },
                                 success: function(response) {
                                     if (response.status) {
+                                        deletedRideId = ride_id;
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                        
-                                        console.log(response.data);
-
                                         socket.emit('master-driver-update-web', {"data":response.data, "ride_id":ride_id});
 
                                         Swal.fire("Success", response.message, "success");

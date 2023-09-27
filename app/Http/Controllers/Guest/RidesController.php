@@ -227,16 +227,29 @@ class RidesController extends Controller
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
+        $dates = count(explode(",",$request->ride_date));
 
-        
-       $dates = count(explode(",",$request->ride_date));
+      
 
-        if ($now->diffInMinutes($request->ride_time) <= 15 && $dates <= 1) {
+        $reqDate =  ($request->ride_date.' '.$request->ride_time.":00");
+
+        echo $reqDate;
+        echo "<br/>";
+        echo $now;
+        echo "<br/>";
+        echo $now->diffInMinutes($request->ride_time);
+
+        die;
+
+        if (($reqDate > $now) || $now->diffInMinutes($reqDate) <= 15 && $dates <= 1) {
+            dd('if');
             $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
             $jsonResponse = $this->create_ride_driver($request);
         } else {
+            dd('else');
             $jsonResponse = $this->book_ride($request);
         }
+
         return $jsonResponse;
     }
 

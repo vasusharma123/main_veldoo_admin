@@ -651,6 +651,9 @@
 
 
         <script>
+
+            var deletedRideId;
+
             $('#phone, #phone_edit, .otpfil').keyup(function () { 
                 this.value = this.value.replace(/[^0-9+\.]/g,'');
             });
@@ -1666,28 +1669,28 @@
 
                     if(response && response.data && response.data.user && response.data.user.random_token == token ){
 
-                    setTimeout(function() {
-                        window.location.reload();
-                    }, 1000);
-                    // $("#add_new_bookings").hide();
-                    // $("#listView").load(location.href + " #listView");
-                    }
-                    if(response && response.data  && response.data.creator_id == isLoginUserId ){
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+
+                    }else if(response && response.data  && response.data.creator_id == isLoginUserId ){
 
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
-                       // $("#add_new_bookings").hide();
-                       // $("#listView").load(location.href + " #listView");
-                    } if(response && response.data  && response.data.is_ride_deleted){
+                    
+                    } else if(response && deletedRideId && response.data && response.data.is_ride_deleted && response.ride_id == deletedRideId){
+
                         setTimeout(function() {
                             window.location.reload();
                         }, 1000);
-                    } else if (response && response.data  && response.data.delete_for_all) {
-                        setTimeout(function() {
-                            window.location.reload();
-                        }, 1000);
+
                     }
+                    // else if (response && response.data  && response.data.delete_for_all) {
+                    //     setTimeout(function() {
+                    //         window.location.reload();
+                    //     }, 1000);
+                    // }
                 });
 
 
@@ -2021,6 +2024,7 @@
                                 },
                                 success: function(response) {
                                     if (response.status) {
+                                        deletedRideId = ride_id;
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                        
                                         socket.emit('master-driver-update-web', {"data":response.data, "ride_id":ride_id});
