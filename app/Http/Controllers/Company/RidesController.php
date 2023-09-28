@@ -117,7 +117,7 @@ class RidesController extends Controller
         $request->car_type = $vehicle_type->car_type;
         $dates = count(explode(",",$request->ride_date));
         $reqDate = $dates <= 1 ? ($request->ride_date.' '.$request->ride_time.":00") : '';
-        
+
         if ($now->diffInMinutes($reqDate) <= 15 && $dates <= 1) {
             $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
             $jsonResponse = $this->create_ride_driver($request);
@@ -472,6 +472,7 @@ class RidesController extends Controller
                         })->orderBy('rides.created_at','Desc')
                         ->where('company_id','!=',null)
                         ->with(['user','driver','vehicle','creator','company'])->find($id);
+        //dd($ride);
         // $ride->status = 2;
         $ride['user_first_name'] = $ride->company ? $ride->company->user->first_name : '';
         return response()->json(['status'=>1,'data'=>$ride]);
@@ -624,7 +625,7 @@ class RidesController extends Controller
             $rideData->save();
 
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($rideData->id);
-            $ride_detail['change_for_all'] = 1;
+            $ride_detail['change_for_all'] = 0;
 
             DB::commit();
             return response()->json(['status' => 1, 'message' => 'Instant ride created successfully.', 'data' => $ride_detail], $this->successCode);
@@ -820,9 +821,12 @@ class RidesController extends Controller
 				if ($ride['status'] == -3 || $ride['status'] == -2) {
 					return response()->json(['status' => 0, 'message' => "Ride Cancelled already"]);
 				}
+                $delete_for_all = 0;
                 if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($ride->parent_ride_id)) {
                     Ride::where(['parent_ride_id' => $ride->parent_ride_id])->where('ride_time', '>', Carbon::now())->update(['note' => $request->note ?? "", 'status' => '-3', 'updated_at' => Carbon::now()]);
+                    $delete_for_all = 1;
                 } else {
+                    $delete_for_all = 0;
                     $ride->status = -3;
                     $ride->save();
                 }
@@ -835,7 +839,7 @@ class RidesController extends Controller
 				// }
                 
                 $ride_detail_socket = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
-
+                $ride_detail_socket['delete_for_all'] = $delete_for_all;
                 $ride_detail = new RideResource(Ride::find($ride->id));
 				$settings = Setting::first();
 				$settingValue = json_decode($settings['value']);
@@ -880,9 +884,12 @@ class RidesController extends Controller
             $rideDetail = Ride::find($request->ride_id);
             $input = $request->all();
             $rideObj = new Ride;
+            $delete_for_all = 0;
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
+                $delete_for_all = 1;
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
             } else {
+                $delete_for_all = 0;
                 $rideObj = $rideObj->where('id', $request->ride_id);
             }
             $rideObj->delete();
@@ -905,6 +912,8 @@ class RidesController extends Controller
         } else {
             $driver_detail = null;
         }
+
+        $driver_detail['delete_for_all'] = $delete_for_all;
         return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
     }
 

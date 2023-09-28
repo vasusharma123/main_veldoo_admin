@@ -746,7 +746,7 @@ class RidesController extends Controller
 
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image,random_token', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($rideData->id);
             
-            $ride_detail['change_for_all'] = 1;
+            $ride_detail['change_for_all'] = 0;
 
             DB::commit();
             return response()->json(['status' => 1, 'message' => 'Instant ride created successfully.', 'data' => $ride_detail], $this->successCode);
@@ -963,9 +963,15 @@ class RidesController extends Controller
 				if ($ride['status'] == -3 || $ride['status'] == -2) {
 					return response()->json(['status' => 0, 'message' => "Ride Cancelled already"]);
 				}
+                $delete_for_all = 0;
+
                 if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($ride->parent_ride_id)) {
+                    $delete_for_all = 1;
+
                     Ride::where(['parent_ride_id' => $ride->parent_ride_id])->where('ride_time', '>', Carbon::now())->update(['note' => $request->note ?? "", 'status' => '-3', 'updated_at' => Carbon::now()]);
                 } else {
+                    $delete_for_all = 0;
+
                     $ride->status = -3;
                     $ride->save();
                 }
@@ -977,6 +983,7 @@ class RidesController extends Controller
 				// }
                 
                 $ride_detail_socket = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image,random_token', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
+                $ride_detail_socket['delete_for_all'] = $delete_for_all;
 
                 $ride_detail = new RideResource(Ride::find($ride->id));
 				$settings = Setting::first();
@@ -1024,9 +1031,12 @@ class RidesController extends Controller
             $input = $request->all();
 
             $rideObj = new Ride;
+            $delete_for_all = 0;
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
+                $delete_for_all = 1;
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
             } else {
+                $delete_for_all = 0;
                 $rideObj = $rideObj->where('id', $request->ride_id);
             }
             $rideObj->delete();
@@ -1047,6 +1057,8 @@ class RidesController extends Controller
 
     public function ride_driver_detail(Request $request){
         $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);
+        $ride_detail['delete_for_all'] = $delete_for_all;
+
         if($ride_detail->driver){
             $driver_detail = view('guest.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
         } else {
