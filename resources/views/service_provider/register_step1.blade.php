@@ -49,7 +49,7 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                             <label class="required_field label_form">{{__("Mobile Number")}}</label>
-                            <input class="form-control" name="iso2[]" type="hidden" id="iso2_0" value="{{ old('iso2.0')??'ch' }}">
+                            <input class="form-control" name="country_code_iso[]" type="hidden" id="iso2_0" value="{{ (!empty($drivers[0]))?($drivers[0]->country_code_iso):(old('country_code_iso.0')??'ch') }}">
                             <input class="form-control" name="country_code[]" type="hidden" id="country_code_0" value="{{ (!empty($drivers[0]))?($drivers[0]->country_code):(old('country_code.0')??41) }}">
                             <input type="text" name="phone[]" id="phone_0" class="form-control input_text" value="{{ (!empty($drivers[0]))?($drivers[0]->phone):old('phone.0') }}" required />
                             @error('phone.0')
@@ -110,7 +110,7 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                             <label class="label_form">{{__("Mobile Number")}}</label>
-                            <input class="form-control" name="iso2[]" type="hidden" id="iso2_1" value="{{ old('iso2.1')??'ch' }}">
+                            <input class="form-control" name="country_code_iso[]" type="hidden" id="iso2_1" value="{{ (!empty($drivers[1]))?($drivers[1]->country_code_iso):(old('country_code_iso.1')??'ch') }}">
                             <input class="form-control" name="country_code[]" type="hidden" id="country_code_1" value="{{ (!empty($drivers[1]))?($drivers[1]->country_code):(old('country_code.1')??41) }}">
                             <input type="text" name="phone[]" id="phone_1" class="form-control input_text" value="{{ (!empty($drivers[1]))?($drivers[1]->phone):old('phone.1') }}" />
                             @error('phone.1')
@@ -171,7 +171,7 @@
 <script>
     var input_0 = document.querySelector("#phone_0");
     var instance_0 = window.intlTelInput(input_0, ({
-        initialCountry: "{{ old('iso2.0')??'ch' }}"
+        initialCountry: "{{ (!empty($drivers[0]))?($drivers[0]->country_code_iso):(old('country_code_iso.0')??'ch') }}"
         , separateDialCode: true
     , }));
     input_0.addEventListener("countrychange", function() {
@@ -181,7 +181,7 @@
 
     var input_1 = document.querySelector("#phone_1");
     var instance_1 = window.intlTelInput(input_1, ({
-        initialCountry: "{{ old('iso2.1')??'ch' }}"
+        initialCountry: "{{ (!empty($drivers[1]))?($drivers[1]->country_code_iso):(old('country_code_iso.1')??'ch') }}"
         , separateDialCode: true
     , }));
     input_1.addEventListener("countrychange", function() {

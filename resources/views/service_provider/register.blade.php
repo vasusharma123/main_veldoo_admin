@@ -89,7 +89,7 @@
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                             <label class="required_field label_form">{{__('Phone Number')}}</label>
-                            <input class="form-control" name="iso2" type="hidden" id="iso2" value="{{ old('iso2')??'ch' }}">
+                            <input class="form-control" name="country_code_iso" type="hidden" id="iso2" value="{{ old('country_code_iso')??'ch' }}">
                             <input class="form-control" name="country_code" type="hidden" id="country_code" value="{{ old('country_code')??41 }}">
                             <input type="text" name="phone" class="form-control input_text" id="country_code_box" value="{{ old('phone') }}" required />
                             @error('phone')
@@ -130,7 +130,7 @@
     // Vanilla Javascript
     var input = document.querySelector("#country_code_box");
     var instance = window.intlTelInput(input, ({
-        initialCountry: "{{ old('iso2')??'ch' }}"
+        initialCountry: "{{ old('country_code_iso')??'ch' }}"
         , separateDialCode: true
     , }));
     input.addEventListener("countrychange", function() {

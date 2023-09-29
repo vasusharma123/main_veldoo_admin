@@ -78,6 +78,7 @@ class ServiceProviderController extends Controller
                 'country' => $request->country,
                 'country_code' => $request->country_code,
                 'phone' => $phone_number,
+                'country_code_iso' => $request->country_code_iso??null,
                 'email' => $request->email,
                 'user_type' => 3                
             ]);
@@ -112,6 +113,7 @@ class ServiceProviderController extends Controller
                     'last_name' => $verifyUser->last_name,
                     'country_code' => $verifyUser->country_code,
                     'phone' => $verifyUser->phone,
+                    'country_code_iso' => $verifyUser->country_code_iso,
                     'is_master' => 1,
                     'user_type' => 2,
                     'service_provider_id' => $verifyUser->id,
@@ -469,6 +471,7 @@ class ServiceProviderController extends Controller
                             'last_name' => $input['last_name'][$key],
                             'country_code' => $input['country_code'][$key],
                             'phone' => $phone_number,
+                            'country_code_iso' => $input['country_code_iso'][$key]??"",
                             'is_master' => 1,
                             'user_type' => 2,
                             'password' => Hash::make($input['password'][$key])
