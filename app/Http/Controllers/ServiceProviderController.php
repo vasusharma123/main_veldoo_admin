@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\PaymentMethod;
 use App\Price;
 use App\ServiceProviderDriver;
 use App\Setting;
@@ -312,6 +313,29 @@ class ServiceProviderController extends Controller
                     "mile_to_currency" => "1",
                     "mile_on_invitation" => "5",
                 ];
+
+                $paymentMethodObj = new PaymentMethod();
+                $paymentMethodObj->fill([
+                    'name' => 'Cash',
+                    'status' => 1,
+                    'service_provider_id' => $verifyUser->id
+                ]);
+                $paymentMethodObj->save();
+                $paymentMethodObj = new PaymentMethod();
+                $paymentMethodObj->fill([
+                    'name' => 'Card',
+                    'status' => 1,
+                    'service_provider_id' => $verifyUser->id
+                ]);
+                $paymentMethodObj->save();
+                $paymentMethodObj = new PaymentMethod();
+                $paymentMethodObj->fill([
+                    'name' => 'Other',
+                    'status' => 1,
+                    'service_provider_id' => $verifyUser->id
+                ]);
+                $paymentMethodObj->save();
+
                 Voucher::insert([
                     [
                         "key" => "_configuration",

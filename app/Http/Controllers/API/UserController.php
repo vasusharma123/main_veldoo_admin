@@ -6486,7 +6486,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$user_id = $user->id;
 
 			if (!empty($input['email'])) {
-				$alreadyExist = User::where(['email' => $input['email']])->where('id', '!=', $user_id)->first();
+				$alreadyExist = User::where(['email' => $input['email'], 'user_type' => $user->user_type])->where('user_type', '!=', $user->user_type)->where('id', '!=', $user_id)->first();
 				if ($alreadyExist) {
 					return response()->json(['success' => false, 'message' => "An email address has already been assigned to another user"], $this->warningCode);
 				} else {
