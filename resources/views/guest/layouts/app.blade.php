@@ -277,7 +277,7 @@
                             <div class="save_btn_box desktop_view">
                                 <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="button">{{ __('Book')}}</button>
                                 <button class="btn save_btn edit_booking save_form_btn" type="button" style="display:none">{{ __('Update')}}</button>
-                                <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button>
+                                <!-- <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button> -->
                             </div>
                             <div class="pickup_Drop_box">
                                 <div class="area_details">
@@ -1908,7 +1908,7 @@
                             confirmButtonColor: '#3085d6',
                             cancelButtonColor: '#d33',
                             confirmButtonText: "{{ __('Update Ride') }}",
-                            input: 'checkbox',
+                            input: parent_id > 0 ? 'checkbox' : '',
                             inputName: 'change_for_all',
                             inputValue: 0,
                             inputPlaceholder: parent_id > 0 ? 'Update all related rides' : 'There are no related rides',
@@ -1916,7 +1916,8 @@
                             if (result.value === 0 || result.value) {
                                 $(document).find(".edit_booking").attr('disabled', true);
                                 var token = '{{csrf_token()}}';
-                                var change_for_all = result.value === 0 ? 0 : 1;
+                                var change_for_all = result.value === 1 ? 1 : 0;
+
                                 $.ajax({
                                     url: "{{ route('guest.ride_booking_update') }}",
                                     type: 'post',
@@ -1969,7 +1970,7 @@
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: "{{ __('Confirm') }}",
-                        input: 'checkbox',
+                        input: parent_id > 0 ? 'checkbox' : '',
                         inputName: 'delete_for_all',
                         inputValue: 0,
                         inputPlaceholder: parent_id > 0 ? 'Cancel all related rides' : 'There are no related rides',
@@ -1983,7 +1984,7 @@
                                 data: {
                                     "_token": "{{ csrf_token() }}",
                                     'ride_id': ride_id,
-                                    'delete_for_all' : result.value === 0 ? 0 : 1,
+                                    'delete_for_all' : result.value === 1 ? 1 : 0,
                                 },
                                 success: function(response) {
                                     if (response.status) {
@@ -2017,7 +2018,7 @@
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'Confirm',
-                        input: 'checkbox',
+                        input: parent_id > 0 ? 'checkbox' : '',
                         inputName: 'delete_for_all',
                         inputValue: 0,
                         inputPlaceholder: parent_id > 0 ? 'Delete all related rides' : 'There are no related rides',
@@ -2033,7 +2034,7 @@
                                 data: {
                                     "_token": "{{ csrf_token() }}",
                                     'ride_id': ride_id,
-                                    'delete_for_all' : result.value === 0 ? 0 : 1,
+                                    'delete_for_all' : result.value === 1 ? 1 : 0,
 
                                 },
                                 success: function(response) {

@@ -60,62 +60,6 @@ class UserWebController extends Controller
             }
 
 
-
-            // $ride = new Ride();
-
-            // $ride->user_id = $user->id;
-            // $ride->user_country_code = $user->country_code;
-            // $ride->user_phone = $user->phone;
-            // $ride->pickup_address = $request->pickup_address;
-            // $ride->dest_address = $request->dest_address??"";
-            // $ride->passanger = $request->passanger;
-            // $ride->note = $request->note;
-            // $ride->ride_type = 1;
-            // $ride->car_type = $request->car_type;
-            // if (!empty($request->ride_time)) {
-			// 	$ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
-			// 	if (!empty($request->alert_time)) {
-			// 		$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
-			// 	} else {
-			// 		$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
-			// 	}
-			// } else {
-            //     $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");
-            //     $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
-            // }
-            
-            // $ride->alert_time = $request->alert_time??15;
-
-            // if (!empty($request->pick_lat)) {
-            //     $ride->pick_lat = $request->pick_lat;
-            // }
-            // if (!empty($request->pick_lng)) {
-            //     $ride->pick_lng = $request->pick_lng;
-            // }
-            // if (!empty($request->dest_lat)) {
-            //     $ride->dest_lat = $request->dest_lat;
-            // }
-            // if (!empty($request->dest_lng)) {
-            //     $ride->dest_lng = $request->dest_lng;
-            // }
-            // if (!empty($request->payment_type)) {
-            //     $ride->payment_type = $request->payment_type;
-            // }
-
-            // if (!empty($request->ride_cost)) {
-            //     $ride->ride_cost = $request->ride_cost;
-            // }
-
-            // if (!empty($request->distance)) {
-            //     $ride->distance = $request->distance;
-            // }
-            // $ride->status = 0;
-            // $ride->platform = "web";
-            // $ride->save();
-            // DB::commit();
-
-
-
             $request->additional_dates = explode(",",$request->ride_date);
             $all_rides_dates = [];
 			
@@ -149,12 +93,13 @@ class UserWebController extends Controller
                 $ride->car_type = $request->car_type;
                 $ride->created_by =  $user->user_type; 
                 $ride->creator_id = $user->id; 
+
                 if (!empty($request->ride_time)) {
                     $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
                     if (!empty($request->alert_time)) {
                         $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
                     } else {
-                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
+                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride_date_time)));
                     }
                 } else {
                     $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");

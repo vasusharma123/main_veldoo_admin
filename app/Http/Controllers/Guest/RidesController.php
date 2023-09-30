@@ -309,6 +309,7 @@ class RidesController extends Controller
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
             }
+
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
@@ -344,6 +345,8 @@ class RidesController extends Controller
 
             $ride->driver_id = null;
             $ride->all_drivers = $driverids;
+            $settings = Setting::first();
+            $settingValue = json_decode($settings['value']);
             $ride->save();
             $ride_data = new RideResource(Ride::find($ride->id));
             $driverids = explode(",", $driverids);
@@ -480,7 +483,17 @@ class RidesController extends Controller
                 $ride->creator_id = Auth::user() ? Auth::user()->id : NULL; 
                 $ride->alert_time = 15;
                 $ride->user_id = Auth::user() ? Auth::user()->id : NULL; 
-                $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
+                if (!empty($request->ride_time)) {
+                    $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+                    if (!empty($request->alert_time)) {
+                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+                    } else {
+                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride_date_time)));
+                    }
+                } else {
+                    $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");
+                    $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
+                }
                 if (!empty($request->pick_lat)) {
                     $ride->pick_lat = $request->pick_lat;
                 }
@@ -704,6 +717,8 @@ class RidesController extends Controller
             $ride->all_drivers = $driverids;
 
             $ride->save();
+            $settings = Setting::first();
+			$settingValue = json_decode($settings['value']);
             $ride_data = new RideResource(Ride::find($ride->id));
             $driverids = explode(",", $driverids);
             $title = 'New Booking';
@@ -889,33 +904,7 @@ class RidesController extends Controller
 				}
 				$ride->save();
 			}
-                
-
-            // $ride = Ride::find($request->ride_id);
-            // $ride->pickup_address = $request->pickup_address;
-            // $ride->dest_address = $request->dest_address??"";
-            // $ride->passanger = $request->passanger;
-            // $ride->note = $request->note;
-            // $ride->ride_type = 1;
-            // $ride->car_type = $request->car_type;
-            // $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
-            // if ((!empty($request->ride_time)) && $request->ride_time >= Carbon::now()->format("Y-m-d H:i:s")) {
-			// 	$ride->notification_sent = 0;
-			// 	$ride->alert_send = 0;
-			// }
-            // $ride->pick_lat = $request->pick_lat ?? "";
-            // $ride->pick_lng = $request->pick_lng ?? "";
-            // $ride->dest_lat = $request->dest_lat ?? "";
-            // $ride->dest_lng = $request->dest_lng ?? "";
-            // $ride->payment_type = $request->payment_type ?? "";
-            // if (!empty($request->ride_cost)) {
-            //     $ride->ride_cost = $request->ride_cost;
-            // }
-            // $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
-            // $ride->distance = $request->distance ?? "";
-            // $ride->status = 0;
-            // $ride->platform = "web";
-            // $ride->save();
+         
 			DB::commit();
             if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
 				$message_content = "";
@@ -928,7 +917,7 @@ class RidesController extends Controller
 				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			}
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image,random_token', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
-            $ride_detail['change_for_all'] = 1;
+            $ride_detail['change_for_all'] = $request->change_for_all == 1 ? 1 : 0;
 			if (!empty($ride_detail->user_id)) {
 				$ride_detail['user_data'] = User::find($ride_detail->user_id);
 			} else {
@@ -1032,6 +1021,8 @@ class RidesController extends Controller
 
             $rideObj = new Ride;
             $delete_for_all = 0;
+            $parent_ride_id = !empty($rideDetail->parent_ride_id) ? $rideDetail->parent_ride_id  : '';
+
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
                 $delete_for_all = 1;
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
@@ -1039,6 +1030,7 @@ class RidesController extends Controller
                 $delete_for_all = 0;
                 $rideObj = $rideObj->where('id', $request->ride_id);
             }
+            $input['parent_ride_id'] = $parent_ride_id;
             $rideObj->delete();
 
            // Ride::where(['id' => $request->ride_id])->delete();
@@ -1046,6 +1038,7 @@ class RidesController extends Controller
 
             $input['id'] = $request->ride_id;
             $input['is_ride_deleted'] = 1;
+            $input['delete_for_all'] = $delete_for_all;
 
             DB::commit();
 			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $input]);
@@ -1057,7 +1050,6 @@ class RidesController extends Controller
 
     public function ride_driver_detail(Request $request){
         $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);
-        $ride_detail['delete_for_all'] = $delete_for_all;
 
         if($ride_detail->driver){
             $driver_detail = view('guest.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();

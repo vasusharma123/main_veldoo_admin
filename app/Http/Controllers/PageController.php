@@ -524,7 +524,9 @@ if($_REQUEST['cm'] == 2)
 
 		$dates = count(explode(",",$request->ride_date));
 
-        if ($now->diffInMinutes($request->ride_time) <= 15 && $dates <= 1) {
+        $reqDate = $dates <= 1 ? ($request->ride_date.' '.$request->ride_time.":00") : '';
+
+        if ($now->diffInMinutes($reqDate) <= 15 && $dates <= 1) {
 			$request['ride_time'] = $request->ride_date.' '.$request->ride_time.":00";
 			$jsonResponse = $webobj->create_ride_driver($request);
 		} else {

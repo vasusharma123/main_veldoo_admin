@@ -196,6 +196,21 @@ class RidesController extends Controller
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
             }
+            $ride->alert_time = 15;
+
+            // if (!empty($request->ride_time)) {
+            //     $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+            //     if (!empty($request->alert_time)) {
+            //         $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+            //     } else {
+            //         $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
+            //     }
+            // } else {
+            //     $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");
+            //     $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
+            // }
+
+
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
@@ -231,8 +246,12 @@ class RidesController extends Controller
 
             $ride->driver_id = null;
             $ride->all_drivers = $driverids;
+
+
             $ride->save();
             $ride_data = new RideResource(Ride::find($ride->id));
+            $settings = Setting::first();
+			$settingValue = json_decode($settings['value']);
 
             $driverids = explode(",", $driverids);
             $title = 'New Booking';
@@ -265,11 +284,14 @@ class RidesController extends Controller
 				+ sin(radians(" . $ride->pick_lat . "))
 				* sin(radians(users.current_lat))) AS distance")
             )->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->get()->toArray();
+          
+
             $rideData = Ride::find($ride->id);
             $rideData->notification_sent = 1;
             if (count($overallDriversCount) <= count($drivers)) {
                 $rideData->alert_send = 1;
             }
+
             $rideData->alert_notification_date_time = Carbon::now()->addseconds($settingValue->waiting_time)->format("Y-m-d H:i:s");
             $rideData->save();
 
@@ -365,7 +387,18 @@ class RidesController extends Controller
                 $ride->creator_id = Auth::user() ? Auth::user()->id : NULL; 
                 $ride->alert_time = 15;
                 $ride->company_id = Auth::user() ? Auth::user()->company_id : NULL; 
-                $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($request->ride_time)));
+
+                if (!empty($request->ride_time)) {
+                    $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
+                    if (!empty($request->alert_time)) {
+                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($request->ride_time)));
+                    } else {
+                        $ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-15 minutes', strtotime($ride_date_time)));
+                    }
+                } else {
+                    $ride->ride_time = Carbon::now()->format("Y-m-d H:i:s");
+                    $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
+                }                
                 if (!empty($request->pick_lat)) {
                     $ride->pick_lat = $request->pick_lat;
                 }
@@ -787,7 +820,8 @@ class RidesController extends Controller
 				$this->sendSMS("+" . $ride->user->country_code, ltrim($ride->user->phone, "0"), $message_content);
 			}
             $ride_detail = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at', 'creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image,random_token', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($request->ride_id);
-            $ride_detail['change_for_all'] = 1;
+            $ride_detail['change_for_all'] = $request->change_for_all == 1 ? 1 : 0;
+
 			if (!empty($ride_detail->user_id)) {
 				$ride_detail['user_data'] = User::find($ride_detail->user_id);
 			} else {
@@ -885,6 +919,7 @@ class RidesController extends Controller
             $input = $request->all();
             $rideObj = new Ride;
             $delete_for_all = 0;
+            $parent_ride_id = !empty($rideDetail->parent_ride_id) ? $rideDetail->parent_ride_id  : '';
             if (!empty($request->delete_for_all) && $request->delete_for_all == 1 && !empty($rideDetail->parent_ride_id)) {
                 $delete_for_all = 1;
                 $rideObj = $rideObj->where(['parent_ride_id' => $rideDetail->parent_ride_id])->where('ride_time', '>', Carbon::now())->whereNotIn('status', [1, 2, 3, 4]);
@@ -892,10 +927,15 @@ class RidesController extends Controller
                 $delete_for_all = 0;
                 $rideObj = $rideObj->where('id', $request->ride_id);
             }
+
+
+            $input['parent_ride_id'] = $parent_ride_id;
             $rideObj->delete();
 
             $input['id'] = $request->ride_id;
             $input['is_ride_deleted'] = 1;
+            $input['delete_for_all'] = $delete_for_all;
+
 
             DB::commit();
 			return response()->json(['status' => 1, 'message' => __('The ride has been deleted.'), 'data' => $input]);
@@ -913,7 +953,6 @@ class RidesController extends Controller
             $driver_detail = null;
         }
 
-        $driver_detail['delete_for_all'] = $delete_for_all;
         return response()->json(['status' => 1, 'message' => "Ride Detail", 'data' => ["driver_detail" => $driver_detail]], $this->successCode);
     }
 
