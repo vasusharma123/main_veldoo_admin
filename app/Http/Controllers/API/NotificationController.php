@@ -22,7 +22,7 @@ class NotificationController extends Controller
     {
         $userDetail = Auth::user();
         try {
-            $last_unseen_notification = Notification::where(['user_id' => $userDetail->id, 'status' => 0])->whereIn('type',[1,10,11,12,13])->orderBy('id','desc')->first();
+            $last_unseen_notification = Notification::where(['user_id' => $userDetail->id, 'status' => 0, 'service_provider_id' => $userDetail->service_provider_id])->whereIn('type',[1,10,11,12,13])->orderBy('id','desc')->first();
             if(!empty($last_unseen_notification)){
                 if((!empty($last_unseen_notification->additional_data)) && (!empty($last_unseen_notification->additional_data->ride_id))){
                     $rideDetail = Ride::find($last_unseen_notification->additional_data->ride_id);
