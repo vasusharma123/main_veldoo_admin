@@ -459,7 +459,7 @@ class UserController extends Controller
 			// 	$driverhoosecar->logout = 1;
 			// 	$driverhoosecar->save();
 			// }
-			DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0]);
+			DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0, 'service_provider_id' => $user->service_provider_id]);
 			return response()->json(['success' => true, 'message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
 		} else {
 			return response()->json(['success' => false, 'message' => 'Details are incorrect, please try again'], $this->successCode);
@@ -524,7 +524,7 @@ class UserController extends Controller
 		$userData->save();
 		$token =  $userData->createToken('auth')->accessToken;
 		$user = $this->getRafrenceUser($userData->id);
-		DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0]);
+		DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0, 'service_provider_id' => $user->service_provider_id]);
 		return response()->json(['message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
 
 		//return response()->json(['message' => 'Verified'], $this->successCode);

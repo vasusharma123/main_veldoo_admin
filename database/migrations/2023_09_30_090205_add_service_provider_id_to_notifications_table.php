@@ -23,6 +23,11 @@ class AddServiceProviderIdToNotificationsTable extends Migration
             $table->index('service_provider_id');
             // $table->foreign('service_provider_id')->references('id')->on('users')->onDelete('cascade');
         });
+        Schema::table('driver_stay_active_notifications', function (Blueprint $table) {
+            $table->unsignedBigInteger('service_provider_id')->default(null)->nullable()->comment('foreign key of users table where user_type = 3');
+            $table->index('service_provider_id');
+            $table->foreign('service_provider_id')->references('id')->on('users')->onDelete('cascade');
+        });
     }
 
     /**
@@ -40,6 +45,11 @@ class AddServiceProviderIdToNotificationsTable extends Migration
         Schema::table('ride_history', function (Blueprint $table) {
             // $table->dropForeign('ride_history_service_provider_id_foreign');
             $table->dropIndex('ride_history_service_provider_id_index');
+            $table->dropColumn('service_provider_id');
+        });
+        Schema::table('driver_stay_active_notifications', function (Blueprint $table) {
+            $table->dropForeign('driver_stay_active_notifications_service_provider_id_foreign');
+            $table->dropIndex('driver_stay_active_notifications_service_provider_id_index');
             $table->dropColumn('service_provider_id');
         });
     }
