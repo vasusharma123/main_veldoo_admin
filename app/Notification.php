@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Notification extends Model
 {
     protected $fillable = [
-        'title', 'description', 'type', 'user_id', 'status', 'additional_data', 'created_at', 'updated_at'
+        'title', 'description', 'type', 'user_id', 'status', 'additional_data', 'service_provider_id', 'created_at', 'updated_at'
     ];
 
     protected $appends = ['created_at_unix_timestamp'];
