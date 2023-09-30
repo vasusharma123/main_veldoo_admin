@@ -1289,6 +1289,12 @@ class UserController extends Controller
 			if (!empty($request->device_token)) {
 				$user->device_token = $request->device_token;
 			}
+			if (!empty($request->app_version)) {
+				$user->app_version = $request->app_version;
+			}
+			if (!empty($request->phone_model)) {
+				$user->phone_model = $request->phone_model;
+			}
 			if (!empty($request->fcm_token)) {
 
 				$user->fcm_token = $request->fcm_token;
