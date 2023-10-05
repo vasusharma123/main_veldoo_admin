@@ -73,7 +73,7 @@
                                 <label class="form-lable">Mobile Number</label>
                                 <div class="field position-relative">
                                 <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+1' }}" class="country_code" id="country_code" name="country_code" />
-                                    <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number">
+                                    <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number" required>
                                     <!-- <input type="email" name="username" class="form-control loginField" placeholder="Enter username or email" required/> -->
                                     <!-- <img src="assets/images/envelope.png" class="img-fluid loginFieldIcon" alt="Email envelope"/> -->
                                 </div>
@@ -89,7 +89,7 @@
                             <div class="form-group position-relative has_validation">
                                 <label class="form-lable">Password</label>
                                 <div class="field position-relative">
-                                    <input type="password" name="password" class="form-control loginField" placeholder="Enter Password"/>
+                                    <input type="password" name="password" class="form-control loginField" placeholder="Enter Password" required/>
                                     <img src="{{ asset('new-design-company/assets/images/password_lock.png') }}" class="img-fluid loginFieldIcon" alt="Password Lock"/>
                                         <img src="{{ asset('new-design-company/assets/images/see_password.png') }}" class="img-fluid loginFieldIcon password_icon" alt="Password Lock"/>
                                 </div>
@@ -127,8 +127,8 @@
 
                             <div class="form_title text-center">
                                 <!-- <a href="{{route('guest.register')}}" class="tagline sign-up-account">Don't have an account? Sign up</a> -->
-                                <a href="javascript:void(0)" class="user_name sd d-block tagline sign-up-account" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
-                                <hr class="divider_form" />
+                                <a href="javascript:void(0)" class=" sd d-block tagline sign-up-account my-3" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
+                               
                             </div>
                             <!-- /Form Title -->
 

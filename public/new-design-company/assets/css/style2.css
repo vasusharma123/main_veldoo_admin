@@ -92,6 +92,7 @@ body{
     width: 100%;
     min-height: 100vh;
     height: 100%;
+    background-attachment: fixed;
 }
 .btn:focus, .form-control:focus{
     box-shadow: none;
@@ -430,10 +431,17 @@ span.menu_icons.arrow {
     align-items: center;
     justify-content: flex-end;
 }
+.iti--separate-dial-code .iti__selected-flag {
+    background-color: transparent !important;
+}
+.svgnon {
+    max-width: 20px !important;
+}
 .logo_mobile_top {
     max-width: 223px;
     width: 100%;
     height: 41px;
+    max-height: 41px;
 }
 .notify_icon_link {
     text-decoration: none;
@@ -697,6 +705,7 @@ span.status_box{
 .area_box {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 .location_box {
     display: flex;
@@ -715,11 +724,26 @@ span.status_box{
     border: none;
     color: var(--secondary-color);
     font-family: var(--roboto-font);
-    font-weight: 500;
+    font-weight: 400 !important;
 }
 .borderless_form_field:focus{
     border: none;
     outline: none;
+}
+#add_new_bookings #pickUpDateRide {
+    height: 40px;
+}
+#add_new_bookings .select2-container--default .select2-selection--single{
+    height: 36px;
+    line-height: 50px;
+    padding: 4px;
+    border: 1px solid #ced4da;
+}
+#add_new_bookings .select2-container--default .select2-selection--single .select2-selection__arrow{
+    top: 5px !important;
+}
+#add_new_bookings .amount_box {
+    padding-left: 0px !important;
 }
 .form_payment_box .form-control ,.form_payment_box .form-select{
     font-size: 16px;
@@ -757,11 +781,14 @@ span.status_box{
     font-family: var(--roboto-font);
     margin-bottom: 11px;
 }
-.area_box .pickup_field {
+.area_box .pickup_field, .text-dark {
     font-size: 16px;
     font-weight: 500;
     font-family: var(--roboto-font);
     color: var(--secondary-color);
+}
+label.text-dark{
+    font-weight: 400 !important;
 }
 .switch_area:hover path{
     fill: var(--primary-color);
@@ -1481,11 +1508,11 @@ label.form-lable.boldlable {
     background: rgb(234 235 239 / 98%) !important;
 }
 
-
-
 .otpcode_box{
     display: none;
 }
+
+
 
 
 /* Repsonsive Sm */
@@ -1792,7 +1819,7 @@ label.form-lable.boldlable {
         max-width: 153px;
         width: 100%;
         margin-right: 15px !important;
-        height: 41px !important;
+        height: 31px !important;
     }
     .newTop_menu_ul a {
         font-size: 16px;

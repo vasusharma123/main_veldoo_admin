@@ -146,7 +146,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <label class="pickupdate ride_new_date">08/02/2023</label>
+                                            <label class="pickupdate ride_new_date view_value_form">08/02/2023</label>
                                         </div>
 
                                     </div>
@@ -157,7 +157,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Time</label>
-                                            <label class="pickTimes ride_new_time">06:00 PM</label>
+                                            <label class="pickTimes ride_new_time view_value_form">06:00 PM</label>
                                         </div>
                                     </div>
                                 </div>
@@ -174,7 +174,7 @@
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
-                                            <p class="ride_driver_details_div_driver_na" style="display: none">N/A</p>
+                                            <p class="ride_driver_details_div_driver_na view_value_form" style="display: none">N/A</p>
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt view_port">
@@ -202,16 +202,16 @@
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
                                                 <label class="form_label" style="margin-bottom:0px">No. Of Passengers</label>
-                                                <label class="user_name text-dark no_of_passengers"></label>
+                                                <label class=" text-dark no_of_passengers view_value_form"></label>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 10px;">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 20px;">
                                         <div class="name_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
                                                 <label class="form_label" style="margin-bottom:0px">Name of Passenger</label>
-                                                <label class="user_name text-dark passenger_details"></label>
+                                                <label class=" text-dark passenger_details view_value_form"></label>
                                             </div>
                                         </div>
                                     </div>
@@ -222,21 +222,21 @@
                                     <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0 method_box">
                                         <div class="form_box">
                                             <label class="form_label down_form_label d-block">Payment Method</label>
-                                            <label class="user_name">
+                                            <label class="text-dark">
                                                 {{-- <img src="{{ asset('new-design-company/assets/images/card.svg') }}" class="img-fluid card_img me-2" alt="payment Image"> --}}
-                                                <span class="ride_payment_type">Cash</span></label>
+                                                <span class="ride_payment_type view_value_form">Cash</span></label>
                                         </div>
                                     </div>
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-6 pe-0 amount_box">
                                         <div class="form_box">
                                             <label class="form_label down_form_label d-block">Amount</label>
-                                            <label class="user_name"><span class="ride_car_price"></span></label>
+                                            <label class="text-dark"><span class="ride_car_price view_value_form"></span></label>
                                         </div>
                                     </div>
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
                                             <label class="form_label down_form_label d-block">Note</label>
-                                            <label class="user_name ride_note_div"></label>
+                                            <label class="text-dark ride_note_div view_value_form"></label>
                                         </div>
                                     </div>
                                 </div>
@@ -268,7 +268,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/pickuppoint.png') }}" class="img-fluid pickup_icon" alt="pick up icon"/>
                                         <div class="location_box" style="width: 100%">
                                             <label class="form_label">Pickup Point</label>
-                                            <input type="text" class="form_control borderless_form_field pickup_field" name="pickup_address" id="pickupPoint" placeholder="Enter pickup point" required autocomplete="off">
+                                            <input type="text" class="form_control borderless_form_field  pickup_field" name="pickup_address" id="pickupPoint" placeholder="Enter pickup point" required autocomplete="off">
                                             <input type="hidden" id="pickup_latitude" name="pick_lat" value="">
                                             <input type="hidden" id="pickup_longitude" name="pick_lng" value="">
                                             <input type="hidden" name="ride_id" id="ride_id">
@@ -299,7 +299,7 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form-control  dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
                                             <!-- <input type="date" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date"> -->
 
                                             
@@ -316,7 +316,7 @@
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
 
-                                            <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form_control borderless_form_field dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
+                                            <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form-control form_control  dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
 
                                         </div>
                                     </div>
@@ -345,11 +345,11 @@
                                         <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">No. Of Passengers</label>
-                                            <input type="number" min="1" class="form_control borderless_form_field psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                            <input type="number" min="1" class="form-control  psnger_no" required id="numberOfPassenger" name="passanger" value="1">
                                         </div>
                                     </div>
                                     <div class="name_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/phone.png') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                        <img src="{{ asset('new-design-company/assets/images/phones.svg') }}" class="img-fluid svg svgnon pickup_icon man_icons" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Mobile Number</label>
 

@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Oswald:wght@200;300;400;500;600;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-/* All Variables */
+/* All Variablessss */
 :root{
     
     --primary-color: #FC4C02;
@@ -60,6 +60,10 @@
     min-height: 100vh;
     height: auto;
 } */
+
+body{
+    background-attachment: fixed !important ;
+}
 
 .btn:focus, .form-control:focus{
     box-shadow: none;
@@ -496,6 +500,13 @@ span.menu_icons.arrow {
     max-width: 223px;
     width: 100%;
     height: 41px;
+    max-height: 41px;
+}
+.svgnon {
+    max-width: 20px !important;
+}
+.iti--separate-dial-code .iti__selected-flag {
+    background-color: transparent !important;
 }
 .notify_icon_link {
     text-decoration: none;
@@ -820,6 +831,7 @@ span.menu_icons.arrow {
 .area_box {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 .location_box {
     display: flex;
@@ -838,7 +850,7 @@ span.menu_icons.arrow {
     border: none;
     color: var(--secondary-color);
     font-family: var(--roboto-font);
-    font-weight: 500;
+    font-weight: 400 !important;
 }
 .borderless_form_field:focus{
     border: none;
@@ -850,13 +862,29 @@ span.menu_icons.arrow {
     color: var(--secondary-color);
     font-weight: 500;
 }
- .select2-users-container, .date_picker_box .form_control {
+ .select2-users-container, .date_picker_box .form-control {
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
     width: 100%;
+}
+#add_new_bookings #pickUpDateRide ,#add_new_bookings #time{
+    height: 40px;
 }
 .form_label {
     margin-bottom: 5px;
     color: #AFAFAF;
+}
+#add_new_bookings .select2-container--default .select2-selection--single{
+    height: 36px;
+    line-height: 50px;
+    padding: 4px;
+    border: 1px solid #ced4da;
+
+}
+#add_new_bookings .select2-container--default .select2-selection--single .select2-selection__arrow{
+    top: 5px !important;
+}
+#add_new_bookings .amount_box {
+    padding-left: 0px !important;
 }
 .pickup_icon {
     max-width: 37px;
@@ -891,11 +919,14 @@ span.select2.select2-container.select2-container--default {
     font-family: var(--roboto-font);
     margin-bottom: 11px;
 }
-.area_box .pickup_field {
+.area_box .pickup_field, .text-dark {
     font-size: 16px;
     font-weight: 500;
     font-family: var(--roboto-font);
     color: var(--secondary-color);
+}
+label.text-dark{
+    font-weight: 400 !important;
 }
 .switch_area:hover path{
     fill: var(--primary-color);
@@ -1882,7 +1913,7 @@ button.fc-today-button.fc-button.fc-button-primary {
         max-width: 153px;
         width: 100%;
         margin-right: 15px !important;
-        height: 41px !important;
+        height: 31px !important;
     }
     .newTop_menu_ul a {
         font-size: 16px;
