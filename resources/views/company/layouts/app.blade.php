@@ -20,8 +20,9 @@
         <link href="{{ asset('/assets/plugins/select2/dist/css/select2.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> -->
 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
 
 
         
@@ -278,7 +279,7 @@
                             <div class="save_btn_box desktop_view">
                                 <button class="btn save_btn btn save_form_btn bookRideSBtn save_booking" type="button">{{ __('Book')}}</button>
                                 <button class="btn save_btn edit_booking save_form_btn" type="button" style="display:none">{{ __('Update')}}</button>
-                                <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button>
+                                <!-- <button class="btn save_btn cancel_ride" type="button" style="display:none;background: #fc4c02;color: white;">{{ __('Cancel')}}</button> -->
                             </div>
                             <div class="pickup_Drop_box">
                                 <div class="area_details">
@@ -315,7 +316,9 @@
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pick a Date</label>
-                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form-control form_control dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+                                            <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
+
                                             <!-- <input type="date" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date"> -->
 
                                             
@@ -455,30 +458,43 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js" integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-        <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+        <!-- <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script> -->
 
         <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
 
+        <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
 
         <script>
-    $(function(){
-      
-      $('input[id$="time"]').inputmask(
-        "hh:mm", {
-        placeholder: "HH:MM", 
-        insertMode: false, 
-        showMaskOnHover: false,
-      }
-      );
-      
-      
-    });
-  </script>
-        <script>
-        $('#pickUpDateRide').datepicker({
-            dateFormat: 'yy-mm-dd',//check change
-            minDate: 0
+
+        
+        var deletedRideId;
+        $(function(){
+        
+        $('input[id$="time"]').inputmask(
+            "hh:mm", {
+            placeholder: "HH:MM", 
+            insertMode: false, 
+            showMaskOnHover: false,
+        }
+        );
+        
+        
         });
+        </script>
+        <script>
+             $('#pickUpDateRideEdit').datepicker({
+                format: "yyyy-mm-dd",
+                startDate: "today"
+            });
+
+
+            $('#pickUpDateRide').datepicker({
+                multidate: true,
+                format: "yyyy-mm-dd",
+                startDate: "today"
+
+            });
 
 
         </script>
@@ -656,39 +672,39 @@
                     ride_status = ""
                     if(booking.status == -2)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == -1)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Rejected</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Rejected</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == 1)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Accepted</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Accepted</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == 2)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Started</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Started</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == 4)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Driver Reached</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-info">Driver Reached</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == 3)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-success">Completed</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-success">Completed</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == -3)
                     {
-                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
+                        ride_status = `<span class="d-flex btnactions"><span class="infomation_update status_box done bg-danger">Cancelled</span> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-trash" aria-hidden="true"></i></button> </span>`;
                     }
                     else if(booking.status == -4)
                     {
-                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
+                        ride_status = `<span class="d-flex btnactions mutibtns dropdown"><span class="infomation_update status_box done bg-warning">Pending</span> <span class="mutibtndropdown"> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button></span></span>`;
                     }
                     else if(booking.status == 0)
                     {
-                        ride_status = `<p class="infomation_update done bg-warning">Upcoming</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" ><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" ><i class="fa fa-clone" aria-hidden="true"></i></button>`;
+                        ride_status = `<p class="infomation_update done bg-warning">Upcoming</p> <button style="margin-left: 15px;height: 28px;" class="btn btn-info text-white btn-sm editRideBtn" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-pencil" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-warning text-white btn-sm cancel_ride" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-close" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-danger text-white btn-sm delete_record" data-id="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-trash" aria-hidden="true"></i></button> <button style="margin-left: 15px;height: 28px;" class="btn btn-primary text-white btn-sm clone_record" data-rideid="`+booking.id+`" data-parentid="`+booking.parent_ride_id+`"><i class="fa fa-clone" aria-hidden="true"></i></button>`;
                     }
                     else if(Date.parse(booking.ride_time) < Date.parse(Date()))
                     {
@@ -840,6 +856,12 @@
                                 $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
                                 $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
                                 $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+
+                                $("#pickUpDateRideEdit").hide();
+                                $("#pickUpDateRide").show();
+                                $("#pickUpDateRideEdit").attr("disabled",true);
+                                $("#pickUpDateRide").attr("disabled",false);
+
                                 if(response.data.ride_detail.user_id == 0){
                                     $("#users").val("").change();
                                 } else {
@@ -940,6 +962,11 @@
                     $(document).find(".cancel_ride").hide();
                     $(document).find(".edit_booking").hide();
                     $('.bookRideTitle').html('Book a Ride');
+
+                    $("#pickUpDateRideEdit").hide();
+                    $("#pickUpDateRide").show();
+                    $("#pickUpDateRideEdit").attr("disabled",true);
+                    $("#pickUpDateRide").attr("disabled",false);
 
                     $("#users").attr("disabled",false);
                     $("#ride_time").attr("readonly",false);
@@ -1303,27 +1330,32 @@
 
                 socket.on('master-driver-response-2', async (response) => {
 
-                    console.log('client' + response);
+                    console.log(response);
 
                     var isLoginUserId = "{{ Auth::check() ? Auth::user()->company_id : '' }}";
                     if(response && response.data && response.data.company_id == isLoginUserId ){
-                         setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
-
-                       // $("#add_new_bookings").hide();
-                       // $("#listView").load(location.href + " #listView");
-                    } if(response && response.data && response.data.is_ride_deleted){
-
-                         setTimeout(function() {
-                            window.location.reload();
-                         }, 1000);
-
-                    } else if (response && response.data && response.data.delete_for_all) {
+                        
                         setTimeout(function() {
                             window.location.reload();
-                         }, 1000);
-                    }
+                        }, 1000);
+                       
+                    } else if(response && deletedRideId && response.data && response.data.is_ride_deleted && response.ride_id == deletedRideId){
+
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+
+                        // $(document).find('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        // $(document).find('#add_new_bookings').css({'margin-right':'-660px','transition':'all 400ms linear'});
+                        // $("#listView").load(location.href + " #listView");
+
+                    } 
+                    // else if (response && response.data && response.data.delete_for_all) {
+
+                    //     setTimeout(function() {
+                    //         window.location.reload();
+                    //     }, 1000);
+                    // }
                 });
 
 
@@ -1404,10 +1436,14 @@
                 //edit ride
                 $(document).on('click','.editRideBtn',function () {
                     var ride_id = $(this).data('rideid');
+                    var parent_id = $(this).data('parentid');
+
                     selected_ride_id = ride_id;
                     $(document).find(".save_booking").hide();
                     $(document).find(".cancel_ride").show();
                     $(document).find(".edit_booking").show();
+                    $(document).find(".edit_booking").attr('data-parentid', parent_id);
+
                     $.ajax({
                         url: "{{ route('company.rides.edit') }}",
                         type: 'get',
@@ -1429,6 +1465,12 @@
                                 $("input[name='ride_time']").val(response.data.ride_detail.ride_time_new_modified_n);
                                 $("input[name='car_type'][data-text='"+ response.data.ride_detail.car_type +"']").attr('checked', 'checked').change();
                                 $("#numberOfPassenger").val(response.data.ride_detail.passanger).change();
+
+                                $("#pickUpDateRideEdit").show();
+                                $("#pickUpDateRide").hide();
+                                $("#pickUpDateRideEdit").attr("disabled",false);
+                                $("#pickUpDateRide").attr("disabled",true);
+
                                 if(response.data.ride_detail.user_id == 0){
                                     $("#users").val("").change();
                                 } else {
@@ -1506,6 +1548,8 @@
                 });
 
                 $(document).on("click", ".edit_booking", function(e) {
+                    var parent_id = $(this).data('parentid');
+
                     e.preventDefault();
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
@@ -1516,15 +1560,22 @@
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
                             cancelButtonColor: '#d33',
-                            confirmButtonText: "{{ __('Update Ride') }}"
+                            confirmButtonText: "{{ __('Update Ride') }}",
+                            input: parent_id > 0 ? 'checkbox' : '',
+                            inputName: 'change_for_all',
+                            inputValue: 0,
+                            inputPlaceholder: parent_id > 0 ? 'Update all related rides' : 'There are no related rides',
                         }).then((result) => {
-                            if (result.value) {
+                            if (result.value === 0 || result.value) {
                                 $(document).find(".edit_booking").attr('disabled', true);
+                                var change_for_all = result.value === 1 ? 1 : 0;
+                                console.log(result.value);
                                 $.ajax({
                                     url: "{{ route('company.ride_booking_update') }}",
                                     type: 'post',
                                     dataType: 'json',
-                                    data: $('form#booking_list_form').serialize(),
+                                    data: $('form#booking_list_form').serialize()+ '&change_for_all=' + change_for_all,
+
                                     success: function(response) {
                                         if (response.status) {
 
@@ -1555,10 +1606,12 @@
                 //cancel ride
                 $(document).on('click', '.cancel_ride', function(e) {
                     e.preventDefault();
-                    delete_cancel_ride(selected_ride_id);
+                    var parent_id = $(this).data('parentid');
+                    delete_cancel_ride(selected_ride_id, parent_id);
+
                 });
 
-                function delete_cancel_ride(ride_id){
+                function delete_cancel_ride(ride_id, parent_id){
                     Swal.fire({
                         title: "{{ __('Please Confirm') }}",
                         text: "{{ __('Cancel the ride ?') }}",
@@ -1566,16 +1619,22 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: "{{ __('Confirm') }}"
+                        confirmButtonText: "{{ __('Confirm') }}",
+                        input: parent_id > 0 ? 'checkbox' : '',
+                        inputName: 'delete_for_all',
+                        inputValue: 0,
+                        inputPlaceholder: parent_id > 0 ? 'Cancel all related rides' : 'There are no related rides',
                     }).then((result) => {
-                        if (result.value) {
+                        if (result.value === 0 || result.value) {
                             $.ajax({
                                 url: "{{ route('company.cancel_booking') }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {
                                     "_token": "{{ csrf_token() }}",
-                                    'ride_id': ride_id
+                                    'ride_id': ride_id,
+                                    'delete_for_all' : result.value === 1 ? 1 : 0,
+
                                 },
                                 success: function(response) {
                                     if (response.status) {
@@ -1600,6 +1659,8 @@
                 }
 
                 $(document).on('click', '.delete_record', function() {
+                    var parent_id = $(this).attr('data-parentid');
+
                     Swal.fire({
                         title: 'Are you sure?',
                         text: "Delete the ride ?",
@@ -1607,9 +1668,13 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Confirm'
+                        confirmButtonText: 'Confirm',
+                        input: parent_id > 0 ? 'checkbox' : '',
+                        inputName: 'delete_for_all',
+                        inputValue: 0,
+                        inputPlaceholder: parent_id > 0 ? 'Delete all related rides' : 'There are no related rides',
                     }).then((result) => {
-                        if (result.value) {
+                        if (result.value === 0 || result.value) {
                             var ride_id = $(this).attr('data-id');
                             $.ajax({
                                 url: "{{ route('company.delete_booking') }}",
@@ -1617,15 +1682,16 @@
                                 dataType: 'json',
                                 data: {
                                     "_token": "{{ csrf_token() }}",
-                                    'ride_id': ride_id
+                                    'ride_id': ride_id,
+                                    'delete_for_all' : result.value === 1 ? 1 : 0,
+
                                 },
                                 success: function(response) {
                                     if (response.status) {
+                                        deletedRideId = ride_id;
                                         $(document).find("li.list-group-item[data-ride_id='" + ride_id + "']").remove();
                                        
-                                        console.log(response.data);
-
-                                        socket.emit('master-driver-update-web', {"data":response.data});
+                                        socket.emit('master-driver-update-web', {"data":response.data, "ride_id":ride_id});
 
                                         Swal.fire("Success", response.message, "success");
                                         // setTimeout(function() {
