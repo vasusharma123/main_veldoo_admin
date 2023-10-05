@@ -46,12 +46,14 @@ class SendRideNotificationToMasterAssignedDriverNoResponse extends Command
     public function handle()
     {
         $currentTime = Carbon::now()->format('Y-m-d H:i:s');
-        $rides = Ride::where('check_assigned_driver_ride_acceptation', '<=', $currentTime)->where(['status' => 0])->whereNotNull('driver_id')->get();
+        $rides = Ride::where('check_assigned_driver_ride_acceptation', '<=', $currentTime)->where(['status' => 0])->whereNotNull('driver_id')->where(function($query){
+            $query->whereNotNull('service_provider_id')->where('service_provider_id','!=','');
+        })->get();
         if (!empty($rides) && count($rides) > 0) {
-            $settings = Setting::first();
-            $settingValue = json_decode($settings['value']);
             foreach ($rides as $ride) {
-                $masterDriverIds=User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+                $settings = Setting::where(['service_provider_id' => $ride->service_provider_id])->first();
+                $settingValue = json_decode($settings['value']);
+                $masterDriverIds=User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1, 'service_provider_id' => $ride->service_provider_id])->pluck('id')->toArray();
                 if(!empty($masterDriverIds)){
                     $ride->driver_id = null;
                     $ride->check_assigned_driver_ride_acceptation = null;
@@ -72,7 +74,7 @@ class SendRideNotificationToMasterAssignedDriverNoResponse extends Command
                     }
                     $ridehistory_data = [];
                     foreach ($masterDriverIds as $driverid) {
-                        $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '3', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                        $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '3', 'service_provider_id' => $ride->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                     }
                     RideHistory::insert($ridehistory_data);
                 } else {

@@ -51,17 +51,22 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
                 ->orWhere(['ride_type' => 3]);
         })->whereNotNull('alert_notification_date_time')->get();
         if (!empty($rides) && count($rides) > 0) {
-            $settings = Setting::first();
-            $settingValue = json_decode($settings['value']);
             foreach ($rides as $ride) {
+                $waitingTime = 30;
+                if(!empty($ride->service_provider_id)){
+                    $settings = Setting::where(['service_provider_id' => $ride->service_provider_id])->first();
+                    $settingValue = json_decode($settings['value']);
+                    $waitingTime = $settingValue->waiting_time;
+                }
+                $settings = Setting::where(['service_provider_id' => $ride->service_provider_id])->first();
+                $settingValue = json_decode($settings['value']);
                 $driverId = $ride->driver_id;
                 $ride->all_drivers = $ride->driver_id;
                 $ride->save();
-                $user_data = User::select('id', 'first_name', 'last_name', 'image', 'country_code', 'phone')->find($ride['user_id']);
                 $title = 'New Booking';
                 $message = 'You Received new booking';
                 $ride = new RideResource(Ride::find($ride->id));
-                $ride['waiting_time'] = $settingValue->waiting_time;
+                $ride['waiting_time'] = $waitingTime;
                 $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride];
                 if (!empty($ride->driver->device_token)) {
                     if ($ride->driver->device_type == 'ios') {
@@ -70,8 +75,8 @@ class SendRideNotificationToDriverOnScheduleTime extends Command
                         bulk_firebase_android_notification($title, $message, [$ride->driver->device_token], $additional);
                     }
                 }
-                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverId, 'additional_data' => json_encode($additional)]);
-                RideHistory::insert(['ride_id' => $ride->id, 'driver_id' => $driverId, 'status' => '2']);
+                Notification::create(['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverId, 'additional_data' => json_encode($additional), 'service_provider_id' => $ride->service_provider_id]);
+                RideHistory::insert(['ride_id' => $ride->id, 'driver_id' => $driverId, 'status' => '2', 'service_provider_id' => $ride->service_provider_id]);
                 $rideData = Ride::find($ride->id);
                 $rideData->driver_id = null;
                 $rideData->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('+' . $settingValue->waiting_time . ' seconds ', strtotime($rideData->alert_notification_date_time)));

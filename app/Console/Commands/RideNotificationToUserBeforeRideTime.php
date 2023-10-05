@@ -63,7 +63,7 @@ class RideNotificationToUserBeforeRideTime extends Command
                         bulk_firebase_android_notification($title, $message, [$ride->user->device_token], $additional);
                     }
                 }
-                Notification::create(['title' => $title, 'description' => $message, 'type' => 14, 'user_id' => $ride->user_id, 'additional_data' => json_encode($additional)]);
+                Notification::create(['title' => $title, 'description' => $message, 'type' => 14, 'user_id' => $ride->user_id, 'additional_data' => json_encode($additional), 'service_provider_id' => $ride->service_provider_id]);
                 $rideData = Ride::find($ride->id);
                 $rideData->is_notified_user_before_ride = 1;
                 $rideData->save();
