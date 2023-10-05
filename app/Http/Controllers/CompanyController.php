@@ -497,6 +497,7 @@ class CompanyController extends Controller
 
     public function updateCompanyInformation(Request $request)
     {
+        // dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             // 'email' => 'email',
@@ -511,8 +512,71 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try 
         {
-            // dd($request->all());
             $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code,'street'=>$request->street,'state'=>$request->state,'zip'=>$request->zip_code,'country'=>$request->country,'city'=>$request->city];  
+            $company = Company::find(Auth::user()->company_id);
+            if ($company) 
+            {
+                $company->fill($data);
+                $company->update();
+            }  
+            else
+            {
+                $company = new Company();
+                $company->fill($data);
+                $company->save();
+            }
+
+            if($request->hasFile('logo') && $request->file('logo')->isValid())
+            {
+                $imageName = 'logo-'.time().'.'.$request->logo->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->logo, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['logo'=>$image]);
+                $company->update();
+            }
+            if($request->hasFile('background_image') && $request->file('background_image')->isValid())
+            {
+                $imageName = 'background-image-'.time().'.'.$request->background_image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->background_image, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['background_image'=>$image]);
+                $company->update();
+            }
+
+            User::where('id',Auth::user()->id)->update(['company_id'=>$company->id]);
+            DB::commit();
+            return back()->with('success', 'Information updated!');
+        } catch (\Exception $exception) {
+            // dd($exception);
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
+
+    public function updateCompanyThemeInformation(Request $request)
+    {
+        // dd($request->all());
+        $this->validate($request, [
+            'header_color' => 'required',
+            // 'email' => 'email',
+            // 'phone' => 'required',
+            // 'country_code' => 'required',
+            // 'state' => 'required|min:3',
+            'input_color' => 'required',
+           // 'zip_code' => 'required|min:3',
+            //'country' => 'required',
+
+        ]);
+        DB::beginTransaction();
+        try 
+        {
+            $data = ['header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
+            
             $company = Company::find(Auth::user()->company_id);
             if ($company) 
             {
@@ -569,7 +633,7 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try 
         {
-            // dd($request->all());
+             //dd($request->all());
             $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {

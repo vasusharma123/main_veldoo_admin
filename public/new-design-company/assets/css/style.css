@@ -1,8 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;200;300;400;500;600;700;800&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Oswald:wght@200;300;400;500;600;700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 /* All Variablessss */
 :root{
-    
-    --primary-color: #FC4C02;
     --secondary-color: #060F21;
     --sidebar-hover-bg: #FFEEE7;
     --Edit-green : #36E43D;
@@ -392,9 +390,15 @@ label.form-lable.boldlable {
     margin-left: 10px;
 }
 .user_name{
-    font-family: var(--oswald-font);
+    /* font-family: var(--oswald-font);
     font-size: 18px;
-    color: white;
+    color: white; */
+
+    font-size: var(--primary-font-color);
+    font-family: var(--oswald-font);
+    color: var(--primary-font-color);
+
+
     font-weight: 500;
     max-width: 65px;
     text-overflow: ellipsis;
@@ -527,15 +531,19 @@ span.menu_icons.arrow {
 .image_home {
     max-width: 30px;
 }
+
 .newTop_menu_ul a{
-    font-size: 20px;
-    font-weight: 500;
+
+    font-size: var(--primary-font-color);
     font-family: var(--oswald-font);
-    color: white;
+    color: var(--primary-font-color);
+    font-weight: 500;
+
     position: relative;
     padding-right: 24px !important;
     padding-left: 24px !important;
 }
+
 .newTop_menu_ul a.dotnot:after{
     display: none;
 }
@@ -817,7 +825,7 @@ span.menu_icons.arrow {
 }
 .save_form_btn {
     background: var(--primary-color);
-    color: white;
+    color: var(--primary-font-color);
     padding: 10px 48px;
     font-family: var(--roboto-font);
     font-size: 18px;
@@ -1143,19 +1151,23 @@ a.btn.menu_toggle_btn.mobile_view {
 .lightgreyBg{
     background: #fcfcfc;
 }
+
+
 .inside_custom_form .main_field{
+    color: var(--primary-input-font-color);
+    font-family: var(--primary-input-font-family);
+    font-size: var(--primary-input-font-size);
     padding: 16px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    color: var(--input-text);
-    font-family: var(--inter-font);
     font-weight: 400;
-    font-size: 16px;
     width: 100%;
 
 }
 .add_managers.inside_custom_form .main_field{
-    background: rgba(255, 255, 255, 0.75);
+    background: var(--primary-input-color);;
 }
+
+
 .main_field:focus{
     box-shadow: none;
     border-color: var(--primary-color);

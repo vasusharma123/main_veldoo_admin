@@ -216,7 +216,10 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	// Route::get('rides/{id}','Company\RidesController@show')->name('company.rides.show');
 	// Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
 	Route::post('settings/update-company-information','CompanyController@updateCompanyInformation')->name('company.updateCompanyInformation')->middleware('can:isCompany');
+	Route::post('settings/update-company-theme-information','CompanyController@updateCompanyThemeInformation')->name('company.updateCompanyThemeInformation')->middleware('can:isCompany');
+
 	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation');
+
 	Route::get('settings','CompanyController@settings')->name('company.settings');
 	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
 	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');

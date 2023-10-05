@@ -35,6 +35,11 @@
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
         <style>
+
+          
+            :root {
+                --primary-color: #FC4C02 !important;
+            }
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }

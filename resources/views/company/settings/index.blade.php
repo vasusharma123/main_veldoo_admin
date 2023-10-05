@@ -1,15 +1,36 @@
 @extends('company.layouts.app')
 @section('content')
 <style>
-    input
+    /* input
     {
         color: black !important;
         font-weight: 600 !important;
-    }
+    } */
     input::placeholder
     {
         font-weight: 100 !important;
     }
+
+    input[type="color"] {
+    background-color: #fff;
+    width: 100px;
+    height: 75px;
+    cursor: pointer;
+}
+
+b {
+	background-color: #fff;
+	padding: 16px;
+	font-family: sans-serif;
+}
+
+code {
+	font-size: 1.2rem;
+	background-color: lightslategray;
+	color: #fff;
+	border-radius: 3px;
+	padding: 5px;
+}
 </style>
     <section class="add_booking_section">
         <article class="add_new_booking_box">
@@ -31,9 +52,13 @@
                         <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
                     @endcan
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="#weekView">Theme Design</a></li>
+
                 </ol>
             </nav>
+
             @can('isCompany')
+
                 <div id="listView" class="resume">
                     <section class="form_add_managers">
                         <article class="form_inside">
@@ -79,13 +104,20 @@
                                                         <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
                                                     </div>
                                                 </div>
-                                                <div class="col-3">
+                                                <!-- <div class="col-3">
                                                     <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
                                                         <h6 class="smalltxt">Background</h6>
                                                         <input type="file" class="photo form-control main_field position-relative" id="cBackgroundImage" name="background_image">
                                                         <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
                                                     </div>
                                                 </div>
+                                                <div class="col-3">
+                                                    <div class="img_preview position-relative desktop_view" style="display: table-caption;width:96px">
+                                                        <h6 class="smalltxt">Theme Color</h6>
+                                                        <input type="color" value="{{ !empty($company->theme_color) ? $company->theme_color  : '#FC4C02' }}" name="theme_color" id="colorPicker">
+
+                                                    </div>
+                                                </div> -->
                                             </div>
                                             <div class="form_btn text-end mobile_margin" style="margin-top:10%">
                                                 <button type="submit" class="btn save_form_btn">Update Changes</button>
@@ -139,11 +171,171 @@
                     </article>
                 </section>
             </div>
+
+            <div id="weekView" class="resume next-tabs">
+                <section class="form_add_managers">
+                    <article class="form_inside">
+                    <form class="add_managers inside_custom_form" method="POST" action="{{ route('company.updateCompanyThemeInformation') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="container-fluid form_container">
+                                <div class="row m-0 w-100">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 mobile_view">
+                                        <h6 class="smalltxt">Background</h6>
+                                        <div class="form-check position-relative text-center p-0 mobile_avatar_top">
+                                            <label class="form-check-label mb-3 setting_labels" for="" >
+                                                Theme
+                                            </label>
+                                            <img src="assets/images/uploaded.png" alt="Logo" class="img-fluid big_upload upload_logo w-100">
+                                            <input type="file" class="form-control main_field uploadLogos text-center p-0" placeholder="" value="16" >
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9 col-sm-12 col-12">
+                                        <h6 class="smalltxt">Header</h6>
+                                        <div class="row w-100 m-0 gx-2">
+                                            <div class="col-lg-1 col-md-1 col-sm-2 col-2 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="orange">
+                                                        Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0 ">
+                                                    <label class="form-check-label mb-3 setting_labels" for="orange">
+                                                        Font
+                                                    </label>
+                                                    <select class="form-control main_field fontStyle text-center p-0" name="header_font_family" >
+                                                       
+                                                    <option value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option value="Berlin-sans-fb" {{ $company->header_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option value="Fantasy" {{ $company->header_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+
+
+                                                    </select>
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-4 col-4 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" >
+                                                        Font Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="" >
+                                                        Font Size
+                                                    </label>
+                                                    <input type="text" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2 ">
+                                                <div class="form-check position-relative text-center p-0 logoBx_prev ">
+                                                    <label class="form-check-label mb-3 setting_labels" for="" >
+                                                        Logo
+                                                    </label>
+                                                    <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" class="img-fluid upload_logo" alt="Select Avatar" id="cLogoImgPreview2"/>
+                                                    <input type="file" class="form-control main_field uploadLogos text-center p-0" id="cLogo2" name="logo">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h6 class="smalltxt">Input field</h6>
+                                        <div class="row w-100 m-0 gx-2">
+                                            <div class="col-lg-1 col-md-1 col-sm-2 col-2 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="orange">
+                                                        Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_color) ? $company->input_color  : '' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="input_color" value="{{ !empty($company->input_color) ? $company->input_color  : '#FC4C02' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0 ">
+                                                    <label class="form-check-label mb-3 setting_labels" for="orange">
+                                                        Font
+                                                    </label>
+                                                    <select class="form-control main_field fontStyle text-center p-0" name="input_font_family">
+
+                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option value="Berlin-sans-fb" {{ $company->input_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option value="Fantasy" {{ $company->input_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+
+                                                   
+                                                    </select>
+                                                    
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-4 col-4 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" >
+                                                        Font Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_font_color) ? $company->input_font_color  : '' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" placeholder="Name" name="input_font_color" value="{{ !empty($company->input_font_color) ? $company->input_font_color  : '#FC4C02' }}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="" >
+                                                        Font Size
+                                                    </label>
+                                                    <input type="text" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '#FC4C02' }}" >
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-3 col-md-3 col-sm-12 col-12 img_preview position-relative desktop_view">
+                                        
+                                        <h6 class="smalltxt desktop_view">Background</h6>
+                                        <div class="form-check position-relative text-center p-0 desktop_view">
+                                            <label class="form-check-label mb-3 setting_labels" for="" >
+                                                Theme
+                                            </label>
+                                            <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" class="img-fluid big_upload upload_logo w-100" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
+                                            <input type="file" class="form-control main_field uploadLogos text-center p-0" id="cBackgroundImage" name="background_image">
+                                        </div>
+
+                                        <div class="form_btn text-end mobile_margin">
+                                            <button type="submit" class="btn save_form_btn">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </article>
+                </section>
+            </div>
+            <!-- /week View -->
         </article>
     </section>
 @endsection
 @section('footer_scripts')
     <script>
+
+
+
+    $(document).ready(function() {
+        $('.colorSlt').change(function() {
+            $(this).closest(".form-check").find('.colorType').css('background-color', $(this).val());
+        });
+    });
 
 
     $('#phone, #phone_edit').keyup(function () { 

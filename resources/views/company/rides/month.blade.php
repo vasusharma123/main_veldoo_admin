@@ -1,9 +1,14 @@
 @extends('company.layouts.app')
 <style>
+    
+
     .fc-h-event {
-        background-color: #fc4c02 !important;
+        background-color: {{ !empty($companyInfo['theme_color']) ?  $companyInfo['theme_color'] : '#fc4c02 !important'}};
         border: 1px solid #fc4c02 !important;
     }
+
+    
+
 </style>
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">

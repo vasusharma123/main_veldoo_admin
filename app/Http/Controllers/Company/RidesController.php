@@ -505,7 +505,7 @@ class RidesController extends Controller
                         })->orderBy('rides.created_at','Desc')
                         ->where('company_id','!=',null)
                         ->with(['user','driver','vehicle','creator','company'])->find($id);
-        //dd($ride);
+       // dd($ride->vehicle);
         // $ride->status = 2;
         $ride['user_first_name'] = $ride->company ? $ride->company->user->first_name : '';
         return response()->json(['status'=>1,'data'=>$ride]);

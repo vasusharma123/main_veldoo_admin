@@ -33,14 +33,105 @@
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
        
        <style>
+
+
+            @if(!empty($companyInfo['header_color']))
+                :root {
+                    --primary-color: {{ $companyInfo['header_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-color: #FC4C02 !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['header_font_family']))
+                :root {
+                    --primary-font-family: {{ $companyInfo['header_font_family'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-font-family: 'Oswald', sans-serif !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['header_font_color']))
+                :root {
+                    --primary-font-color: {{ $companyInfo['header_font_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-font-color: #ffffff !important;
+                }
+            @endif
+
+            @if(!empty($companyInfo['header_font_size']))
+                :root {
+                    --primary-font-size: {{ $companyInfo['header_font_size'] }} px !important;
+                }
+            @else
+                :root {
+                    --primary-font-size: 20px !important;
+                }
+            @endif
+
+
+
+            @if(!empty($companyInfo['input_color']))
+                :root {
+                    --primary-input-color: {{ $companyInfo['input_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-color: rgba(255, 255, 255, 0.75) !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['input_font_family']))
+                :root {
+                    --primary-input-font-family: {{ $companyInfo['input_font_family'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-family: 'Oswald', sans-serif !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['input_font_color']))
+                :root {
+                    --primary-input-font-color: {{ $companyInfo['input_font_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-color: #666666 !important;
+                }
+            @endif
+
+            @if(!empty($companyInfo['input_font_size']))
+                :root {
+                    --primary-input-font-size: {{ $companyInfo['input_font_size'] }} px !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-size: 20px !important;
+                }
+            @endif
+
+
+
+
+
+
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
-                --bs-alert-bg: #fc4c02 !important;
+                
+                --bs-alert-bg: var(--primary-color);
+                color: var(--primary-font-color);
+
                 --bs-alert-border-color: #fc4c02 !important;
-                color: white !important;
                 max-width: 600px !important;
                 margin-top: 30px !important;
                 margin-bottom: 0px !important;
@@ -109,6 +200,9 @@
                 min-height: 100vh;
                 height: auto;
             }
+
+
+            
 
         </style>
         @include('company.elements.header')
@@ -340,7 +434,7 @@
                                         </div>
                                     </div>
                                 </div>
-                 ̰            </div>
+                            </div>
                             <div class="cars_selection">
                                 <div class="swiper carSwiper">
                                     <div class="swiper-wrapper">
@@ -1730,6 +1824,29 @@
             </script>
         @endif
         <script>
+
+        $(document).on('change','#cLogo2',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#cLogoImgPreview2').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+
             $(document).on('change','#cLogo',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];
@@ -1751,6 +1868,8 @@
                 reader.readAsDataURL(file);
                 }
             });
+
+
             $(document).on('change','#cBackgroundImage',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];
@@ -1772,6 +1891,7 @@
                 reader.readAsDataURL(file);
                 }
             });
+            
             $(document).on('change','#cImage',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];
