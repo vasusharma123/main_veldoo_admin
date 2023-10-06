@@ -3,7 +3,7 @@
 <style>
     /* input
     {
-        color: black !important;
+         color: black !important; 
         font-weight: 600 !important;
     } */
     input::placeholder
@@ -12,7 +12,7 @@
     }
 
     input[type="color"] {
-    background-color: #fff;
+    /* background-color: #fff; */
     width: 100px;
     height: 75px;
     cursor: pointer;
@@ -207,7 +207,9 @@ code {
                                                         Font
                                                     </label>
                                                     <select class="form-control main_field fontStyle text-center p-0" name="header_font_family" >
-                                                       
+                                                  
+                                                    <option value="">Select Font</option>
+                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
                                                     <option value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
                                                     <option value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
                                                     <option value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
@@ -236,7 +238,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="text" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
+                                                    <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2 ">
@@ -267,6 +269,8 @@ code {
                                                     </label>
                                                     <select class="form-control main_field fontStyle text-center p-0" name="input_font_family">
 
+                                                    <option value="">Select Font</option>
+                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
                                                     <option value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
                                                     <option value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
                                                     <option value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
@@ -277,6 +281,8 @@ code {
                                                     <option value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
 
                                                    
+                                                    
+
                                                     </select>
                                                     
                                                 </div>
@@ -295,7 +301,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="text" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '#FC4C02' }}" >
+                                                    <input type="number" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                         </div>
@@ -309,7 +315,7 @@ code {
                                                 Theme
                                             </label>
                                             <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" class="img-fluid big_upload upload_logo w-100" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
-                                            <input type="file" class="form-control main_field uploadLogos text-center p-0" id="cBackgroundImage" name="background_image">
+                                            <input type="file" min="14" max="18" class="form-control main_field uploadLogos text-center p-0" id="cBackgroundImage" name="background_image">
                                         </div>
 
                                         <div class="form_btn text-end mobile_margin">

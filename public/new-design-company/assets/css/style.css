@@ -395,7 +395,7 @@ label.form-lable.boldlable {
     color: white; */
 
     font-size: var(--primary-font-color);
-    font-family: var(--oswald-font);
+    font-family: var(--primary-font-family);
     color: var(--primary-font-color);
 
 
@@ -534,8 +534,8 @@ span.menu_icons.arrow {
 
 .newTop_menu_ul a{
 
-    font-size: var(--primary-font-color);
-    font-family: var(--oswald-font);
+    font-size: var(--primary-font-size);
+    font-family: var(--primary-font-family);
     color: var(--primary-font-color);
     font-weight: 500;
 
@@ -826,8 +826,9 @@ span.menu_icons.arrow {
 .save_form_btn {
     background: var(--primary-color);
     color: var(--primary-font-color);
+    font-family: var(--primary-font-family);
+
     padding: 10px 48px;
-    font-family: var(--roboto-font);
     font-size: 18px;
     font-weight: 400;
     border-radius: 5px;
@@ -1152,6 +1153,11 @@ a.btn.menu_toggle_btn.mobile_view {
     background: #fcfcfc;
 }
 
+.iti__selected-dial-code{
+    color: var(--primary-input-font-color);
+    font-family: var(--primary-input-font-family);
+    font-size: var(--primary-input-font-size);
+}
 
 .inside_custom_form .main_field{
     color: var(--primary-input-font-color);
@@ -1205,7 +1211,8 @@ input#photo{
 .save_form_btn {
     font-weight: 700;
     font-size: 20px;
-    font-family: var(--roboto-font);
+    font-family: var(--primary-font-family);
+
 }
 .imgs_uploaded_view{
     border-radius: 0;

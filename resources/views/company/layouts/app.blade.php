@@ -67,7 +67,7 @@
 
             @if(!empty($companyInfo['header_font_size']))
                 :root {
-                    --primary-font-size: {{ $companyInfo['header_font_size'] }} px !important;
+                    --primary-font-size: {{ $companyInfo['header_font_size'] }}px !important;
                 }
             @else
                 :root {
@@ -93,7 +93,7 @@
                 }
             @else
                 :root {
-                    --primary-input-font-family: 'Oswald', sans-serif !important;
+                    --primary-input-font-family: var(--bs-body-font-family) !important;
                 }
             @endif
             
@@ -109,11 +109,11 @@
 
             @if(!empty($companyInfo['input_font_size']))
                 :root {
-                    --primary-input-font-size: {{ $companyInfo['input_font_size'] }} px !important;
+                    --primary-input-font-size: {{ $companyInfo['input_font_size'] }}px !important;
                 }
             @else
                 :root {
-                    --primary-input-font-size: 20px !important;
+                    --primary-input-font-size: 16px !important;
                 }
             @endif
 

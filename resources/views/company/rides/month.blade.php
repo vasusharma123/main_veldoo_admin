@@ -3,7 +3,7 @@
     
 
     .fc-h-event {
-        background-color: {{ !empty($companyInfo['theme_color']) ?  $companyInfo['theme_color'] : '#fc4c02 !important'}};
+        background-color: {{ !empty($companyInfo['header_color']) ?  $companyInfo['header_color'] : '#fc4c02 !important'}};
         border: 1px solid #fc4c02 !important;
     }
 

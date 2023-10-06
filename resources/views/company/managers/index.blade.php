@@ -3,7 +3,7 @@
 <style>
     input
     {
-        color: black !important;
+        /* color: black !important; */
         font-weight: 600 !important;
     }
     input::placeholder
