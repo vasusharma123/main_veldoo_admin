@@ -1,4 +1,16 @@
 @extends('company.layouts.app')
+
+<style>
+
+.table_box { overflow: auto; height: 600px; }
+.table_box thead th { position: sticky; top: 0; z-index: 1; }
+
+/* Just common table stuff. Really. */
+table  { border-collapse: collapse; width: 100%; }
+/* th, td { padding: 8px 16px; } */
+th     { background:#eee; }
+
+</style>
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />

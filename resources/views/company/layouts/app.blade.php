@@ -211,7 +211,7 @@
                 @yield('content')
             </div>
         </div>
-        @if (\Request::route()->getName()=='company.rides')
+        @if (\Request::route()->getName()=='company.rides' || \Request::route()->getName()=='managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings' )
             <!-- Section View Booking -->
                 <section class="add_booking_modal view_booking" id="view_booking">
                     <article class="booking_container_box">
@@ -258,7 +258,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pick Date</label>
                                             <label class="pickupdate ride_new_date view_value_form">08/02/2023</label>
                                         </div>
 
@@ -269,7 +269,7 @@
                                     <div class=" area_box dropUp_area timer_picker mb-3">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pick Time</label>
                                             <label class="pickTimes ride_new_time ">06:00 PM</label>
                                         </div>
                                     </div>
@@ -409,7 +409,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pick Date</label>
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
 
@@ -424,7 +424,7 @@
                                     <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pick Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
@@ -489,6 +489,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
                                             <label class="form_label down_form_label ">Add Note</label>
@@ -497,6 +498,15 @@
                                     </div>
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="row w-100 m-0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
+                                        <label for="checkid">
+                                            <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -648,7 +658,8 @@
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
-        @if (\Request::route()->getName()=='company.rides')
+
+        @if (\Request::route()->getName() =='company.rides' || \Request::route()->getName()== 'managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings')
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
@@ -738,6 +749,8 @@
                     $('.ride_car_div').hide();
                     $('.ride_car_div').removeClass('d-flex');
                     $('.ride_car_div_na').show();
+                    $('.ride_car_div_na').text(booking.car_type);
+
                     if (booking.vehicle!=null)
                     {
                         $('.ride_car_div').show();

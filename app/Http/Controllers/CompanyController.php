@@ -12,6 +12,7 @@ use DataTables;
 use App\Company;
 use Auth;
 use App\Ride;
+use App\Price;
 
 class CompanyController extends Controller
 {
@@ -106,6 +107,10 @@ class CompanyController extends Controller
                 });
             });
         }
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+
         $data['companies'] = $companies->paginate(100);
         return view('admin.company.index')->with($data);
     }
@@ -492,6 +497,8 @@ class CompanyController extends Controller
     {
         $data = array('page_title' => 'Settings', 'action' => 'Settings');
         $data['company'] = Company::find(Auth::user()->company_id); 
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
 		return view("company.settings.index")->with($data);
     }
 
@@ -562,12 +569,12 @@ class CompanyController extends Controller
     {
         // dd($request->all());
         $this->validate($request, [
-            'header_color' => 'required',
+            //'header_color' => 'required',
             // 'email' => 'email',
             // 'phone' => 'required',
             // 'country_code' => 'required',
             // 'state' => 'required|min:3',
-            'input_color' => 'required',
+            //'input_color' => 'required',
            // 'zip_code' => 'required|min:3',
             //'country' => 'required',
 
@@ -575,8 +582,13 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try 
         {
-            $data = ['header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
-            
+            $data = [];
+            if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
+                $data = ['logo' => '', 'background_image' => '','header_color'=> '', 'header_font_family'=> '', 'header_font_color'=> '', 'header_font_size'=> '', 'input_color'=> '', 'input_font_family'=> '', 'input_font_color'=> '', 'input_font_size'=> ''];  
+            } else {
+                $data = ['header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
+            }
+
             $company = Company::find(Auth::user()->company_id);
             if ($company) 
             {
@@ -613,7 +625,11 @@ class CompanyController extends Controller
 
             User::where('id',Auth::user()->id)->update(['company_id'=>$company->id]);
             DB::commit();
-            return back()->with('success', 'Information updated!');
+            if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
+                return response()->json(['status'=>1,'message'=>'Information reset!']);
+            } else {
+                return back()->with('success', 'Information updated!');
+            }
         } catch (\Exception $exception) {
             // dd($exception);
             DB::rollBack();

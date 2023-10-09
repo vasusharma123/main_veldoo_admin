@@ -112,6 +112,7 @@ class RidesController extends Controller
 
     public function ride_booking(Request $request)
     {
+        
         $now = Carbon::now();
         $vehicle_type = Price::find($request->car_type);
         $request->car_type = $vehicle_type->car_type;
@@ -258,6 +259,7 @@ class RidesController extends Controller
             $message = 'You Received new booking';
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
+
             if (!empty($driverids)) {
                 $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                 if (!empty($ios_driver_tokens)) {
@@ -276,6 +278,7 @@ class RidesController extends Controller
                 Notification::insert($notification_data);
                 RideHistory::insert($ridehistory_data);
             }
+
             $overallDriversCount = User::select(
                 "users.*",
                 DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))

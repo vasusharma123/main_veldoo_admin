@@ -32,6 +32,12 @@ code {
 	padding: 5px;
 }
 </style>
+@section('header_button')
+    <button type="button" class="btn addNewBtn_cs me-4">
+        <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
+        <span class="text_button">Book a ride</span>
+    </button>
+@endsection
     <section class="add_booking_section">
         <article class="add_new_booking_box">
             <div class="action_btn text-end page_btn" style="margin-top: 100px">
@@ -318,8 +324,9 @@ code {
                                             <input type="file" min="14" max="18" class="form-control main_field uploadLogos text-center p-0" id="cBackgroundImage" name="background_image">
                                         </div>
 
-                                        <div class="form_btn text-end mobile_margin">
-                                            <button type="submit" class="btn save_form_btn">Save Changes</button>
+                                        <div class="form_btn text-end mobile_margin d-flex">
+                                            <button type="button" companyid="{{ !empty($company->id) ? $company->id  : '' }}"  class=" btn save_theme_design_form_btn reset-theme-design">Reset Changes</button>
+                                            <button type="submit" class="btn save_theme_design_form_btn">Save Changes</button>
                                         </div>
                                     </div>
                                 </div>
@@ -435,5 +442,46 @@ code {
             iti.setNumber("+"+code + phone);
             $("#phone").val(phone);
         });
+
+
+        $(document).on('click','.reset-theme-design',function () {
+            var companyId = $(this).data('companyid');
+            Swal.fire({
+                title: "{{ __('Please Confirm') }}",
+                text: "{{ __('Reset theme design ?') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: "{{ __('Confirm') }}"
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: "{{ route('company.updateCompanyThemeInformation') }}",
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            'company_id': companyId,
+                            'reset_theme_design':'reset_theme_design'
+
+                        },
+                        success: function(response) {
+                            Swal.fire("Success", 'Theme design reset successfully', "success");
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1000);
+                        },
+                        error(response) {
+                            swal.fire("{{ __('Error') }}", '', "error");
+                        }
+                    });
+                }
+            });
+            
+        });
+        
+
+
     </script>
 @endsection
