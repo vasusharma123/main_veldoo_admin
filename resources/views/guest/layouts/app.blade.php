@@ -167,7 +167,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <label class="pickupdate ride_new_date view_value_form">08/02/2023</label>
                                         </div>
 
@@ -178,7 +178,7 @@
                                     <div class=" area_box dropUp_area timer_picker mb-3">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             <label class="pickTimes ride_new_time view_value_form">06:00 PM</label>
                                         </div>
                                     </div>
@@ -321,7 +321,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field pick-up-date-ride" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field pick-up-date-ride-edit" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
 
@@ -336,7 +336,7 @@
                                     <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
