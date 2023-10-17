@@ -299,7 +299,7 @@ class User extends Authenticatable implements HasMedia
 	public function getUserRoleAttribute()
 	{
 		$selected_user_type = (!empty($this->user_type))?$this->user_type:2;
-		$user_types= [1=>"customer",2=>"driver",3=>"admin",4=>"company",5=>"company_manager"];
+		$user_types= [1=>"customer",2=>"driver",3=>"Service Provider",4=>"company",5=>"company_manager"];
 		return $user_types[$selected_user_type];
 	}
 

@@ -2231,7 +2231,7 @@ class UserController extends Controller
 				}
 				$notification_data = [];
 				foreach ($masterDriverIds as $driverid) {
-					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
 				}
 				Notification::insert($notification_data);
 			}
@@ -2915,6 +2915,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($request->note)) {
 				$ride->note = $request->note;
 			}
+			if(!empty($ride->service_provider_id)){
+				$ride->service_provider_id = $logged_in_user->service_provider_id;
+			}
 
 			if (!empty($ride)) {
 				if(!empty($request->user_id)){
@@ -3060,7 +3063,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 					if (!empty($request->distance)) {
 						$ride->distance = $request->distance;
-						$voucher = Voucher::first();
+						$voucher = Voucher::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
 						$voucherValue = json_decode($voucher['value']);
 						$mile_per_ride = $voucherValue->mile_per_ride;
 						$distance = $request->distance;
@@ -3108,7 +3111,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->save();
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
-			$settings = \App\Setting::first();
+			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
 			$settingValue = json_decode($settings['value']);
 			$ride['waiting_time'] = $settingValue->waiting_time;
 			if ($request->status != -1) {
@@ -3140,6 +3143,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$uservoucher->user_id = $ride['user_id'];
 						$uservoucher->ride_id = $request->ride_id;
 						$uservoucher->type = 3;
+						$uservoucher->service_provider_id = $rideDetail->service_provider_id;
 						$uservoucher->save();
 					}
 				}
@@ -4819,8 +4823,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$notification_data = [];
 			$ridehistory_data = [];
 			foreach ($driverids as $driverid) {
-				$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
-				$ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+				$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+				$ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
 			}
 			Notification::insert($notification_data);
 			RideHistory::insert($ridehistory_data);

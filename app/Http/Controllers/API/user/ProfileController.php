@@ -76,4 +76,32 @@ class ProfileController extends Controller
             return response()->json(['message' => $exception->getMessage()], $this->warningCode);
         }
     }
+
+    public function service_providers(Request $request)
+    {
+        try {
+            $service_providers = User::select('id','name','user_type')->where(['user_type' => 3])->get();
+            return response()->json(['success' => true, 'message' => 'List of service providers', 'data' => $service_providers], $this->successCode);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
+    public function mark_favourite_service_provider(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $user->service_provider_id = $request->service_provider_id??null;
+            $user->save();
+            $userDetail = User::find($user->id);
+            return response()->json(['success' => true, 'message' => 'My profile', 'data' => $userDetail], $this->successCode);
+        } catch (\Illuminate\Database\QueryException $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+        }
+    }
+
 }

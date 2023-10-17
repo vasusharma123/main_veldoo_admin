@@ -139,6 +139,9 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('my_profile','user\ProfileController@my_profile');
 	Route::post('delete_account', 'user\ProfileController@destroy');
 	Route::post('ride/update_address', 'RideController@update_ride_address');
+	Route::get('service_providers','user\ProfileController@service_providers');
+	Route::post('mark_favourite_service_provider','user\ProfileController@mark_favourite_service_provider');
+	
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {
