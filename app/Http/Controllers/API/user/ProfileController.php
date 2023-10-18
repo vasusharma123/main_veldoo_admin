@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\API\user;
 
 use App\Http\Controllers\Controller;
-use App\Notification;
-use App\Ride;
+use App\PaymentMethod;
 use App\Setting;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
@@ -41,7 +39,7 @@ class ProfileController extends Controller
         try {
             $rules = [
                 'country_code' => 'required',
-                'phone' => 'required'
+                'phone' => 'required',
             ];
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -80,7 +78,7 @@ class ProfileController extends Controller
     public function service_providers(Request $request)
     {
         try {
-            $service_providers = User::select('id','name','user_type')->where(['user_type' => 3])->get();
+            $service_providers = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
             return response()->json(['success' => true, 'message' => 'List of service providers', 'data' => $service_providers], $this->successCode);
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -93,7 +91,7 @@ class ProfileController extends Controller
     {
         try {
             $user = Auth::user();
-            $user->service_provider_id = $request->service_provider_id??null;
+            $user->service_provider_id = $request->service_provider_id ?? null;
             $user->save();
             $userDetail = User::find($user->id);
             return response()->json(['success' => true, 'message' => 'My profile', 'data' => $userDetail], $this->successCode);
@@ -104,4 +102,13 @@ class ProfileController extends Controller
         }
     }
 
+    public function settings(Request $request)
+    {
+        $user = Auth::user();
+        $service_provider_id = (!empty($user->service_provider_id)) ? $user->service_provider_id : 1;
+        $payment_method = PaymentMethod::where(['service_provider_id' => $service_provider_id])->get();
+        $settings = Setting::where(['service_provider_id' => $service_provider_id])->first();
+        $settingValue = json_decode($settings['value']);
+        return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name, 'driver_count_to_display' => $settingValue->driver_count_to_display], $this->successCode);
+    }
 }

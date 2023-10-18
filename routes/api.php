@@ -141,7 +141,8 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::post('ride/update_address', 'RideController@update_ride_address');
 	Route::get('service_providers','user\ProfileController@service_providers');
 	Route::post('mark_favourite_service_provider','user\ProfileController@mark_favourite_service_provider');
-	
+	Route::get('settings', 'user\ProfileController@settings');
+	Route::get('vehicleTypes', 'user\VehicleController@vehicleTypes');
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {

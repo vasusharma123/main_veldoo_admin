@@ -4540,6 +4540,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->distance)) {
 			$ride->distance = $request->distance;
 		}
+		if(!empty($request->service_provider_id)){
+			$ride->service_provider_id = $request->service_provider_id;
+		}
 		$ride->ride_type = 3;
 		$ride->created_by = 1;
 		$ride->creator_id = Auth::user()->id;
