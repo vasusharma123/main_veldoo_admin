@@ -5264,6 +5264,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if (!empty($request->distance)) {
 				$ride->distance = $request->distance;
 			}
+			if(!empty($request->service_provider_id)){
+				$ride->service_provider_id = $request->service_provider_id;
+			}
 			$ride->pickup_address = $request->start_location;
 			$ride->ride_type = 1;
 			$ride->created_by = 1;
@@ -5281,29 +5284,31 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			$ride->save();
 
-			$settings = Setting::first();
-			$settingValue = json_decode($settings['value']);
+			if (!empty($request->service_provider_id)) {
+				$settings = Setting::where(['service_provider_id' => $request->service_provider_id])->first();
+				$settingValue = json_decode($settings['value']);
 
-			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
-			if (!empty($masterDriverIds)) {
-				$title = 'Ride is planned';
-				$message = 'A new ride is planned';
-				$ride = new RideResource(Ride::find($ride->id));
-				$ride['waiting_time'] = $settingValue->waiting_time;
-				$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
-				$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
-				if (!empty($ios_driver_tokens)) {
-					bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
+				$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1, 'service_provider_id' => $request->service_provider_id])->pluck('id')->toArray();
+				if (!empty($masterDriverIds)) {
+					$title = 'Ride is planned';
+					$message = 'A new ride is planned';
+					$ride = new RideResource(Ride::find($ride->id));
+					$ride['waiting_time'] = $settingValue->waiting_time;
+					$additional = ['type' => 15, 'ride_id' => $ride->id, 'ride_data' => $ride];
+					$ios_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
+					if (!empty($ios_driver_tokens)) {
+						bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
+					}
+					$android_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'android'])->pluck('device_token')->toArray();
+					if (!empty($android_driver_tokens)) {
+						bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
+					}
+					$notification_data = [];
+					foreach ($masterDriverIds as $driverid) {
+						$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'service_provider_id' => $request->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+					}
+					Notification::insert($notification_data);
 				}
-				$android_driver_tokens = User::whereIn('id', $masterDriverIds)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'android'])->pluck('device_token')->toArray();
-				if (!empty($android_driver_tokens)) {
-					bulk_firebase_android_notification($title, $message, $android_driver_tokens, $additional);
-				}
-				$notification_data = [];
-				foreach ($masterDriverIds as $driverid) {
-					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
-				}
-				Notification::insert($notification_data);
 			}
 
 			$ride_data = Ride::find($ride->id);
@@ -6633,15 +6638,14 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		echo "function working";
 	}
+
 	public function homedriverList(Request $request)
 	{
 		$user = Auth::user();
 		$user_id = $user['id'];
 		$rules = [
-
 			'pick_lat' => 'required',
 			'pick_lng' => 'required',
-
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -6650,25 +6654,29 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 
 		try {
-
 			$lat = $request->pick_lat;
 			$lon = $request->pick_lng;
 
-			$settings = \App\Setting::first();
-			$settingValue = json_decode($settings['value']);
-			$radius = $settingValue->radius;
-			$driverlimit = $settingValue->driver_requests;
+			$radius = 50;
+			$driverlimit = 3;
+			if (!empty($user->service_provider_id)) {
+				$settings = Setting::where(['service_provider_id' => $user->service_provider_id])->first();
+				$settingValue = json_decode($settings['value']);
+				$radius = $settingValue->radius;
+				$driverlimit = $settingValue->driver_requests;
+			}
 			$query = User::select("users.id", "users.first_name", "users.last_name", "users.image", "users.current_lat", "users.current_lng", DB::raw("6371 * acos(cos(radians(" . $lat . "))
                     * cos(radians(users.current_lat))
                     * cos(radians(users.current_lng) - radians(" . $lon . "))
                     + sin(radians(" . $lat . "))
                     * sin(radians(users.current_lat))) AS distance"));
+			if (!empty($user->service_provider_id)) {
+				$query->where(['service_provider_id' => $user->service_provider_id]);
+			}
 			$query->where([['user_type', '=', 2], ['availability', '=', 1]])->having('distance', '<', $radius)->orderBy('distance', 'asc')->limit($driverlimit);
-			//$query->where('user_type', '=',2)->orderBy('distance','asc');
 			$drivers = $query->get()->toArray();
 
 			if (!empty($drivers)) {
-
 				return response()->json(['message' => 'Driver Listed successfully', 'data' => $drivers], $this->successCode);
 			} else {
 				return response()->json(['message' => 'No Driver Found'], $this->warningCode);
@@ -6680,6 +6688,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 		}
 	}
+
 	public function sendRidetoMaster(Request $request)
 	{
 		// If no driver will accept then ride will sent to all master drivers
