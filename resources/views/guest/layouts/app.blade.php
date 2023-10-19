@@ -1,5 +1,6 @@
 
 <!DOCTYPE html>
+
 <html>
     <head>
         <title>{{ env('APP_NAME') }} {{ isset($page_title)?' - '.$page_title:'' }}</title>
