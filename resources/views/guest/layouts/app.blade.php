@@ -583,6 +583,7 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
+                                        
                                         <input type="hidden" id="otp_status" name="status">
 
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
