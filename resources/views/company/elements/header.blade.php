@@ -12,16 +12,17 @@
                         <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
 
                         @endif
-                            <div class="menus cs_menus me-auto">
+                            <div class="menus cs_menus ms-auto me-2">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
                                     <ul class="navbar-nav align-items-center newTop_menu_ul">
-                                        <li class="nav-item">
+                                        <!-- <li class="nav-item">
                                             <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('company.rides','month') }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
-                                        </li>
+                                        </li> -->
+                                        
 
-                                        <li class="nav-item">
+                                        <li class="nav-item dotnot">
                                             <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
                                         

@@ -420,8 +420,8 @@ span.menu_icons.arrow {
     right: 0;
     top: 0;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 20px 32px;
-    min-height: 80px;
+    padding: 4px 32px;
+    min-height: 61px;
     background-color: var(--primary-color);
     color: white;
     z-index: 6;
@@ -463,22 +463,22 @@ span.menu_icons.arrow {
     max-width: 30px;
 }
 .newTop_menu_ul a{
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 19px;
+    font-weight: 400;
     font-family: var(--oswald-font);
     color: white;
     position: relative;
-    padding-right: 24px !important;
-    padding-left: 24px !important;
+    padding-right: 15px !important;
+    padding-left: 15px !important;
 }
 .newTop_menu_ul a.dotnot:after{
     display: none;
 }
 .newTop_menu_ul a:after {
     content: '';
-    width: 5px;
-    height: 5px;
-    background: #d9d9d9;
+    width: 3px;
+    height: 3px;
+    background: #fff;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -554,13 +554,18 @@ span.menu_icons.arrow {
     padding: 12px 15px;
     color: var(--primary-color);
     font-size: 16px;
-    font-weight: 400;
-    font-family: var(--lato-font);
-    border-radius: 5px;
+    font-weight: 500;
+    font-family: var(--oswald-font);
+    text-transform: uppercase;
+    border-radius: 0px;
+    transition: all .3s;
 }
-.addNewBtn_cs:hover, .addNewBtn_cs:focus{
-    background-color: var(--secondary-color);
-    color: white;
+.addNewBtn_cs:hover, .addNewBtn_cs:focus, .save_form_btn:hover, .save_form_btn:focus{
+    background-color: #34657F;
+    color: white !important;
+    border-color: white;
+    transform: scale(1.1);
+    transition: all .3s;
 }
 .add_icon_svg path{
     fill: var(--primary-color);
@@ -584,7 +589,7 @@ span.menu_icons.arrow {
     border-spacing: 0 5px;
 }
 .custom_table_view thead tr th{
-    background-color: rgba(6, 15, 33, 0.5);
+    background-color: rgba(6, 15, 33, 0.8);
     border-bottom: none;
     font-family: var(--roboto-font);
     font-weight: 500;
@@ -655,7 +660,7 @@ span.status_box{
 }
 .add_booking_modal {
     position: fixed;
-    top: 93.5px;
+    top: 64.5px;
     right: 0;
     max-width: 469px;
     z-index: 2;
@@ -1511,8 +1516,13 @@ label.form-lable.boldlable {
 .otpcode_box{
     display: none;
 }
-
-
+.area_box.dropUp_area.timer_picker svg {
+    font-size: 80px;
+    min-width: 23px;
+}
+.select2.select2-container.select2-container--default {
+    max-width: 100% !important;
+}
 
 
 /* Repsonsive Sm */
@@ -1526,7 +1536,7 @@ label.form-lable.boldlable {
 }
 @media (min-width:1200px){
     .add_booking_modal{
-        top: 107.5px;
+        top: 67.5px;
     }
 }
 @media (min-width:599px){
@@ -1812,6 +1822,7 @@ label.form-lable.boldlable {
     .fc .fc-view.fc-daygrid, .fc .fc-view.fc-timegrid {
         min-height: 410px !important;
     }
+   
 }
 
 @media (max-width:1200px){
@@ -1850,18 +1861,66 @@ label.form-lable.boldlable {
     .logo_mobile_top{
         margin-right: auto !important;
     }
+    
+    
+}
+@media (max-width:992px){
     .menu_toggle_btn.mobile_view {
         display: flex !important;
         margin-left: 10px;
         background-color: transparent !important;
-        border-color: transparent !important; 
+        border-color: transparent !important;
         color: white !important;
     }
     .menu_toggle_btn.mobile_view .line_menu{
         background-color: white !important;
     }
-    
+    .menus.cs_menus.ms-auto.me-2 {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 100%;
+        background: white;
+        color: black;
+    }
+    .logo_mobile_top {
+        width: 100%;
+        object-fit: cover;
+    }
+    .newTop_menu_ul a {
+        font-size: 16px;
+        color: black;
+    }
+    .btn.menu_toggle_btn.mobile_view.show span:last-child {
+        transform: rotate(307deg) translate(-50%,-50%);
+        position: absolute;
+        top: 26%;
+        left: 35%;
+        width: 79%;
+    }
+    .btn.menu_toggle_btn.mobile_view span:last-child, .btn.menu_toggle_btn.mobile_view span:first-child{
+        transition: all 400ms linear;
+    }
+    .btn.menu_toggle_btn.mobile_view.show span:first-child {
+        transform: rotate(52deg) translate(-50%,-50%);
+        position: absolute;
+        top: 90%;
+        left: 30%;
+        width: 83%;
+        height: 40%;
+        font-weight: 600;
+        transition: all 400ms linear;
+    }
+    .btn.menu_toggle_btn.mobile_view.show {
+        position: relative;
+        transition: all 400ms linear;
+    }
+    .btn.menu_toggle_btn.mobile_view.show span:nth-child(2n) {
+        display: none;
+        transition: all 400ms linear;
+    }
 }
+
 
 @media (max-width:430px){
     .table_pagination {

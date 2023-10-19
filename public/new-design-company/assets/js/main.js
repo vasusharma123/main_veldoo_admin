@@ -47,7 +47,12 @@ $(function(){
     });
 
     //Slide animation
-
+    if($(window).width() < 993){
+        $('.cs_menus').stop().hide();
+    }
+    else{
+        $('.cs_menus').stop().show();
+    }
     $(document).on('click','.menu_toggle_btn',function(){
 
         $(this).stop().toggleClass('show');
@@ -56,7 +61,19 @@ $(function(){
     });
 
 
+    $(window).resize(function(){
+        if($(window).width() < 993){
+            $('.cs_menus').stop().hide(function(){
+                $('.menu_toggle_btn').removeClass('show');
+            });
+            
+        }
+        else{
+            $('.cs_menus').stop().show();
+        }
+        
 
+    });
 
     //Stop Reconfirmation
     if ( window.history.replaceState ) {
