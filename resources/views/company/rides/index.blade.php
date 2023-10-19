@@ -28,6 +28,36 @@ th     { background:#eee; }
             </div>
         </article>
     </section>
+
+    <!-- <section class="">
+        <article class="form_inside">
+            <div class="form_add_managers">
+                <form class="add_managers inside_custom_form " action="{{ route('company-users.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="container-fluid form_container">
+                        <div class="row m-0 w-100">
+                            <div class="col-lg-7 col-md-7 col-sm-12 col-12">
+                                <div class="row w-100 m-0 gx-2">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
+                                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0">
+                                        <input type="text" class="form-control main_field" name="first_name" placeholder="First Name" aria-label="First Name" required>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
+                                        <input type="text" class="form-control main_field" name="last_name" placeholder="Last Name" aria-label="Last Name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
+                                <div class="form_btn text-end mobile_margin user_info">
+                                    <button type="submit" class="btn save_form_btn">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </article>
+    </section> -->
     <section class="table_all_content">
         <article class="table_container top_header_text">
             <h1 class="main_heading">History</h1>
@@ -36,9 +66,43 @@ th     { background:#eee; }
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
-
                 </ol>
+                <form method="GET" class="form-inline">
+                    <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                        <div class="form-check position-relative text-center p-0 ">
+                            @php    
+                                $userId = !empty(request()->get('user_id')) ? request()->get('user_id') : '';
+                                $getStatus = isset(request()->status) && request()->status != '' ? request()->get('status') : '';
+
+                            @endphp
+                            <select class="form-control main_field fontStyle text-center p-0" name="user_id" >
+                                <option value="">All User</option>
+                                @foreach ($users as $user)
+                                    {{ $sel = $user->id == $userId ? 'selected' : ''}}
+                                    <option value="{{ $user->id }}" {{$sel}}>
+                                        {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <select class="form-control main_field fontStyle text-center p-0" name="status">
+                                <option value="">All</option>
+                                <option value="0" {{ $getStatus == '0' ? 'selected' : ''}}>Upcoming</option>
+                                <option value="-4" {{ $getStatus == '-4' ? 'selected' : ''}}>Pending</option>
+                                <option value="-2" {{ $getStatus == '-2' ? 'selected' : ''}}>Cancelled</option>
+                                <option value="4" {{ $getStatus == '4' ? 'selected' : ''}}>Driver Reached</option>
+                                <option value="3" {{ $getStatus == '3' ? 'selected' : ''}}>Completed</option>
+                                <option value="2" {{ $getStatus == '2' ? 'selected' : ''}}>Started</option>
+                                <option value="1" {{ $getStatus == '1' ? 'selected' : ''}}>Accepted</option>
+                            </select>
+                        </div>
+                        <div class="form_btn text-end mobile_margin d-flex">
+                            <button type="button" class="btn btn-default reset-filter-form-data">Reset</button>
+                            <button type="submit" class="btn btn-default">Search</button>
+                        </div>
+                    </div>
+                </form>
             </nav>
+
             <div id="listView" class="resume list_names">
                 <div class="table_box">
                     <table class="table table-responsive table-stripes custom_table_view">

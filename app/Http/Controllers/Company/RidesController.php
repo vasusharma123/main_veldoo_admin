@@ -38,19 +38,29 @@ class RidesController extends Controller
 
     public function listView($data,$request)
     {
+
+        $userId = !empty(request()->user_id) ?  request()->user_id : '';
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
+
         $company = Auth::user();
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
+        
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')
         ->where(['company_id' => Auth::user()->company_id])
-                            ->where(function($query){
-                                // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            ->where(function ($query) use ($getStatus){
+                                if (isset($getStatus) && $getStatus != '') {
+                                    $query->where('status', $getStatus);
+                                }
+                            })->where(function ($query2) use ($userId){
+                                if (!empty($userId)) {
+                                    $query2->where('user_id', $userId);
+                                }
                             })->where('company_id','!=',null)
                            // ->orderBy('rides.id')
                             ->orderBy('rides.ride_time', 'DESC')
                             ->with(['vehicle','user:id,first_name,last_name'])
                             ->paginate(20);
-    // dd($data);
         return view('company.rides.index')->with($data);
     }
 
