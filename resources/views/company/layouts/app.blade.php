@@ -22,6 +22,8 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
         <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> -->
 
+        
+
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
 
 
@@ -266,7 +268,7 @@
                                     <div class="divider_form_area vrt view_port">
                                         <span class="divider_area vrt"></span>
                                     </div>
-                                    <div class=" area_box dropUp_area timer_picker mb-3">
+                                    <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
                                             <label class="form_label">Pickup Time</label>
@@ -295,7 +297,7 @@
                                     </div>
                                     <div class=" area_box dropUp_area timer_picker">
                                         <div class="location_box">
-                                            <label class="form_label" style="text-align: right">Car Type</label>
+                                            <label class="form_label">Car Type</label>
                                             <div class="viewuser_sidebar d-flex align-items-center ride_car_div">
                                                 <img src="{{ asset('new-design-company/assets/images/business.png') }}" alt="Selected Car" class="img-fluid car_selectImg ride_car_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
@@ -309,8 +311,8 @@
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content row justify-content-between">
-                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
                                         <div class="number_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -319,7 +321,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 20px;">
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-12 pe-0" style="padding-left: 0px;">
                                         <div class="name_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -453,26 +455,30 @@
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content d-flex justify-content-between">
-                                    <div class="number_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">No. Of Passengers</label>
-                                            <input type="number" min="1" class="form-control  psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
+                                        <div class="number_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">No. Of Passengers</label>
+                                                <input type="number" min="1" class="form-control  psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="name_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">Passenger</label>
-                                            <select name="user_id" class="form-select borderless_form_field psnger_no" id="users">
-                                                <option value="">--Select User--</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">
-                                                        {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                        <div class="name_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">Passenger</label>
+                                                <select name="user_id" class="form-select borderless_form_field psnger_no" id="users">
+                                                    <option value="">--Select User--</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">
+                                                            {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

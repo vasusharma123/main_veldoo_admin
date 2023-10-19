@@ -29,45 +29,16 @@ th     { background:#eee; }
         </article>
     </section>
 
-    <!-- <section class="">
-        <article class="form_inside">
-            <div class="form_add_managers">
-                <form class="add_managers inside_custom_form " action="{{ route('company-users.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="container-fluid form_container">
-                        <div class="row m-0 w-100">
-                            <div class="col-lg-7 col-md-7 col-sm-12 col-12">
-                                <div class="row w-100 m-0 gx-2">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
-                                        <input type="hidden" class="form-control inside_input_field mb-2" name="user_status" value="0">
-                                        <input type="text" class="form-control main_field" name="first_name" placeholder="First Name" aria-label="First Name" required>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
-                                        <input type="text" class="form-control main_field" name="last_name" placeholder="Last Name" aria-label="Last Name" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
-                                <div class="form_btn text-end mobile_margin user_info">
-                                    <button type="submit" class="btn save_form_btn">Save Changes</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </article>
-    </section> -->
     <section class="table_all_content">
         <article class="table_container top_header_text">
             <h1 class="main_heading">History</h1>
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
-                <ol class="breadcrumb tab_lnks">
+                <!-- <ol class="breadcrumb tab_lnks">
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
-                </ol>
-                <form method="GET" class="form-inline">
+                </ol> -->
+                <!-- <form method="GET" class="form-inline">
                     <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
                         <div class="form-check position-relative text-center p-0 ">
                             @php    
@@ -100,8 +71,42 @@ th     { background:#eee; }
                             <button type="submit" class="btn btn-default">Search</button>
                         </div>
                     </div>
-                </form>
+                </form> -->
             </nav>
+
+            <div class="row m-0 w-100 fileterrow">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <nav aria-label="breadcrumb" class="pageBreadcrumb">
+                        <ol class="breadcrumb tab_lnks mb-0">
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="custom_form d-flex">
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Search User--</option>
+                                <option value="rahul">Rahul</option>
+                                <option value="manish">Manish</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Select Status--</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="complete">Complete</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
 
             <div id="listView" class="resume list_names">
                 <div class="table_box">
