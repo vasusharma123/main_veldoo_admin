@@ -80,6 +80,10 @@ $(function(){
         window.history.replaceState( null, null, window.location.href );
     }
 
+ 
+   
+    $('.selectusers').select2();
+
 
     //hideshownav
     $('.tabs_links_btns[href^="#"]').on('click', function(event) {

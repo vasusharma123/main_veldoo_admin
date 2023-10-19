@@ -1337,8 +1337,28 @@ input#photo{
     font-family: var(--roboto-font);
     font-weight: 400;
 }
-.pageBreadcrumb {
-    margin-bottom: 40px;
+.fileterrow {
+    margin-bottom: 40px !important;
+}
+.custom_form.d-flex {
+    justify-content: right;
+}
+.custom_form.d-flex .form-group .select2-selection--single .select2-selection__arrow {
+    height: 26px;
+    position: absolute;
+    top: 50%;
+    right: 1px;
+    width: 20px;
+    transform: translateY(-50%);
+}
+.custom_form.d-flex .form-group .select2-selection.select2-selection--single {
+    min-height: 40px;
+    padding: 5px;
+    line-height: 50px;
+    position: relative;
+    font-size: 14px;
+    background: rgba(255,255,255,.9);
+    font-weight: 700;
 }
 .fc-scrollgrid.fc-scrollgrid-liquid {
     background: rgba(255, 255, 255, 0.75);
@@ -1821,6 +1841,10 @@ label.form-lable.boldlable {
     }
     .fc .fc-view.fc-daygrid, .fc .fc-view.fc-timegrid {
         min-height: 410px !important;
+    }
+    .custom_form.d-flex {
+        justify-content: start;
+        margin: 10px 0px !important;
     }
    
 }

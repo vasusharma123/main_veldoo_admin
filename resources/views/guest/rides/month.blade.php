@@ -25,7 +25,9 @@
     <section class="table_all_content">
         <article class="table_container top_header_text">
             <h1 class="main_heading">History</h1>
-            <nav aria-label="breadcrumb" class="pageBreadcrumb">
+            <div class="row m-0 w-100 fileterrow">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
                     
                 
@@ -42,7 +44,31 @@
 
 
                 </ol>
-            </nav>
+                </nav>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="custom_form d-flex">
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Search User--</option>
+                                <option value="rahul">Rahul</option>
+                                <option value="manish">Manish</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Select Status--</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="complete">Complete</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+            
             <!-- /List View -->
             <div id="monthView" class="resume">
                 <div id='calendar'></div>
