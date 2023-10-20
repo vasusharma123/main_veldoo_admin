@@ -345,6 +345,11 @@ class ServiceProviderController extends Controller
                         "service_provider_id" => $verifyUser->id,
                     ],
                 ]);
+
+                FacadesMail::send('email.updateDriverDetailLinkToServiceProvider', ['token' => $token], function ($message) use ($verifyUser) {
+                    $message->to($verifyUser->email);
+                    $message->subject('Update Credentials Link');
+                });
             }
             // $data['user'] = $user;
             // $data['driver'] = $driver;
@@ -354,10 +359,6 @@ class ServiceProviderController extends Controller
             // $message = "Your e-mail is verified. We sent a mail with your login details.";
             return redirect()->route('service-provider.register_step1', ['token' => $token]);
 
-            // Mail::send('email.sendLoginDetailsToServiceProvider', ['data' => $data], function ($message) use ($verifyUser) {
-            //     $message->to($verifyUser->email);
-            //     $message->subject('Welcome Mail');
-            // });
             // return redirect()->route('adminLogin')->with('success', $message);
         } else {
             $message = 'Sorry your email cannot be identified.';
