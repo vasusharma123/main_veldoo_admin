@@ -38,19 +38,29 @@ class RidesController extends Controller
 
     public function listView($data,$request)
     {
+
+        $userId = !empty(request()->user_id) ?  request()->user_id : '';
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
+
         $company = Auth::user();
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
+        
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')
         ->where(['company_id' => Auth::user()->company_id])
-                            ->where(function($query){
-                                // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                            ->where(function ($query) use ($getStatus){
+                                if (isset($getStatus) && $getStatus != '') {
+                                    $query->where('status', $getStatus);
+                                }
+                            })->where(function ($query2) use ($userId){
+                                if (!empty($userId)) {
+                                    $query2->where('user_id', $userId);
+                                }
                             })->where('company_id','!=',null)
                            // ->orderBy('rides.id')
                             ->orderBy('rides.ride_time', 'DESC')
                             ->with(['vehicle','user:id,first_name,last_name'])
                             ->paginate(20);
-    // dd($data);
         return view('company.rides.index')->with($data);
     }
 
@@ -129,6 +139,7 @@ class RidesController extends Controller
 
     public function create_ride_driver(Request $request)
     {
+        //dd($request->all());
         $rules = [
             'pick_lat' => 'required',
             'pick_lng' => 'required',
@@ -178,6 +189,7 @@ class RidesController extends Controller
             $ride->ride_type = 3;
             $ride->created_by = Auth::user()->user_type;
             $ride->creator_id = Auth::user()->id;
+            $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -258,7 +270,8 @@ class RidesController extends Controller
             $message = 'You Received new booking';
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
-            if (!empty($driverids)) {
+
+            if (!empty($driverids) && empty($request->status)) {
                 $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                 if (!empty($ios_driver_tokens)) {
                     bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
@@ -276,6 +289,7 @@ class RidesController extends Controller
                 Notification::insert($notification_data);
                 RideHistory::insert($ridehistory_data);
             }
+
             $overallDriversCount = User::select(
                 "users.*",
                 DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
@@ -421,7 +435,7 @@ class RidesController extends Controller
                 if (!empty($request->distance)) {
                     $ride->distance = $request->distance;
                 }
-                $ride->status = 0;
+                $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
                 $ride->platform = "web";
                 
                 $ride->save();
@@ -442,7 +456,7 @@ class RidesController extends Controller
             $ride['is_newly_created'] = 1;
             
 
-			if (!empty($masterDriverIds)) {
+			if (!empty($masterDriverIds) && empty($request->status)) {
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
 				$ride['waiting_time'] = $settingValue->waiting_time;
@@ -505,7 +519,7 @@ class RidesController extends Controller
                         })->orderBy('rides.created_at','Desc')
                         ->where('company_id','!=',null)
                         ->with(['user','driver','vehicle','creator','company'])->find($id);
-        //dd($ride);
+       // dd($ride->vehicle);
         // $ride->status = 2;
         $ride['user_first_name'] = $ride->company ? $ride->company->user->first_name : '';
         return response()->json(['status'=>1,'data'=>$ride]);
@@ -570,6 +584,8 @@ class RidesController extends Controller
                 $ride->payment_type = $request->payment_type;
             }
             $ride->ride_type = 3;
+            $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
+
             $ride->platform = "web";
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
@@ -623,7 +639,8 @@ class RidesController extends Controller
             $message = 'You Received new booking';
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
-            if (!empty($driverids)) {
+
+            if (!empty($driverids) && empty($request->status)) {
                 $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                 if (!empty($ios_driver_tokens)) {
                     bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
@@ -798,12 +815,13 @@ class RidesController extends Controller
 				if ($request->has('route')) {
 					$ride->route = $request->route;
 				}
+                $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
 
 				if ((!empty($alert_notification_date_time)) && (!empty($request->ride_time)) && $alert_notification_date_time >= Carbon::now()->format("Y-m-d H:i:s")) {
 					$ride->alert_notification_date_time = $alert_notification_date_time;
 					$ride->notification_sent = 0;
 					$ride->alert_send = 0;
-					$ride->status = 0;
+                    $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
 				}
 				$ride->save();
 			}

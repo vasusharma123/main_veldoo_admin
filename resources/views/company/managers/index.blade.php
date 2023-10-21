@@ -3,7 +3,7 @@
 <style>
     input
     {
-        color: black !important;
+        /* color: black !important; */
         font-weight: 600 !important;
     }
     input::placeholder
@@ -15,6 +15,12 @@
         z-index: 1;
     }
 </style>
+@section('header_button')
+    <button type="button" class="btn addNewBtn_cs me-4">
+        <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
+        <span class="text_button">Book a ride</span>
+    </button>
+@endsection
 <section class="add_booking_section">
     <article class="add_new_booking_box">
         <div class="action_btn text-end page_btn">

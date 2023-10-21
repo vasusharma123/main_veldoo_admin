@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
     <head>
         <title>{{ env('APP_NAME') }} {{ isset($page_title)?' - '.$page_title:'' }}</title>
@@ -22,6 +23,8 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
         <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> -->
 
+        
+
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
 
 
@@ -33,14 +36,105 @@
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
        
        <style>
+
+
+            @if(!empty($companyInfo['header_color']))
+                :root {
+                    --primary-color: {{ $companyInfo['header_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-color: #FC4C02 !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['header_font_family']))
+                :root {
+                    --primary-font-family: {{ $companyInfo['header_font_family'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-font-family: 'Oswald', sans-serif !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['header_font_color']))
+                :root {
+                    --primary-font-color: {{ $companyInfo['header_font_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-font-color: #ffffff !important;
+                }
+            @endif
+
+            @if(!empty($companyInfo['header_font_size']))
+                :root {
+                    --primary-font-size: {{ $companyInfo['header_font_size'] }}px !important;
+                }
+            @else
+                :root {
+                    --primary-font-size: 20px !important;
+                }
+            @endif
+
+
+
+            @if(!empty($companyInfo['input_color']))
+                :root {
+                    --primary-input-color: {{ $companyInfo['input_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-color: rgba(255, 255, 255, 0.75) !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['input_font_family']))
+                :root {
+                    --primary-input-font-family: {{ $companyInfo['input_font_family'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-family: var(--bs-body-font-family) !important;
+                }
+            @endif
+            
+            @if(!empty($companyInfo['input_font_color']))
+                :root {
+                    --primary-input-font-color: {{ $companyInfo['input_font_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-color: #666666 !important;
+                }
+            @endif
+
+            @if(!empty($companyInfo['input_font_size']))
+                :root {
+                    --primary-input-font-size: {{ $companyInfo['input_font_size'] }}px !important;
+                }
+            @else
+                :root {
+                    --primary-input-font-size: 16px !important;
+                }
+            @endif
+
+
+
+
+
+
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
-                --bs-alert-bg: #fc4c02 !important;
+                
+                --bs-alert-bg: var(--primary-color);
+                color: var(--primary-font-color);
+
                 --bs-alert-border-color: #fc4c02 !important;
-                color: white !important;
                 max-width: 600px !important;
                 margin-top: 30px !important;
                 margin-bottom: 0px !important;
@@ -110,6 +204,9 @@
                 height: auto;
             }
 
+
+            
+
         </style>
         @include('company.elements.header')
         <div class="main_content">
@@ -117,7 +214,7 @@
                 @yield('content')
             </div>
         </div>
-        @if (\Request::route()->getName()=='company.rides')
+        @if (\Request::route()->getName()=='company.rides' || \Request::route()->getName()=='managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings' )
             <!-- Section View Booking -->
                 <section class="add_booking_modal view_booking" id="view_booking">
                     <article class="booking_container_box">
@@ -164,7 +261,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <label class="pickupdate ride_new_date view_value_form">08/02/2023</label>
                                         </div>
 
@@ -172,10 +269,10 @@
                                     <div class="divider_form_area vrt view_port">
                                         <span class="divider_area vrt"></span>
                                     </div>
-                                    <div class=" area_box dropUp_area timer_picker mb-3">
+                                    <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             <label class="pickTimes ride_new_time ">06:00 PM</label>
                                         </div>
                                     </div>
@@ -201,7 +298,7 @@
                                     </div>
                                     <div class=" area_box dropUp_area timer_picker">
                                         <div class="location_box">
-                                            <label class="form_label" style="text-align: right">Car Type</label>
+                                            <label class="form_label">Car Type</label>
                                             <div class="viewuser_sidebar d-flex align-items-center ride_car_div">
                                                 <img src="{{ asset('new-design-company/assets/images/business.png') }}" alt="Selected Car" class="img-fluid car_selectImg ride_car_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
@@ -215,8 +312,8 @@
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content row justify-content-between">
-                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
                                         <div class="number_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -225,7 +322,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 20px;">
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-12 pe-0" style="padding-left: 0px;">
                                         <div class="name_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -315,7 +412,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
 
@@ -330,7 +427,7 @@
                                     <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
@@ -340,7 +437,7 @@
                                         </div>
                                     </div>
                                 </div>
-                 ̰            </div>
+                            </div>
                             <div class="cars_selection">
                                 <div class="swiper carSwiper">
                                     <div class="swiper-wrapper">
@@ -359,26 +456,30 @@
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content d-flex justify-content-between">
-                                    <div class="number_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">No. Of Passengers</label>
-                                            <input type="number" min="1" class="form-control  psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
+                                        <div class="number_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">No. Of Passengers</label>
+                                                <input type="number" min="1" class="form-control  psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="name_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">Passenger</label>
-                                            <select name="user_id" class="form-select borderless_form_field psnger_no" id="users">
-                                                <option value="">--Select User--</option>
-                                                @foreach ($users as $user)
-                                                    <option value="{{ $user->id }}">
-                                                        {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                        <div class="name_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">Passenger</label>
+                                                <select name="user_id" class="form-select borderless_form_field psnger_no" id="users">
+                                                    <option value="">--Select User--</option>
+                                                    @foreach ($users as $user)
+                                                        <option value="{{ $user->id }}">
+                                                            {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -395,6 +496,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
                                             <label class="form_label down_form_label ">Add Note</label>
@@ -403,6 +505,15 @@
                                     </div>
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <div class="row w-100 m-0">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
+                                        <label for="checkid">
+                                            <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -554,7 +665,8 @@
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
-        @if (\Request::route()->getName()=='company.rides')
+
+        @if (\Request::route()->getName() =='company.rides' || \Request::route()->getName()== 'managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings')
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
@@ -644,6 +756,8 @@
                     $('.ride_car_div').hide();
                     $('.ride_car_div').removeClass('d-flex');
                     $('.ride_car_div_na').show();
+                    $('.ride_car_div_na').text(booking.car_type);
+
                     if (booking.vehicle!=null)
                     {
                         $('.ride_car_div').show();
@@ -1730,6 +1844,29 @@
             </script>
         @endif
         <script>
+
+        $(document).on('change','#cLogo2',function(e) {
+                // Get the selected file
+                var file = e.target.files[0];
+                // console.log(e.target);
+
+                // Check if the file is an image
+                if (file && file.type.startsWith('image/')) {
+                // Create a FileReader instance
+                var reader = new FileReader();
+
+                // Set up the FileReader onload event
+                reader.onload = function(e) {
+                    // Set the src attribute of the preview image
+                    // console.log(e.target);
+                    $('#cLogoImgPreview2').attr('src', e.target.result);
+                }
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(file);
+                }
+            });
+
             $(document).on('change','#cLogo',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];
@@ -1751,6 +1888,8 @@
                 reader.readAsDataURL(file);
                 }
             });
+
+
             $(document).on('change','#cBackgroundImage',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];
@@ -1772,6 +1911,7 @@
                 reader.readAsDataURL(file);
                 }
             });
+            
             $(document).on('change','#cImage',function(e) {
                 // Get the selected file
                 var file = e.target.files[0];

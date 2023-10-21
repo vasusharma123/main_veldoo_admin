@@ -25,24 +25,44 @@
     <section class="table_all_content">
         <article class="table_container top_header_text">
             <h1 class="main_heading">History</h1>
-            <nav aria-label="breadcrumb" class="pageBreadcrumb">
-                <ol class="breadcrumb tab_lnks">
-                    
-                
-
-                @if(\Request::get('token'))
-                   <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',['list','token' => \Request::get('token')]) }}">List View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',['week','token' => \Request::get('token')]) }}">Week View</a></li>
-                @else 
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides','month') }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides','list') }}">List View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides','week') }}">Week View</a></li>
-                @endif
-
-
-                </ol>
-            </nav>
+            <div class="row m-0 w-100 fileterrow">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <nav aria-label="breadcrumb" class="pageBreadcrumb">
+                        <ol class="breadcrumb tab_lnks">
+                            @if(\Request::get('token'))
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',['list','token' => \Request::get('token')]) }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',['week','token' => \Request::get('token')]) }}">Week View</a></li>
+                            @else 
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides','month') }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides','list') }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides','week') }}">Week View</a></li>
+                            @endif
+                        </ol>
+                    </nav>
+                </div>
+                <!-- <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="custom_form d-flex">
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Search User--</option>
+                                <option value="rahul">Rahul</option>
+                                <option value="manish">Manish</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Select Status--</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="complete">Complete</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+            
             <!-- /List View -->
             <div id="monthView" class="resume">
                 <div id='calendar'></div>

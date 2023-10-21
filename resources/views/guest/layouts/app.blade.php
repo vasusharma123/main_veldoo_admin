@@ -1,5 +1,6 @@
 
 <!DOCTYPE html>
+
 <html>
     <head>
         <title>{{ env('APP_NAME') }} {{ isset($page_title)?' - '.$page_title:'' }}</title>
@@ -27,6 +28,7 @@
 
         
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 
 
         
@@ -35,6 +37,11 @@
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
         <style>
+
+          
+            :root {
+                --primary-color: #FC4C02 !important;
+            }
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
@@ -162,7 +169,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <label class="pickupdate ride_new_date view_value_form">08/02/2023</label>
                                         </div>
 
@@ -170,10 +177,10 @@
                                     <div class="divider_form_area vrt view_port">
                                         <span class="divider_area vrt"></span>
                                     </div>
-                                    <div class=" area_box dropUp_area timer_picker mb-3">
+                                    <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             <label class="pickTimes ride_new_time view_value_form">06:00 PM</label>
                                         </div>
                                     </div>
@@ -199,7 +206,7 @@
                                     </div>
                                     <div class=" area_box dropUp_area timer_picker">
                                         <div class="location_box">
-                                            <label class="form_label" style="text-align: right">Car Type</label>
+                                            <label class="form_label">Car Type</label>
                                             <div class="viewuser_sidebar d-flex align-items-center ride_car_div">
                                                 <img src="{{ asset('new-design-company/assets/images/business.png') }}" alt="Selected Car" class="img-fluid car_selectImg ride_car_div_image"/>
                                                 <div class="name_occupation d-flex flex-column">
@@ -207,14 +214,14 @@
                                                     <span class="user_name ride_car_div_number"></span>
                                                 </div>
                                             </div>
-                                            <p class="ride_car_div_na " style="display:none">N/A</p>
+                                            <p class="ride_car_div_na" style="display:none">N/A</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content row justify-content-between">
-                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
                                         <div class="number_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -223,7 +230,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 pe-0" style="padding-left: 0px;margin-top: 20px;">
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-12 pe-0" style="padding-left: 0px;">
                                         <div class="name_psnger d-flex">
                                             <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
                                             <div class="location_box">
@@ -316,7 +323,7 @@
                                     <div class=" area_box pickUp_area">
                                         <img src="{{ asset('new-design-company/assets/images/calendar-days.svg') }}" class="img-fluid svg pickup_icon" alt="pick up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Date</label>
+                                            <label class="form_label">Pickup Date</label>
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRide" class="form_control form_control borderless_form_field dropup_field pick-up-date-ride" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
                                             <input type="text" value="<?php echo date("Y-m-d") ?>"  id="pickUpDateRideEdit" class="form_control form_control borderless_form_field dropup_field pick-up-date-ride-edit" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;" name="ride_date">
 
@@ -331,7 +338,7 @@
                                     <div class=" area_box dropUp_area timer_picker">
                                         <img src="{{ asset('new-design-company/assets/images/clock.svg') }}" class="img-fluid svg pickup_icon" alt="Drop up icon"/>
                                         <div class="location_box">
-                                            <label class="form_label">Pick a Time</label>
+                                            <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
                                             
@@ -360,29 +367,33 @@
                                 </div>
                             </div>
                             <div class="passengers_box_details">
-                                <div class="passenger_box_content d-flex justify-content-between">
-                                    <div class="number_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">No. Of Passengers</label>
-                                            <input type="number" min="1" class="form_control borderless_form_field psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                <div class="passenger_box_content row">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0">
+                                        <div class="number_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/person.svg') }}" class="img-fluid svg pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">No. Of Passengers</label>
+                                                <input type="number" min="1" class="form_control borderless_form_field psnger_no" required id="numberOfPassenger" name="passanger" value="1">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="name_psnger d-flex">
-                                        <img src="{{ asset('new-design-company/assets/images/phones.svg') }}" class="img-fluid svg svgnon pickup_icon man_icons" alt="pick up icon"/>
-                                        <div class="location_box">
-                                            <label class="form_label">Mobile Number</label>
+                                    <div class="col-lg-7 col-md-7 col-sm-6 col-6 ps-0">
+                                        <div class="name_psnger d-flex">
+                                            <img src="{{ asset('new-design-company/assets/images/phones.svg') }}" class="img-fluid svg svgnon pickup_icon man_icons" alt="pick up icon"/>
+                                            <div class="location_box">
+                                                <label class="form_label">Mobile Number</label>
 
-                                            <div class="col_form_settings mb-2">
-                                                <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
-                                                <input type="text" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                                <div class="col_form_settings mb-2">
+                                                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                                                    <input type="text" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                                </div>
+
+                                                <!-- <select name="user_id" class="form_control borderless_form_field psnger_no" id="users">
+                                                    <option value="">--Select User--</option>
+                                                </select> -->
+
+
                                             </div>
-
-                                            <!-- <select name="user_id" class="form_control borderless_form_field psnger_no" id="users">
-                                                <option value="">--Select User--</option>
-                                            </select> -->
-
-
                                         </div>
                                     </div>
                                 </div>
@@ -407,6 +418,15 @@
                                     </div>
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
+                                    </div>
+                                    <div class="">
+                                        <div class="row w-100 m-0">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
+                                                <label for="checkid">
+                                                    <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -563,6 +583,9 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
+                                        
+                                        <input type="hidden" id="otp_status" name="status">
+
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
                                             
@@ -642,6 +665,10 @@
         <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.8/index.global.min.js'></script>
         <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/list@6.1.8/index.global.min.js'></script>
         <!-- Custom Js -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
         <script src="{{ asset('new-design-company/assets/js/main.js') }}" type="application/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
@@ -655,6 +682,7 @@
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+
 
 
         <script>
@@ -893,10 +921,10 @@
                         }
 
                     }
-
                     $('.ride_car_div').hide();
                     $('.ride_car_div').removeClass('d-flex');
                     $('.ride_car_div_na').show();
+                    $('.ride_car_div_na').text(booking.car_type);
                     if (booking.vehicle!=null)
                     {
                         $('.ride_car_div').show();
@@ -1576,7 +1604,8 @@
                     $('#otp_numberOfPassenger').val($('input[name="passanger"]').val());  
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
                     $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
-                    $('#otp_note').val($('textarea[name="note"]').val());  
+                    $('#otp_note').val($('textarea[name="note"]').val()); 
+                    $('#otp_status').val($('input[name="status"]').val());
 
                     form_validate_res = calculate_route();
                     if (form_validate_res) {

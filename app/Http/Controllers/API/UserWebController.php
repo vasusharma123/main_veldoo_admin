@@ -132,10 +132,9 @@ class UserWebController extends Controller
                 if (!empty($request->distance)) {
                     $ride->distance = $request->distance;
                 }
-                $ride->status = 0;
+                $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
+
                 $ride->platform = "web";
-                $ride->save();
-                
                 $ride->save();
                 $all_ride_ids[] = $ride->id;
             }
@@ -154,7 +153,7 @@ class UserWebController extends Controller
             $ride['is_newly_created'] = 1;
             
 
-			if (!empty($masterDriverIds)) {
+			if (!empty($masterDriverIds) && empty($request->status)) {
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
 				$ride['waiting_time'] = $settingValue->waiting_time;
@@ -260,6 +259,8 @@ class UserWebController extends Controller
             $ride->created_by = 1;
             $ride->creator_id = $user->id;
             $ride->platform = "web";
+            $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
+
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
             } else {
@@ -321,7 +322,7 @@ class UserWebController extends Controller
             $message = 'You Received new booking';
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
-            if (!empty($driverids)) {
+            if (!empty($driverids) && empty($request->status)) {
                 $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                 if (!empty($ios_driver_tokens)) {
                     bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);
@@ -419,7 +420,8 @@ class UserWebController extends Controller
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
             }
-            $ride->status = 0;
+            $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
+
             $ride->platform = "web";
             $ride->save();
             DB::commit();
@@ -480,6 +482,8 @@ class UserWebController extends Controller
             }
             $ride->ride_type = 3;
             $ride->platform = "web";
+            $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
+
             if (!empty($request->ride_time)) {
                 $ride->ride_time = date("Y-m-d H:i:s", strtotime($request->ride_time));
             } else {
@@ -541,7 +545,7 @@ class UserWebController extends Controller
             $message = 'You Received new booking';
             $ride_data['waiting_time'] = $settingValue->waiting_time;
             $additional = ['type' => 1, 'ride_id' => $ride->id, 'ride_data' => $ride_data];
-            if (!empty($driverids)) {
+            if (!empty($driverids) && empty($request->status)) {
                 $ios_driver_tokens = User::whereIn('id', $driverids)->whereNotNull('device_token')->where('device_token', '!=', '')->where(['device_type' => 'ios'])->pluck('device_token')->toArray();
                 if (!empty($ios_driver_tokens)) {
                     bulk_pushok_ios_notification($title, $message, $ios_driver_tokens, $additional, $sound = 'default', 2);

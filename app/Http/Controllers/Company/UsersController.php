@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use Hash;
 use Storage;
+use App\Price;
 
 class UsersController extends Controller
 {
@@ -28,6 +29,7 @@ class UsersController extends Controller
     {
         $data = array('page_title' => 'Users', 'action' => 'Users');
         $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
         return view('company.company-users.index')->with($data);
     }
 
