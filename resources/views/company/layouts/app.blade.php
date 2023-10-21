@@ -54,7 +54,8 @@
                 }
             @else
                 :root {
-                    --primary-font-family: 'Oswald sans-serif !important;
+                    --primary-font-family: 'Oswald', sans-serif !important;
+
                 }
             @endif
             
@@ -77,8 +78,6 @@
                     --primary-font-size: 20px !important;
                 }
             @endif
-
-
 
             @if(!empty($companyInfo['input_color']))
                 :root {
