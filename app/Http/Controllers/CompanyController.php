@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\DB;
 use App\User;
 use Mail;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use CStorage;
 use DataTables;
 use App\Company;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\Ride;
+use App\Price;
 
 class CompanyController extends Controller
 {
@@ -36,10 +37,11 @@ class CompanyController extends Controller
     {
         $data['title'] = "Company";
         $data['action'] = "List Companies";
+        $loggedInUser = Auth::user();
         // if ($request->ajax()) {
-            
+
         //     $data = User::select(['id', 'name', 'country','state','city','email', 'phone','status','name','country_code', 'user_type'])->where('user_type',4)->orderBy('id','DESC')->get();
-            
+
         //     return Datatables::of($data)
         //                     ->addIndexColumn()
         //                     ->addColumn('action', function ($row) {
@@ -48,17 +50,17 @@ class CompanyController extends Controller
         //                         Action
         //                     </button>
         //                     <div class="dropdown-menu">
-                              
+
         //                         <a class="dropdown-item" href="'.route('company.show',$row->id) .'">'.trans("admin.View").'</a>
         //                         <a class="dropdown-item" href="'. route('company.edit',$row->id).'">'. trans("admin.Edit").'</a>
         //                         <a class="dropdown-item delete_record" data-id="'. $row->id .'">'.trans("admin.Delete").'</a>
         //                     </div>
         //                 </div>';
-                                
-                                  
-                                
+
+
+
         //                         return $btn;
-                        
+
         //                     })
         //                     ->addColumn('status', function ($row) {
         //                         $status=($row->status === 1)?'checked':'';
@@ -67,11 +69,11 @@ class CompanyController extends Controller
         //                         <input type="checkbox" class="change_status" data-status="'.$row->status.'" data-id="'.$row->id.'" '.$status.'><span class="lever" data-id="'.$row->id.'" ></span>
         //                     </label>
         //                 </div>';
-                                
-                                  
-                                
+
+
+
         //                         return $btn;
-                        
+
         //                     })->addColumn('name', function ($row) {
         //                         return ucfirst($row->name);
         //                     })->addColumn('email', function ($row) {
@@ -86,34 +88,30 @@ class CompanyController extends Controller
         //                     ->addColumn('country_code_phone', function ($row) {
         //                         return $row->country_code.'-'.$row->phone;
         //                     })
-                           
+
         //                     ->rawColumns(['action','status','name','email','country','city','state'])
         //                     ->make(true);
         // }
         // ->where('service_provider_id',Auth::user()->id)
         // DB::enableQueryLog();
-        $companies = Company::orderBy('created_at','desc');
+        $companies = Company::orderBy('created_at', 'desc');
         if ($request->has('search') && !empty($request->search)) {
-            $companies->where(function($query) use ($request){
-                $query->orWhere('name','LIKE','%'.$request->search.'%');
-                $query->orWhere('email','LIKE','%'.$request->search.'%');
-                $query->orWhere('phone','LIKE','%'.$request->search.'%');
-                $query->orWhere('state','LIKE','%'.$request->search.'%');
-                $query->orWhere('city','LIKE','%'.$request->search.'%');
-                $query->orWhere('country','LIKE','%'.$request->search.'%');
-            })->orWhereHas('user', function($user) use ($request) {
-                $user->where('service_provider_id',Auth::user()->id)->where(function($query) use ($request){
-                    $query->orWhere('name','LIKE','%'.$request->search.'%');
-                    $query->orWhere('email','LIKE','%'.$request->search.'%');
-                });
+            $companies->where(function ($query) use ($request) {
+                $query->orWhere('name', 'LIKE', '%' . $request->search . '%');
+                $query->orWhere('email', 'LIKE', '%' . $request->search . '%');
+                $query->orWhere('phone', 'LIKE', '%' . $request->search . '%');
+                $query->orWhere('state', 'LIKE', '%' . $request->search . '%');
+                $query->orWhere('city', 'LIKE', '%' . $request->search . '%');
+                $query->orWhere('country', 'LIKE', '%' . $request->search . '%');
             });
         }
-        else
-        {
-            $companies->whereHas('user', function($user) use ($request) {
-                $user->where('service_provider_id',Auth::user()->id);
-            });
-        }
+        $companies->whereHas('user', function ($user) use ($loggedInUser) {
+            $user->where('service_provider_id', $loggedInUser->id);
+        });
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+
         $data['companies'] = $companies->paginate(100);
         return view('admin.company.index')->with($data);
     }
@@ -503,11 +501,14 @@ class CompanyController extends Controller
     {
         $data = array('page_title' => 'Settings', 'action' => 'Settings');
         $data['company'] = Company::find(Auth::user()->company_id); 
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
 		return view("company.settings.index")->with($data);
     }
 
     public function updateCompanyInformation(Request $request)
     {
+        // dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             // 'email' => 'email',
@@ -522,7 +523,6 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try 
         {
-            // dd($request->all());
             $data = ['name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code,'street'=>$request->street,'state'=>$request->state,'zip'=>$request->zip_code,'country'=>$request->country,'city'=>$request->city];  
             $company = Company::find(Auth::user()->company_id);
             if ($company) 
@@ -568,6 +568,79 @@ class CompanyController extends Controller
         }
     }
 
+
+    public function updateCompanyThemeInformation(Request $request)
+    {
+        // dd($request->all());
+        $this->validate($request, [
+            //'header_color' => 'required',
+            // 'email' => 'email',
+            // 'phone' => 'required',
+            // 'country_code' => 'required',
+            // 'state' => 'required|min:3',
+            //'input_color' => 'required',
+           // 'zip_code' => 'required|min:3',
+            //'country' => 'required',
+
+        ]);
+        DB::beginTransaction();
+        try 
+        {
+            $data = [];
+            if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
+                $data = ['logo' => '', 'background_image' => '','header_color'=> '', 'header_font_family'=> '', 'header_font_color'=> '', 'header_font_size'=> '', 'input_color'=> '', 'input_font_family'=> '', 'input_font_color'=> '', 'input_font_size'=> ''];  
+            } else {
+                $data = ['header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
+            }
+
+            $company = Company::find(Auth::user()->company_id);
+            if ($company) 
+            {
+                $company->fill($data);
+                $company->update();
+            }  
+            else
+            {
+                $company = new Company();
+                $company->fill($data);
+                $company->save();
+            }
+
+            if($request->hasFile('logo') && $request->file('logo')->isValid())
+            {
+                $imageName = 'logo-'.time().'.'.$request->logo->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->logo, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['logo'=>$image]);
+                $company->update();
+            }
+            if($request->hasFile('background_image') && $request->file('background_image')->isValid())
+            {
+                $imageName = 'background-image-'.time().'.'.$request->background_image->extension();
+                $image = Storage::disk('public')->putFileAs(
+                    'company/'.$company->id, $request->background_image, $imageName
+                );
+                $company = Company::find($company->id);
+                $company->fill(['background_image'=>$image]);
+                $company->update();
+            }
+
+            User::where('id',Auth::user()->id)->update(['company_id'=>$company->id]);
+            DB::commit();
+            if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
+                return response()->json(['status'=>1,'message'=>'Information reset!']);
+            } else {
+                return back()->with('success', 'Information updated!');
+            }
+        } catch (\Exception $exception) {
+            // dd($exception);
+            DB::rollBack();
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
     public function updatePersonalInformation(Request $request)
     {
         // dd($request->all());
@@ -580,7 +653,7 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try 
         {
-            // dd($request->all());
+             //dd($request->all());
             $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {

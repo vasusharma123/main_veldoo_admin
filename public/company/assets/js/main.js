@@ -13,4 +13,10 @@ jQuery(function () {
         //     $(this).parents(".list-group-item").removeClass("selected");
         // }
     });
+
+
+    $(window).resize(function(){
+        console.log('hello');
+    });
+
 });

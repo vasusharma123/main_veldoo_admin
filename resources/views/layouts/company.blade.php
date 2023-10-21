@@ -23,6 +23,18 @@
         @yield('script')
     </body>
     <style>
+
+        
+            @if(!empty($companyInfo['theme_color']))
+                :root {
+                    --primary-color: {{ $companyInfo['theme_color'] }} !important;
+                }
+            @else
+                :root {
+                    --primary-color: #FC4C02 !important;
+                }
+            @endif	
+            
             body{
                 background-image: url(<?php echo $logoImage ?>);
                 background-size: cover;
@@ -31,6 +43,9 @@
                 min-height: 100vh;
                 height: auto;
             }
+
+            
+
 
         </style>
 </html>

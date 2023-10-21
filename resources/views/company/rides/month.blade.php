@@ -1,16 +1,23 @@
 @extends('company.layouts.app')
 <style>
+    
+
     .fc-h-event {
-        background-color: #fc4c02 !important;
+        background-color: {{ !empty($companyInfo['header_color']) ?  $companyInfo['header_color'] : '#fc4c02 !important'}};
         border: 1px solid #fc4c02 !important;
     }
+
+    
+
 </style>
+
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />
         <span class="text_button">Book a ride</span>
     </button>
 @endsection
+
 @section('content')
     <section class="add_booking_section">
         <article class="add_new_booking_box">
@@ -25,14 +32,40 @@
     <section class="table_all_content">
         <article class="table_container top_header_text">
             <h1 class="main_heading">History</h1>
-            <nav aria-label="breadcrumb" class="pageBreadcrumb">
-                <ol class="breadcrumb tab_lnks">
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+            <div class="row m-0 w-100 fileterrow">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <nav aria-label="breadcrumb" class="pageBreadcrumb">
+                        <ol class="breadcrumb tab_lnks mb-0">
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
 
-                </ol>
-            </nav>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="custom_form d-flex">
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Search User--</option>
+                                <option value="rahul">Rahul</option>
+                                <option value="manish">Manish</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-select selectusers">
+                                <option value="">--Select Status--</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="complete">Complete</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+           
             <!-- /List View -->
             <div id="monthView" class="resume">
                 <div id='calendar'></div>

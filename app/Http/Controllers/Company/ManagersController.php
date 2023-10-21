@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use Hash;
 use Storage;
+use App\Price;
+
 
 class ManagersController extends Controller
 {
@@ -26,10 +28,14 @@ class ManagersController extends Controller
      */
     public function index(Request $request)
     {
-
+        //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
         $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->paginate(20);
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+
+        $data['vehicle_types'] = Price::orderBy('sort')->get();
+
         return view('company.managers.index')->with($data);
     }
 
