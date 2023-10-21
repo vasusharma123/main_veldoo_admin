@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\User;
 //use App\UserData;
@@ -181,7 +181,11 @@ class UserController extends Controller
 			return redirect()->route('guest.rides','month');
 
 		}
-		return view('dashboards.'.Auth::user()->user_role)->with($data);
+		if(Auth::user()->user_type == 3){
+			return view('dashboards.admin')->with($data);
+		} else {
+			return view('dashboards.'.Auth::user()->user_role)->with($data);
+		}
 	}
 
     /**
