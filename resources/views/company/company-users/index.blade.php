@@ -124,7 +124,8 @@
                     @foreach ($users as $key=>$user)
                         <tr>
                             <td>{{ $user->first_name.' '.$user->last_name }}</td>
-                            <td>+{{ $user->country_code }} {{ $user->phone }}</td>
+                            <td> {{ $user->phone ? '+' : '' }} {{ $user->country_code }} {{ $user->phone }}</td>
+
                             <td class="">{{ $user->email }}</td>
                             <td class="">
                                 <div class="">

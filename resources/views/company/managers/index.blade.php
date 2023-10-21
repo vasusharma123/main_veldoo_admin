@@ -141,7 +141,7 @@
                     @foreach ($managers as $key=>$manager)
                         <tr>
                             <td>{{ $manager->first_name }}</td>
-                            <td>+{{ $manager->country_code }} {{ $manager->phone }}</td>
+                            <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
                             <td class="">{{ $manager->email }}</td>
                             <td class="">
                                 <div class="">

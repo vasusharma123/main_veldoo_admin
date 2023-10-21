@@ -54,7 +54,7 @@
                 }
             @else
                 :root {
-                    --primary-font-family: 'Oswald', sans-serif !important;
+                    --primary-font-family: 'Oswald sans-serif !important;
                 }
             @endif
             

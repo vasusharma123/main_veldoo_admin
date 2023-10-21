@@ -13,7 +13,7 @@ use App\Company;
 use Auth;
 use App\Ride;
 use App\Price;
-
+use URL;
 class CompanyController extends Controller
 {
 
@@ -628,7 +628,8 @@ class CompanyController extends Controller
             if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
                 return response()->json(['status'=>1,'message'=>'Information reset!']);
             } else {
-                return back()->with('success', 'Information updated!');
+                $urlToRedirect = URL::to('company/settings#weekView/');
+                return redirect($urlToRedirect)->with('success', 'Information updated!');
             }
         } catch (\Exception $exception) {
             // dd($exception);
@@ -650,13 +651,14 @@ class CompanyController extends Controller
         try 
         {
              //dd($request->all());
-            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
+            $user = User::find(Auth::user()->id);
+
+            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=> !empty($user->email) ? $user->email : $request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {
                 $data['password'] = Hash::make($request->password);
             }
-
-            $user = User::find(Auth::user()->id);
+            
             $user->fill($data);
             $user->update();
 
