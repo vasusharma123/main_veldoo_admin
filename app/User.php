@@ -30,7 +30,7 @@ class User extends Authenticatable implements HasMedia
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'first_name', 'last_name', 'email', 'image', 'location', 'lat', 'lng', 'user_type', 'status', 'zip', 'addresses', 'password', 'verify', 'device_type', 'device_token', 'fcm_token', 'state', 'country_code', 'phone', 'city', 'availability', 'country', 'step', 'earned_points', 'spent_points', 'created_by', 'street', 'second_country_code', 'second_phone_number', 'random_token', 'company_id', 'service_provider_id' ,'last_driver_location_update_time', 'app_version', 'phone_model', 'current_timezone', 'country_code_iso', 'second_country_code_iso'
+		'name', 'first_name', 'last_name', 'email', 'image', 'location', 'lat', 'lng', 'user_type', 'status', 'zip', 'addresses', 'password', 'verify', 'device_type', 'device_token', 'fcm_token', 'state', 'country_code', 'phone', 'city', 'availability', 'country', 'step', 'earned_points', 'spent_points', 'created_by', 'street', 'second_country_code', 'second_phone_number', 'random_token', 'company_id', 'service_provider_id' ,'last_driver_location_update_time', 'app_version', 'phone_model', 'current_timezone', 'is_master', 'country_code_iso', 'second_country_code_iso'
 	];
 
 	/**
