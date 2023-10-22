@@ -49,7 +49,9 @@ class SendRideNotificationToMasterAfterScheduleTime extends Command
         $rides = Ride::where('alert_notification_date_time', '<=', $currentTime)->where(['status' => 0, 'notification_sent' => 1, 'alert_send' => 1])->where(function ($query) {
             $query->where(['ride_type' => 1])
                 ->orWhere(['ride_type' => 3]);
-        })->whereNotNull('alert_notification_date_time')->get();
+        })->whereNotNull('alert_notification_date_time')->where(function($query){
+            $query->whereNotNull('service_provider_id')->where('service_provider_id','!=','');
+        })->get();
         if (!empty($rides) && count($rides) > 0) {
             foreach ($rides as $ride) {
                 if (!empty($ride->service_provider_id)) {
