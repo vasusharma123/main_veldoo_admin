@@ -54,11 +54,14 @@ code {
             @include('company.company_flash_message')
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
-                    @can('isCompany')
-                        <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
+                   @can('isCompany')
+                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
                     @endcan
+
                     <li class="breadcrumb-item"><a class="tabs_links_btns {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="#weekView">Theme Design</a></li>
+                    @can('isCompany')
+                    <li class="breadcrumb-item"><a class="tabs_links_btns theme-design-tab" href="#weekView">Theme Design</a></li>
+                    @endcan
 
                 </ol>
             </nav>
@@ -107,23 +110,12 @@ code {
                                                     <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
                                                         <h6 class="smalltxt">Logo</h6>
                                                         <input type="file" class="photo form-control main_field position-relative" id="cLogo" name="logo">
-                                                        <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
-                                                    </div>
-                                                </div>
-                                                <!-- <div class="col-3">
-                                                    <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
-                                                        <h6 class="smalltxt">Background</h6>
-                                                        <input type="file" class="photo form-control main_field position-relative" id="cBackgroundImage" name="background_image">
-                                                        <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
-                                                    </div>
-                                                </div>
-                                                <div class="col-3">
-                                                    <div class="img_preview position-relative desktop_view" style="display: table-caption;width:96px">
-                                                        <h6 class="smalltxt">Theme Color</h6>
-                                                        <input type="color" value="{{ !empty($company->theme_color) ? $company->theme_color  : '#FC4C02' }}" name="theme_color" id="colorPicker">
 
+                                                        
+                                                        <img src="{{ @$company->logo ?  env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
+                                                   
                                                     </div>
-                                                </div> -->
+                                                </div>
                                             </div>
                                             <div class="form_btn text-end mobile_margin" style="margin-top:10%">
                                                 <button type="submit" class="btn save_form_btn">Update Changes</button>
@@ -137,6 +129,7 @@ code {
                 </div>
             @endcan
             <!-- /List View -->
+
             <div id="monthView" class="resume next-tabs" style="display:{{ Auth::user()->user_type==5?'block':'none' }}">
                 <section class="form_add_managers">
                     <article class="form_inside">
@@ -150,11 +143,11 @@ code {
                                                 <input type="text" class="form-control main_field" placeholder="Name" aria-label="First name"  name="name" value="{{ Auth::user()->name }}" required>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required>
+                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required readonly>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                 <input type="hidden" name="country_code_admin" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
-                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}" required>
+                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}">
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                 <input type="password" class="form-control main_field" placeholder="Password" aria-label="Password" name="password" >
@@ -203,7 +196,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '' }} "></span>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }} "></span>
                                                     <input type="color" class="form-control main_field colorSlt" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
                                                 </div>
                                             </div>
@@ -235,7 +228,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" >
                                                         Font Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '' }} "></span>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }} "></span>
                                                     <input type="color" class="form-control main_field colorSlt" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
                                                 </div>
                                             </div>
@@ -264,8 +257,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_color) ? $company->input_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="input_color" value="{{ !empty($company->input_color) ? $company->input_color  : '#FC4C02' }}">
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_color) ? $company->input_color  : '#F9F9F9' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="input_color" value="{{ !empty($company->input_color) ? $company->input_color  : '#F9F9F9' }}">
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -298,8 +291,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" >
                                                         Font Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_font_color) ? $company->input_font_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" placeholder="Name" name="input_font_color" value="{{ !empty($company->input_font_color) ? $company->input_font_color  : '#FC4C02' }}" >
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_font_color) ? $company->input_font_color  : '#666666' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" placeholder="Name" name="input_font_color" value="{{ !empty($company->input_font_color) ? $company->input_font_color  : '#666666' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -307,7 +300,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
+                                                    <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                         </div>
@@ -435,14 +428,26 @@ code {
         });
 
         $(document).ready(function(){
-
             var code = "{{@$company->country_code}}";
             var phone = "{{@$company->phone}}";
+            setTimeout(() => {
+                iti.setNumber("+"+code + phone);
+                $("#phone").val(phone);
 
-            iti.setNumber("+"+code + phone);
-            $("#phone").val(phone);
+            }, 500);
+
         });
 
+        $(document).ready(function(){
+
+            var code = "{{ Auth::user() && Auth::user()->country_code ? Auth::user()->country_code : '' }}";
+            var phone = "{{ Auth::user() && Auth::user()->phone ? Auth::user()->phone : '' }}";
+            setTimeout(() => {
+                itiAdmin.setNumber("+"+code + phone);
+                $("#phone_admin").val(phone);
+            }, 500);
+
+        });
 
         $(document).on('click','.reset-theme-design',function () {
             var companyId = $(this).data('companyid');
@@ -478,7 +483,17 @@ code {
                     });
                 }
             });
-            
+        });
+
+
+        $(document).ready(function () {
+            var currentURL = (document.URL);
+            var part = currentURL.split("#")[1];
+            setTimeout(function() {
+                if(part == 'weekView'){
+                    $(".theme-design-tab").trigger("click");
+                }
+            }, 1000);
         });
         
 

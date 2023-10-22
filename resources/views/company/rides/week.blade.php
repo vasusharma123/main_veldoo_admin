@@ -18,40 +18,55 @@
     </section>
     <section class="table_all_content">
         <article class="table_container top_header_text">
-            <h1 class="main_heading">History</h1>
-            <div class="row m-0 w-100 fileterrow">
-                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                    <nav aria-label="breadcrumb" class="pageBreadcrumb">
-                        <ol class="breadcrumb tab_lnks mb-0">
-                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
-                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
-                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
-
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                    <div class="custom_form d-flex">
-                        <div class="form-group">
-                            <select class="form-select selectusers">
-                                <option value="">--Search User--</option>
-                                <option value="rahul">Rahul</option>
-                                <option value="manish">Manish</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-select selectusers">
-                                <option value="">--Select Status--</option>
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="complete">Complete</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
+        <h1 class="main_heading">My Booking</h1>
+            <form method="GET" class="form-inline" name="filter_form">
+                <div class="row m-0 w-100 fileterrow">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <nav aria-label="breadcrumb" class="pageBreadcrumb">
+                            <ol class="breadcrumb tab_lnks mb-0">
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    @php    
+                        $userId = !empty(request()->get('user_id')) ? request()->get('user_id') : '';
+                        $getStatus = isset(request()->status) && request()->status != '' ? request()->get('status') : '';
+                    @endphp
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="custom_form d-flex">
+                            <div class="form-group">
+                                <select class="form-select selectusers" id="__allUsersFilterId" name="user_id">
+                                    <option value="">--All Users--</option>
+                                    @foreach ($users as $user)
+                                        {{ $sel = $user->id == $userId ? 'selected' : ''}}
+                                        <option value="{{ $user->id }}" {{$sel}}>
+                                            {{ $user->full_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-select selectusers" id="__allStatusFilterId" name="status">
+                                    <option value="">--All--</option>
+                                    <option value="0" {{ $getStatus == '0' ? 'selected' : ''}}>Upcoming</option>
+                                    <option value="-4" {{ $getStatus == '-4' ? 'selected' : ''}}>Pending</option>
+                                    <option value="-2" {{ $getStatus == '-2' ? 'selected' : ''}}>Cancelled</option>
+                                    <option value="4" {{ $getStatus == '4' ? 'selected' : ''}}>Driver Reached</option>
+                                    <option value="3" {{ $getStatus == '3' ? 'selected' : ''}}>Completed</option>
+                                    <option value="2" {{ $getStatus == '2' ? 'selected' : ''}}>Started</option>
+                                    <option value="1" {{ $getStatus == '1' ? 'selected' : ''}}>Accepted</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                  
+                    <div class="form_btn text-end mobile_margin d-flex">
+                        <input type="hidden" name="w" id="__filterWeekDate"/>
+                        <input type="submit" class="btn btn-default submit-button-filter-form"/>
+                    </div>
                 </div>
-            </div>
+            </form>
             <div id="weekView" class="resume">
                 <div id='calendar2'></div>
             </div>
@@ -123,6 +138,34 @@
                 $(document).find("button.fc-next-button").trigger('click');
             }
         });
+
+
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return false;
+        };
+
+        $(document).ready(function() {
+            var week = getUrlParameter('w');
+            $("#__filterWeekDate").val(week ? week : '');
+            $('#__allUsersFilterId,#__allStatusFilterId').on('change', function() {
+                var $form = $(this).closest('form');
+                $form.find('input[type=submit]').click();
+            });
+
+        });
+
     }
 </script>
 @endsection

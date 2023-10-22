@@ -66,6 +66,9 @@ class RidesController extends Controller
 
     public function monthView($data,$request)
     {
+        $userId = !empty(request()->user_id) ?  request()->user_id : '';
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
+
         $date = date('Y-m-d');
         if(isset($request['m']) && !empty($request['m']))
         {
@@ -78,8 +81,14 @@ class RidesController extends Controller
         $data['action'] = 'Rides';
         $company = Auth::user();
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
-                            ->where(function($query){
-                                // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
+                             ->where(function ($query) use ($getStatus){
+                                if (isset($getStatus) && $getStatus != '') {
+                                    $query->where('status', $getStatus);
+                                }
+                            })->where(function ($query2) use ($userId){
+                                if (!empty($userId)) {
+                                    $query2->where('user_id', $userId);
+                                }
                             })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
@@ -90,6 +99,9 @@ class RidesController extends Controller
 
     public function weekView($data,$request)
     {
+        $userId = !empty(request()->user_id) ?  request()->user_id : '';
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
+
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
         $data['year'] = Carbon::now()->startOfWeek()->format('Y');
@@ -111,9 +123,15 @@ class RidesController extends Controller
         // dd($endOfWeekDate);
 
         $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['company_id' => Auth::user()->company_id])
-                        ->where(function($query){
-                            // $query->where(['status' => 0])->orWhere(['status' => 1])->orWhere(['status' => 2])->orWhere(['status' => 4]);
-                        })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
+            ->where(function ($query) use ($getStatus){
+                if (isset($getStatus) && $getStatus != '') {
+                    $query->where('status', $getStatus);
+                }
+            })->where(function ($query2) use ($userId){
+                if (!empty($userId)) {
+                    $query2->where('user_id', $userId);
+                }
+            })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         // dd($data['rides']);

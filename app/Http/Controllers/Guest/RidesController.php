@@ -60,6 +60,7 @@ class RidesController extends Controller
     public function listView($data,$request)
     {
 
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
 
         $company = Auth::user();
         $data['page_title'] = 'Rides';
@@ -77,6 +78,10 @@ class RidesController extends Controller
                     $query->where(['user_id' => $userId]);
                 }
                 $query->where('status', '!=', -2);
+            })->where(function ($query) use ($getStatus){
+                if (isset($getStatus) && $getStatus != '') {
+                    $query->where('status', $getStatus);
+                }
             })->where('user_id','!=',null)
             ->orderBy('rides.ride_time', 'DESC')
             ->with(['vehicle','user:id,first_name,last_name'])
@@ -90,6 +95,7 @@ class RidesController extends Controller
 
     public function monthView($data,$request)
     {
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
 
         $date = date('Y-m-d');
         if(isset($request['m']) && !empty($request['m']))
@@ -115,6 +121,10 @@ class RidesController extends Controller
                     $query->where(['user_id' => $userId]);
                 }
             $query->where('status', '!=', -2);
+        })->where(function ($query) use ($getStatus){
+            if (isset($getStatus) && $getStatus != '') {
+                $query->where('status', $getStatus);
+            }
         })->where('user_id','!=',null)
         ->orderBy('rides.id')
         //->whereMonth('ride_time',$month)
@@ -136,6 +146,8 @@ class RidesController extends Controller
 
     public function weekView($data,$request)
     {
+        $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
+
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
         $data['year'] = Carbon::now()->startOfWeek()->format('Y');
@@ -168,6 +180,10 @@ class RidesController extends Controller
                     $query->where(['user_id' => $userId]);
                 }
             $query->where('status', '!=', -2);
+        })->where(function ($query) use ($getStatus){
+            if (isset($getStatus) && $getStatus != '') {
+                $query->where('status', $getStatus);
+            }
         })->where('user_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())
         ->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())
         ->with(['vehicle','user:id,first_name,last_name'])->get();

@@ -53,14 +53,14 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" required>
+                                    <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" required>
+                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
-                                    <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                    <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required>
@@ -95,14 +95,14 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="text" class="form-control main_field" form="updateForm" name="name" placeholder="Name" aria-label="Name" required>
+                                    <input type="text" class="form-control main_field" form="updateForm" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
+                                    <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" autocomplete="off" aria-label="Phone Number">
+                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" autocomplete="off" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
@@ -141,7 +141,7 @@
                     @foreach ($managers as $key=>$manager)
                         <tr>
                             <td>{{ $manager->first_name }}</td>
-                            <td>+{{ $manager->country_code }} {{ $manager->phone }}</td>
+                            <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
                             <td class="">{{ $manager->email }}</td>
                             <td class="">
                                 <div class="">
@@ -290,14 +290,17 @@
             $('.edit_box').find("#imgPreview1").attr('src',"{{ asset('storage') }}/"+user.image);
         }
         $('.edit_box').find("input[name='name']").val(user.first_name);
-        $('.edit_box').find("input[name='phone']").val(user.phone);
+        $('.edit_box').find("input[name='phone']").val(user && user.phone ? user.phone : '' );
         $('.edit_box').find("input[name='country_code']").val(user.country_code);
         $('.edit_box').find("input[name='email']").val(user.email);
         $('.edit_box').find("input[name='password']").val('');
         $('.edit_box').show();
         $('.form_add_managers').hide();
 
-        itiEdit.setNumber("+"+user.country_code+user.phone);
+        if(user && user.phone){
+            itiEdit.setNumber("+"+user.country_code+user.phone);
+
+        }
     });
     // $(document).on('change','#photo',function(){
     //     const file = this.files[0];

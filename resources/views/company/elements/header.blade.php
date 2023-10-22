@@ -21,24 +21,23 @@
                                             </a>
                                         </li> -->
                                         
-
                                         <li class="nav-item dotnot">
-                                            <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
+                                            <a class="nav-link dotnot {{ request()->segment(count(request()->segments()) - 1) == 'rides' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
                                         
                                         @if (Auth::check() && Auth::user()->user_type == 4)
 
 
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'managers' ? 'active' : '' }}" href="{{ route('managers.index') }}">Managers</a>
                                         </li>
 
                                         @endif
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'company-users' ? 'active' : '' }}" href="{{ route('company-users.index') }}">Users</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('company.settings') }}">Settings</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'settings' ? 'active' : '' }}" href="{{ route('company.settings') }}">Settings</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('logout') }}?company=true">Logout</a>
@@ -49,12 +48,13 @@
                             @yield('header_button')
                             <div class="viewUser_content d-flex align-items-center">
                                @if (Auth::check())
-                                <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
+                                <img src="{{ Auth::user()->image ? env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
+                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view kkkkkkkk">
                                     <span class="user_name">{{ Auth::user()->name }}</span>
                                     <!-- <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span> -->
                                 </div>
                                 @endif
+
                             </div>
                             {{-- <button type="button" class="btn addNewBtn_cs me-4">
                                 <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />

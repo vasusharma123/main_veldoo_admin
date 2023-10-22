@@ -55,6 +55,7 @@
             @else
                 :root {
                     --primary-font-family: 'Oswald', sans-serif !important;
+
                 }
             @endif
             
@@ -77,8 +78,6 @@
                     --primary-font-size: 20px !important;
                 }
             @endif
-
-
 
             @if(!empty($companyInfo['input_color']))
                 :root {
@@ -290,7 +289,7 @@
                                                     <a href="javsscript:;" class=" side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
-                                            <p class="ride_driver_details_div_driver_na view_value_form" style="display: none">N/A</p>
+                                            <p class="ride_driver_details_div_driver_na view_value_form" style="display: none"></p>
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt view_port">
@@ -306,7 +305,7 @@
                                                     <span class="user_name ride_car_div_number"></span>
                                                 </div>
                                             </div>
-                                            <p class="ride_car_div_na" style="display: none">N/A</p>
+                                            <p class="ride_car_div_na" style="display: none"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -747,7 +746,7 @@
                             $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
                             $('.ride_driver_details_div_driver_na').text('');
                         } else {
-                            $('.ride_driver_details_div_driver_na').text('N/A');
+                            $('.ride_driver_details_div_driver_na').text('');
                         }
                         
 
@@ -2040,8 +2039,16 @@
             });
 
 
+            
            
-
+            $(document).ready(function(){
+                $('ul li a').click(function(){
+                    setTimeout(function() {
+                        $('li a').removeClass("active");
+                        $(this).addClass("active");
+                    }, 1000);
+                });
+            });
           
 
         </script>

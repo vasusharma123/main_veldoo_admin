@@ -327,6 +327,7 @@ class UserController extends Controller
 	#USER LOGIN
 	public function login(Request $request)
 	{
+		//dd($request->all());
 		$rules = [
 			//'email' => 'required',
 			'password' => 'required',
