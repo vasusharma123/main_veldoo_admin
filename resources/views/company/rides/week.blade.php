@@ -1,4 +1,10 @@
 @extends('company.layouts.app')
+<style>
+    .fc-v-event {
+        background-color: {{ !empty($companyInfo['ride_color']) ?  $companyInfo['ride_color']  : '#3788d8 !important'}};
+        border: {{ !empty($companyInfo['ride_color']) ? '1px solid ' .$companyInfo['ride_color'] . '!important'  : '#3788d8 !important'}};
+    }
+</style>
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />

@@ -947,7 +947,13 @@
                         $('.passenger_details').html(booking.user.first_name+' '+booking.user.last_name+"  (+"+booking.user.country_code+'-'+booking.user.phone+")");
                     }
                     $('.ride_payment_type').html(booking.payment_type);
-                    $('.ride_car_price').html('CHF '+booking.ride_cost);
+
+                    if(booking && booking.ride_cost) {
+                        $('.ride_car_price').html('CHF '+booking.ride_cost);
+                    } else {
+                        $('.ride_car_price').html('CHF ');
+                    }
+
                     $('.ride_note_div').html(booking.note);
 
                     ride_status = ""
@@ -1605,7 +1611,14 @@
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
                     $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
                     $('#otp_note').val($('textarea[name="note"]').val()); 
-                    $('#otp_status').val($('input[name="status"]').val());
+
+                    if($('input[name="status"]').prop('checked') == true){
+                        $('#otp_status').val($('input[name="status"]').val());
+                    } else if($('input[name="status"]').prop('checked') == false){
+                        $('#otp_status').val(0);
+                    }  else {
+                        $('#otp_status').val(0);
+                    }
 
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
@@ -1845,7 +1858,9 @@
                                 } else {
                                     $("#users").val(response.data.ride_detail.user_id).change();
                                 }
+
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
+
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
                                 $("#note").val(response.data.ride_detail.note);

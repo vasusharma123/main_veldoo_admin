@@ -884,7 +884,13 @@
                         $('.passenger_details').html(booking.user.first_name+' '+booking.user.last_name+"  (+"+booking.user.country_code+'-'+booking.user.phone+")");
                     }
                     $('.ride_payment_type').html(booking.payment_type);
-                    $('.ride_car_price').html('CHF '+booking.ride_cost);
+
+                    if(booking && booking.ride_cost) {
+                        $('.ride_car_price').html('CHF '+booking.ride_cost);
+                    } else {
+                        $('.ride_car_price').html('CHF ');
+                    }
+
                     $('.ride_note_div').html(booking.note);
 
                     ride_status = ""

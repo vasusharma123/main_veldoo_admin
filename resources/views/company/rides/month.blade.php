@@ -1,14 +1,9 @@
 @extends('company.layouts.app')
 <style>
-    
-
     .fc-h-event {
-        background-color: {{ !empty($companyInfo['header_color']) ?  $companyInfo['header_color'] : '#fc4c02 !important'}};
-        border: 1px solid #fc4c02 !important;
+        background-color: {{ !empty($companyInfo['ride_color']) ?  $companyInfo['ride_color']  : '#fc4c02 !important'}};
+        border: {{ !empty($companyInfo['ride_color']) ? '1px solid ' .$companyInfo['ride_color'] . '!important'  : '#fc4c02 !important'}};
     }
-
-    
-
 </style>
 
 @section('header_button')
