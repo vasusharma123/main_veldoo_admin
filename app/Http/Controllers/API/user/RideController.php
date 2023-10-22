@@ -185,7 +185,6 @@ class RideController extends Controller
                         }
                     }
                 }
-
                 return response()->json(['success' => true, 'message' => 'get successfully', 'data' => $rides], $this->successCode);
             } else {
                 return response()->json(['message' => 'Record Not found'], $this->warningCode);

@@ -21,24 +21,23 @@
                                             </a>
                                         </li> -->
                                         
-
                                         <li class="nav-item dotnot">
-                                            <a class="nav-link dotnot" href="{{ route('company.rides','month') }}">My Booking</a>
+                                            <a class="nav-link dotnot {{ request()->segment(count(request()->segments()) - 1) == 'rides' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">My Booking</a>
                                         </li>
                                         
                                         @if (Auth::check() && Auth::user()->user_type == 4)
 
 
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('managers.index') }}">Managers</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'managers' ? 'active' : '' }}" href="{{ route('managers.index') }}">Managers</a>
                                         </li>
 
                                         @endif
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('company-users.index') }}">Users</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'company-users' ? 'active' : '' }}" href="{{ route('company-users.index') }}">Users</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('company.settings') }}">Settings</a>
+                                            <a class="nav-link {{request()->segment(count(request()->segments())) == 'settings' ? 'active' : '' }}" href="{{ route('company.settings') }}">Settings</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('logout') }}?company=true">Logout</a>

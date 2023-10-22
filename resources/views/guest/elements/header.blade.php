@@ -28,14 +28,11 @@
                                         @endif
 
                                         @if(\Request::get('token'))
-                                            <li class="nav-item"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
                                         @else 
-                                            <li class="nav-item"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
 
                                         @endif
-
-
-                                       
                                        
 
                                         @if (Auth::check())

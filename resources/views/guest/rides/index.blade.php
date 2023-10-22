@@ -54,7 +54,7 @@ th     { background:#eee; }
                         <div class="custom_form d-flex">
                             <div class="form-group">
                                 <select class="form-select selectusers" id="__allStatusFilterId" name="status">
-                                    <option value="">--Select Status--</option>
+                                    <option value="">--All--</option>
                                     <option value="0" {{ $getStatus == '0' ? 'selected' : ''}}>Upcoming</option>
                                     <option value="-4" {{ $getStatus == '-4' ? 'selected' : ''}}>Pending</option>
                                     <option value="-2" {{ $getStatus == '-2' ? 'selected' : ''}}>Cancelled</option>

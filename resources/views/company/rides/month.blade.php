@@ -51,18 +51,18 @@
                         <div class="custom_form d-flex">
                             <div class="form-group">
                                 <select class="form-select selectusers" id="__allUsersFilterId" name="user_id">
-                                    <option value="">--Search User--</option>
+                                    <option value="">--All Users--</option>
                                     @foreach ($users as $user)
                                         {{ $sel = $user->id == $userId ? 'selected' : ''}}
                                         <option value="{{ $user->id }}" {{$sel}}>
-                                            {{ $user->full_name }}{{ !empty($user->phone) ? ' (+' . $user->country_code . '-' . $user->phone . ')' : '' }}
+                                            {{ $user->full_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group">
                                 <select class="form-select selectusers" id="__allStatusFilterId" name="status">
-                                    <option value="">--Select Status--</option>
+                                    <option value="">--All--</option>
                                     <option value="0" {{ $getStatus == '0' ? 'selected' : ''}}>Upcoming</option>
                                     <option value="-4" {{ $getStatus == '-4' ? 'selected' : ''}}>Pending</option>
                                     <option value="-2" {{ $getStatus == '-2' ? 'selected' : ''}}>Cancelled</option>

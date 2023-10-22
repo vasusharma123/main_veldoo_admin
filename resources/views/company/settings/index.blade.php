@@ -129,6 +129,7 @@ code {
                 </div>
             @endcan
             <!-- /List View -->
+
             <div id="monthView" class="resume next-tabs" style="display:{{ Auth::user()->user_type==5?'block':'none' }}">
                 <section class="form_add_managers">
                     <article class="form_inside">
@@ -142,11 +143,11 @@ code {
                                                 <input type="text" class="form-control main_field" placeholder="Name" aria-label="First name"  name="name" value="{{ Auth::user()->name }}" required>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required>
+                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required readonly>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                 <input type="hidden" name="country_code_admin" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
-                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}" required>
+                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}">
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                 <input type="password" class="form-control main_field" placeholder="Password" aria-label="Password" name="password" >
@@ -429,22 +430,18 @@ code {
         $(document).ready(function(){
             var code = "{{@$company->country_code}}";
             var phone = "{{@$company->phone}}";
-            
-
             setTimeout(() => {
-
-            var code = "{{@$company->country_code}}";
-            var phone = "{{@$company->phone}}";
+                iti.setNumber("+"+code + phone);
+                $("#phone").val(phone);
 
             }, 500);
-            
 
         });
 
         $(document).ready(function(){
 
-            var code = "{{@$company->country_code}}";
-            var phone = "{{@$company->phone}}";
+            var code = "{{ Auth::user() && Auth::user()->country_code ? Auth::user()->country_code : '' }}";
+            var phone = "{{ Auth::user() && Auth::user()->phone ? Auth::user()->phone : '' }}";
             setTimeout(() => {
                 itiAdmin.setNumber("+"+code + phone);
                 $("#phone_admin").val(phone);
