@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\RideResource;
+use Illuminate\Support\Facades\Log;
 
 class SendRideNotificationAfterScheduleTime extends Command
 {
