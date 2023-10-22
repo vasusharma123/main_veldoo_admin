@@ -467,16 +467,19 @@ class ServiceProviderController extends Controller
                         if (str_contains($phone_number, "+" . $input['country_code'][$key])) {
                             $phone_number = str_replace("+" . $input['country_code'][$key], '', $phone_number);
                         }
-                        $driver->fill([
+                        $driverArray = [
                             'first_name' => $value,
                             'last_name' => $input['last_name'][$key],
                             'country_code' => $input['country_code'][$key],
                             'phone' => $phone_number,
                             'country_code_iso' => $input['country_code_iso'][$key]??"",
                             'is_master' => 1,
-                            'user_type' => 2,
-                            'password' => Hash::make($input['password'][$key])
-                        ]);
+                            'user_type' => 2
+                        ];
+                        if(!empty($input['password'][$key])){
+                            $driverArray['password'] = Hash::make($input['password'][$key]);
+                        }
+                        $driver->fill($driverArray);
                         $driver->save();
                         $serviceProviderDriver = ServiceProviderDriver::firstOrNew(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
                         $serviceProviderDriver->fill(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
