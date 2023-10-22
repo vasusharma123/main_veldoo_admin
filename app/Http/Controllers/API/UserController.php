@@ -5842,6 +5842,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$notification->type = $type;
 						$notification->user_id = $userdata['id'];
 						$notification->additional_data = json_encode($additional);
+						$notification->service_provider_id = $ride->service_provider_id;
 						$notification->save();
 					}
 					$rideDetail = Ride::find($request->ride_id);
@@ -5871,18 +5872,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								if ($ride->notification_sent == 1 && $ride->alert_send == 1) {
 									Notifications::sendRideNotificationToMasters($request->ride_id);
 								} else {
-									$settings = \App\Setting::first();
-									$settingValue = json_decode($settings['value']);
-									$driverlimit = $settingValue->driver_requests;
-									$driver_radius = $settingValue->radius;
-									$overallDriversAvailable = User::select(
+									$driverlimit = 3;
+									if(!empty($ride->service_provider_id)){
+										$settings = Setting::where(['service_provider_id' => $ride->service_provider_id])->first();
+										$settingValue = json_decode($settings['value']);
+										$driverlimit = $settingValue->driver_requests;
+									}
+									
+									// $driver_radius = $settingValue->radius;
+									$query = User::select(
 										"users.*",
 										DB::raw("3959 * acos(cos(radians(" . $ride->pick_lat . "))
 									* cos(radians(users.current_lat))
 									* cos(radians(users.current_lng) - radians(" . $ride->pick_lng . "))
 									+ sin(radians(" . $ride->pick_lat . "))
 									* sin(radians(users.current_lat))) AS distance")
-									)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token')->having('distance', '<', $driver_radius)->get()->toArray();
+									)->where(['user_type' => 2, 'availability' => 1])->whereNotNull('device_token');
+									if(!empty($ride->service_provider_id)){
+										$query->where(['service_provider_id' => $ride->service_provider_id]);
+									}
+									$overallDriversAvailable = $query->get()->toArray();
 									$overallNotificationSentCount = RideHistory::where(['ride_id' => $request->ride_id])->count();
 									if (count($overallDriversAvailable) <= $overallNotificationSentCount) {
 										Notifications::sendRideNotificationToMasters($request->ride_id);
