@@ -1,8 +1,8 @@
 @extends('company.layouts.app')
 <style>
     .fc-h-event {
-        background-color: {{ !empty($companyInfo['ride_color']) ?  $companyInfo['ride_color']  : '#fc4c02 !important'}};
-        border: {{ !empty($companyInfo['ride_color']) ? '1px solid ' .$companyInfo['ride_color'] . '!important'  : '#fc4c02 !important'}};
+        background-color: {{ !empty($companyInfo['ride_color']) ?  $companyInfo['ride_color']  : '#356681 !important'}};
+        border: {{ !empty($companyInfo['ride_color']) ? '1px solid ' .$companyInfo['ride_color'] . '!important'  : '#356681 !important'}};
     }
 </style>
 
@@ -32,9 +32,9 @@
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                         <nav aria-label="breadcrumb" class="pageBreadcrumb">
                             <ol class="breadcrumb tab_lnks mb-0">
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides',['month','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides',['list','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides',['week','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">Week View</a></li>
                             </ol>
                         </nav>
                     </div>
@@ -85,10 +85,39 @@
 @endsection
 @section('footer_scripts')
     <script>
+
+
+       
                    
         if ($('#calendar').length > 0)
         {
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+                return false;
+            };
+
+
+
             var calendarEl = document.getElementById('calendar');
+
+            var status = getUrlParameter('status');
+            var user_id = getUrlParameter('user_id');
+            var fUser = user_id ? user_id : '';
+            var fStatus = status ? status : '';
+
+            
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 events:
                 [
@@ -127,7 +156,11 @@
                             });
 
                     // alert('Year is ' + year + ' Month is ' + month);
-                    window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+                    //window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
+                    window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01&status="+fStatus+"&user_id="+fUser;
+                   // window.location.href = "{{ route('company.rides','week') }}?w="+year+"-"+month+"-"+day;
+
+
                 }, 100);
 
             });
@@ -143,22 +176,6 @@
                 }
             });
 
-
-            var getUrlParameter = function getUrlParameter(sParam) {
-                var sPageURL = window.location.search.substring(1),
-                    sURLVariables = sPageURL.split('&'),
-                    sParameterName,
-                    i;
-
-                for (i = 0; i < sURLVariables.length; i++) {
-                    sParameterName = sURLVariables[i].split('=');
-
-                    if (sParameterName[0] === sParam) {
-                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-                    }
-                }
-                return false;
-            };
 
             $(document).ready(function() {
 

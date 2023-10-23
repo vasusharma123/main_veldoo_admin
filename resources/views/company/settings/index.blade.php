@@ -146,7 +146,7 @@ code {
                                                 <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required readonly>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="hidden" name="country_code_admin" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
+                                                <input type="hidden" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
                                                 <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}">
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">

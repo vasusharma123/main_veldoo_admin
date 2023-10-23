@@ -37,9 +37,10 @@ th     { background:#eee; }
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                         <nav aria-label="breadcrumb" class="pageBreadcrumb">
                             <ol class="breadcrumb tab_lnks mb-0">
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides','month') }}">Month View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides','list') }}">List View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides','week') }}">Week View</a></li>
+                                
+                            <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('company.rides',['month','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('company.rides',['list','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('company.rides',['week','status' => \Request::get('status'),'user_id' => \Request::get('user_id')]) }}">Week View</a></li>
                             </ol>
                         </nav>
                     </div>

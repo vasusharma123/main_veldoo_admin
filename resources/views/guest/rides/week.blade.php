@@ -24,15 +24,10 @@
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                         <nav aria-label="breadcrumb" class="pageBreadcrumb">
                             <ol class="breadcrumb tab_lnks mb-0">
-                                @if(\Request::get('token'))
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">Month View</a></li>
-                                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',['list','token' => \Request::get('token')]) }}">List View</a></li>
-                                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',['week','token' => \Request::get('token')]) }}">Week View</a></li>
-                                @else 
-                                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides','month') }}">Month View</a></li>
-                                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides','list') }}">List View</a></li>
-                                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides','week') }}">Week View</a></li>
-                                @endif
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'month' ? 'active' : '' }}" href="{{ route('guest.rides',['month','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',['list','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',['week','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Week View</a></li>
+                            
                             </ol>
                         </nav>
                     </div>
@@ -71,7 +66,27 @@
 @section('footer_scripts')
 <script>
     if ($('#calendar2').length > 0)
-    {
+    {   
+
+        var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+                return false;
+            };
+
+
+        var status = getUrlParameter('status');
+        var fStatus = status ? status : '';
 
         var calendarEl = document.getElementById('calendar2');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -125,13 +140,10 @@
                             useGrouping: false
                         });
 
-               /// alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
+            // alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
 
-                if(token){
-                    window.location.href = "{{ route('guest.rides','week') }}?token="+token+"&w="+year+"-"+month+"-"+day;
-                } else {
-                    window.location.href = "{{ route('guest.rides','week') }}?w="+year+"-"+month+"-"+day;
-                }
+                window.location.href = "{{ route('guest.rides','week') }}?token="+token+"&w="+year+"-"+month+"-"+day+"&status="+fStatus;
+                
             }, 100);
         });
 
@@ -146,21 +158,6 @@
             }
         });
 
-        var getUrlParameter = function getUrlParameter(sParam) {
-            var sPageURL = window.location.search.substring(1),
-                sURLVariables = sPageURL.split('&'),
-                sParameterName,
-                i;
-
-            for (i = 0; i < sURLVariables.length; i++) {
-                sParameterName = sURLVariables[i].split('=');
-
-                if (sParameterName[0] === sParam) {
-                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-                }
-            }
-            return false;
-        };
 
         $(document).ready(function() {
             var week = getUrlParameter('w');

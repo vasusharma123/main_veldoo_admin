@@ -59,7 +59,7 @@
                                     <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                                    <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+1' }}" class="country_code" id="country_code" name="country_code" />
                                     <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                    <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" autocomplete="off" aria-label="Phone Number">
+                                    <input type="text" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" autocomplete="off" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
@@ -274,6 +274,17 @@
             $('#country_code_edit').val(selectedCountryData.dialCode);
         });
     });
+
+        $(document).ready(function(){
+            var code = $('#country_code').val();  
+            var phone = $('#phone').val();
+            setTimeout(() => {
+                iti.setNumber("+"+code + phone);
+                $("#phone").val(phone);
+
+            }, 500);
+
+        });
     
     $(document).on('click','.editButton',function(){
 

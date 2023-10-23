@@ -83,7 +83,7 @@ class UsersController extends Controller
                 $user->fill(['company_id'=>Auth::user()->company_id,'first_name'=>$request->first_name,'last_name'=>$request->last_name,'email'=>$request->email]);
                 $user->update();
             }
-            return redirect()->route('company-users.index')->with('success','User successfully updated');
+            return redirect()->route('company-users.index')->with('success','User added successfully');
         }
         else
         {

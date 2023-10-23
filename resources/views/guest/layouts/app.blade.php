@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <!-- Custom CSS -->
 
-        <link href="{{ asset('new-design-company/assets/css/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('new-design-company/assets/css/guest.css') }}" rel="stylesheet">
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />

@@ -640,7 +640,7 @@ class CompanyController extends Controller
 
     public function updatePersonalInformation(Request $request)
     {
-        // dd($request->all());
+         //dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             'email' => 'email',
