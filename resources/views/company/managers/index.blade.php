@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                    <input type="text" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" autocomplete="off" aria-label="Phone Number">
+                                    <input type="text" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                     <input type="password" class="form-control main_field" placeholder="Password" form="updateForm" name="password" aria-label="Password">
@@ -289,6 +289,9 @@
     $(document).on('click','.editButton',function(){
 
         user = $(this).data('user');
+
+        console.log(user.phone);
+
         action = $('#updateForm').attr('action');
         action = action.replace('~',user.id);
         $('#updateForm').attr('action',action);
@@ -300,6 +303,11 @@
         {
             $('.edit_box').find("#imgPreview1").attr('src',"{{ asset('storage') }}/"+user.image);
         }
+
+        if(user && user.phone){
+            itiEdit.setNumber("+"+user.country_code+user.phone);
+        }
+
         $('.edit_box').find("input[name='name']").val(user.first_name);
         $('.edit_box').find("input[name='phone']").val(user && user.phone ? user.phone : '' );
         $('.edit_box').find("input[name='country_code']").val(user.country_code);
@@ -308,10 +316,7 @@
         $('.edit_box').show();
         $('.form_add_managers').hide();
 
-        if(user && user.phone){
-            itiEdit.setNumber("+"+user.country_code+user.phone);
-
-        }
+       
     });
     // $(document).on('change','#photo',function(){
     //     const file = this.files[0];

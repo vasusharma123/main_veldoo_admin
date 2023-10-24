@@ -17,6 +17,7 @@ use Auth;
 use Hash;
 use Storage;
 use App\Price;
+use Illuminate\Validation\Rule;
 
 
 class ManagersController extends Controller
@@ -31,8 +32,8 @@ class ManagersController extends Controller
         //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->paginate(20);
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
 
         $data['vehicle_types'] = Price::orderBy('sort')->get();
 
@@ -49,9 +50,15 @@ class ManagersController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
+
+
+
+         
+
         $request->validate([
-            'email' => 'email|required|unique:users',
+            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($request) {
+                return $query->where('user_type', 5);
+            })],
             'name' => 'required',
             'password' => 'required',
         ]);

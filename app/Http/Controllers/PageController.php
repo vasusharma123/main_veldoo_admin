@@ -535,7 +535,14 @@ if($_REQUEST['cm'] == 2)
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
+
 		if ($responseObj['status'] == 1) {
+
+			\Auth::login($user);
+			if (in_array(Auth::user()->user_type,[1])) {
+				Auth::user()->syncRoles('Customer');
+			}
+
 			$message_content = "Your Booking has been confirmed with Veldoo, for time";
 			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			$SMSTemplate = SMSTemplate::find(2);

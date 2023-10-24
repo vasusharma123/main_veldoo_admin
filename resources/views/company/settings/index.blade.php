@@ -308,8 +308,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Ride Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->ride_color) ? $company->ride_color  : '#FC4C02' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="ride_color" value="{{ !empty($company->ride_color) ? $company->ride_color  : '#FC4C02' }}">
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="ride_color" value="{{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }}">
                                                 </div>
                                             </div>
                                         </div>

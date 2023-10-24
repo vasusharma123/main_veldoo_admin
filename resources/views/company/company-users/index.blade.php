@@ -54,7 +54,7 @@
                                     <input type="text" class="form-control main_field" name="last_name" placeholder="Last Name" aria-label="Last Name" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
-                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" required>
+                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2 d-flex">
                                     <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
@@ -88,7 +88,7 @@
                                 <input type="text" class="form-control main_field" name="last_name" form="updateForm" placeholder="Last Name" aria-label="Last Name" required>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
+                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email">
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
 

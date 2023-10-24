@@ -145,8 +145,8 @@
                 }
             });
             calendar.render();
-            $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
 
+            $(document).on('click', 'button.fc-prev-button, button.fc-next-button, button.fc-today-button', function () {
                 setTimeout(() => {
                     var currentDate = calendar.view.currentStart;
                     var year = currentDate.getFullYear();
@@ -155,11 +155,10 @@
                                 useGrouping: false
                             });
 
-                    // alert('Year is ' + year + ' Month is ' + month);
+                     //alert('Year is ' + year + ' Month is ' + month);
                     //window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";
                     window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01&status="+fStatus+"&user_id="+fUser;
                    // window.location.href = "{{ route('company.rides','week') }}?w="+year+"-"+month+"-"+day;
-
 
                 }, 100);
 

@@ -36,11 +36,13 @@
                                        
 
                                         @if (Auth::check())
-
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('logout') }}?customer=true">Logout</a>
                                         </li>
                                         @endif
+
+                                       
+
                                     </ul>
                                 </nav>
                             </div>
@@ -49,7 +51,7 @@
                                @if (Auth::check())
                                 <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <span class="user_name">{{ Auth::user()->name }}</span>
+                                    <span class="user_name">{{ Auth::user() && Auth::user()->name ? Auth::user()->name : Auth::user()->first_name}}</span>
                                     <!-- <span class="user_position">{{ Auth::user()->first_name ? Auth::user()->first_name : Auth::user()->last_name }}</span> -->
                                 </div>
 

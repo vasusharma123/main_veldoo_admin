@@ -49,7 +49,7 @@
                             <div class="viewUser_content d-flex align-items-center">
                                @if (Auth::check())
                                 <img src="{{ Auth::user()->image ? env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view kkkkkkkk">
+                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
                                     <span class="user_name">{{ Auth::user()->name }}</span>
                                     <!-- <span class="user_position">{{ Auth::user()->user_type==5?'Manager':'Admin' }}</span> -->
                                 </div>

@@ -85,6 +85,7 @@
     if ($('#calendar2').length > 0)
     {
 
+
         var getUrlParameter = function getUrlParameter(sParam) {
                 var sPageURL = window.location.search.substring(1),
                     sURLVariables = sPageURL.split('&'),
@@ -138,8 +139,8 @@
         var day = parseInt("{{ $day }}");
         calendar.gotoDate(new Date(year, month, day));
         calendar.render();
-        $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
 
+        $(document).on('click', 'button.fc-prev-button, button.fc-next-button, button.fc-today-button', function () {
             setTimeout(() => {
                 var currentDate = calendar.view.currentStart;
                 var year = currentDate.getFullYear();
@@ -196,6 +197,8 @@
             });
 
         });
+
+
 
     }
 </script>
