@@ -87,13 +87,23 @@ class UsersController extends Controller
         }
         else
         {
-            $request->validate([
-                'email' => 'email|unique:users',
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'phone' => 'required',
-                'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            ]);
+            if(!empty($request->email)) {
+                $request->validate([
+                    'email' => 'email|unique:users',
+                    'first_name' => 'required',
+                    'last_name' => 'required',
+                    'phone' => 'required',
+                    'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                ]);
+            } else {
+                $request->validate([
+                    //'email' => 'email|unique:users',
+                    'first_name' => 'required',
+                    'last_name' => 'required',
+                    'phone' => 'required',
+                    'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                ]);
+            }
         }
 
         DB::beginTransaction();
