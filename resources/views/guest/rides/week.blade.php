@@ -121,7 +121,7 @@
         var day = parseInt("{{ $day }}");
         calendar.gotoDate(new Date(year, month, day));
         calendar.render();
-        $(document).on('click', 'button.fc-prev-button, button.fc-next-button', function () {
+        $('button.fc-prev-button, button.fc-next-button, button.fc-today-button').click(function() {
 
             let searchParams = new URLSearchParams(window.location.search);
             let token = searchParams.get('token');

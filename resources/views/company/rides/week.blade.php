@@ -140,7 +140,7 @@
         calendar.gotoDate(new Date(year, month, day));
         calendar.render();
 
-        $(document).on('click', 'button.fc-prev-button, button.fc-next-button, button.fc-today-button', function () {
+        $('button.fc-prev-button, button.fc-next-button, button.fc-today-button').click(function() {
             setTimeout(() => {
                 var currentDate = calendar.view.currentStart;
                 var year = currentDate.getFullYear();
