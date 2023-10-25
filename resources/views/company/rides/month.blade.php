@@ -112,10 +112,7 @@
 
             var calendarEl = document.getElementById('calendar');
 
-            var status = getUrlParameter('status');
-            var user_id = getUrlParameter('user_id');
-            var fUser = user_id ? user_id : '';
-            var fStatus = status ? status : '';
+           
 
             
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -154,6 +151,10 @@
                                 minimumIntegerDigits: 2,
                                 useGrouping: false
                             });
+                            var status = getUrlParameter('status');
+                            var user_id = getUrlParameter('user_id');
+                            var fUser = user_id ? user_id : '';
+                            var fStatus = status ? status : '';
 
                      //alert('Year is ' + year + ' Month is ' + month);
                     //window.location.href = "{{ route('company.rides','month') }}?m="+year+"-"+month+"-01";

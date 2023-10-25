@@ -94,10 +94,7 @@
             };
 
 
-            var status = getUrlParameter('status');
-            var user_id = getUrlParameter('user_id');
-            var fUser = user_id ? user_id : '';
-            var fStatus = status ? status : '';
+           
             
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -136,6 +133,10 @@
 
                 let searchParams = new URLSearchParams(window.location.search);
                 let token = searchParams.get('token');
+                var status = getUrlParameter('status');
+                var user_id = getUrlParameter('user_id');
+                var fUser = user_id ? user_id : '';
+                var fStatus = status ? status : '';
 
                 setTimeout(() => {
                     var currentDate = calendar.view.currentStart;

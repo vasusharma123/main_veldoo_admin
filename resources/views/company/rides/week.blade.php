@@ -103,10 +103,7 @@
             };
 
 
-        var status = getUrlParameter('status');
-        var user_id = getUrlParameter('user_id');
-        var fUser = user_id ? user_id : '';
-        var fStatus = status ? status : '';
+       
         
         var calendarEl = document.getElementById('calendar2');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -152,6 +149,10 @@
                             minimumIntegerDigits: 2,
                             useGrouping: false
                         });
+                var status = getUrlParameter('status');
+                var user_id = getUrlParameter('user_id');
+                var fUser = user_id ? user_id : '';
+                var fStatus = status ? status : '';
 
                 // alert('Year is ' + year + ' Month is ' + month+ ' day '+day);
                // window.location.href = "{{ route('company.rides','week') }}?w="+year+"-"+month+"-"+day;

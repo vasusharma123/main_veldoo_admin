@@ -129,6 +129,10 @@
             setTimeout(() => {
 
                 var currentDate = calendar.view.currentStart;
+                var status = getUrlParameter('status');
+                var user_id = getUrlParameter('user_id');
+                var fUser = user_id ? user_id : '';
+                var fStatus = status ? status : '';
                 var year = currentDate.getFullYear();
                 var month =  (currentDate.getMonth() + 1).toLocaleString('en-US', {
                             minimumIntegerDigits: 2,
