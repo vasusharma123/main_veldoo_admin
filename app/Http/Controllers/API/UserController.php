@@ -2184,6 +2184,7 @@ class UserController extends Controller
 				$ride->ride_type = 1;
 				$ride->car_type = $request->car_type;
 				$ride->driver_id = $request->driver_id ?? null;
+				$ride->route = $request->route ?? null;
 				if (!empty($request->alert_time)) {
 					$ride->alert_notification_date_time = date('Y-m-d H:i:s', strtotime('-' . $request->alert_time . ' minutes', strtotime($ride_date_time)));
 				} else {
@@ -4711,6 +4712,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if (!empty($request->company_id)) {
 			$ride->company_id = $request->company_id;
 		}
+		$ride->route = $request->route ?? null;
 		$ride->ride_type = 3;
 		$ride->created_by = 2;
 		$ride->creator_id = Auth::user()->id;
