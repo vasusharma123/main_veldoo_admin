@@ -1577,6 +1577,18 @@ input#photo{
 .fc-header-toolbar  .fc-toolbar-chunk {
     display: flex;
 }
+.payment-method{
+    margin-left: 42px;
+}
+.select-payment-method{
+    width: 200px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    padding: 6px 10px;
+    border-radius: .375rem;
+}
 
 .fc-header-toolbar .fc-button-group > .fc-button {
     border: none;

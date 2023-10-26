@@ -489,9 +489,11 @@
                                                 </select>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
+                            
+                            
                             <div class="form_payment_box">
                                 <div class="row w-100 m-0">
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-12 pe-0 amount_box">
@@ -500,8 +502,19 @@
                                             <div class="form-dollar position-relative">
                                                 <input type="text" min="0" class="form-control down_form price_calculated_input" name="ride_cost" value="0" readonly placeholder="CHF"/>
                                                 <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
-                                                <input type="hidden" name="payment_type" value="Cash" id="payment_type">
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 pe-0 amount_box payment-method">
+                                        <div class="form_box">
+                                            <label class="form_label down_form_label">Payment Method</label>
+                                            <select name="payment_type" class="form-select borderless_form_field select-payment-method" id="payment_type">
+                                                <option value="Cash">Cash</option>
+                                                <option value="Invoice">Invoice</option>
+                                                <option value="Card">Card</option>
+                                                <option value="Other">Other</option>
+                                            </select>
                                         </div>
                                     </div>
                                     
@@ -516,6 +529,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="">
                                 <div class="row w-100 m-0">
                                     <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
@@ -525,6 +539,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="save_btn_box mobile_view">
                                 <button type="button" class="btn save_form_btn bottom_btn w-100 save_booking">Book Ride</button>
                             </div>
@@ -996,6 +1011,7 @@
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
+
                                 $("#note").val(response.data.ride_detail.note);
 
                                 if (response.data.ride_detail.pick_lat) {
@@ -1602,6 +1618,13 @@
                                 } else {
                                     $("#users").val(response.data.ride_detail.user_id).change();
                                 }
+
+                                if(response.data.ride_detail.payment_type){
+                                    $("#payment_type").val(response.data.ride_detail.payment_type).change();
+                                } else {
+                                    $("#payment_type").val("").change();
+                                }
+
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
