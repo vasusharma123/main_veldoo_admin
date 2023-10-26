@@ -58,7 +58,7 @@ code {
                     <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
                     @endcan
 
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
+                    <li class="breadcrumb-item"><a class="tabs_links_btns user-can-update-info {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
                     @can('isCompany')
                     <li class="breadcrumb-item"><a class="tabs_links_btns theme-design-tab" href="#weekView">Theme Design</a></li>
                     @endcan
@@ -146,7 +146,7 @@ code {
                                                 <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required readonly>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="hidden" name="country_code_admin" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
+                                                <input type="hidden" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
                                                 <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}">
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -301,6 +301,15 @@ code {
                                                         Font Size
                                                     </label>
                                                     <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="" >
+                                                        Ride Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="ride_color" value="{{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -488,12 +497,16 @@ code {
 
         $(document).ready(function () {
             var currentURL = (document.URL);
-            var part = currentURL.split("#")[1];
+            var lastUrlEle = currentURL.split("#")[1];
+            console.log(lastUrlEle);
             setTimeout(function() {
-                if(part == 'weekView'){
+                if(lastUrlEle == 'weekView'){
                     $(".theme-design-tab").trigger("click");
                 }
-            }, 1000);
+                if(lastUrlEle == 'monthView'){
+                    $(".user-can-update-info").trigger("click");
+                }
+            }, 500);
         });
         
 

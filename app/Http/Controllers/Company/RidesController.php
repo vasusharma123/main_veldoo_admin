@@ -31,7 +31,7 @@ class RidesController extends Controller
     {
         $type = ($type?$type:'list').'View';
         $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         return $this->$type($data,$request->all());
     }
@@ -90,7 +90,7 @@ class RidesController extends Controller
                                     $query2->where('user_id', $userId);
                                 }
                             })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         // dd($data['rides']);
         $data['date'] = $date;
@@ -132,7 +132,7 @@ class RidesController extends Controller
                     $query2->where('user_id', $userId);
                 }
             })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         // dd($data['rides']);
         return view('company.rides.week')->with($data);
