@@ -132,7 +132,7 @@ class ManagersController extends Controller
             ->where('id', '!=', $id)->where('email', $request->email)->first();
 
             if($existEmail){
-                return redirect()->back()->with('error','This email has already been taken')->withInput($request->all());
+                return redirect()->back()->with('error','The email has already been taken')->withInput($request->all());
             }
 
             $data = ['first_name'=>$request->name, 'name'=>$request->name,'email'=>$request->email];
