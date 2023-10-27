@@ -121,11 +121,20 @@ class ManagersController extends Controller
             // 'password' => 'required',
         ]);
 
+
        
 
         DB::beginTransaction();
         try
         {
+
+            $existEmail = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->whereNull('deleted_at')
+            ->where('id', '!=', $id)->where('email', $request->email)->first();
+
+            if($existEmail){
+                return redirect()->back()->with('error','This email has already been taken')->withInput($request->all());
+            }
+
             $data = ['first_name'=>$request->name, 'name'=>$request->name,'email'=>$request->email];
             if ($request->phone)
             {
