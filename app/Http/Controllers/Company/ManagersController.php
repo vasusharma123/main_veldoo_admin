@@ -51,13 +51,9 @@ class ManagersController extends Controller
     public function store(Request $request)
     {
 
-
-
-         
-
         $request->validate([
             'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($request) {
-                return $query->where('user_type', 5);
+                return $query->where('user_type', 5)->whereNull('deleted_at');
             })],
             'name' => 'required',
             'password' => 'required',
@@ -115,12 +111,18 @@ class ManagersController extends Controller
 
     public function update(Request $request,$id)
     {
-        // dd($request->all());
+        // dd($id);
         $request->validate([
-            'email' => 'email|required|unique:users,email,'.$id,
+           // 'email' => 'email|required|unique:users,email,'.$id,
+            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($id) {
+                return $query->where('user_type', 5)->whereNotNull('deleted_at')->where('id', $id);
+            })],
             'name' => 'required',
             // 'password' => 'required',
         ]);
+
+       
+
         DB::beginTransaction();
         try
         {
