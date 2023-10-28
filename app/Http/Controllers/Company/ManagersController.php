@@ -11,6 +11,7 @@ use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RideExport;
+use App\PaymentMethod;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Auth;
@@ -36,7 +37,7 @@ class ManagersController extends Controller
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
 
         $data['vehicle_types'] = Price::orderBy('sort')->get();
-
+        $data['payment_types'] = PaymentMethod::get();
         return view('company.managers.index')->with($data);
     }
 

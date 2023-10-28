@@ -237,7 +237,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
+                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2 ">
@@ -300,7 +300,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
+                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">

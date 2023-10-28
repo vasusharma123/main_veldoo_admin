@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use App\Setting;
 use App\Notification;
 use App\Http\Resources\RideResource;
+use App\PaymentMethod;
 use App\SMSTemplate;
 
 class RidesController extends Controller
@@ -51,6 +52,7 @@ class RidesController extends Controller
         } 
        
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
         return $this->$type($data,$request->all());
     }
 
@@ -139,6 +141,7 @@ class RidesController extends Controller
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
         $data['date'] = $date;
 
         return view('guest.rides.month')->with($data);
@@ -194,6 +197,7 @@ class RidesController extends Controller
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
         // dd($data['rides']);
         return view('guest.rides.week')->with($data);
     }

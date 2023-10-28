@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use DataTables;
 use App\Company;
+use App\PaymentMethod;
 use Auth;
 use App\Ride;
 use App\Price;
@@ -499,6 +500,7 @@ class CompanyController extends Controller
         $data['company'] = Company::find(Auth::user()->company_id); 
         $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
 		return view("company.settings.index")->with($data);
     }
 

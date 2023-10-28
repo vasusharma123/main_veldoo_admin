@@ -416,10 +416,9 @@
                                         <div class="form_box">
                                             <label class="form_label down_form_label">Payment Method</label>
                                             <select name="payment_type" class="form-select borderless_form_field select-payment-method" id="payment_type">
-                                                <option value="Cash">Cash</option>
-                                                <option value="Invoice">Invoice</option>
-                                                <option value="Card">Card</option>
-                                                <option value="Other">Other</option>
+                                                @foreach ($payment_types as $payment_type)
+                                                        <option value="{{ $payment_type->name }}">{{ $payment_type->name }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
