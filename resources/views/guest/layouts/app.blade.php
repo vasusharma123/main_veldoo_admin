@@ -630,10 +630,10 @@
                                                 <div class="form-group position-relative has_validation text-center otpcode_box invalid_field">
                                                     <label class="form-lable boldlable">OTP code</label>
                                                     <div class="field position-relative otp-box d-flex">
-                                                        <input type="text" id="digit-1" maxlength="1" name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-2" maxlength="1" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-1" maxlength="1" name="digit-1" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-2" maxlength="1" name="digit-2" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
                                                     </div>
                                                     <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline confirmOTPModalTimer">Resend OTP</a> 30 sec.</p> -->
                                                     <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>

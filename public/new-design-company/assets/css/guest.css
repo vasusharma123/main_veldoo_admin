@@ -238,6 +238,8 @@ label.form-lable.boldlable {
     border-bottom: 1px solid #9B9B9B !important;
     border-radius: 0 !important;
     margin: 0px 2px 20px;
+    padding: 16px 24px;
+    font-size: 20px;
 }
 
 .erro {

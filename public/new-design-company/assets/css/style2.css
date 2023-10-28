@@ -1491,6 +1491,7 @@ button.fc-today-button.fc-button.fc-button-primary {
     border-bottom: 1px solid #9B9B9B;
     border-radius: 0;
     margin: 0px 2px 20px;
+    font-size: 20px;
 }
 label.form-lable.boldlable {
     font-size: 20px;
