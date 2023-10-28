@@ -543,21 +543,21 @@ if($_REQUEST['cm'] == 2)
 				Auth::user()->syncRoles('Customer');
 			}
 
-			$message_content = "Your Booking has been confirmed with Veldoo, for time";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			$SMSTemplate = SMSTemplate::find(2);
-			if ($request->url_type == "taxisteinemann") {
-				$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
-				if (app()->getLocale() != "en") {
-					$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
-				if (app()->getLocale() != "en") {
-					$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
-				}
-			}
-			$this->sendSMS("+" . $request->country_code, $phone_number, $message_content);
+			// $message_content = "Your Booking has been confirmed with Veldoo, for time";
+			// $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			// $SMSTemplate = SMSTemplate::find(2);
+			// if ($request->url_type == "taxisteinemann") {
+			// 	$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+			// 	if (app()->getLocale() != "en") {
+			// 		$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
+			// 	}
+			// } else {
+			// 	$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+			// 	if (app()->getLocale() != "en") {
+			// 		$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
+			// 	}
+			// }
+			// $this->sendSMS("+" . $request->country_code, $phone_number, $message_content);
 		}
 		return $jsonResponse;
 	}
@@ -582,26 +582,26 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
-		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
-		if($responseObj['status'] == 1){
-			$message_content = "Your Booking has been confirmed with Veldoo, for time";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			$SMSTemplate = SMSTemplate::find(2);
-			if ($request->url_type=="taxisteinemann") {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
-		}
+		// $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		// if($responseObj['status'] == 1){
+		// 	$message_content = "Your Booking has been confirmed with Veldoo, for time";
+		// 	$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		// 	$SMSTemplate = SMSTemplate::find(2);
+		// 	if ($request->url_type=="taxisteinemann") {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	} else {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	}
+		// 	$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+		// }
 		return $jsonResponse;
 	}
 
@@ -1117,27 +1117,27 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
-		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
-		if($responseObj['status'] == 1){
-			$message_content = "";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		// $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		// if($responseObj['status'] == 1){
+		// 	$message_content = "";
+		// 	$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
-			$SMSTemplate = SMSTemplate::find(5);
-			if ($request->url_type=="taxisteinemann") {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
-		}
+		// 	$SMSTemplate = SMSTemplate::find(5);
+		// 	if ($request->url_type=="taxisteinemann") {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	} else {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	}
+		// 	$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+		// }
 		return $jsonResponse;
 	}
 
