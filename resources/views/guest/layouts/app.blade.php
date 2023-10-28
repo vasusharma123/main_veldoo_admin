@@ -432,6 +432,7 @@
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
                                     </div>
+                                    <input type="hidden" name="route" class="ride_route" id="ride_route">
                                 </div>
                             </div>
                             <div class="save_btn_box mobile_view">
@@ -587,7 +588,7 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
-                                        
+                                        <input type="hidden" id="otp_ride_route" name="route">
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
                                             
@@ -1165,7 +1166,7 @@
                                 }
 
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
 
@@ -1521,6 +1522,8 @@
                                     distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
                                     distance = Math.ceil(distance);
                                     $('#distance_calculated_input').val(distance);
+                                    var ride_route = result.routes[shortestRouteIndex].overview_polyline;
+                                    $('#ride_route').val(ride_route);
                                     calculate_amount();
                                 }
                             });
@@ -1614,6 +1617,7 @@
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
                     $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
                     $('#otp_note').val($('textarea[name="note"]').val());
+                    $('#otp_ride_route').val($('#ride_route').val());  
 
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
@@ -1744,26 +1748,9 @@
                     $('#pickup_latitude').val('');
                     $('#pickup_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     initializeMapReport([]);
                     calculate_amount();
-                });
-
-                $(document).on('click','.dropoffPointCloseBtn',function(){
-                        $('#dropoffPoint').val('');
-                        $('#dropoff_latitude').val('');
-                        $('#dropoff_longitude').val('');
-                        $(".distance_calculated_input").val(0);
-                        calculate_amount();
-                        if($('#pickup_latitude').val()!="")
-                        {
-                            initializeMapReport([{
-                                Latitude: $('#pickup_latitude').val(),
-                                Longitude: $('#pickup_longitude').val(),
-                                AddressLocation: $('#pickupPoint').val()
-                            }]);
-                        } else {
-                            initializeMapReport([]);
-                        }
                 });
 
                 $(document).on('click','.dropoffPointCloseBtn',function(){
@@ -1771,6 +1758,7 @@
                     $('#dropoff_latitude').val('');
                     $('#dropoff_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     calculate_amount();
                     if($('#pickup_latitude').val()!="")
                     {
@@ -1860,7 +1848,7 @@
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
 

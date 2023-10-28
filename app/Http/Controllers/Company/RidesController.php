@@ -230,6 +230,9 @@ class RidesController extends Controller
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
             }
+            if (!empty($request->route)) {
+                $ride->route = $request->route;
+            }
             $ride->alert_time = 15;
 
             // if (!empty($request->ride_time)) {
@@ -457,6 +460,9 @@ class RidesController extends Controller
                 if (!empty($request->distance)) {
                     $ride->distance = $request->distance;
                 }
+                if (!empty($request->route)) {
+                    $ride->route = $request->route;
+                }
                 $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
                 $ride->platform = "web";
                 
@@ -618,6 +624,7 @@ class RidesController extends Controller
             $ride->note = $request->note ?? "";
             $ride->car_type = $request->car_type ?? "";
             $ride->distance = $request->distance ?? "";
+            $ride->route = $request->route ?? "";
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
@@ -831,6 +838,7 @@ class RidesController extends Controller
 				if (!empty($request->distance)) {
 					$ride->distance = $request->distance;
 				}
+                $ride->route = $request->route ?? "";
 				if (!empty($request->ride_type)) {
 					$ride->ride_type = 1;
 				}

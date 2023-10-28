@@ -526,6 +526,7 @@
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
                                     </div>
+                                    <input type="hidden" name="route" class="ride_route" id="ride_route">
                                 </div>
                             </div>
                             
@@ -1002,7 +1003,7 @@
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
 
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 if (response.data.ride_detail.pick_lat) {
                                     newBookingMapPoints = [{
                                         Latitude: response.data.ride_detail.pick_lat,
@@ -1337,6 +1338,8 @@
                                     distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
                                     distance = Math.ceil(distance);
                                     $('#distance_calculated_input').val(distance);
+                                    var ride_route = result.routes[shortestRouteIndex].overview_polyline;
+                                    $('#ride_route').val(ride_route);
                                     calculate_amount();
                                 }
                             });
@@ -1495,26 +1498,9 @@
                     $('#pickup_latitude').val('');
                     $('#pickup_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     initializeMapReport([]);
                     calculate_amount();
-                });
-
-                $(document).on('click','.dropoffPointCloseBtn',function(){
-                        $('#dropoffPoint').val('');
-                        $('#dropoff_latitude').val('');
-                        $('#dropoff_longitude').val('');
-                        $(".distance_calculated_input").val(0);
-                        calculate_amount();
-                        if($('#pickup_latitude').val()!="")
-                        {
-                            initializeMapReport([{
-                                Latitude: $('#pickup_latitude').val(),
-                                Longitude: $('#pickup_longitude').val(),
-                                AddressLocation: $('#pickupPoint').val()
-                            }]);
-                        } else {
-                            initializeMapReport([]);
-                        }
                 });
 
                 $(document).on('click','.dropoffPointCloseBtn',function(){
@@ -1522,6 +1508,7 @@
                     $('#dropoff_latitude').val('');
                     $('#dropoff_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     calculate_amount();
                     if($('#pickup_latitude').val()!="")
                     {
@@ -1618,7 +1605,7 @@
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 if (response.data.ride_detail.pick_lat) {
                                     newBookingMapPoints = [{
                                         Latitude: response.data.ride_detail.pick_lat,
