@@ -528,16 +528,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="">
-                                <div class="row w-100 m-0">
-                                    <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
-                                        <label for="checkid">
-                                            <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
                             
                             <div class="save_btn_box mobile_view">
                                 <button type="button" class="btn save_form_btn bottom_btn w-100 save_booking">Book Ride</button>

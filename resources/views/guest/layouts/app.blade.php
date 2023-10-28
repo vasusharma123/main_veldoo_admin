@@ -432,15 +432,6 @@
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
                                     </div>
-                                    <div class="">
-                                        <div class="row w-100 m-0">
-                                            <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
-                                                <label for="checkid">
-                                                    <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="save_btn_box mobile_view">
@@ -597,8 +588,6 @@
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
                                         
-                                        <input type="hidden" id="otp_status" name="status">
-
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
                                             
@@ -1624,15 +1613,7 @@
                     $('#otp_numberOfPassenger').val($('input[name="passanger"]').val());  
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
                     $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
-                    $('#otp_note').val($('textarea[name="note"]').val()); 
-
-                    if($('input[name="status"]').prop('checked') == true){
-                        $('#otp_status').val($('input[name="status"]').val());
-                    } else if($('input[name="status"]').prop('checked') == false){
-                        $('#otp_status').val(0);
-                    }  else {
-                        $('#otp_status').val(0);
-                    }
+                    $('#otp_note').val($('textarea[name="note"]').val());
 
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
