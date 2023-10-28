@@ -14,7 +14,7 @@ class RemoveUniqueConstraintFromEmailColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropUnique('email');
+            $table->dropUnique('users_email_unique');
         });
     }
 
@@ -26,7 +26,7 @@ class RemoveUniqueConstraintFromEmailColumnToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropUnique('email');
+            $table->unique('email');
         });
         
     }
