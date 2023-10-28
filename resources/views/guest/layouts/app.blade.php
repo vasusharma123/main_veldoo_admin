@@ -1265,9 +1265,7 @@
                     return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
                 }
 
-                
-
-                $(document).on('click','.addNewBtn_cs ',function(){
+                $(document).on('click','.addNewBtn_cs, .add_new_booking_btn',function(){
                     newBookingMapPoints = [];
                     newBookingMarkers = [];
                     cur_lat = "";
@@ -1304,17 +1302,12 @@
                     var cCode = "{{ auth()->check() ? auth()->user()->country_code : '' }}";
                     var uPhone = "{{ auth()->check() ? auth()->user()->phone : '' }}";
 
-                    
-
                     if(cCode && uPhone) {
                         $("#otpPhone").val(uPhone);
                         $("#otpCountryCode").val(cCode);
                         iti.setNumber("+"+cCode + uPhone);
                         $("#phone").val(uPhone);
-
                     }
-
-
                 });
 
                 //new booking code
@@ -1710,6 +1703,7 @@
                                                     } else if(response.status == 0){
                                                         new swal("{{ __('Error') }}",response.message,"error");
                                                         $(document).find(".verify_otp").removeAttr('disabled');
+                                                        $(document).find(".save_booking").removeAttr('disabled');
                                                     }
                                                 }
                                             },
@@ -2403,13 +2397,13 @@
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
-                        $(document).find(".bookRideSBtn").removeAttr('disabled');
+                        $(document).find(".save_booking").removeAttr('disabled');
                     }
                 },
                 error(response) {
                     new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
-                    $(document).find(".bookRideSBtn").removeAttr('disabled');
+                    $(document).find(".save_booking").removeAttr('disabled');
                 }
             });
         })
