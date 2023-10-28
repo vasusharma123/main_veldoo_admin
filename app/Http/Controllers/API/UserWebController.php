@@ -153,7 +153,7 @@ class UserWebController extends Controller
             $ride['is_newly_created'] = 1;
             
 
-			if (!empty($masterDriverIds) && empty($request->status)) {
+			if (!empty($masterDriverIds)) {
 				$title = 'Ride is planned';
 				$message = 'A new ride is planned';
 				$ride['waiting_time'] = $settingValue->waiting_time;
