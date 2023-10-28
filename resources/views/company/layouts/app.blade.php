@@ -1092,7 +1092,7 @@
 
                 
 
-                $(document).on('click','.addNewBtn_cs ',function(){
+                $(document).on('click','.addNewBtn_cs, .add_new_booking_btn',function(){
                     newBookingMapPoints = [];
                     newBookingMarkers = [];
                     cur_lat = "";
