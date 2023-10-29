@@ -6285,22 +6285,31 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		try {
 			$text = $request->text;
+			$usersQuery = User::where(['user_type' => 1]);
 			if (isset($request->text) && $request->text != '') {
-				$users = User::where(['user_type' => 1])->where(function($query) use($text){
+				$usersQuery = $usersQuery->where(function ($query) use ($text) {
 					$query->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%');
-				})->orderBy('first_name', 'ASC')->paginate(100);
-				$usercount = User::where(['user_type' => 1])->where(function($query) use($text){
-					$query->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%');
-				})->count();
-			} else {
-				$users = User::where([['user_type', '=', 1]])->orderBy('first_name', 'ASC')->paginate(100);
-				$usercount = DB::table('users')->select('*')->where([['user_type', '=', 1]])->count();
+				});
 			}
+			if(!empty($request->company_id)){
+				$usersQuery = $usersQuery->where(['company_id' => $request->company_id]);
+			}
+			$users = $usersQuery->orderBy('first_name', 'ASC')->paginate(100);
+			$usercountQuery = User::where(['user_type' => 1]);
+			if (isset($request->text) && $request->text != '') {
+				$usercountQuery = $usercountQuery->where(function ($query) use ($text) {
+					$query->where('first_name', 'like', '%' . $text . '%')->orWhere('last_name', 'like', '%' . $text . '%')->orWhere('phone', 'like', '%' . $text . '%');
+				});
+			}
+			if(!empty($request->company_id)){
+				$usercountQuery = $usercountQuery->where(['company_id' => $request->company_id]);
+			}
+			$usercount = $usercountQuery->count();
 			if (!empty($usercount)) {
 				foreach ($users as $user_key => $userDat) {
 					$users[$user_key]->full_name = $userDat->full_name;
 					$users[$user_key]->avg_rating = $userDat->avg_rating;
-					$users[$user_key]->app_installed = (!empty($userDat->password))?1:0;
+					$users[$user_key]->app_installed = (!empty($userDat->password)) ? 1 : 0;
 				}
 			} else {
 				return response()->json(['success' => true, 'message' => 'No records found', 'data' => $users], $this->successCode);
