@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Company;
 use App\Http\Resources\RideCompanyResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
@@ -30,6 +31,23 @@ class CompanyController extends Controller
     public function list_data(Request $request)
     {
         $companies = RideCompanyResource::collection(Company::all());
+
+        return $this->successResponse($companies, 'List of Company');
+    }
+
+    public function company_list(Request $request)
+    {
+        $query = new Company();
+        if (!empty($request->user_id)) {
+            $company_list = User::where(['id' => $request->user_id])->pluck('company_id')->toArray();
+            if (!empty($company_list)) {
+                $query = $query->whereIn('id', $company_list);
+            } else {
+                $query = $query->where('id', 0);
+            }
+        }
+        $company_query = $query->get();
+        $companies = RideCompanyResource::collection($company_query);
 
         return $this->successResponse($companies, 'List of Company');
     }
