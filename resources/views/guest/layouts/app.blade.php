@@ -29,19 +29,16 @@
         
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-
-
-        
+        <style>
+            :root {
+                --primary-color: #cccccc;
+            }
+        </style>
     </head>
     <body>
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
         <style>
-
-          
-            :root {
-                --primary-color: #FC4C02 !important;
-            }
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }

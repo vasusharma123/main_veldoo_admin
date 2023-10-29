@@ -42,7 +42,7 @@
 
                         <div class="col-12 p-0">
 
-                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                            <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
                             <a class="close_modal" href="{{route('guest.rides','month')}}">×</a>
 
                           
@@ -186,7 +186,7 @@
 
                                 <div class="col-12 p-0">
 
-                                <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
 
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Not Logged in</h4>
@@ -298,7 +298,7 @@
 
                                 <div class="col-12 p-0">
 
-                                <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
 
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Forgot Password</h4>
