@@ -217,7 +217,16 @@ code {
                                                     <option value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
                                                     <option value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
                                                     <option value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
-
+                                                    <option value="Georgia" {{ $company->header_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option value="Calibri" {{ $company->header_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option value="Helvetica" {{ $company->header_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option value="Palatino" {{ $company->header_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option value="Cambria" {{ $company->header_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option value="Garamond" {{ $company->header_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option value="Comic Sans MS" {{ $company->header_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option value="Copperplate Gothic" {{ $company->header_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option value="Optima" {{ $company->header_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option value="Trebuchet MS" {{ $company->header_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                     </select>
                                                     
@@ -278,6 +287,17 @@ code {
                                                     <option value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
                                                     <option value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
                                                     <option value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+
+                                                    <option value="Georgia" {{ $company->input_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option value="Calibri" {{ $company->input_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option value="Helvetica" {{ $company->input_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option value="Palatino" {{ $company->input_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option value="Cambria" {{ $company->input_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option value="Garamond" {{ $company->input_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option value="Comic Sans MS" {{ $company->input_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option value="Copperplate Gothic" {{ $company->input_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option value="Optima" {{ $company->input_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option value="Trebuchet MS" {{ $company->input_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                    
                                                     
