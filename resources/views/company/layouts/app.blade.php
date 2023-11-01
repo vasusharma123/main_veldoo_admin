@@ -586,8 +586,7 @@
 
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.11.14/jquery.timepicker.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.11.14/jquery.timepicker.min.js"></script>
+        <script src="https://cdn.rawgit.com/weareoutman/clockpicker/v0.0.7/dist/jquery-clockpicker.min.js"></script>
 
         <script>
 
@@ -620,11 +619,10 @@
 
             });
 
-          $('#time').timepicker({
-                timeFormat: 'H:i'
+            $('#time').clockpicker({
+                language: 'en', // Set the language to English
+                donetext: 'Done'
             });
-
-
 
         </script>
        
