@@ -438,8 +438,6 @@
                                             <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
-                                            
-
                                             <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form-control form_control  dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
 
                                         </div>
@@ -588,6 +586,7 @@
 
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+        <script src="https://cdn.rawgit.com/weareoutman/clockpicker/v0.0.7/dist/jquery-clockpicker.min.js"></script>
 
         <script>
 
@@ -620,6 +619,10 @@
 
             });
 
+            $('#time').clockpicker({
+                language: 'en', // Set the language to English
+                donetext: 'Done'
+            });
 
         </script>
        

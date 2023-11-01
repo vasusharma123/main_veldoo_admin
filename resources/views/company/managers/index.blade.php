@@ -59,7 +59,7 @@
                                     <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                    <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+1' }}" class="country_code" id="country_code" name="country_code" />
+                                    <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+41' }}" class="country_code" id="country_code" name="country_code" />
                                     <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
@@ -229,11 +229,11 @@
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "us";
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
                 success(countryCode);
             });
         },
-        initialCountry:"us",
+        initialCountry:"ch",
         separateDialCode: true,
         utilsScript: "{{url('assets/js/utils.js')}}",
         autoFormat: false,

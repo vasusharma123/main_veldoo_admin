@@ -72,7 +72,7 @@
                             <div class="form-group position-relative has_validation">
                                 <label class="form-lable">Mobile Number</label>
                                 <div class="field position-relative">
-                                <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+1' }}" class="country_code" id="country_code" name="country_code" />
+                                <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+41' }}" class="country_code" id="country_code" name="country_code" />
                                     <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number" required>
                                     <!-- <input type="email" name="username" class="form-control loginField" placeholder="Enter username or email" required/> -->
                                     <!-- <img src="assets/images/envelope.png" class="img-fluid loginFieldIcon" alt="Email envelope"/> -->
@@ -427,11 +427,11 @@
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "us";
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
                 success(countryCode);
             });
         },
-        initialCountry:"us",
+        initialCountry:"ch",
         separateDialCode: true,
         utilsScript: "{{url('assets/js/utils.js')}}",
         autoFormat: false,
