@@ -34,7 +34,7 @@
 
             
 
-                <form class="login_form" action="{{ url('do-login-guest')}}" method="post" autocomplete="off">
+                <form class="login_form" action="{{ route('do-login-guest')}}" method="post" autocomplete="off">
                         @csrf
                         @include('company.company_flash_message')
 
@@ -44,13 +44,6 @@
 
                             <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
                             <a class="close_modal" href="{{route('guest.rides','month')}}">×</a>
-
-                          
-                            <!-- @if(\Request::get('token'))
-                            <a href="{{ route('booking_taxisteinemann',['token' => \Request::get('token')]) }}" class="link_hyper">Back</a>
-                            @else 
-                            <a href="{{ route('booking_taxisteinemann',['token' => \Request::get('token')]) }}" class="link_hyper">Back</a>
-                            @endif -->
 
                             <div class="form_title text-center">
                                 <h4 class="sub_title">Log in</h4>
@@ -223,9 +216,8 @@
                                         <input type="text" id="digit-3" maxlength="1"  name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
                                         <input type="text" id="digit-4" maxlength="1"  name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
                                         </div>
-                                        <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline">Resend OTP</a> 90 sec.</p> -->
-                                        <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
-
+                                        <p class="registerOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
+                                        <p class="mb-0 register_otp_not_rec" style="display:none;"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
                                     </div>
 
                                 
@@ -316,7 +308,6 @@
                                     <div class="form-group position-relative has_validation">
                                         <label class="form-lable">Mobile Number</label>
                                         <div class="field position-relative">
-                                        <input type="hidden" value="forgetpassword" class="forget-password" id="forgetPassword" name="forget_password" />
                                         <input type="hidden" value="+1" class="country_code" id="countryCodeIdForgetPassword" name="country_code" />
 
                                         <input type="text" name="phone" id="phoneNumberForgetPassword" class="form-control loginField otpnumberenter" placeholder="Enter Number" aria-label="Phone Number">
@@ -332,15 +323,17 @@
                                     <div class="form-group position-relative has_validation text-center otpcode_box">
                                         <label class="form-lable boldlable">OTP code</label>
                                         <div class="field position-relative otp-box d-flex">
-                                        <input type="text" id="digit-1-forget-password" name="digit-1" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-2-forget-password" name="digit-2" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-3-forget-password" name="digit-3" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
-                                        <input type="text" id="digit-4-forget-password" name="digit-4" maxlength="1" class="form-control loginField otpfil px-2 text-center"  placeholder="_"/>
+                                            <input type="text" id="digit-1-forget-password" name="digit-1" maxlength="1" class="form-control loginField otpfil px-2 text-center" placeholder="_" />
+                                            <input type="text" id="digit-2-forget-password" name="digit-2" maxlength="1" class="form-control loginField otpfil px-2 text-center" placeholder="_" />
+                                            <input type="text" id="digit-3-forget-password" name="digit-3" maxlength="1" class="form-control loginField otpfil px-2 text-center" placeholder="_" />
+                                            <input type="text" id="digit-4-forget-password" name="digit-4" maxlength="1" class="form-control loginField otpfil px-2 text-center" placeholder="_" />
                                         </div>
                                         <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline">Resend OTP</a> 90 sec.</p> -->
-                                        <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtpForgetPassword">Resend OTP</a></p>
+                                        <p class="forgotPasswordOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
+                                        <p class="mb-0 forgot_password_otp_not_rec" style="display:none;"><a href="javascript:void(0);" class="hyperinline  confirmOTPModalResendOtpForgetPassword">Resend OTP</a></p>
 
                                     </div>
+
 
                                 
 
@@ -422,7 +415,6 @@
 
 
     var input = document.querySelector("#phone");
-    console.log(input);
     var iti = window.intlTelInput(input, {
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
@@ -576,7 +568,6 @@
                 var $parent = $input.closest('.has_validation');
                 $parent.addClass('invalid_field');
             } else {
-                $(".otpcode_box").css("display", "block");
                 var $parent = $input.closest('.has_validation');
                 $parent.removeClass('invalid_field');
             }
@@ -585,57 +576,46 @@
 
 
     function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
-           // $('.'+confirmOTPModalResendOtpClass).hide();
-            $('.'+timerClass).show();
-            var m = Math.floor(remaining / 60);
-            var s = remaining % 60;
-            
-            m = m < 10 ? '0' + m : m;
-            s = s < 10 ? '0' + s : s;
-            // console.log(timerClass);
-            // console.log(s);
-            if(s > 0) {
-                $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
-            } else {
-                $('.'+timerClass).html('{{ __("Resend OTP") }} ');
-            }
-
-            // document.getElementById(id).innerHTML = 
-            remaining -= 1;
-            
-            if(remaining >= 0) {
-                setTimeout(function() {
-                    timer(remaining,timerClass,confirmOTPModalResendOtpClass);
-                }, 1000);
-                return;
-            }
-
-            
-            // Do timeout stuff here
-            // alert('Timeout for otp');
-            $('.'+confirmOTPModalResendOtpClass).show();
-           // $('.'+timerClass).hide();
+        $('.'+confirmOTPModalResendOtpClass).hide();
+        $('.'+timerClass).show();
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        
+        m = m < 10 ? '0' + m : m;
+        s = s < 10 ? '0' + s : s;
+        $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
+        remaining -= 1;
+        
+        if(remaining >= 0) {
+            setTimeout(function() {
+                timer(remaining,timerClass,confirmOTPModalResendOtpClass);
+            }, 1000);
+            return;
         }
+
+        // Do timeout stuff here
+        $('.'+confirmOTPModalResendOtpClass).show();
+        $('.'+timerClass).hide();
+    }
 
         
 
     $(document).on('click','.confirmOTPModalResendOtp',function(){
         $.ajax({
-            url: "{{ route('send_otp_before_ride_booking')}}",
+            url: "{{ route('send_otp_before_register')}}",
             type: 'post',
             dataType: 'json',
             data: $('form#toContinueLoginForm').serialize(),
             success: function(response) {
                 if(response.status){
-                    $("#confirmOTPModal").modal('show');
-                    timer(30,"confirmOTPModalTimer","otp_not_rec");
+                    timer(30,"registerOTPModalTimer","register_otp_not_rec");
                 } else if(response.status == 0){
                     new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             },
             error(response) {
-                new swal("{{ __('Error') }}",response.message,"error");
+                new swal("{{ __('Error') }}",response.statusText,"error");
                 $(document).find(".verify_otp").removeAttr('disabled');
             }
         });
@@ -644,21 +624,20 @@
 
     $(document).on('click','.confirmOTPModalResendOtpForgetPassword',function(){
         $.ajax({
-            url: "{{ route('send_otp_before_ride_booking')}}",
+            url: "{{ route('send_otp_forgot_password')}}",
             type: 'post',
             dataType: 'json',
             data: $('form#toContinueLoginFormForgetPassword').serialize(),
             success: function(response) {
                 if(response.status){
-                    $("#confirmOTPModal").modal('show');
-                    timer(30,"confirmOTPModalTimer","otp_not_rec");
+                    timer(30,"forgotPasswordOTPModalTimer","forgot_password_otp_not_rec");
                 } else if(response.status == 0){
                     new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
                 }
             },
             error(response) {
-                new swal("{{ __('Error') }}",response.message,"error");
+                new swal("{{ __('Error') }}",response.statusText,"error");
                 $(document).find(".verify_otp").removeAttr('disabled');
             }
         });
@@ -694,9 +673,7 @@
         var otp_entered = $("#digit-1").val()+$("#digit-2").val()+$("#digit-3").val()+$("#digit-4").val();
         if(phoneNumber > 1) {
             $('.otpcode_box').removeClass('invalid_field');
-            $(".otpcode_box").css("display", "block");
             $('.error-message-phone').text('');
-
         } else {
             $('.otpcode_box').addClass('invalid_field');
             $(".otpcode_box").css("display", "none");
@@ -731,17 +708,12 @@
             dataType: 'json',
             data: post_data,
             success: function(response) {
-                console.log(response);
                 if(response.status == 1) {
-                    timer(30,"confirmOTPModalTimer","otp_not_rec");
+                    $(".otpcode_box").css("display", "block");
+                    timer(30,"registerOTPModalTimer","register_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-
-                   // var currentURL = (document.URL); // returns http://myplace.com/abcd
-                   // var part = currentURL.split("/")[1];
-
-                    var origin  = window.location.origin;
-                    var route = origin+'/guest-register?code='+response.code+'&phone='+response.phone;
+                    var route = "{{route('guest.register')}}"+"?code="+response.code+"&phone="+response.phone;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");
@@ -752,7 +724,7 @@
                 }
             },
             error(response) {
-                new swal("{{ __('Error') }}",response.message,"error");
+                new swal("{{ __('Error') }}",response.statusText,"error");
                 $(document).find(".verify_otp").removeAttr('disabled');
             }
         });
@@ -763,11 +735,9 @@
         e.preventDefault();
         var phoneNumber = $('#phoneNumberForgetPassword').val();
         var otp_entered = $("#digit-1-forget-password").val() + $("#digit-2-forget-password").val() + $("#digit-3-forget-password").val() + $("#digit-4-forget-password").val();
-        console.log(otp_entered.toString().length);
 
         if(phoneNumber > 1) {
             $('.otpcode_box').removeClass('invalid_field');
-            $(".otpcode_box").css("display", "block");
             $('.error-message-phone').text('');
 
         } else {
@@ -778,9 +748,9 @@
         }
 
         if(phoneNumber > 1 && otp_entered.toString().length >= 4) {
-            var url = "{{ route('verify_otp_before_register')}}";
+            var url = "{{ route('verify_otp_forgot_password')}}";
         } else {
-            var url = "{{ route('send_otp_before_register')}}"
+            var url = "{{ route('send_otp_forgot_password')}}"
         }
 
         var post_data = $('form#toContinueLoginFormForgetPassword').serialize();
@@ -804,20 +774,12 @@
             dataType: 'json',
             data: post_data,
             success: function(response) {
-                console.log(response);
                 if(response.status == 1) {
-                    timer(30,"confirmOTPModalTimer","otp_not_rec");
+                    $(".otpcode_box").css("display", "block");
+                    timer(30,"forgotPasswordOTPModalTimer","forgot_password_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-                    var origin  = window.location.origin;
-                    var route = origin+'/guest-register?code='+response.code+'&phone='+response.phone;
-                    window.location.href = route;
-
-                    new swal("{{ __('Success') }}",response.message,"success");
-
-                } else if(response.status == 3) {
-                    var origin  = window.location.origin;
-                    var route = origin+'/forget-password?code='+response.code+'&phone='+response.phone;
+                    var route = "{{route('forget.password')}}"+"?code="+response.code+"&phone="+response.phone;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");
@@ -828,7 +790,7 @@
                 }
             },
             error(response) {
-                new swal("{{ __('Error') }}",response.message,"error");
+                new swal("{{ __('Error') }}",response.statusText,"error");
                 $(document).find(".verify_otp").removeAttr('disabled');
             }
         });
@@ -849,7 +811,6 @@
             var forget_code  = $("#country_code").val();
             var forget_phone = $("#phone").val();
 
-            console.log(forget_code);
             itiForget.setNumber("+"+forget_code);
 
             $("#phoneNumberForgetPassword").val(forget_phone);

@@ -35,25 +35,24 @@ class RidesController extends Controller
     // protected $errorCode = 401;
     // protected $warningCode = 500;
 
-    public function index(Request $request, $type=null)
+    public function index(Request $request, $type = null)
     {
-
-        $type = ($type?$type:'list').'View';
-        $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
+        $type = ($type ? $type : 'month') . 'View';
+        $type = !in_array($type, ['listView', 'monthView', 'weekView']) ? 'monthView' : $type;
         $data['user'] = '';
-        if($request->token){
+        if ($request->token) {
             $data['token'] = $request->token;
             $data['user'] = User::where('random_token', $request->token)->first();
         }
         $userId = (Auth::user()) ? Auth::user()->id : (($data['user'])  ? $data['user']->id : "");
 
-        if($userId){
+        if ($userId) {
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
-        } 
-       
+        }
+
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
-        return $this->$type($data,$request->all());
+        return $this->$type($data, $request->all());
     }
 
 

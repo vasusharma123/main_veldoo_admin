@@ -36,6 +36,7 @@
         </style>
     </head>
     <body>
+        
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
         <style>
@@ -127,7 +128,7 @@
         </div>
 
 
-        @if (\Request::route()->getName()=='guest.login' || \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='booking_taxisteinemann' )
+        @if (\Request::route()->getName()=='guest.login' || \Request::route()->getName()=='guest.rides')
             <!-- Section View Booking -->
                 <section class="add_booking_modal view_booking" id="view_booking">
                     <article class="booking_container_box">
@@ -830,7 +831,7 @@
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
-        @if ( \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='booking_taxisteinemann' || \Request::route()->getName()=='guest.login' )
+        @if ( \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='guest.login' )
 
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
@@ -2333,16 +2334,9 @@
             $(document).find(".verify_otp").attr('disabled',true);
             <?php
                 $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-                if (strpos($url,'taxisteinemann') !== false) {
-                    ?>
-                        post_data += '&url_type=taxisteinemann';
-                    <?php
-                } else {
-                    ?>
-                        post_data += '&url_type=taxi2000';
-                    <?php
-                }
             ?>
+            post_data += '&url_type=taxi2000';
+            alert(post_data);
             $.ajax({
                 url: "{{ route('verify_otp_and_ride_booking')}}",
                 type: 'post',
@@ -2356,9 +2350,8 @@
                             var currentURL = (document.URL); // returns http://myplace.com/abcd
                             var part = currentURL.split("/")[1];
                             route = part+'?token='+response.user_data.random_token;
-                            //  route = "{{ route('list_of_booking_taxisteinemann','~') }}";
                            // route = route.replace('~',response.user_data.random_token);
-                            window.location.href = route;//"{{ route('booking_taxisteinemann')}}";
+                            window.location.href = route;
                         }, 2000);
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
