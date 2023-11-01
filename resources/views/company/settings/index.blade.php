@@ -390,11 +390,11 @@ code {
                 initialCountry: "auto",
                 geoIpLookup: function (success, failure) {
                     $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                        var countryCode = (resp && resp.country) ? resp.country : "us";
+                        var countryCode = (resp && resp.country) ? resp.country : "ch";
                         success(countryCode);
                     });
                 },
-                initialCountry:"us",
+                initialCountry:"ch",
                 separateDialCode: true,
                 utilsScript: "{{url('assets/js/utils.js')}}",
                 autoFormat: false,
@@ -416,11 +416,11 @@ code {
             initialCountry: "auto",
             geoIpLookup: function (success, failure) {
                 $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                    var countryCode = (resp && resp.country) ? resp.country : "us";
+                    var countryCode = (resp && resp.country) ? resp.country : "ch";
                     success(countryCode);
                 });
             },
-            initialCountry:"us",
+            initialCountry:"ch",
             nationalMode: true,
             separateDialCode: true,
             utilsScript: "{{url('assets/js/utils.js')}}",

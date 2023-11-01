@@ -29,6 +29,8 @@
         
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+        
+       
         <style>
             :root {
                 --primary-color: #d4ded4;
@@ -381,7 +383,7 @@
                                                 <label class="form_label">Mobile Number</label>
 
                                                 <div class="col_form_settings mb-2">
-                                                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                                                    <input type="hidden" value="+41" class="country_code" id="country_code" name="country_code" />
                                                     <input type="text" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
                                                 </div>
 
@@ -682,9 +684,8 @@
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
-
-
-
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.11.14/jquery.timepicker.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.11.14/jquery.timepicker.min.js"></script>
         <script>
 
         
@@ -728,11 +729,11 @@
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "us";
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
                 success(countryCode);
             });
         },
-        initialCountry:"us",
+        initialCountry:"ch",
         separateDialCode: true,
         utilsScript: "{{url('assets/js/utils.js')}}",
         autoFormat: false,
@@ -782,6 +783,11 @@
                 startDate: "today"
 
             });
+
+            $('#time').timepicker({
+                timeFormat: 'H:i'
+            });
+
 
         </script>
        
