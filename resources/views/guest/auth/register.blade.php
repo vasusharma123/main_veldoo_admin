@@ -24,7 +24,7 @@
                             <div class="login_form_box_cover">
                                 
 
-                                <form class="login_form" action="{{ url('do-register-guest')}}" method="post" autocomplete="off">
+                                <form class="login_form" action="{{ route('do-register-guest')}}" method="post" autocomplete="off">
                              
 
                                 @csrf
@@ -143,7 +143,7 @@
                                                     <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="button" class="btn submit_btn">
                                                             <!-- <span class="btn_text">Back</span> -->
-                                                            <a href="{{route('booking_taxisteinemann')}}" class="btn_text back-btn-text">Back</a>
+                                                            <a href="{{route('guest.rides')}}" class="btn_text back-btn-text">Back</a>
                                                         </button>
                                                     </div>
                                                     <div class="col-lg-6 col-sm-6 col-12">

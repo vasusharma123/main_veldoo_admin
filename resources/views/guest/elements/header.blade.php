@@ -37,7 +37,7 @@
 
                                         @if (Auth::check())
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('logout') }}?customer=true">Logout</a>
+                                            <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
                                         </li>
                                         @endif
 
