@@ -2343,7 +2343,6 @@
                 $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
             ?>
             post_data += '&url_type=taxi2000';
-            alert(post_data);
             $.ajax({
                 url: "{{ route('verify_otp_and_ride_booking')}}",
                 type: 'post',
