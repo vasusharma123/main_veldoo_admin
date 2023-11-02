@@ -274,11 +274,11 @@ class LoginController extends Controller
             'confirm_password' => 'required|min:6|same:password',
         ];
         $request->validate($rules);
-        $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
+        $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT), 'user_type' => 1])->first();
         if (!$userInfo) {
             return redirect()->back()->withErrors(['message' => 'No such number exists in our record']);
         }
-        User::find($userInfo->id)->update(['password' => $request->password]);
+        User::find($userInfo->id)->update(['password' => Hash::make($request->password)]);
         return redirect()->route('guest.login')->with('success', __('Password updated successfully.'));
     }
 

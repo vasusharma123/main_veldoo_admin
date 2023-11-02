@@ -625,9 +625,8 @@
                                                         <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
                                                         <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
                                                     </div>
-                                                    <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline confirmOTPModalTimer">Resend OTP</a> 30 sec.</p> -->
-                                                    <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
-
+                                                    <p class="bookingOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
+                                                    <p class="mb-0 booking_otp_not_rec" style="display:none;"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
                                                 </div>
                                                 <div class="form-group position-relative">
                                                     <button type="submit" class="btn submit_btn otpsubmit custom_btn verify_otp">
@@ -1689,7 +1688,7 @@
                                                 } else {
                                                     if(response.status){
                                                         $("#confirmOTPModal").modal('show');
-                                                        timer(30,"confirmOTPModalTimer","otp_not_rec");
+                                                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
                                                     } else if(response.status == 0){
                                                         new swal("{{ __('Error') }}",response.message,"error");
                                                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -2273,22 +2272,14 @@
 
              // var timerOn = true;
         function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
-           // $('.'+confirmOTPModalResendOtpClass).hide();
+            $('.'+confirmOTPModalResendOtpClass).hide();
             $('.'+timerClass).show();
             var m = Math.floor(remaining / 60);
             var s = remaining % 60;
             
             m = m < 10 ? '0' + m : m;
             s = s < 10 ? '0' + s : s;
-            // console.log(timerClass);
-            // console.log(s);
-            if(s > 0) {
-                $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
-            } else {
-                $('.'+timerClass).html('{{ __("Resend OTP") }} ');
-            }
-
-            // document.getElementById(id).innerHTML = 
+            $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
             remaining -= 1;
             
             if(remaining >= 0) {
@@ -2298,11 +2289,9 @@
                 return;
             }
 
-            
             // Do timeout stuff here
-            // alert('Timeout for otp');
             $('.'+confirmOTPModalResendOtpClass).show();
-           // $('.'+timerClass).hide();
+            $('.'+timerClass).hide();
         }
 
         $(document).on('click','.confirmOTPModalResendOtp',function(){
@@ -2314,7 +2303,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","otp_not_rec");
+                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
