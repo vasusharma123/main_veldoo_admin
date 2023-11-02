@@ -590,7 +590,8 @@
 
         <script>
 
-        
+       
+
         var deletedRideId;
         $(function(){
         
@@ -686,6 +687,23 @@
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
+            $('.headerFontFamily ').on('change', function() {
+            var newFont = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-family', newFont, 'important');
+            });
+
+            $('.headerBg ').on('change', function() {
+            var newColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-color', newColor, 'important');
+            });
+             
+
+            $('.headerFont ').on('change', function() {
+            var newFontColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-color', newFontColor, 'important');
+            });
+            
+
                 $("#users").select2();
                 var socket = io("{{env('SOCKET_URL')}}");
                 var map;
@@ -2063,6 +2081,7 @@
                         $(this).addClass("active");
                     }, 1000);
                 });
+                
             });
           
 
