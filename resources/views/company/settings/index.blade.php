@@ -197,7 +197,7 @@ code {
                                                         Color
                                                     </label>
                                                     <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
+                                                    <input type="color" class="form-control main_field colorSlt headerBg" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -205,19 +205,28 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Font
                                                     </label>
-                                                    <select class="form-control main_field fontStyle text-center p-0" name="header_font_family" >
+                                                    <select class="form-control main_field fontStyle headerFontFamily text-center p-0" name="header_font_family" >
                                                   
                                                     <option value="">Select Font</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
-                                                    <option value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
-                                                    <option value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
-                                                    <option value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
-                                                    <option value="Berlin-sans-fb" {{ $company->header_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
-                                                    <option value="Fantasy" {{ $company->header_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
-                                                    <option value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
-                                                    <option value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
-                                                    <option value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
-
+                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
+                                                    <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option style="font-family:Arial" value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option style="font-family:Algerian" value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option style="font-family:Berlin-sans-fb" value="Berlin-sans-fb" {{ $company->header_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option style="font-family:Fantasy" value="Fantasy" {{ $company->header_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option style="font-family:Cursive" value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option style="font-family:Verdana" value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option style="font-family:Fearless" value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+                                                    <option style="font-family:Georgia" value="Georgia" {{ $company->header_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option style="font-family:Calibri" value="Calibri" {{ $company->header_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option style="font-family:Helvetica" value="Helvetica" {{ $company->header_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option style="font-family:Palatino" value="Palatino" {{ $company->header_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option style="font-family:Cambria" value="Cambria" {{ $company->header_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option style="font-family:Garamond" value="Garamond" {{ $company->header_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option style="font-family:Comic Sans MS" value="Comic Sans MS" {{ $company->header_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option style="font-family:Copperplate Gothic" value="Copperplate Gothic" {{ $company->header_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option style="font-family:Optima" value="Optima" {{ $company->header_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option style="font-family:Trebuchet MS" value="Trebuchet MS" {{ $company->header_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                     </select>
                                                     
@@ -229,7 +238,7 @@ code {
                                                         Font Color
                                                     </label>
                                                     <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
+                                                    <input type="color" class="form-control main_field colorSlt headerFont" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -237,7 +246,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
+                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0 headerFontsize" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2 ">
@@ -269,15 +278,26 @@ code {
                                                     <select class="form-control main_field fontStyle text-center p-0" name="input_font_family">
 
                                                     <option value="">Select Font</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
-                                                    <option value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
-                                                    <option value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
-                                                    <option value="Berlin-sans-fb" {{ $company->input_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
-                                                    <option value="Fantasy" {{ $company->input_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
-                                                    <option value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
-                                                    <option value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
-                                                    <option value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
+                                                    <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option style="font-family:Arial" value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option style="font-family:Algerian" value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option style="font-family:Berlin-sans-fb" value="Berlin-sans-fb" {{ $company->input_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option style="font-family:Fantasy" value="Fantasy" {{ $company->input_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option style="font-family:Cursive" value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option style="font-family:Verdana" value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option style="font-family:Fearless" value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+
+                                                    <option style="font-family:Georgia" value="Georgia" {{ $company->input_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option style="font-family:Calibri" value="Calibri" {{ $company->input_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option style="font-family:Helvetica" value="Helvetica" {{ $company->input_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option style="font-family:Palatino" value="Palatino" {{ $company->input_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option style="font-family:Cambria" value="Cambria" {{ $company->input_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option style="font-family:Garamond" value="Garamond" {{ $company->input_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option style="font-family:Comic Sans MS" value="Comic Sans MS" {{ $company->input_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option style="font-family:Copperplate Gothic" value="Copperplate Gothic" {{ $company->input_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option style="font-family:Optima" value="Optima" {{ $company->input_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option style="font-family:Trebuchet MS" value="Trebuchet MS" {{ $company->input_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                    
                                                     
