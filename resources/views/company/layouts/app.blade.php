@@ -1182,8 +1182,9 @@
                         var options = {
                             bounds: defaultBounds,
                             // fields: ["address_components"], // Or whatever fields you need
-                            strictBounds: true, // Only if you want to restrict, not bias
+                            //strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
+                          //  radius: 5000
                         };
                     } else {
                         var options = {
