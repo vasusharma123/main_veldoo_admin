@@ -1341,15 +1341,15 @@
                             lng: cur_lng
                         };
                         var defaultBounds = {
-                            north: center.lat + 5,
-                            south: center.lat - 5,
-                            east: center.lng + 5,
-                            west: center.lng - 5,
+                            north: center.lat + 0.1,
+                            south: center.lat - 0.1,
+                            east: center.lng + 0.1,
+                            west: center.lng - 0.1,
                         };
                         var options = {
                             bounds: defaultBounds,
                             // fields: ["address_components"], // Or whatever fields you need
-                            strictBounds: true, // Only if you want to restrict, not bias
+                            //strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
                         };
                     } else {
