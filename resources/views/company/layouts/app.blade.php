@@ -438,8 +438,6 @@
                                             <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
-                                            
-
                                             <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form-control form_control  dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
 
                                         </div>
@@ -588,10 +586,12 @@
 
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+        <script src="https://cdn.rawgit.com/weareoutman/clockpicker/v0.0.7/dist/jquery-clockpicker.min.js"></script>
 
         <script>
 
-        
+       
+
         var deletedRideId;
         $(function(){
         
@@ -620,6 +620,10 @@
 
             });
 
+            $('#time').clockpicker({
+                language: 'en', // Set the language to English
+                donetext: 'Done'
+            });
 
         </script>
        
@@ -683,6 +687,23 @@
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
+            $('.headerFontFamily ').on('change', function() {
+            var newFont = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-family', newFont, 'important');
+            });
+
+            $('.headerBg ').on('change', function() {
+            var newColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-color', newColor, 'important');
+            });
+             
+
+            $('.headerFont ').on('change', function() {
+            var newFontColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-color', newFontColor, 'important');
+            });
+            
+
                 $("#users").select2();
                 var socket = io("{{env('SOCKET_URL')}}");
                 var map;
@@ -1163,6 +1184,7 @@
                             // fields: ["address_components"], // Or whatever fields you need
                             strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
+                            radius: 5000
                         };
                     } else {
                         var options = {
@@ -2060,6 +2082,7 @@
                         $(this).addClass("active");
                     }, 1000);
                 });
+                
             });
           
 
