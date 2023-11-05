@@ -779,7 +779,7 @@
                     timer(30,"forgotPasswordOTPModalTimer","forgot_password_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-                    var route = "{{route('forget.password')}}"+"?code="+response.code+"&phone="+response.phone;
+                    var route = "{{route('forget.password')}}"+"?token="+response.auth_token;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");

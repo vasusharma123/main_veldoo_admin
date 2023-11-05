@@ -147,13 +147,22 @@ class LoginController extends Controller
         try {
             $expiryMin = config('app.otp_expiry_minutes');
             $otp = rand(1000, 9999);
-            $haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+            $phone_number = $this->phone_number_trim($request->phone);
+            $userDetail = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->where(function($query){
+                $query->where('password','!=','');
+                $query->whereNotNull('password');
+            })->first();
+            if ($userDetail) {
+                return response()->json(['status' => 0, 'message' => 'An account has already been registered with this mobile number. Please use the "Forgot Password" option to reset it.']);
+            }
+
+            $haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $phone_number])->first();
             $now = Carbon::now();
             $endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
             if ($haveOtp) {
                 if ($now->gt($haveOtp->expiry)) {
                     OtpVerification::updateOrCreate(
-                        ['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+                        ['country_code' => $request->country_code, 'phone' => $phone_number],
                         ['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
                     );
                 } else {
@@ -161,7 +170,7 @@ class LoginController extends Controller
                 }
             } else {
                 OtpVerification::updateOrCreate(
-                    ['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+                    ['country_code' => $request->country_code, 'phone' => $phone_number],
                     ['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
                 );
             }
@@ -171,7 +180,7 @@ class LoginController extends Controller
             if (app()->getLocale() != "en") {
                 $body = str_replace('#OTP#', $otp, $SMSTemplate->german_content);
             }
-            $this->sendSMS("+" . $request->country_code, ltrim($request->phone, "0"), $body);
+            $this->sendSMS("+" . $request->country_code, $phone_number, $body);
             return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -201,20 +210,21 @@ class LoginController extends Controller
     public function send_otp_forgot_password(Request $request)
     {
         try {
-            $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
+            $phone_number = $this->phone_number_trim($request->phone);
+            $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT), 'user_type' => 1])->first();
             if (!$userInfo) {
                 return response()->json(['status' => 0, 'message' => 'The mobile number does not match our records.']);
             }
 
             $expiryMin = config('app.otp_expiry_minutes');
             $otp = rand(1000, 9999);
-            $haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
+            $haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => $phone_number])->first();
             $now = Carbon::now();
             $endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
             if ($haveOtp) {
                 if ($now->gt($haveOtp->expiry)) {
                     OtpVerification::updateOrCreate(
-                        ['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+                        ['country_code' => $request->country_code, 'phone' => $phone_number],
                         ['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
                     );
                 } else {
@@ -222,7 +232,7 @@ class LoginController extends Controller
                 }
             } else {
                 OtpVerification::updateOrCreate(
-                    ['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
+                    ['country_code' => $request->country_code, 'phone' => $phone_number],
                     ['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
                 );
             }
@@ -232,7 +242,7 @@ class LoginController extends Controller
             if (app()->getLocale() != "en") {
                 $body = str_replace('#OTP#', $otp, $SMSTemplate->german_content);
             }
-            $this->sendSMS("+" . $request->country_code, ltrim($request->phone, "0"), $body);
+            $this->sendSMS("+" . $request->country_code, $phone_number, $body);
             return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
         } catch (\Illuminate\Database\QueryException $exception) {
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
@@ -243,7 +253,6 @@ class LoginController extends Controller
 
     public function verify_otp_forgot_password(Request $request)
     {
-
         $expiryMin = config('app.otp_expiry_minutes');
         $now = Carbon::now();
         $haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
@@ -256,7 +265,13 @@ class LoginController extends Controller
             return response()->json(['status' => 0, 'message' => __('Verification code has expired')]);
         }
         $haveOtp->delete();
-        return response()->json(['status' => 2, 'message' => __('Verified'), 'code' => $request->country_code, 'phone' => $request->phone, 'otp' => $request->otp]);
+        $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT), 'user_type' => 1])->first();
+        if (empty($userInfo->random_token)) {
+            $generateRandomString = $this->generateRandomString(16);
+            $userInfo->random_token = $generateRandomString;
+            $userInfo->save();
+        }
+        return response()->json(['status' => 2, 'message' => __('Verified'), 'auth_token' => $userInfo->random_token]);
     }
 
     public function forgetPassword()
@@ -274,7 +289,7 @@ class LoginController extends Controller
             'confirm_password' => 'required|min:6|same:password',
         ];
         $request->validate($rules);
-        $userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT), 'user_type' => 1])->first();
+        $userInfo = User::where(['random_token' => $request->auth_token])->first();
         if (!$userInfo) {
             return redirect()->back()->withErrors(['message' => 'No such number exists in our record']);
         }
