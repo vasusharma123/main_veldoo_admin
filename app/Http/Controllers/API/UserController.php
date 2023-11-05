@@ -1208,7 +1208,7 @@ class UserController extends Controller
 		$userdata['notification_count'] = $ncount; */
 		return $userdata;
 	}
-	function generateRandomString($length)
+	function generateRandomString($length = 10)
 	{
 		$characters = '0123456789abcdefghijklmnopqrs092u3tuvwxyzaskdhfhf9882323ABCDEFGHIJKLMNksadf9044OPQRSTUVWXYZ';
 		$charactersLength = strlen($characters);
