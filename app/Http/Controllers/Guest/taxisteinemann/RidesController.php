@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Guest;
+namespace App\Http\Controllers\Guest\taxisteinemann;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -91,7 +91,7 @@ class RidesController extends Controller
         
 
      //dd($data);
-        return view('guest.rides.index')->with($data);
+        return view('guest.taxisteinemann.rides.index')->with($data);
     }
 
     public function monthView($data,$request)
@@ -143,7 +143,7 @@ class RidesController extends Controller
         $data['payment_types'] = PaymentMethod::get();
         $data['date'] = $date;
 
-        return view('guest.rides.month')->with($data);
+        return view('guest.taxisteinemann.rides.month')->with($data);
     }
 
     public function weekView($data,$request)
@@ -198,7 +198,7 @@ class RidesController extends Controller
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
         // dd($data['rides']);
-        return view('guest.rides.week')->with($data);
+        return view('guest.taxisteinemann.rides.week')->with($data);
     }
 
     public function user_exist(Request $request) {
@@ -221,7 +221,7 @@ class RidesController extends Controller
 			$userData = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
 
 			if(Auth::user()) {
-                return response()->json(['status' => 1, 'route' => route('guest.ride_booking'), ]);
+                return response()->json(['status' => 1, 'route' => route('guest.taxisteinemann.ride_booking'), ]);
             } 
             // else if ($userExit) {
             //     return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
@@ -615,7 +615,7 @@ class RidesController extends Controller
                             $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
                         })->orderBy('rides.created_at','Desc')->where('user_id','!=',null)->with(['user','driver','vehicle','creator'])->get();
         // dd(($data['rides']));
-        return view('guest.rides.history')->with($data);
+        return view('guest.taxisteinemann.rides.history')->with($data);
     }
 
     public function ride_detail($id)
@@ -1083,7 +1083,7 @@ class RidesController extends Controller
         $ride_detail = Ride::with(['driver', 'vehicle', 'creator'])->find($request->ride_id);
 
         if($ride_detail->driver){
-            $driver_detail = view('guest.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
+            $driver_detail = view('guest.taxisteinemann.rides.driver_detail')->with(['ride_detail' => $ride_detail])->render();
         } else {
             $driver_detail = null;
         }

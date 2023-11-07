@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.taxisteinemann.guest')
 @section('content')
 
 <style>
@@ -42,8 +42,8 @@
 
                         <div class="col-12 p-0">
 
-                            <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
-                            <a class="close_modal" href="{{route('guest.rides','month')}}">×</a>
+                            <img src="{{ asset('guest_assets/logos/Steinemann_white_bg.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                            <a class="close_modal" href="{{route('guest.taxisteinemann.rides','month')}}">×</a>
 
                             <div class="form_title text-center">
                                 <h4 class="sub_title">Log in</h4>
@@ -119,7 +119,7 @@
 
 
                             <div class="form_title text-center">
-                                <!-- <a href="{{route('guest.register')}}" class="tagline sign-up-account">Don't have an account? Sign up</a> -->
+                                <!-- <a href="{{route('guest.taxisteinemann.register')}}" class="tagline sign-up-account">Don't have an account? Sign up</a> -->
                                 <a href="javascript:void(0)" class=" sd d-block tagline sign-up-account my-3" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
                                
                             </div>
@@ -179,12 +179,12 @@
 
                                 <div class="col-12 p-0">
 
-                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                <img src="{{ asset('guest_assets/logos/Steinemann_white_bg.png') }}" alt="Logo" class="img-fluid logo_img"/>
 
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Not Logged in</h4>
                                         <p class="tagline">To continue enter mobile number</p>
-                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.register')}}" class="hyperinline">Register</a></p> -->
+                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.taxisteinemann.register')}}" class="hyperinline">Register</a></p> -->
                                         <hr class="divider_form" />
                                     </div>
                                     <!-- /Form Title -->
@@ -290,12 +290,12 @@
 
                                 <div class="col-12 p-0">
 
-                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                <img src="{{ asset('guest_assets/logos/Steinemann_white_bg.png') }}" alt="Logo" class="img-fluid logo_img"/>
 
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Forgot Password</h4>
                                         <p class="tagline">To continue enter mobile number</p>
-                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.register')}}" class="hyperinline">Register</a></p> -->
+                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.taxisteinemann.register')}}" class="hyperinline">Register</a></p> -->
                                         <hr class="divider_form" />
                                     </div>
                                     <!-- /Form Title -->
@@ -713,7 +713,7 @@
                     timer(30,"registerOTPModalTimer","register_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-                    var route = "{{route('guest.register')}}"+"?code="+response.code+"&phone="+response.phone;
+                    var route = "{{route('guest.taxisteinemann.register')}}"+"?code="+response.code+"&phone="+response.phone;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");

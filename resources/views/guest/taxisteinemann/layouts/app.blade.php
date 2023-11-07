@@ -33,7 +33,7 @@
        
         <style>
             :root {
-                --primary-color: #d4ded4;
+                --primary-color: #add6f0;
             }
         </style>
     </head>
@@ -122,7 +122,7 @@
             
 
         </style>
-        @include('guest.elements.header')
+        @include('guest.taxisteinemann.elements.header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">
                 @yield('content')
@@ -130,7 +130,7 @@
         </div>
 
 
-        @if (\Request::route()->getName()=='guest.login' || \Request::route()->getName()=='guest.rides')
+        @if (\Request::route()->getName()=='guest.taxisteinemann.login' || \Request::route()->getName()=='guest.taxisteinemann.rides')
             <!-- Section View Booking -->
                 <section class="add_booking_modal view_booking" id="view_booking">
                     <article class="booking_container_box">
@@ -837,7 +837,7 @@
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
-        @if ( \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='guest.login' )
+        @if ( \Request::route()->getName()=='guest.taxisteinemann.rides' || \Request::route()->getName()=='guest.taxisteinemann.login' )
 
             <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
@@ -871,7 +871,7 @@
                 async function showRideModal(rideId,Dclass)
                 {
                     selected_ride_id = rideId;
-                    route = "{{ route('guest.ride_detail','~') }}";
+                    route = "{{ route('guest.taxisteinemann.ride_detail','~') }}";
                     route = route.replace('~',selected_ride_id);
                     await $.ajax({
                         url: route,
@@ -1127,7 +1127,7 @@
                     $(document).find(".save_booking").show();
 
                     $.ajax({
-                        url: "{{ route('guest.rides.edit') }}",
+                        url: "{{ route('guest.taxisteinemann.rides.edit') }}",
                         type: 'get',
                         data: {
                             ride_id: ride_id
@@ -1642,11 +1642,11 @@
                                     $(document).find(".save_booking").attr('disabled', true);
                                 }
 
-                                var booking_url = "{{ auth()->check() ? route('guest.ride_booking') : route('send_otp_before_ride_booking') }}";
+                                var booking_url = "{{ auth()->check() ? route('guest.taxisteinemann.ride_booking') : route('send_otp_before_ride_booking') }}";
                                 var authCheck = "{{ auth()->check() }}";
 
                                 $.ajax({
-                                    url: "{{ route('guest.user_exist') }}",
+                                    url: "{{ route('guest.taxisteinemann.user_exist') }}",
                                     type: 'post',
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
@@ -1815,7 +1815,7 @@
                     $(document).find(".edit_booking").show();
                     $(document).find(".edit_booking").attr('data-parentid', parent_id);
                     $.ajax({
-                        url: "{{ route('guest.rides.edit') }}",
+                        url: "{{ route('guest.taxisteinemann.rides.edit') }}",
                         type: 'get',
                         data: {
                             ride_id: ride_id
@@ -1951,7 +1951,7 @@
                                 var change_for_all = result.value === 1 ? 1 : 0;
 
                                 $.ajax({
-                                    url: "{{ route('guest.ride_booking_update') }}",
+                                    url: "{{ route('guest.taxisteinemann.ride_booking_update') }}",
                                     type: 'post',
                                     headers: {'X-CSRF-TOKEN': token},
                                     dataType: 'json',
@@ -2010,7 +2010,7 @@
                     }).then((result) => {
                         if (result.value === 0 || result.value) {
                             $.ajax({
-                                url: "{{ route('guest.cancel_booking') }}",
+                                url: "{{ route('guest.taxisteinemann.cancel_booking') }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {
@@ -2060,7 +2060,7 @@
                             var ride_id = $(this).attr('data-id');
 
                             $.ajax({
-                                url: "{{ route('guest.delete_booking') }}",
+                                url: "{{ route('guest.taxisteinemann.delete_booking') }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {

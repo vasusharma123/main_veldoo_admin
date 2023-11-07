@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Guest;
+namespace App\Http\Controllers\Guest\taxisteinemann;
 
 use App\Http\Controllers\Controller;
 use App\OtpVerification;
@@ -33,7 +33,7 @@ class LoginController extends Controller
 
         if (Auth::check() && Auth::user()->user_type == 1) {
             Auth::user()->syncRoles('Customer');
-            return redirect()->route('guest.rides', 'month');
+            return redirect()->route('guest.taxisteinemann.rides', 'month');
         }
 
         $breadcrumb = array('title' => 'Home', 'action' => 'Login');
@@ -42,7 +42,7 @@ class LoginController extends Controller
 
         $data = array_merge($breadcrumb, $data);
         $data['vehicle_types'] = $vehicle_types;
-        return view('guest.auth.login')->with($data);
+        return view('guest.taxisteinemann.auth.login')->with($data);
     }
 
     public function doLoginGuest(Request $request)
@@ -65,7 +65,7 @@ class LoginController extends Controller
             \Auth::login($user);
             if (in_array(Auth::user()->user_type, [1])) {
                 Auth::user()->syncRoles('Customer');
-                return redirect()->route('guest.rides', 'month');
+                return redirect()->route('guest.taxisteinemann.rides', 'month');
             }
             Auth::logout();
             return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'These credentials do not match our records.']);
@@ -80,7 +80,7 @@ class LoginController extends Controller
         $breadcrumb = array('title' => 'Home', 'action' => 'Login');
         $data = [];
         $data = array_merge($breadcrumb, $data);
-        return view('guest.auth.register')->with($data);
+        return view('guest.taxisteinemann.auth.register')->with($data);
     }
 
 	public function doRegisterGuest(GuestRegisterRequest $request)
@@ -129,11 +129,11 @@ class LoginController extends Controller
 				\Auth::login($user);
 				if (in_array(Auth::user()->user_type, [1])) {
 					Auth::user()->syncRoles('Customer');
-					return redirect()->route('guest.rides', 'month');
+					return redirect()->route('guest.taxisteinemann.rides', 'month');
 				}
 				//return redirect()->to(url('verify-otp?phone='.$request->phone.'&code='.$request->country_code));
 			}
-			return view('guest.register');
+			return view('guest.taxisteinemann.register');
 		} catch (\Exception $e) {
 			DB::rollback();
 			echo $e->getMessage();
@@ -279,7 +279,7 @@ class LoginController extends Controller
         $breadcrumb = array('title' => 'Forget', 'action' => 'ForgetPassword');
         $data = [];
         $data = array_merge($breadcrumb, $data);
-        return view('guest.auth.forget-password')->with($data);
+        return view('guest.taxisteinemann.auth.forget-password')->with($data);
     }
 
     public function changeForgetPassword(Request $request)
@@ -294,13 +294,13 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(['message' => 'No such number exists in our record']);
         }
         User::find($userInfo->id)->update(['password' => Hash::make($request->password)]);
-        return redirect()->route('guest.login')->with('success', __('Password updated successfully.'));
+        return redirect()->route('guest.taxisteinemann.login')->with('success', __('Password updated successfully.'));
     }
 
     public function logout(Request $request)
     {
         Session::flush();
         Auth::logout();
-        return redirect()->route("guest.rides");
+        return redirect()->route("guest.taxisteinemann.rides");
     }
 }

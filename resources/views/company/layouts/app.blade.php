@@ -690,7 +690,7 @@
         @yield('footer_scripts')
 
         @if (\Request::route()->getName() =='company.rides' || \Request::route()->getName()== 'managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings')
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
             $('.headerFontFamily ').on('change', function() {
@@ -1180,16 +1180,17 @@
                             lng: cur_lng
                         };
                         var defaultBounds = {
-                            north: center.lat + 5,
-                            south: center.lat - 5,
-                            east: center.lng + 5,
-                            west: center.lng - 5,
+                            north: center.lat + 0.1,
+                            south: center.lat - 0.1,
+                            east: center.lng + 0.1,
+                            west: center.lng - 0.1,
                         };
                         var options = {
                             bounds: defaultBounds,
                             // fields: ["address_components"], // Or whatever fields you need
-                            strictBounds: true, // Only if you want to restrict, not bias
+                            //strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
+                          //  radius: 5000
                         };
                     } else {
                         var options = {

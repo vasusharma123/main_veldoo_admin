@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
-                        <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                        <img src="{{ asset('guest_assets/logos/Steinemann_white_bg.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
                         
                             <div class="menus cs_menus ms-auto me-2">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
@@ -13,14 +13,14 @@
 
                                     @if(\Request::get('token'))
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.taxisteinemann.rides',['month','token' => \Request::get('token')]) }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
                                         @else 
 
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides','month') }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.taxisteinemann.rides','month') }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
@@ -28,16 +28,16 @@
                                         @endif
 
                                         @if(\Request::get('token'))
-                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.taxisteinemann.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
                                         @else 
-                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.taxisteinemann.rides','month') }}">My Booking</a></li>
 
                                         @endif
                                        
 
                                         @if (Auth::check())
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
+                                            <a class="nav-link" href="{{ route('guest.taxisteinemann.logout') }}">Logout</a>
                                         </li>
                                         @endif
 
@@ -59,7 +59,7 @@
 
 
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
+                                    <a class="nav-link user_name" href="{{route('guest.taxisteinemann.login')}}">Login</a>
 
                                 </div>
 

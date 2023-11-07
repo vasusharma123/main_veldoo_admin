@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.taxisteinemann.guest')
 @section('content')
 <style>
 
@@ -132,7 +132,7 @@
                                                         <input class="form-check-input form_checkbox" type="checkbox" value="" id="remember_me">
                                                         <label class="form-check-label form-lable w-100" for="remember_me">
                                                             Agree with terms and conditions.
-                                                            <a href="{{route('guest.login')}}" class="link_hyper">Already have an account?</a>
+                                                            <a href="{{route('guest.taxisteinemann.login')}}" class="link_hyper">Already have an account?</a>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -143,7 +143,7 @@
                                                     <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="button" class="btn submit_btn">
                                                             <!-- <span class="btn_text">Back</span> -->
-                                                            <a href="{{route('guest.rides')}}" class="btn_text back-btn-text">Back</a>
+                                                            <a href="{{route('guest.taxisteinemann.rides')}}" class="btn_text back-btn-text">Back</a>
                                                         </button>
                                                     </div>
                                                     <div class="col-lg-6 col-sm-6 col-12">
