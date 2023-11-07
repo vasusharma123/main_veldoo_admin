@@ -1732,7 +1732,7 @@ button.fc-today-button.fc-button.fc-button-primary {
         height: 50%;
     }
     .desktop_view{
-        display: none !important;
+        /* display: none !important; */
     }
     .dashbaord_bodycontent{
         max-width: 100%;
@@ -2117,7 +2117,7 @@ button.fc-today-button.fc-button.fc-button-primary {
         display: none;
     }
     .form_add_managers{
-        display: none;
+        /* display: none; */
     }
 
     .navbar-nav.align-items-center.newTop_menu_ul {
