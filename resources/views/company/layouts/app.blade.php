@@ -37,7 +37,7 @@
        
        <style>
 
-
+        
             @if(!empty($companyInfo['header_color']))
                 :root {
                     --primary-color: {{ $companyInfo['header_color'] }} !important;
@@ -212,7 +212,13 @@
                 height: auto;
             }
 
-
+            @media (max-width: 768px) {
+            .clockpicker-popover {
+                background-color: #fff; /* Change background color for mobile */
+                margin: 25px !important; /* Reduce padding for mobile */
+                align: right;
+            }
+            }
             
 
         </style>
@@ -622,7 +628,7 @@
 
             $('#time').clockpicker({
                 language: 'en', // Set the language to English
-                donetext: 'Done'
+                donetext: 'Done',
             });
 
         </script>
