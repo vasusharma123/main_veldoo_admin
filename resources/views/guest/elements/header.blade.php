@@ -39,6 +39,10 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
                                         </li>
+                                        @else 
+                                            <li class="nav-item mobile_view">
+                                                <a class="nav-link" href="{{route('guest.login')}}">Login</a>
+                                            </li>
                                         @endif
 
                                        
