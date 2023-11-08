@@ -6210,50 +6210,66 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		try {
 
+			$savedLocationCount = \App\SaveLocation::where('user_id', $user_id)->count();
 
+			$savedLocationCount = \App\SaveLocation::where('user_id', $user_id)->count();
+			if($savedLocationCount >= 15 && ( $request->type != 1 || $request->type !=2 )){
+				  $locationData = \App\SaveLocation::where('user_id', $user_id)->whereNotIn('type',[1,2])->get();
+
+				$recordsToKeep = \App\SaveLocation::where('user_id', $user_id)
+				->whereNotIn('type', [1, 2])
+				->orderBy('created_at', 'asc')
+				->take(1)
+				->pluck('id');
+
+				$locationDeleted = \App\SaveLocation::where('id', $recordsToKeep)->delete();
+				
+				if(!$locationDeleted){
+					return response()->json(['message' => 'Location Not  deleted'], $this->successCode);
+				}
+
+			}
 			if ($request->type == 1 || $request->type == 2) {
 				$location = \App\SaveLocation::where('user_id', $user_id)->where('type', $request->type)->first();
 				if (!empty($location)) {
 					$location->update(['lat' => $request->lat, 'lng' => $request->lng, 'title' => $request->title, 'type' => $request->type]);
 					return response()->json(['message' => 'Location Updated successfully'], $this->successCode);
 				} else {
-					\App\SaveLocation::create(['lat' => $request->lat, 'lng' => $request->lng, 'title' => $request->title, 'type' => $request->type, 'user_id', $user_id]);
+					
+					\App\SaveLocation::create(['lat' => $request->lat, 'lng' => $request->lng, 'title' => $request->title, 'type' => $request->type, 'user_id' => $user_id]);
+					return response()->json(['message' => 'Location Added successfully'], $this->successCode);
 				}
+			}else{
+				$location = SaveLocation::where([['type', '=', $_REQUEST['type']], ['user_id', '=', $user_id], ['lat', '=', $request->lat], ['lng', '=', $request->lng]])->first();
+				//$location = SaveLocation::where('user_id',$user_id)->where('type',$request->type)->first();
+	
+				if (!empty($location) && $location != null) {
+					return response()->json(['message' => 'Location Already Added'], $this->successCode);
+				} else {
+	
+					$location = new SaveLocation();
+				}
+				if ($_REQUEST['type'] == 3) {
+					$location = new SaveLocation();
+				}
+				$location->lat = $request->lat;
+				$location->lng = $request->lng;
+				$location->title = $request->title;
+				$location->type = $request->type;
+	
+				$location->user_id = $user_id;
+				unset($location->created_at);
+				unset($location->updated_at);
+	
+				if ($location->save()) {
+
+					return response()->json(['message' => 'Location Added successfully'], $this->successCode);
+				} else {
+					return response()->json(['message' => 'Something went wrong'], $this->warningCode);
+				}	
 			}
 
-			$location = SaveLocation::where([['type', '=', $_REQUEST['type']], ['user_id', '=', $user_id], ['lat', '=', $request->lat], ['lng', '=', $request->lng]])->first();
-			//$location = SaveLocation::where('user_id',$user_id)->where('type',$request->type)->first();
-
-			if (!empty($location) && $location != null) {
-				return response()->json(['message' => 'Location Already Added'], $this->successCode);
-			} else {
-
-				$location = new SaveLocation();
-			}
-			if ($_REQUEST['type'] == 3) {
-				$location = new SaveLocation();
-			}
-			$location->lat = $request->lat;
-			$location->lng = $request->lng;
-			$location->title = $request->title;
-			$location->type = $request->type;
-
-
-
-			$location->user_id = $user_id;
-			unset($location->created_at);
-			unset($location->updated_at);
-
-
-
-			if ($location->save()) {
-
-
-
-				return response()->json(['message' => 'Location Added successfully'], $this->successCode);
-			} else {
-				return response()->json(['message' => 'Something went wrong'], $this->warningCode);
-			}
+			
 		} catch (\Illuminate\Database\QueryException $exception) {
 			$errorCode = $exception->errorInfo[1];
 			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
@@ -6265,7 +6281,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		try {
 			$userId = Auth::user()->id;
-			$locations = SaveLocation::where('user_id', $userId)->whereIn('type', [1, 2, 3])->orderBy('type', 'asc')->limit(15)->get();
+			$locations = SaveLocation::where('user_id', $userId)->whereIn('type', [1, 2, 3])->orderBy('type', 'asc')->orderBy('id', 'desc')->limit(15)->get();
 			$count = SaveLocation::where('user_id', $userId)->whereIn('type', [1, 2, 3])->orderBy('type', 'asc')->limit(15)->count();
 			//if(count($locations)>0){
 			if (!empty($locations)) {
