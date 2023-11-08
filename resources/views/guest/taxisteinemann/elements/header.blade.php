@@ -58,7 +58,7 @@
                                 @else 
 
 
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
+                                <div class="name_occupation d-flex flex-column top_header_nav">
                                     <a class="nav-link user_name" href="{{route('guest.taxisteinemann.login')}}">Login</a>
 
                                 </div>

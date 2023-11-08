@@ -39,10 +39,6 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
                                         </li>
-                                        @else 
-                                            <li class="nav-item mobile_view">
-                                                <a class="nav-link" href="{{route('guest.login')}}">Login</a>
-                                            </li>
                                         @endif
 
                                        
@@ -53,20 +49,15 @@
                             @yield('header_button')
                             <div class="viewUser_content d-flex align-items-center">
                                @if (Auth::check())
-                                <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <span class="user_name">{{ Auth::user() && Auth::user()->name ? Auth::user()->name : Auth::user()->first_name}}</span>
-                                    <!-- <span class="user_position">{{ Auth::user()->first_name ? Auth::user()->first_name : Auth::user()->last_name }}</span> -->
-                                </div>
-
-                                @else 
-
-
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
-
-                                </div>
-
+                               <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar" />
+                               <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
+                                   <span class="user_name">{{ Auth::user() && Auth::user()->name ? Auth::user()->name : Auth::user()->first_name}}</span>
+                                   <!-- <span class="user_position">{{ Auth::user()->first_name ? Auth::user()->first_name : Auth::user()->last_name }}</span> -->
+                               </div>
+                               @else
+                               <div class="name_occupation d-flex flex-column top_header_nav">
+                                   <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
+                               </div>
 
                                 <!-- <div class="viewUser_content d-flex align-items-center">
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
