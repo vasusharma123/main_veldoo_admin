@@ -144,6 +144,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
 });
 
+
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
 	Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
@@ -290,3 +291,8 @@ Route::post('forget-password',  'UserController@changeForgetPassword')->name('ch
 
 
 Route::get('/privacy_policy','PageController@privacy_policy');
+
+
+Route::get('master-login',  'MasterAdmin\LoginController@login');
+Route::post('adminLogin',  [ 'uses' => 'company\UsersController@adminLogin'])->name('masterLogin');
+Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
