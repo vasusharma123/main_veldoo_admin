@@ -18,10 +18,7 @@
 
                                 <form class="login_form" action="{{ route('change.forget.password')}}" method="post" autocomplete="off">
                                 @csrf
-
-                                <input type="hidden" name="country_code" value="{{ \Request::get('code') }}" placeholder="Enter New Password " />
-                                <input type="hidden" name="phone" value="{{ \Request::get('phone') }}"  placeholder="Enter New Password " />
-
+                                <input type="hidden" name="auth_token" value="{{ \Request::get('token') }}" />
                                     <div class="form-row">
 
                                         <div class="col-12 p-0">
@@ -71,7 +68,7 @@
                                                 <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="button" class="btn submit_btn">
                                                             <!-- <span class="btn_text">Back</span> -->
-                                                            <a href="{{route('booking_taxisteinemann')}}" class="btn_text back-btn-text">Back</a>
+                                                            <a href="{{route('guest.rides')}}" class="btn_text back-btn-text">Back</a>
                                                         </button>
                                                     </div>
                                                     <div class="col-lg-6 col-sm-6 col-12">

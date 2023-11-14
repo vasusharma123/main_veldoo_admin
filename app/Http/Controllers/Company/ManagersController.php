@@ -11,12 +11,14 @@ use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RideExport;
+use App\PaymentMethod;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use Hash;
 use Storage;
 use App\Price;
+use Illuminate\Validation\Rule;
 
 
 class ManagersController extends Controller
@@ -31,11 +33,11 @@ class ManagersController extends Controller
         //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->paginate(20);
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('name')->get();
+        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
+        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
 
         $data['vehicle_types'] = Price::orderBy('sort')->get();
-
+        $data['payment_types'] = PaymentMethod::get();
         return view('company.managers.index')->with($data);
     }
 
@@ -49,18 +51,18 @@ class ManagersController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
+
         $request->validate([
-            'email' => 'email|required|unique:users',
+            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($request) {
+                return $query->where('user_type', 5)->whereNull('deleted_at');
+            })],
             'name' => 'required',
             'password' => 'required',
         ]);
         DB::beginTransaction();
         try
         {
-
-            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => 5, 'company_id' => Auth::user()->company_id];
-
+            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => 5, 'company_id' => Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
             if ($request->phone)
             {
@@ -110,16 +112,31 @@ class ManagersController extends Controller
 
     public function update(Request $request,$id)
     {
-        // dd($request->all());
+        // dd($id);
         $request->validate([
-            'email' => 'email|required|unique:users,email,'.$id,
+           // 'email' => 'email|required|unique:users,email,'.$id,
+            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($id) {
+                return $query->where('user_type', 5)->whereNotNull('deleted_at')->where('id', $id);
+            })],
             'name' => 'required',
             // 'password' => 'required',
         ]);
+
+
+       
+
         DB::beginTransaction();
         try
         {
-            $data = ['first_name'=>$request->name,'email'=>$request->email];
+
+            $existEmail = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->whereNull('deleted_at')
+            ->where('id', '!=', $id)->where('email', $request->email)->first();
+
+            if($existEmail){
+                return redirect()->back()->with('error','The email has already been taken')->withInput($request->all());
+            }
+
+            $data = ['first_name'=>$request->name, 'name'=>$request->name,'email'=>$request->email];
             if ($request->phone)
             {
                 $data['phone'] = str_replace(' ', '', $request->phone);

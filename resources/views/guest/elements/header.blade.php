@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
-                        <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                        <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
                         
                             <div class="menus cs_menus ms-auto me-2">
                                 <nav class="navbar navbar-expand-lg newTop_menu">
@@ -28,42 +28,36 @@
                                         @endif
 
                                         @if(\Request::get('token'))
-                                            <li class="nav-item"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
                                         @else 
-                                            <li class="nav-item"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
 
                                         @endif
-
-
-                                       
                                        
 
                                         @if (Auth::check())
-
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('logout') }}?customer=true">Logout</a>
+                                            <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
                                         </li>
                                         @endif
+
+                                       
+
                                     </ul>
                                 </nav>
                             </div>
                             @yield('header_button')
                             <div class="viewUser_content d-flex align-items-center">
                                @if (Auth::check())
-                                <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar"/>
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <span class="user_name">{{ Auth::user()->name }}</span>
-                                    <!-- <span class="user_position">{{ Auth::user()->first_name ? Auth::user()->first_name : Auth::user()->last_name }}</span> -->
-                                </div>
-
-                                @else 
-
-
-                                <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
-                                    <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
-
-                                </div>
-
+                               <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('new-design-company/assets/images/user.png') }}" alt="User avatar" class="img-fluid user_avatar" />
+                               <div class="name_occupation d-flex flex-column top_header_nav desktop_view">
+                                   <span class="user_name">{{ Auth::user() && Auth::user()->name ? Auth::user()->name : Auth::user()->first_name}}</span>
+                                   <!-- <span class="user_position">{{ Auth::user()->first_name ? Auth::user()->first_name : Auth::user()->last_name }}</span> -->
+                               </div>
+                               @else
+                               <div class="name_occupation d-flex flex-column top_header_nav">
+                                   <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
+                               </div>
 
                                 <!-- <div class="viewUser_content d-flex align-items-center">
                                 <div class="name_occupation d-flex flex-column top_header_nav desktop_view">

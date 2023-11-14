@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Hash;
 use CStorage;
 use DataTables;
 use App\Company;
+use App\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
 use App\Ride;
 use App\Price;
-
+use URL;
 class CompanyController extends Controller
 {
 
@@ -503,6 +504,7 @@ class CompanyController extends Controller
         $data['company'] = Company::find(Auth::user()->company_id); 
         $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
 		return view("company.settings.index")->with($data);
     }
 
@@ -588,9 +590,9 @@ class CompanyController extends Controller
         {
             $data = [];
             if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
-                $data = ['logo' => '', 'background_image' => '','header_color'=> '', 'header_font_family'=> '', 'header_font_color'=> '', 'header_font_size'=> '', 'input_color'=> '', 'input_font_family'=> '', 'input_font_color'=> '', 'input_font_size'=> ''];  
+                $data = ['ride_color' => '','logo' => '', 'background_image' => '','header_color'=> '', 'header_font_family'=> '', 'header_font_color'=> '', 'header_font_size'=> '', 'input_color'=> '', 'input_font_family'=> '', 'input_font_color'=> '', 'input_font_size'=> ''];  
             } else {
-                $data = ['header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
+                $data = ['ride_color' => $request->ride_color,'header_color'=>$request->header_color,'header_font_family'=>$request->header_font_family,'header_font_color'=>$request->header_font_color,'header_font_size'=>$request->header_font_size,'input_color'=>$request->input_color,'input_font_family'=>$request->input_font_family,'input_font_color'=>$request->input_font_color,'input_font_size'=>$request->input_font_size];  
             }
 
             $company = Company::find(Auth::user()->company_id);
@@ -632,7 +634,8 @@ class CompanyController extends Controller
             if(!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design'){
                 return response()->json(['status'=>1,'message'=>'Information reset!']);
             } else {
-                return back()->with('success', 'Information updated!');
+                $urlToRedirect = URL::to('company/settings#weekView/');
+                return redirect($urlToRedirect)->with('success', 'Information updated!');
             }
         } catch (\Exception $exception) {
             // dd($exception);
@@ -643,24 +646,25 @@ class CompanyController extends Controller
 
     public function updatePersonalInformation(Request $request)
     {
-        // dd($request->all());
+         //dd($request->all());
         $this->validate($request, [
             'name' => 'required',
             'email' => 'email',
-            'phone' => 'required',
+            //'phone' => 'required',
 
         ]);
         DB::beginTransaction();
         try 
         {
              //dd($request->all());
-            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=>$request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
+            $user = User::find(Auth::user()->id);
+
+            $data = ['name'=>$request->name,'first_name'=>$request->name,'email'=> !empty($user->email) ? $user->email : $request->email,'phone'=>$request->phone,'country_code'=>$request->country_code];
             if ($request->password) 
             {
                 $data['password'] = Hash::make($request->password);
             }
-
-            $user = User::find(Auth::user()->id);
+            
             $user->fill($data);
             $user->update();
 
@@ -676,7 +680,8 @@ class CompanyController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Information updated!');
+            $urlToRedirect = URL::to('company/settings#monthView/');
+            return redirect($urlToRedirect)->with('success', 'Information updated!');
         } catch (\Exception $exception) {
             // dd($exception);
             DB::rollBack();

@@ -8,7 +8,7 @@
     input
     {
         /* color: black !important; */
-        font-weight: 600 !important;
+        /* font-weight: 600 !important; */
     }
     input::placeholder
     {
@@ -54,14 +54,14 @@
                                     <input type="text" class="form-control main_field" name="last_name" placeholder="Last Name" aria-label="Last Name" required>
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings user_info mb-2">
-                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" required>
+                                    <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2 d-flex">
                                     <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
                                     <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
                                 </div>
                                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2 check_user_info">
-                                    <div class="form_btn  mobile_margin ml-2">
+                                    <div class="form_btn  mobile_margin ml-2" style="margin-top:2px">
                                         <button type="button" class="btn save_form_btn check_user_info_btn">Check</button>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                         </div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-12 ">
                             <div class="form_btn text-end mobile_margin user_info">
-                                <button type="submit" class="btn save_form_btn">Save Changes</button>
+                                <button type="submit" class="btn save_form_btn">Add</button>
                             </div>
                         </div>
                     </div>
@@ -88,12 +88,12 @@
                                 <input type="text" class="form-control main_field" name="last_name" form="updateForm" placeholder="Last Name" aria-label="Last Name" required>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email" required>
+                                <input type="email" class="form-control main_field" form="updateForm" name="email" placeholder="Email" aria-label="Email">
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
 
                                 <input type="hidden" value="+1" class="country_code" form="updateForm" id="country_code_edit" name="country_code" />
-                                <input type="tel" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
+                                <input type="text" id="phone_edit" class="form-control main_field" form="updateForm" placeholder="Enter Number" name="phone" aria-label="Phone Number">
 
                             </div>
                         </div>
@@ -124,7 +124,8 @@
                     @foreach ($users as $key=>$user)
                         <tr>
                             <td>{{ $user->first_name.' '.$user->last_name }}</td>
-                            <td>+{{ $user->country_code }} {{ $user->phone }}</td>
+                            <td> {{ $user->phone ? '+' : '' }} {{ $user->country_code }} {{ $user->phone }}</td>
+
                             <td class="">{{ $user->email }}</td>
                             <td class="">
                                 <div class="">
@@ -201,7 +202,7 @@
             success: function(data){
                 if (data.status==1)
                 {
-                    alert('User already exists.');
+                    //alert('User already exists.');
                     $('.check_user_info').hide();
                     $('.user_info').find('input[name="first_name"]').val(data.user.first_name);
                     $('.user_info').find('input[name="last_name"]').val(data.user.last_name);
@@ -251,11 +252,11 @@
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "us";
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
                 success(countryCode);
             });
         },
-        initialCountry:"us",
+        initialCountry:"ch",
         separateDialCode: true,
         utilsScript: "{{url('assets/js/utils.js')}}",
         autoFormat: false,

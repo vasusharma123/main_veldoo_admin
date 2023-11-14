@@ -58,30 +58,6 @@ class UserController extends Controller
 		 return view('admin.guest_message');
 	}
 
-
-	public function guestLogin(){
-
-		if(Auth::check() && Auth::user()->user_type == 1){
-			Auth::user()->syncRoles('Customer');
-			return redirect()->route('guest.rides','month');
-		}
-
-		$breadcrumb = array('title'=>'Home','action'=>'Login');
-		$vehicle_types = Price::orderBy('sort')->get();
-		$data = [];
-
-		$data = array_merge($breadcrumb,$data);
-		$data['vehicle_types'] = $vehicle_types;
-		return view('guest.auth.login')->with($data);
-	}
-
-	public function guestRegister(){
-		$breadcrumb = array('title'=>'Home','action'=>'Login');
-		$data = [];
-		$data = array_merge($breadcrumb,$data);
-		return view('guest.auth.register')->with($data);
-	}
-
 	public function login(){
 		$breadcrumb = array('title'=>'Home','action'=>'Login');
 		$data = [];
@@ -110,38 +86,6 @@ class UserController extends Controller
 			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
 
-	}
-
-	public function doLoginGuest(Request $request){
-		$rules = [
-			'phone' => 'required',
-			'country_code' => 'required',
-			'password' => 'required|min:6',
-		];
-		$request->validate($rules);
-		$input = $request->all();
-
-		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
-		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
-		$phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
-
-		$user = User::where('phone', $phone_number)->where('country_code', $request->country_code)->where('user_type', 1)->first();
-		//dd(Hash::check($request->password, $user->password));
-		if (!empty($user) && Hash::check($request->password, $user->password)) {
-			\Auth::login($user);
-			if (in_array(Auth::user()->user_type,[1])) {
-				Auth::user()->syncRoles('Customer');
-				return redirect()->route('guest.rides','month');
-			}
-			Auth::logout();
-			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'These credentials do not match our records.']);
-
-		} else{
-			Auth::logout();
-			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
-		}
-		
-		
 	}
 
 	public function dashboard(){
