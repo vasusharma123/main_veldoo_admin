@@ -292,11 +292,9 @@ Route::post('forget-password',  'UserController@changeForgetPassword')->name('ch
 
 Route::get('/privacy_policy','PageController@privacy_policy');
 
-
+/* Master admin */
 Route::get('master-login',  'MasterAdmin\LoginController@login');
 Route::post('adminLogin',  [ 'uses' => 'MasterAdmin\LoginController@masterLogin'])->name('masterLogin');
-
-/* Master admin */
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
 	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
