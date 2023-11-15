@@ -17,6 +17,7 @@
     
                                     <form  class="login_form" method="POST" action="{{ route('masterLogin') }}" autocomplete="off">
                                     @csrf
+                                    @include('company.company_flash_message') 
                                         <div class="form-row">
     
                                             <div class="col-12 p-0">

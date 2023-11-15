@@ -294,5 +294,15 @@ Route::get('/privacy_policy','PageController@privacy_policy');
 
 
 Route::get('master-login',  'MasterAdmin\LoginController@login');
-Route::post('adminLogin',  [ 'uses' => 'company\UsersController@adminLogin'])->name('masterLogin');
-Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
+Route::post('adminLogin',  [ 'uses' => 'MasterAdmin\LoginController@masterLogin'])->name('masterLogin');
+
+/* Master admin */
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
+	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
+	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings');
+	Route::get('master-plan',  'MasterAdmin\PlansController@getServiceProviderPlan');
+	Route::get('plan-detail',  'MasterAdmin\PlansController@getPlanDetail');
+	Route::get('billing',  'MasterAdmin\PlansController@getBillingDetail');
+	Route::get('master-logout',  ['as' => 'logout','uses' => 'MasterAdmin\UsersController@logout']);
+});

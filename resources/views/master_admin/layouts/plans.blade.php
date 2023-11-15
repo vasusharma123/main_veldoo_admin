@@ -2,7 +2,7 @@
 
 <body>
     <div class="main_wrapper">
-        @include('master_admin.layouts.header')
+        @include('master_admin.layouts.plan_header')
         <main class="body_content">
             <div class="inside_body">
                 <div class="container-fluid p-0">

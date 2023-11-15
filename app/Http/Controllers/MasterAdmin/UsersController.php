@@ -17,6 +17,7 @@ use Auth;
 use Hash;
 use Storage;
 use App\Price;
+use Session;
 
 class UsersController extends Controller
 {
@@ -25,11 +26,25 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+    protected $redirectTo = '/home';
 
      public function dashboard(){
         return view('dashboards.master_admin');
 
-        }
+    }
+
+    public function getSettings(){
+        return view('master_admin.setting');
+
+    }
 	
+
+    public function logout(Request $request){
+        Session::flush();
+        Auth::logout();
+        return Redirect('master-login');
+	}
+
+
+        
 }
