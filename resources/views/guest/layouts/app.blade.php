@@ -422,6 +422,21 @@
                                             </select>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="form_payment_box">
+                                <div class="row w-100 m-0">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0 amount_box">
+                                        <div class="form_box">
+                                            <label class="form_label down_form_label">Service Provider</label>
+                                            <select name="service_provider_id" class="form-select borderless_form_field select-payment-method" id="service_provider">
+                                                <option value="">-- Select --</option>
+                                                @foreach ($service_providers as $service_provider)
+                                                        <option value="{{ $service_provider->id }}">{{ $service_provider->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
@@ -588,6 +603,7 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
+                                        <input type="hidden" id="otp_service_provider" name="service_provider_id">
                                         <input type="hidden" id="otp_ride_route" name="route">
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
@@ -1169,6 +1185,8 @@
                                     $("#payment_type").val("").change();
                                 }
 
+                                $("#service_provider").val(response.data.ride_detail.service_provider_id).removeAttr('disabled');
+
                                 $("#note").val(response.data.ride_detail.note);
                                 $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
@@ -1287,6 +1305,7 @@
                     $("input[name='car_type']").attr("disabled",false);
                     $("#numberOfPassenger").attr("disabled",false);
                     $("#note").attr("readonly",false);
+                    $("#service_provider").removeAttr('disabled');
 
                     $("input[name='car_type']:first").attr('checked', 'checked').change();
                     $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
@@ -1619,7 +1638,8 @@
                     $('#otp_payment_type').val($('#payment_type').val()); 
                     $('#otp_numberOfPassenger').val($('input[name="passanger"]').val());  
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
-                    $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
+                    $('#otp_ride_cost').val($('input[name="ride_cost"]').val());
+                    $('#otp_service_provider').val($('#service_provider').val()); 
                     $('#otp_note').val($('textarea[name="note"]').val());
                     $('#otp_ride_route').val($('#ride_route').val());  
 
@@ -1851,11 +1871,11 @@
 
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
+                                $("#service_provider").val(response.data.ride_detail.service_provider_id).attr('disabled',true);
                                 $("#note").val(response.data.ride_detail.note);
                                 $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
-
                                 iti.setNumber("+"+response.data.ride_detail.user_country_code);
                                 $("#phone").val(response.data.ride_detail.user_phone);
 

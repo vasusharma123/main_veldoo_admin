@@ -131,7 +131,7 @@ class AddDefaultServiceProviderSeeder extends Seeder
             'service_provider_id' => 1
         ]);
 
-        DB::table(' user_vouchers')->where(function($query){
+        DB::table('user_vouchers')->where(function($query){
             $query->where(['service_provider_id' => ''])
             ->orWhereNull('service_provider_id');
         })->update([

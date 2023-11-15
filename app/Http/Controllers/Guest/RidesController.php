@@ -52,6 +52,7 @@ class RidesController extends Controller
 
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
+        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         return $this->$type($data, $request->all());
     }
 
@@ -141,6 +142,7 @@ class RidesController extends Controller
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
+        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         $data['date'] = $date;
 
         return view('guest.rides.month')->with($data);
@@ -197,7 +199,7 @@ class RidesController extends Controller
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
-        // dd($data['rides']);
+        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         return view('guest.rides.week')->with($data);
     }
 
@@ -309,7 +311,8 @@ class RidesController extends Controller
             }
             $ride->ride_type = 3;
             $ride->created_by =  Auth::user() ? Auth::user()->user_type : 1; 
-            $ride->creator_id = Auth::user() ? Auth::user()->id : NULL; 
+            $ride->creator_id = Auth::user() ? Auth::user()->id : NULL;
+            $ride->service_provider_id = $request->service_provider_id??"";
             $ride->platform = "web";
             $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
 
@@ -503,7 +506,8 @@ class RidesController extends Controller
                 $ride->ride_type = 1;
                 $ride->car_type = $request->car_type;
                 $ride->created_by =  Auth::user() ? Auth::user()->user_type : 1; 
-                $ride->creator_id = Auth::user() ? Auth::user()->id : NULL; 
+                $ride->creator_id = Auth::user() ? Auth::user()->id : NULL;
+                $ride->service_provider_id = $request->service_provider_id??"";
                 $ride->alert_time = 15;
                 $ride->user_id = Auth::user() ? Auth::user()->id : NULL; 
                 if (!empty($request->ride_time)) {
