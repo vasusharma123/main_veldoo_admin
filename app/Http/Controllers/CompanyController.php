@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\User;
 use Mail;
 use Illuminate\Support\Facades\Hash;
-use CStorage;
+use Illuminate\Support\Facades\Storage;
 use DataTables;
 use App\Company;
 use App\PaymentMethod;
