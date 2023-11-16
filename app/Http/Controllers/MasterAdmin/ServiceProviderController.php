@@ -21,6 +21,7 @@ use App\Notification;
 use App\Http\Resources\RideResource;
 use App\SMSTemplate;
 
+
 class ServiceProviderController extends Controller
 
 {
@@ -31,7 +32,9 @@ class ServiceProviderController extends Controller
 
 
     public function getAllServiceProvider(){
-        return view('service_provider');
+
+        $data =  User::where('user_type', 3)->paginate(5);
+        return view('service_provider', compact('data'));
 
     }
 

@@ -3,7 +3,7 @@
 <section class="addonTable sectionsform">
                                         <article class="container-fluid">
                                             <div class="table-responsive marginTbl">
-
+                                                
                                                 <table class="table table-borderless table-fixed customTable">
                                                     <thead>
                                                         <tr>
@@ -16,59 +16,27 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                    @foreach ($data as $item)
                                                         <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
+                                                            <td>00:00:00</td>
+                                                            <td>{{ $item->first_name }}</td>
+                                                            <td>{{ $item->phone }}</td>
+                                                            <td>{{ $item->email }}</td>
                                                             <td>Monthly</td>
                                                             <td class="text-center"><a href="/master-plan" class="plan valid">Silver</a></td>
+                                                            <!-- Add more cells for other columns -->
                                                         </tr>
-                                                        <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
-                                                            <td>Yearly</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan valid">Gold</a></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
-                                                            <td>Monthly</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan valid">Platinum</a></td>
-                                                        </tr>
+                                                    @endforeach
                                                         
-                                                        <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
-                                                            <td>Yearly</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan invalid">Inactive</a></td>
-                                                        </tr>
-
-                                                        <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
-                                                            <td>Yearly</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan valid">Gold</a></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="text-center">00:00:00</td>
-                                                            <td>Veldoo</td>
-                                                            <td>+91 956256484</td>
-                                                            <td>ramkumar@gmail.com</td>
-                                                            <td>Test</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan valid">Test</a></td>
-                                                        </tr>
                                                         
                                                     </tbody>
                                                 </table>
+
+                                                @if(!empty($data))
+                                                    {{ $data->links('pagination.new_design') }}
+                                                 @endif
+
+
                                             </div>
                                         </article>
                                     </section>
