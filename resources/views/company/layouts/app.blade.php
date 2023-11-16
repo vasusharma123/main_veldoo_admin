@@ -31,9 +31,15 @@
         
     </head>
     <body>
-   
-
-    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+        @php
+        if (Auth::check() && !empty($companyInfo->background_image)){
+            $logoImage = config('app.url_public').'/'.$companyInfo->background_image;
+        } elseif (!empty($setting['admin_background']) && file_exists('storage/'.$setting['admin_background'])) {
+            $logoImage = env('URL_PUBLIC').'/'.$setting['admin_background'];
+        } else {
+            $logoImage = asset('new-design-company/assets/images/bg_body.png');
+        }
+        @endphp
        
        <style>
 
