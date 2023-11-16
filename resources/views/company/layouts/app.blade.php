@@ -205,11 +205,6 @@
 
             body{
                 background-image: url(<?php echo $logoImage ?>);
-                background-size: cover;
-                background-position: center;
-                width: 100%;
-                min-height: 100vh;
-                height: auto;
             }
 
             @media (max-width: 768px) {

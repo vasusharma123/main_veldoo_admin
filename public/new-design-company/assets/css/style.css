@@ -50,16 +50,13 @@
     display: none;
 }
 
-/* body{
-    background: url(../images/bg_body.png);
+body{
+    /* background: url(../images/bg_body.png); */
     background-size: cover;
     background-position: center;
     width: 100%;
     min-height: 100vh;
     height: auto;
-} */
-
-body{
     background-attachment: fixed !important ;
 }
 
