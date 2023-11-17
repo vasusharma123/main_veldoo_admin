@@ -145,6 +145,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
 });
 
+
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
 	Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
@@ -322,3 +323,18 @@ Route::group([ 'middleware' => 'auth'], function(){
 Route::get('company-login',  ['as'=>'company_login','uses'=>'Company\LoginController@login']);
 
 Route::get('/privacy_policy','PageController@privacy_policy');
+
+/* Master admin */
+Route::get('master-login',  'MasterAdmin\LoginController@login');
+Route::post('adminLogin',  [ 'uses' => 'MasterAdmin\LoginController@masterLogin'])->name('masterLogin');
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
+	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
+	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings');
+	Route::get('master-plan',  'MasterAdmin\PlansController@getServiceProviderPlan');
+	Route::get('plan-detail',  'MasterAdmin\PlansController@getPlanDetail');
+	Route::get('billing',  'MasterAdmin\PlansController@getBillingDetail');
+	Route::get('master-logout',  ['as' => 'logout','uses' => 'MasterAdmin\UsersController@logout']);
+	Route::post('updateServiceProvider',  [ 'uses' => 'MasterAdmin\ServiceProviderController@updateServiceProvider'])->name('updateServiceProvider');
+
+});

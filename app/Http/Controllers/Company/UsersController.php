@@ -239,4 +239,27 @@ class UsersController extends Controller
             return redirect()->back()->with('error',$e->getMessage());
         }
     }
+
+    public function adminLogin(Request $request){
+        
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required|min:6',
+		];
+		$request->validate($rules);
+		$input = $request->all();
+       
+		$whereData = array('email' => $input['email'], 'password' => $input['password']);
+        if(auth()->attempt($whereData)){
+			// if (in_array(Auth::user()->user_type,[4,5])) {
+			// 	Auth::user()->syncRoles('Company');
+			// 	return redirect()->route('company.rides','month');
+
+			// }
+            return redirect()->route('masterAdmin.dashboard');
+        } else{
+			Auth::logout();
+			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+		}
+	}
 }
