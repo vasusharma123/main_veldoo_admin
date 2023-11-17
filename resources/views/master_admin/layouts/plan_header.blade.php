@@ -11,9 +11,8 @@
                             <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
                             <ul class="nav top_tab_menu target">
 
-                            <?php $currentUri  = $_SERVER['REQUEST_URI'];
+                            <?php $currentUri  = request()->path();
                             $uriWithoutSlashOrAsterisk = str_replace('/', '', $currentUri);
-
                             if($uriWithoutSlashOrAsterisk == 'service-provider'){ ?>
                                     <li class="nav-item">
                                         <a class="nav-link active" href="/service-provider">List</a>
@@ -21,13 +20,13 @@
                            <?php }else{
                             ?>
                                 <li class="nav-item">
-                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'master-plan') { echo "active";  }  ?>" href="/master-plan">Plan</a>
+                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'master-plan') { echo "active";  }  ?>" href="/master-plan?id={{request('id')}}">Plan</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'plan-detail' ) { echo "active";  } ?>" href="/plan-detail">Details</a>
+                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'plan-detail' ) { echo "active";  } ?>" href="/plan-detail?id={{request('id')}}">Details</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'billing') { echo "active";  } ?>" href="/billing">Billing</a>
+                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'billing') { echo "active";  } ?>" href="/billing?id={{request('id')}}">Billing</a>
                                 </li>
                                 <?php } ?>
                             </ul>

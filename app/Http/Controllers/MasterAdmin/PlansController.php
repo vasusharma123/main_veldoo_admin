@@ -34,17 +34,28 @@ class PlansController extends Controller
 
 
     public function getServiceProviderPlan(){
-        return view('service_provider_plan');
+        $data = array('page_title' => 'Service Provider Plan', 'action' => 'Service Provider Plan');
+        return view('service_provider_plan')->with($data);
 
     }
 
-    public function getPlanDetail(){
-        return view('plan_detail');
+    public function getPlanDetail(Request $request){
+        try{
+            $data = array('page_title' => 'Plan Detail', 'action' => 'Plan Detail');
+            $serviceProviderId = decrypt($request->id);
+            $data['user'] = User::where('id', $serviceProviderId)->first();
+            return view('plan_detail',  compact('data'))->with($data);
+
+        }catch(Exception $e){
+            Log::info('In getPlanDetail method'. $e);
+        }
+        
 
     }
 
     public function getBillingDetail(){
-        return view('billing_detail');
+        $data = array('page_title' => 'Billing', 'action' => 'Billing');
+        return view('billing_detail')->with($data);
 
     }
 

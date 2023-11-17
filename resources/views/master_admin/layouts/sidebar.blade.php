@@ -4,7 +4,7 @@
                     <i class="bi bi-x-lg sidebarToggler">&nbsp; <span>Close</span></i>
                     <article class="all_sidebar_box">
                         <ul class="nav sidebarLists w-100">
-                        <?php $currentUri  = $_SERVER['REQUEST_URI'];
+                        <?php $currentUri  = request()->path();
                             $uriWithoutSlashOrAsterisk = str_replace('/', '', $currentUri); ?>
 
 
@@ -16,7 +16,7 @@
                                 </a>
                             </li>
                             <li class="nav-item w-100">
-                                <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'service-provider') { echo "active";  }  ?>" href="/service-provider">
+                                <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'service-provider' || $uriWithoutSlashOrAsterisk == 'master-plan' || $uriWithoutSlashOrAsterisk == 'plan-detail' || $uriWithoutSlashOrAsterisk == 'billing') { echo "active";  }  ?>" href="/service-provider">
                                     <img src="assets/imgs/users.png" class="img-fluid w-100 sidebarImgs" alt="users"/> 
                                     <span class="sidebarText">Service provider</span>
                                     <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>

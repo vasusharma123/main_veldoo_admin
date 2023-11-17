@@ -16,14 +16,14 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                    @foreach ($data as $item)
+                                                    @foreach ($data['user'] as $item)
                                                         <tr>
                                                             <td>00:00:00</td>
                                                             <td>{{ $item->first_name }}</td>
                                                             <td>{{ $item->phone }}</td>
                                                             <td>{{ $item->email }}</td>
                                                             <td>Monthly</td>
-                                                            <td class="text-center"><a href="/master-plan" class="plan valid">Silver</a></td>
+                                                            <td class="text-center"><a href="/master-plan?id={{ encrypt($item->id) }}"  class="plan valid">Silver</a></td>
                                                             <!-- Add more cells for other columns -->
                                                         </tr>
                                                     @endforeach
@@ -32,8 +32,8 @@
                                                     </tbody>
                                                 </table>
 
-                                                @if(!empty($data))
-                                                    {{ $data->links('pagination.new_design') }}
+                                                @if(!empty($data['user']))
+                                                    {{ $data['user']->links('pagination.new_design') }}
                                                  @endif
 
 

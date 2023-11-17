@@ -303,4 +303,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('plan-detail',  'MasterAdmin\PlansController@getPlanDetail');
 	Route::get('billing',  'MasterAdmin\PlansController@getBillingDetail');
 	Route::get('master-logout',  ['as' => 'logout','uses' => 'MasterAdmin\UsersController@logout']);
+	Route::post('updateServiceProvider',  [ 'uses' => 'MasterAdmin\ServiceProviderController@updateServiceProvider'])->name('updateServiceProvider');
+
 });

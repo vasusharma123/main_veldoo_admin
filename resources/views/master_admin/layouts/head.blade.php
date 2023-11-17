@@ -3,7 +3,8 @@
 
     <head>
 
-        <title>Veldoo - Login</title>  
+        <!-- <title>Veldoo - Login</title>   -->
+        <title>{{ env('APP_NAME') }} {{ isset($page_title)?' - '.$page_title:'' }}</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- Bootstrap V5 CSS-->
@@ -33,6 +34,15 @@
             }
             .dashbaord_bodycontent {
                 padding: 50px 32px 50px 32px;
+            }
+            .save_form_btn {
+                background: var(--primary-color);
+                color: var(--primary-font-color);
+                font-family: var(--primary-font-family);
+                padding: 10px 48px;
+                font-size: 18px;
+                font-weight: 400;
+                border-radius: 5px;
             }
         </style>
         

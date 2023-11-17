@@ -20,7 +20,7 @@ use App\Setting;
 use App\Notification;
 use App\Http\Resources\RideResource;
 use App\SMSTemplate;
-
+use Illuminate\Support\Facades\Log;
 
 class ServiceProviderController extends Controller
 
@@ -33,8 +33,15 @@ class ServiceProviderController extends Controller
 
     public function getAllServiceProvider(){
 
-        $data =  User::where('user_type', 3)->paginate(5);
-        return view('service_provider', compact('data'));
+        try{
+            $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider');
+            $data['user'] =  User::where('user_type', 3)->paginate(5);
+            return view('service_provider', compact('data'))->with($data);
+
+        }catch(Exception $e){
+            Log::info('Error in method getAllServiceProvider'. $e);
+        }
+        
 
     }
 
