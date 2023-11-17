@@ -50,16 +50,13 @@
     display: none;
 }
 
-/* body{
-    background: url(../images/bg_body.png);
+body{
+    /* background: url(../images/bg_body.png); */
     background-size: cover;
     background-position: center;
     width: 100%;
     min-height: 100vh;
     height: auto;
-} */
-
-body{
     background-attachment: fixed !important ;
 }
 
@@ -400,7 +397,7 @@ label.form-lable.boldlable {
 
 
     font-weight: 500;
-    max-width: 65px;
+    max-width: 112px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -829,6 +826,9 @@ span.menu_icons.arrow {
     margin: 24px 0px 50px 0px;
     text-align: right;
 }
+.submit-button-filter-form{
+    display: none;
+}
 .save_form_btn {
     background: var(--primary-color);
     color: var(--primary-font-color);
@@ -846,7 +846,7 @@ span.menu_icons.arrow {
 
      /* new */
     padding: 12px 11px;
-    margin: 0px 5px 1px 5px;
+    margin: 0px 4px 1px 5px;
 
     /* old padding: 10px 48px; */
     font-size: 18px;
@@ -1562,6 +1562,19 @@ input#photo{
 }
 .fc-header-toolbar  .fc-toolbar-chunk {
     display: flex;
+}
+
+.payment-method{
+    margin-left: 42px;
+}
+.select-payment-method{
+    width: 200px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    padding: 6px 10px;
+    border-radius: .375rem;
 }
 
 .fc-header-toolbar .fc-button-group > .fc-button {

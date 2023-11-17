@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateColumnEmailToUsersTable extends Migration
+class AddRideColorColumnToCompaniesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class UpdateColumnEmailToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropUnique('users_email_unique');
+        Schema::table('companies', function (Blueprint $table) {
+            $table->string('ride_color',50)->nullable()->default(null);
         });
     }
 
@@ -25,8 +25,8 @@ class UpdateColumnEmailToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->unique('email');
+        Schema::table('companies', function (Blueprint $table) {
+            $table->string('ride_color',50)->nullable()->default(null);
         });
     }
 }

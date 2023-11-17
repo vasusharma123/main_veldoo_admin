@@ -343,75 +343,6 @@ if($_REQUEST['cm'] == 2)
 		return view('booking_form')->with(['vehicle_type' => $vehicle_type, 'input' => $input]);
 	}
 
-
-
-	public function send_otp_before_register(Request $request)
-	{
-		try
-		{
-			// if (!$request->has('g-recaptcha-response'))
-			// {
-			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			// }
-			// $captcha = $request['g-recaptcha-response'];
-			// $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=".env('RECAPTCHA_SITE_KEY')."&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
-			// if(!is_array($response) && isset($response) && $response['success'] == false)
-			// {
-			// 	return response()->json(['status' => 0, 'message' => 'Invalid Request']);
-			// }
-
-
-			if(!empty($request->forget_password)) {
-				$userInfo = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
-				if(!$userInfo) {
-					return response()->json(['status' => 0, 'message' => 'Mobile number does not match with out records']);
-				}
-			}
-
-			$expiryMin = config('app.otp_expiry_minutes');
-			$otp = rand(1000, 9999);
-			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")])->first();
-			$now = Carbon::now();
-			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-			if ($haveOtp)
-			{
-				if ($now->gt($haveOtp->expiry))
-				{
-					OtpVerification::updateOrCreate(
-						['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-						['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
-					);
-				}
-				else
-				{
-					$otp = $haveOtp->otp;
-				}
-			}
-			else
-			{
-				OtpVerification::updateOrCreate(
-					['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0")],
-					['otp' => $otp, 'expiry' => $endTime, 'device_type' => 'web']
-				);
-			}
-
-			$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_otp_create_booking','service_provider_id'=>Auth::user()->id])->first();
-			$body = str_replace('#OTP#',$otp,$SMSTemplate->english_content);//"Dear User, your Veldoo verification code is ".$otp.". Use this password to complete your booking";
-			if (app()->getLocale()!="en")
-			{
-				$body = str_replace('#OTP#',$otp,$SMSTemplate->german_content);
-			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $body);
-			return response()->json(['status' => 1, 'message' => __('OTP is sent to Your Mobile Number')]);
-		} catch (\Illuminate\Database\QueryException $exception) {
-			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
-		} catch (\Exception $exception) {
-			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
-		}
-	}
-
-
-
 	public function verify_otp_before_register(Request $request)
 	{
 
@@ -534,22 +465,29 @@ if($_REQUEST['cm'] == 2)
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
 		$user = User::where(['country_code' => $request->country_code, 'phone' => $phone_number, 'user_type' => 1])->first();
+
 		if ($responseObj['status'] == 1) {
-			$message_content = "Your Booking has been confirmed with Veldoo, for time";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			$SMSTemplate = SMSTemplate::find(2);
-			if ($request->url_type == "taxisteinemann") {
-				$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
-				if (app()->getLocale() != "en") {
-					$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
-				if (app()->getLocale() != "en") {
-					$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
-				}
+
+			\Auth::login($user);
+			if (in_array(Auth::user()->user_type,[1])) {
+				Auth::user()->syncRoles('Customer');
 			}
-			$this->sendSMS("+" . $request->country_code, $phone_number, $message_content);
+
+			// $message_content = "Your Booking has been confirmed with Veldoo, for time";
+			// $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			// $SMSTemplate = SMSTemplate::find(2);
+			// if ($request->url_type == "taxisteinemann") {
+			// 	$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+			// 	if (app()->getLocale() != "en") {
+			// 		$message_content = str_replace('#LINK#', route('list_of_booking_taxisteinemann', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
+			// 	}
+			// } else {
+			// 	$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->english_content));
+			// 	if (app()->getLocale() != "en") {
+			// 		$message_content = str_replace('#LINK#', route('list_of_booking_taxi2000', $user->random_token), str_replace('#TIME#', date('d M, Y h:ia', strtotime($request->ride_time)), $SMSTemplate->german_content));
+			// 	}
+			// }
+			// $this->sendSMS("+" . $request->country_code, $phone_number, $message_content);
 		}
 		return $jsonResponse;
 	}
@@ -574,26 +512,26 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
-		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
-		if($responseObj['status'] == 1){
-			$message_content = "Your Booking has been confirmed with Veldoo, for time";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-			$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_create_booking','service_provider_id'=>Auth::user()->id])->first();//find(2);
-			if ($request->url_type=="taxisteinemann") {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
-		}
+		// $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		// if($responseObj['status'] == 1){
+		// 	$message_content = "Your Booking has been confirmed with Veldoo, for time";
+		// 	$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		// 	$SMSTemplate = SMSTemplate::find(2);
+		// 	if ($request->url_type=="taxisteinemann") {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	} else {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	}
+		// 	$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+		// }
 		return $jsonResponse;
 	}
 
@@ -1109,27 +1047,27 @@ if($_REQUEST['cm'] == 2)
 		}
 		$content = $jsonResponse->getContent();
 		$responseObj = json_decode($content, true);
-		$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
-		if($responseObj['status'] == 1){
-			$message_content = "";
-			$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		// $user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		// if($responseObj['status'] == 1){
+		// 	$message_content = "";
+		// 	$url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
-			$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_edit_booking','service_provider_id'=>Auth::user()->id])->first();//find(5);
-			if ($request->url_type=="taxisteinemann") {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			} else {
-				$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
-				if (app()->getLocale()!="en")
-				{
-					$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
-				}
-			}
-			$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
-		}
+		// 	$SMSTemplate = SMSTemplate::where(['unique_key'=>'send_booking_details_after_edit_booking','service_provider_id'=>Auth::user()->id])->first();//find(5);
+		// 	if ($request->url_type=="taxisteinemann") {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxisteinemann',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	} else {
+		// 		$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->english_content));
+		// 		if (app()->getLocale()!="en")
+		// 		{
+		// 			$message_content = str_replace('#LINK#',route('list_of_booking_taxi2000',$user->random_token),str_replace('#TIME#',date('d M, Y h:ia', strtotime($request->ride_time)),$SMSTemplate->german_content));
+		// 		}
+		// 	}
+		// 	$this->sendSMS("+".$request->country_code, ltrim($request->phone, "0"), $message_content);
+		// }
 		return $jsonResponse;
 	}
 

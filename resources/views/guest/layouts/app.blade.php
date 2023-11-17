@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
         <!-- Custom CSS -->
 
-        <link href="{{ asset('new-design-company/assets/css/style.css') }}" rel="stylesheet">
+        <link href="{{ asset('new-design-company/assets/css/guest.css') }}" rel="stylesheet">
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
@@ -29,19 +29,19 @@
         
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-
-
         
+       
+        <style>
+            :root {
+                --primary-color: #d4ded4;
+            }
+        </style>
     </head>
     <body>
+        
     <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
         <style>
-
-          
-            :root {
-                --primary-color: #FC4C02 !important;
-            }
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
             }
@@ -130,7 +130,7 @@
         </div>
 
 
-        @if (\Request::route()->getName()=='guest.login' || \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='booking_taxisteinemann' )
+        @if (\Request::route()->getName()=='guest.login' || \Request::route()->getName()=='guest.rides')
             <!-- Section View Booking -->
                 <section class="add_booking_modal view_booking" id="view_booking">
                     <article class="booking_container_box">
@@ -198,7 +198,7 @@
                                                     <a href="javsscript:;" class="user_position side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
-                                            <p class="ride_driver_details_div_driver_na" style="display: none;">N/A</p>
+                                            <p class="ride_driver_details_div_driver_na" style="display: none;"></p>
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt view_port">
@@ -214,7 +214,7 @@
                                                     <span class="user_name ride_car_div_number"></span>
                                                 </div>
                                             </div>
-                                            <p class="ride_car_div_na" style="display:none">N/A</p>
+                                            <p class="ride_car_div_na" style="display:none"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -384,7 +384,7 @@
                                                 <label class="form_label">Mobile Number</label>
 
                                                 <div class="col_form_settings mb-2">
-                                                    <input type="hidden" value="+1" class="country_code" id="country_code" name="country_code" />
+                                                    <input type="hidden" value="+41" class="country_code" id="country_code" name="country_code" />
                                                     <input type="text" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" aria-label="Phone Number">
                                                 </div>
 
@@ -400,16 +400,44 @@
                             </div>
                             <div class="form_payment_box">
                                 <div class="row w-100 m-0">
+
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-12 pe-0 amount_box">
                                         <div class="form_box">
                                             <label class="form_label down_form_label ">Amount (CHF)</label>
                                             <div class="form-dollar position-relative">
                                                 <input type="text" min="0" class="form-control down_form price_calculated_input" name="ride_cost" value="0" readonly placeholder="CHF"/>
                                                 <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
-                                                <input type="hidden" name="payment_type" value="Cash" id="payment_type">
+                                                <!-- <input type="hidden" name="payment_type" value="Cash" id="payment_type"> -->
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0 amount_box payment-method">
+                                        <div class="form_box">
+                                            <label class="form_label down_form_label">Payment Method</label>
+                                            <select name="payment_type" class="form-select borderless_form_field select-payment-method" id="payment_type">
+                                                @foreach ($payment_types as $payment_type)
+                                                        <option value="{{ $payment_type->name }}">{{ $payment_type->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form_payment_box">
+                                <div class="row w-100 m-0">
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0 amount_box">
+                                        <div class="form_box">
+                                            <label class="form_label down_form_label">Service Provider</label>
+                                            <select name="service_provider_id" class="form-select borderless_form_field select-payment-method" id="service_provider">
+                                                <option value="">-- Select --</option>
+                                                @foreach ($service_providers as $service_provider)
+                                                        <option value="{{ $service_provider->id }}">{{ $service_provider->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
                                             <label class="form_label down_form_label ">Add Note</label>
@@ -419,15 +447,7 @@
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
                                     </div>
-                                    <div class="">
-                                        <div class="row w-100 m-0">
-                                            <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
-                                                <label for="checkid">
-                                                    <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <input type="hidden" name="route" class="ride_route" id="ride_route">
                                 </div>
                             </div>
                             <div class="save_btn_box mobile_view">
@@ -583,9 +603,8 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
-                                        
-                                        <input type="hidden" id="otp_status" name="status">
-
+                                        <input type="hidden" id="otp_service_provider" name="service_provider_id">
+                                        <input type="hidden" id="otp_ride_route" name="route">
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
                                             
@@ -617,14 +636,13 @@
                                                 <div class="form-group position-relative has_validation text-center otpcode_box invalid_field">
                                                     <label class="form-lable boldlable">OTP code</label>
                                                     <div class="field position-relative otp-box d-flex">
-                                                        <input type="text" id="digit-1" maxlength="1" name="digit-1" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-2" maxlength="1" name="digit-2" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
-                                                        <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control loginField otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-1" maxlength="1" name="digit-1" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-2" maxlength="1" name="digit-2" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-3" maxlength="1" name="digit-3" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
+                                                        <input type="text" id="digit-4" maxlength="1" name="digit-4" class="form-control otpfil px-2 text-center"  placeholder="_" required/>
                                                     </div>
-                                                    <!-- <p class="erro d-none mb-0">Invalid OTP code. <a href="#" class="hyperinline confirmOTPModalTimer">Resend OTP</a> 30 sec.</p> -->
-                                                    <p class="erro d-none mb-0"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
-
+                                                    <p class="bookingOTPModalTimer">{{ __('Resend OTP in') }} 30</p>
+                                                    <p class="mb-0 booking_otp_not_rec" style="display:none;"><a href="javascript:void(0);" class="hyperinline confirmOTPModalTimer confirmOTPModalResendOtp">Resend OTP</a></p>
                                                 </div>
                                                 <div class="form-group position-relative">
                                                     <button type="submit" class="btn submit_btn otpsubmit custom_btn verify_otp">
@@ -682,8 +700,7 @@
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
-
-
+        <script src="https://cdn.rawgit.com/weareoutman/clockpicker/v0.0.7/dist/jquery-clockpicker.min.js"></script>
 
         <script>
 
@@ -728,11 +745,11 @@
         initialCountry: "auto",
         geoIpLookup: function (success, failure) {
             $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                var countryCode = (resp && resp.country) ? resp.country : "us";
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
                 success(countryCode);
             });
         },
-        initialCountry:"us",
+        initialCountry:"ch",
         separateDialCode: true,
         utilsScript: "{{url('assets/js/utils.js')}}",
         autoFormat: false,
@@ -783,6 +800,12 @@
 
             });
 
+            $('#time').clockpicker({
+                language: 'en', // Set the language to English
+                donetext: 'Done'
+            });
+
+
         </script>
        
 
@@ -830,9 +853,9 @@
         <script src="{{ asset('/assets/plugins/select2/dist/js/select2.min.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.js"></script>
         @yield('footer_scripts')
-        @if ( \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='booking_taxisteinemann' || \Request::route()->getName()=='guest.login' )
+        @if ( \Request::route()->getName()=='guest.rides' || \Request::route()->getName()=='guest.login' )
 
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
 
@@ -917,7 +940,7 @@
                             $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
                             $('.ride_driver_details_div_driver_na').text('');
                         } else {
-                            $('.ride_driver_details_div_driver_na').text('N/A');
+                            $('.ride_driver_details_div_driver_na').text('');
                         }
 
                     }
@@ -947,7 +970,13 @@
                         $('.passenger_details').html(booking.user.first_name+' '+booking.user.last_name+"  (+"+booking.user.country_code+'-'+booking.user.phone+")");
                     }
                     $('.ride_payment_type').html(booking.payment_type);
-                    $('.ride_car_price').html('CHF '+booking.ride_cost);
+
+                    if(booking && booking.ride_cost) {
+                        $('.ride_car_price').html('CHF '+booking.ride_cost);
+                    } else {
+                        $('.ride_car_price').html('CHF ');
+                    }
+
                     $('.ride_note_div').html(booking.note);
 
                     ride_status = ""
@@ -1147,9 +1176,19 @@
                                 }
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
-                                $("#payment_type").val(response.data.ride_detail.payment_type);
-                                $("#note").val(response.data.ride_detail.note);
 
+                                // $("#payment_type").val(response.data.ride_detail.payment_type);
+
+                                if(response.data.ride_detail.payment_type){
+                                    $("#payment_type").val(response.data.ride_detail.payment_type).change();
+                                } else {
+                                    $("#payment_type").val("").change();
+                                }
+
+                                $("#service_provider").val(response.data.ride_detail.service_provider_id).removeAttr('disabled');
+
+                                $("#note").val(response.data.ride_detail.note);
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
 
@@ -1238,9 +1277,7 @@
                     return shortestRouteArr.indexOf(Math.min(...shortestRouteArr));
                 }
 
-                
-
-                $(document).on('click','.addNewBtn_cs ',function(){
+                $(document).on('click','.addNewBtn_cs, .add_new_booking_btn',function(){
                     newBookingMapPoints = [];
                     newBookingMarkers = [];
                     cur_lat = "";
@@ -1268,6 +1305,7 @@
                     $("input[name='car_type']").attr("disabled",false);
                     $("#numberOfPassenger").attr("disabled",false);
                     $("#note").attr("readonly",false);
+                    $("#service_provider").removeAttr('disabled');
 
                     $("input[name='car_type']:first").attr('checked', 'checked').change();
                     $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
@@ -1277,17 +1315,12 @@
                     var cCode = "{{ auth()->check() ? auth()->user()->country_code : '' }}";
                     var uPhone = "{{ auth()->check() ? auth()->user()->phone : '' }}";
 
-                    
-
                     if(cCode && uPhone) {
                         $("#otpPhone").val(uPhone);
                         $("#otpCountryCode").val(cCode);
                         iti.setNumber("+"+cCode + uPhone);
                         $("#phone").val(uPhone);
-
                     }
-
-
                 });
 
                 //new booking code
@@ -1327,15 +1360,15 @@
                             lng: cur_lng
                         };
                         var defaultBounds = {
-                            north: center.lat + 5,
-                            south: center.lat - 5,
-                            east: center.lng + 5,
-                            west: center.lng - 5,
+                            north: center.lat + 0.1,
+                            south: center.lat - 0.1,
+                            east: center.lng + 0.1,
+                            west: center.lng - 0.1,
                         };
                         var options = {
                             bounds: defaultBounds,
                             // fields: ["address_components"], // Or whatever fields you need
-                            strictBounds: true, // Only if you want to restrict, not bias
+                            //strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
                         };
                     } else {
@@ -1512,6 +1545,8 @@
                                     distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
                                     distance = Math.ceil(distance);
                                     $('#distance_calculated_input').val(distance);
+                                    var ride_route = result.routes[shortestRouteIndex].overview_polyline;
+                                    $('#ride_route').val(ride_route);
                                     calculate_amount();
                                 }
                             });
@@ -1603,9 +1638,10 @@
                     $('#otp_payment_type').val($('#payment_type').val()); 
                     $('#otp_numberOfPassenger').val($('input[name="passanger"]').val());  
                     $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
-                    $('#otp_ride_cost').val($('input[name="ride_cost"]').val());  
-                    $('#otp_note').val($('textarea[name="note"]').val()); 
-                    $('#otp_status').val($('input[name="status"]').val());
+                    $('#otp_ride_cost').val($('input[name="ride_cost"]').val());
+                    $('#otp_service_provider').val($('#service_provider').val()); 
+                    $('#otp_note').val($('textarea[name="note"]').val());
+                    $('#otp_ride_route').val($('#ride_route').val());  
 
                     form_validate_res = calculate_route();
                     if (form_validate_res) {
@@ -1672,10 +1708,11 @@
                                                 } else {
                                                     if(response.status){
                                                         $("#confirmOTPModal").modal('show');
-                                                        timer(30,"confirmOTPModalTimer","otp_not_rec");
+                                                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
                                                     } else if(response.status == 0){
                                                         new swal("{{ __('Error') }}",response.message,"error");
                                                         $(document).find(".verify_otp").removeAttr('disabled');
+                                                        $(document).find(".save_booking").removeAttr('disabled');
                                                     }
                                                 }
                                             },
@@ -1735,26 +1772,9 @@
                     $('#pickup_latitude').val('');
                     $('#pickup_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     initializeMapReport([]);
                     calculate_amount();
-                });
-
-                $(document).on('click','.dropoffPointCloseBtn',function(){
-                        $('#dropoffPoint').val('');
-                        $('#dropoff_latitude').val('');
-                        $('#dropoff_longitude').val('');
-                        $(".distance_calculated_input").val(0);
-                        calculate_amount();
-                        if($('#pickup_latitude').val()!="")
-                        {
-                            initializeMapReport([{
-                                Latitude: $('#pickup_latitude').val(),
-                                Longitude: $('#pickup_longitude').val(),
-                                AddressLocation: $('#pickupPoint').val()
-                            }]);
-                        } else {
-                            initializeMapReport([]);
-                        }
                 });
 
                 $(document).on('click','.dropoffPointCloseBtn',function(){
@@ -1762,6 +1782,7 @@
                     $('#dropoff_latitude').val('');
                     $('#dropoff_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     calculate_amount();
                     if($('#pickup_latitude').val()!="")
                     {
@@ -1845,14 +1866,16 @@
                                 } else {
                                     $("#users").val(response.data.ride_detail.user_id).change();
                                 }
+
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
+
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
+                                $("#service_provider").val(response.data.ride_detail.service_provider_id).attr('disabled',true);
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
                                 $("#otpCountryCode").val(response.data.ride_detail.user_country_code);
-
                                 iti.setNumber("+"+response.data.ride_detail.user_country_code);
                                 $("#phone").val(response.data.ride_detail.user_phone);
 
@@ -2269,22 +2292,14 @@
 
              // var timerOn = true;
         function timer(remaining,timerClass,confirmOTPModalResendOtpClass) {
-           // $('.'+confirmOTPModalResendOtpClass).hide();
+            $('.'+confirmOTPModalResendOtpClass).hide();
             $('.'+timerClass).show();
             var m = Math.floor(remaining / 60);
             var s = remaining % 60;
             
             m = m < 10 ? '0' + m : m;
             s = s < 10 ? '0' + s : s;
-            // console.log(timerClass);
-            // console.log(s);
-            if(s > 0) {
-                $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
-            } else {
-                $('.'+timerClass).html('{{ __("Resend OTP") }} ');
-            }
-
-            // document.getElementById(id).innerHTML = 
+            $('.'+timerClass).html('{{ __("Resend OTP in") }} ' + s);
             remaining -= 1;
             
             if(remaining >= 0) {
@@ -2294,11 +2309,9 @@
                 return;
             }
 
-            
             // Do timeout stuff here
-            // alert('Timeout for otp');
             $('.'+confirmOTPModalResendOtpClass).show();
-           // $('.'+timerClass).hide();
+            $('.'+timerClass).hide();
         }
 
         $(document).on('click','.confirmOTPModalResendOtp',function(){
@@ -2310,7 +2323,7 @@
                 success: function(response) {
                     if(response.status){
                         $("#confirmOTPModal").modal('show');
-                        timer(30,"confirmOTPModalTimer","otp_not_rec");
+                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
@@ -2337,16 +2350,8 @@
             $(document).find(".verify_otp").attr('disabled',true);
             <?php
                 $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-                if (strpos($url,'taxisteinemann') !== false) {
-                    ?>
-                        post_data += '&url_type=taxisteinemann';
-                    <?php
-                } else {
-                    ?>
-                        post_data += '&url_type=taxi2000';
-                    <?php
-                }
             ?>
+            post_data += '&url_type=taxi2000';
             $.ajax({
                 url: "{{ route('verify_otp_and_ride_booking')}}",
                 type: 'post',
@@ -2360,20 +2365,19 @@
                             var currentURL = (document.URL); // returns http://myplace.com/abcd
                             var part = currentURL.split("/")[1];
                             route = part+'?token='+response.user_data.random_token;
-                            //  route = "{{ route('list_of_booking_taxisteinemann','~') }}";
                            // route = route.replace('~',response.user_data.random_token);
-                            window.location.href = route;//"{{ route('booking_taxisteinemann')}}";
+                            window.location.href = route;
                         }, 2000);
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
                         $(document).find(".verify_otp").removeAttr('disabled');
-                        $(document).find(".bookRideSBtn").removeAttr('disabled');
+                        $(document).find(".save_booking").removeAttr('disabled');
                     }
                 },
                 error(response) {
                     new swal("{{ __('Error') }}",response.message,"error");
                     $(document).find(".verify_otp").removeAttr('disabled');
-                    $(document).find(".bookRideSBtn").removeAttr('disabled');
+                    $(document).find(".save_booking").removeAttr('disabled');
                 }
             });
         })

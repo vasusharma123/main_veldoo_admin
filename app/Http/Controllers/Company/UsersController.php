@@ -11,6 +11,7 @@ use App\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Exports\RideExport;
+use App\PaymentMethod;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Auth;
@@ -28,8 +29,9 @@ class UsersController extends Controller
     public function index(Request $request)
     {
         $data = array('page_title' => 'Users', 'action' => 'Users');
-        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->paginate(20);
+        $data['users'] = User::where(['user_type'=>1,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
         $data['vehicle_types'] = Price::orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::get();
         return view('company.company-users.index')->with($data);
     }
 
@@ -83,17 +85,27 @@ class UsersController extends Controller
                 $user->fill(['company_id'=>Auth::user()->company_id,'first_name'=>$request->first_name,'last_name'=>$request->last_name,'email'=>$request->email]);
                 $user->update();
             }
-            return redirect()->route('company-users.index')->with('success','User successfully updated');
+            return redirect()->route('company-users.index')->with('success','User added successfully');
         }
         else
         {
-            $request->validate([
-                'email' => 'email|required|unique:users',
-                'first_name' => 'required',
-                'last_name' => 'required',
-                'phone' => 'required',
-                'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            ]);
+            if(!empty($request->email)) {
+                $request->validate([
+                    'email' => 'email|unique:users',
+                    'first_name' => 'required',
+                    'last_name' => 'required',
+                    'phone' => 'required',
+                    'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                ]);
+            } else {
+                $request->validate([
+                    //'email' => 'email|unique:users',
+                    'first_name' => 'required',
+                    'last_name' => 'required',
+                    'phone' => 'required',
+                    'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                ]);
+            }
         }
 
         DB::beginTransaction();
@@ -160,19 +172,37 @@ class UsersController extends Controller
 
     public function update(Request $request,$id)
     {
-        $request->validate([
-            'email' => 'email|required|unique:users,email,'.$id,
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'phone' => 'required',
-            // 'country' => 'required',
-            // 'state' => 'required',
-            // 'city' => 'required',
-            // 'street' => 'required',
-            // 'zip_code' => 'required',
-            'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
-            // 'password' => 'required',
-        ]);
+        if(!empty($request->email)) {
+            $request->validate([
+                'email' => 'email|unique:users,email,'.$id,
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                // 'country' => 'required',
+                // 'state' => 'required',
+                // 'city' => 'required',
+                // 'street' => 'required',
+                // 'zip_code' => 'required',
+                'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                // 'password' => 'required',
+            ]);
+        } else {
+            $request->validate([
+                //'email' => 'email|unique:users,email,'.$id,
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                // 'country' => 'required',
+                // 'state' => 'required',
+                // 'city' => 'required',
+                // 'street' => 'required',
+                // 'zip_code' => 'required',
+                'image_tmp' => 'image|mimes:jpeg,png,jpg|max:2048',
+                // 'password' => 'required',
+            ]);
+        }
+        
+
         DB::beginTransaction();
         try
         {

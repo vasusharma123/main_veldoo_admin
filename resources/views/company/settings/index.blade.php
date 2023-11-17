@@ -54,11 +54,14 @@ code {
             @include('company.company_flash_message')
             <nav aria-label="breadcrumb" class="pageBreadcrumb">
                 <ol class="breadcrumb tab_lnks">
-                    @can('isCompany')
-                        <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
+                   @can('isCompany')
+                    <li class="breadcrumb-item"><a class="tabs_links_btns active" href="#listView">Company Information</a></li>
                     @endcan
-                    <li class="breadcrumb-item"><a class="tabs_links_btns {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
-                    <li class="breadcrumb-item"><a class="tabs_links_btns" href="#weekView">Theme Design</a></li>
+
+                    <li class="breadcrumb-item"><a class="tabs_links_btns user-can-update-info {{ Auth::user()->user_type==5?'active':'' }}" href="#monthView">Admin Profile</a></li>
+                    @can('isCompany')
+                    <li class="breadcrumb-item"><a class="tabs_links_btns theme-design-tab" href="#weekView">Theme Design</a></li>
+                    @endcan
 
                 </ol>
             </nav>
@@ -107,23 +110,12 @@ code {
                                                     <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
                                                         <h6 class="smalltxt">Logo</h6>
                                                         <input type="file" class="photo form-control main_field position-relative" id="cLogo" name="logo">
-                                                        <img src="{{ @$company->logo?env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
-                                                    </div>
-                                                </div>
-                                                <!-- <div class="col-3">
-                                                    <div class="img_preview position-relative desktop_view" style="display: table-caption;width:90px">
-                                                        <h6 class="smalltxt">Background</h6>
-                                                        <input type="file" class="photo form-control main_field position-relative" id="cBackgroundImage" name="background_image">
-                                                        <img src="{{ @$company->background_image?env('URL_PUBLIC').'/'.$company->background_image:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cBackgroundImageImgPreview"/>
-                                                    </div>
-                                                </div>
-                                                <div class="col-3">
-                                                    <div class="img_preview position-relative desktop_view" style="display: table-caption;width:96px">
-                                                        <h6 class="smalltxt">Theme Color</h6>
-                                                        <input type="color" value="{{ !empty($company->theme_color) ? $company->theme_color  : '#FC4C02' }}" name="theme_color" id="colorPicker">
 
+                                                        
+                                                        <img src="{{ @$company->logo ?  env('URL_PUBLIC').'/'.$company->logo:asset('new-design-company/assets/images/image-uploaded.png') }}" style="margin-top: 25px" class="img-fluid avtar_preview imgs_uploaded_view imgPreview" alt="Select Avatar" id="cLogoImgPreview"/>
+                                                   
                                                     </div>
-                                                </div> -->
+                                                </div>
                                             </div>
                                             <div class="form_btn text-end mobile_margin" style="margin-top:10%">
                                                 <button type="submit" class="btn save_form_btn">Update Changes</button>
@@ -137,6 +129,7 @@ code {
                 </div>
             @endcan
             <!-- /List View -->
+
             <div id="monthView" class="resume next-tabs" style="display:{{ Auth::user()->user_type==5?'block':'none' }}">
                 <section class="form_add_managers">
                     <article class="form_inside">
@@ -150,11 +143,11 @@ code {
                                                 <input type="text" class="form-control main_field" placeholder="Name" aria-label="First name"  name="name" value="{{ Auth::user()->name }}" required>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required>
+                                                <input type="email" class="form-control main_field" placeholder="Email" aria-label="Email" name="email" value="{{ Auth::user()->email }}" required readonly>
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
-                                                <input type="hidden" name="country_code_admin" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
-                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}" required>
+                                                <input type="hidden" id="country_code_admin" name="country_code" value="{{ Auth::user()->country_code }}">
+                                                <input type="tel" id="phone_admin" class="form-control main_field" placeholder="Enter Phone Number" aria-label="Phone Number" name="phone" value="{{ Auth::user()->phone }}">
                                             </div>
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2">
                                                 <input type="password" class="form-control main_field" placeholder="Password" aria-label="Password" name="password" >
@@ -203,8 +196,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt headerBg" name="header_color" value="{{ !empty($company->header_color) ? $company->header_color  : '#FC4C02' }}">
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -212,19 +205,28 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Font
                                                     </label>
-                                                    <select class="form-control main_field fontStyle text-center p-0" name="header_font_family" >
+                                                    <select class="form-control main_field fontStyle headerFontFamily text-center p-0" name="header_font_family" >
                                                   
                                                     <option value="">Select Font</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
-                                                    <option value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
-                                                    <option value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
-                                                    <option value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
-                                                    <option value="Berlin-sans-fb" {{ $company->header_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
-                                                    <option value="Fantasy" {{ $company->header_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
-                                                    <option value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
-                                                    <option value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
-                                                    <option value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
-
+                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
+                                                    <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option style="font-family:Arial" value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option style="font-family:Algerian" value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option style="font-family:Berlin-sans-fb" value="Berlin-sans-fb" {{ $company->header_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option style="font-family:Fantasy" value="Fantasy" {{ $company->header_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option style="font-family:Cursive" value="Cursive" {{ $company->header_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option style="font-family:Verdana" value="Verdana" {{ $company->header_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option style="font-family:Fearless" value="Fearless" {{ $company->header_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+                                                    <option style="font-family:Georgia" value="Georgia" {{ $company->header_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option style="font-family:Calibri" value="Calibri" {{ $company->header_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option style="font-family:Helvetica" value="Helvetica" {{ $company->header_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option style="font-family:Palatino" value="Palatino" {{ $company->header_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option style="font-family:Cambria" value="Cambria" {{ $company->header_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option style="font-family:Garamond" value="Garamond" {{ $company->header_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option style="font-family:Comic Sans MS" value="Comic Sans MS" {{ $company->header_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option style="font-family:Copperplate Gothic" value="Copperplate Gothic" {{ $company->header_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option style="font-family:Optima" value="Optima" {{ $company->header_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option style="font-family:Trebuchet MS" value="Trebuchet MS" {{ $company->header_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                     </select>
                                                     
@@ -235,8 +237,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" >
                                                         Font Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt headerFont" name="header_font_color" placeholder="Name" value="{{ !empty($company->header_font_color) ? $company->header_font_color  : '#FFFFFF' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -244,7 +246,7 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" min="16" max="22" class="form-control main_field fontStyle text-center p-0" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
+                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0 headerFontsize" name="header_font_size" placeholder="" value="{{ !empty($company->header_font_size) ? $company->header_font_size  : '16' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2 ">
@@ -264,8 +266,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="orange">
                                                         Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_color) ? $company->input_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" name="input_color" value="{{ !empty($company->input_color) ? $company->input_color  : '#FC4C02' }}">
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_color) ? $company->input_color  : '#F9F9F9' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="input_color" value="{{ !empty($company->input_color) ? $company->input_color  : '#F9F9F9' }}">
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -276,15 +278,26 @@ code {
                                                     <select class="form-control main_field fontStyle text-center p-0" name="input_font_family">
 
                                                     <option value="">Select Font</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
-                                                    <option value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
-                                                    <option value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
-                                                    <option value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
-                                                    <option value="Berlin-sans-fb" {{ $company->input_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
-                                                    <option value="Fantasy" {{ $company->input_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
-                                                    <option value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
-                                                    <option value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
-                                                    <option value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
+                                                    <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $company->input_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
+                                                    <option style="font-family:Arial" value="Arial" {{ $company->input_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
+                                                    <option style="font-family:Algerian" value="Algerian" {{ $company->input_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>
+                                                    <option style="font-family:Berlin-sans-fb" value="Berlin-sans-fb" {{ $company->input_font_family == 'Berlin-sans-fb' ? "selected" : ''}}>Berlin Sans FB</option>
+                                                    <option style="font-family:Fantasy" value="Fantasy" {{ $company->input_font_family == 'Fantasy' ? "selected" : ''}}>Fantasy</option>
+                                                    <option style="font-family:Cursive" value="Cursive" {{ $company->input_font_family == 'Cursive' ? "selected" : ''}}>cursive</option>
+                                                    <option style="font-family:Verdana" value="Verdana" {{ $company->input_font_family == 'Verdana' ? "selected" : ''}}>Verdana</option>
+                                                    <option style="font-family:Fearless" value="Fearless" {{ $company->input_font_family == 'Fearless' ? "selected" : ''}}>Fearless</option>
+
+                                                    <option style="font-family:Georgia" value="Georgia" {{ $company->input_font_family == 'Georgia' ? "selected" : ''}}>Georgia</option>
+                                                    <option style="font-family:Calibri" value="Calibri" {{ $company->input_font_family == 'Calibri' ? "selected" : ''}}>Calibri</option>
+                                                    <option style="font-family:Helvetica" value="Helvetica" {{ $company->input_font_family == 'Helvetica' ? "selected" : ''}}>Helvetica</option>
+                                                    <option style="font-family:Palatino" value="Palatino" {{ $company->input_font_family == 'Palatino' ? "selected" : ''}}>Palatino</option>
+                                                    <option style="font-family:Cambria" value="Cambria" {{ $company->input_font_family == 'Cambria' ? "selected" : ''}}>Cambria</option>
+                                                    <option style="font-family:Garamond" value="Garamond" {{ $company->input_font_family == 'Garamond' ? "selected" : ''}}>Garamond</option>
+                                                    <option style="font-family:Comic Sans MS" value="Comic Sans MS" {{ $company->input_font_family == 'Comic Sans MS' ? "selected" : ''}}>Comic Sans MS</option>
+                                                    <option style="font-family:Copperplate Gothic" value="Copperplate Gothic" {{ $company->input_font_family == 'Copperplate Gothic' ? "selected" : ''}}>Copperplate Gothic</option>
+                                                    <option style="font-family:Optima" value="Optima" {{ $company->input_font_family == 'Optima' ? "selected" : ''}}>Optima</option>
+                                                    <option style="font-family:Trebuchet MS" value="Trebuchet MS" {{ $company->input_font_family == 'Trebuchet MS' ? "selected" : ''}}>Trebuchet MS</option>
 
                                                    
                                                     
@@ -298,8 +311,8 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" >
                                                         Font Color
                                                     </label>
-                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_font_color) ? $company->input_font_color  : '' }} "></span>
-                                                    <input type="color" class="form-control main_field colorSlt" placeholder="Name" name="input_font_color" value="{{ !empty($company->input_font_color) ? $company->input_font_color  : '#FC4C02' }}" >
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->input_font_color) ? $company->input_font_color  : '#666666' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" placeholder="Name" name="input_font_color" value="{{ !empty($company->input_font_color) ? $company->input_font_color  : '#666666' }}" >
                                                 </div>
                                             </div>
                                             <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
@@ -307,7 +320,16 @@ code {
                                                     <label class="form-check-label mb-3 setting_labels" for="" >
                                                         Font Size
                                                     </label>
-                                                    <input type="number" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
+                                                    <input type="number" min="12" max="22" class="form-control main_field fontStyle text-center p-0" name="input_font_size" placeholder="" value="{{ !empty($company->input_font_size) ? $company->input_font_size  : '16' }}" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-3 col-3 col_form_settings mb-2">
+                                                <div class="form-check position-relative text-center p-0">
+                                                    <label class="form-check-label mb-3 setting_labels" for="" >
+                                                        Ride Color
+                                                    </label>
+                                                    <span class="colorType mx-auto" style=" background-color: {{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }} "></span>
+                                                    <input type="color" class="form-control main_field colorSlt" name="ride_color" value="{{ !empty($company->ride_color) ? $company->ride_color  : '#356681' }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -388,11 +410,11 @@ code {
                 initialCountry: "auto",
                 geoIpLookup: function (success, failure) {
                     $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                        var countryCode = (resp && resp.country) ? resp.country : "us";
+                        var countryCode = (resp && resp.country) ? resp.country : "ch";
                         success(countryCode);
                     });
                 },
-                initialCountry:"us",
+                initialCountry:"ch",
                 separateDialCode: true,
                 utilsScript: "{{url('assets/js/utils.js')}}",
                 autoFormat: false,
@@ -414,11 +436,11 @@ code {
             initialCountry: "auto",
             geoIpLookup: function (success, failure) {
                 $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
-                    var countryCode = (resp && resp.country) ? resp.country : "us";
+                    var countryCode = (resp && resp.country) ? resp.country : "ch";
                     success(countryCode);
                 });
             },
-            initialCountry:"us",
+            initialCountry:"ch",
             nationalMode: true,
             separateDialCode: true,
             utilsScript: "{{url('assets/js/utils.js')}}",
@@ -435,14 +457,26 @@ code {
         });
 
         $(document).ready(function(){
-
             var code = "{{@$company->country_code}}";
             var phone = "{{@$company->phone}}";
+            setTimeout(() => {
+                iti.setNumber("+"+code + phone);
+                $("#phone").val(phone);
 
-            iti.setNumber("+"+code + phone);
-            $("#phone").val(phone);
+            }, 500);
+
         });
 
+        $(document).ready(function(){
+
+            var code = "{{ Auth::user() && Auth::user()->country_code ? Auth::user()->country_code : '' }}";
+            var phone = "{{ Auth::user() && Auth::user()->phone ? Auth::user()->phone : '' }}";
+            setTimeout(() => {
+                itiAdmin.setNumber("+"+code + phone);
+                $("#phone_admin").val(phone);
+            }, 500);
+
+        });
 
         $(document).on('click','.reset-theme-design',function () {
             var companyId = $(this).data('companyid');
@@ -478,7 +512,21 @@ code {
                     });
                 }
             });
-            
+        });
+
+
+        $(document).ready(function () {
+            var currentURL = (document.URL);
+            var lastUrlEle = currentURL.split("#")[1];
+            console.log(lastUrlEle);
+            setTimeout(function() {
+                if(lastUrlEle == 'weekView'){
+                    $(".theme-design-tab").trigger("click");
+                }
+                if(lastUrlEle == 'monthView'){
+                    $(".user-can-update-info").trigger("click");
+                }
+            }, 500);
         });
         
 

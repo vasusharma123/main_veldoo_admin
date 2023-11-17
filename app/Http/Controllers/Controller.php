@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
@@ -111,5 +112,20 @@ class Controller extends BaseController
             $phone_number = str_replace("+" . $country_code, '', $phone_number);
         }
         return $phone_number;
+    }
+
+    function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        $checkToken = User::where(['random_token'=>$randomString])->first();
+        if ($checkToken) 
+        {
+            return $this->generateRandomString($length);
+        }
+        return $randomString;
     }
 }

@@ -31,13 +31,19 @@
         
     </head>
     <body>
-   
-
-    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
+        @php
+        if (Auth::check() && !empty($companyInfo->background_image)){
+            $logoImage = config('app.url_public').'/'.$companyInfo->background_image;
+        } elseif (!empty($setting['admin_background']) && file_exists('storage/'.$setting['admin_background'])) {
+            $logoImage = env('URL_PUBLIC').'/'.$setting['admin_background'];
+        } else {
+            $logoImage = asset('new-design-company/assets/images/bg_body.png');
+        }
+        @endphp
        
        <style>
 
-
+        
             @if(!empty($companyInfo['header_color']))
                 :root {
                     --primary-color: {{ $companyInfo['header_color'] }} !important;
@@ -55,6 +61,7 @@
             @else
                 :root {
                     --primary-font-family: 'Oswald', sans-serif !important;
+
                 }
             @endif
             
@@ -77,8 +84,6 @@
                     --primary-font-size: 20px !important;
                 }
             @endif
-
-
 
             @if(!empty($companyInfo['input_color']))
                 :root {
@@ -117,6 +122,15 @@
             @else
                 :root {
                     --primary-input-font-size: 16px !important;
+                }
+            @endif
+            @if(!empty($companyInfo['ride_color']))
+                :root {
+                    --primary-ride-color: {{ $companyInfo['ride_color'] }}px !important;
+                }
+            @else
+                :root {
+                    --primary-ride-color: 16px !important;
                 }
             @endif
 
@@ -197,14 +211,15 @@
 
             body{
                 background-image: url(<?php echo $logoImage ?>);
-                background-size: cover;
-                background-position: center;
-                width: 100%;
-                min-height: 100vh;
-                height: auto;
             }
 
-
+            @media (max-width: 768px) {
+            .clockpicker-popover {
+                background-color: #fff; /* Change background color for mobile */
+                margin: 25px !important; /* Reduce padding for mobile */
+                align: right;
+            }
+            }
             
 
         </style>
@@ -290,7 +305,7 @@
                                                     <a href="javsscript:;" class=" side_mob_link ride_driver_details_div_driver_phone"></a>
                                                 </div>
                                             </div>
-                                            <p class="ride_driver_details_div_driver_na view_value_form" style="display: none">N/A</p>
+                                            <p class="ride_driver_details_div_driver_na view_value_form" style="display: none"></p>
                                         </div>
                                     </div>
                                     <div class="divider_form_area vrt view_port">
@@ -306,7 +321,7 @@
                                                     <span class="user_name ride_car_div_number"></span>
                                                 </div>
                                             </div>
-                                            <p class="ride_car_div_na" style="display: none">N/A</p>
+                                            <p class="ride_car_div_na" style="display: none"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -430,8 +445,6 @@
                                             <label class="form_label">Pickup Time</label>
                                             
                                             <!-- <input type="time" class="form_control borderless_form_field dropup_field without_ampm" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time"> -->
-                                            
-
                                             <input type="text" id="time" value="<?php echo date("H:i") ?>" class="form-control form_control  dropup_field" placeholder="Please select time" style="border: 1px solid;border-radius: 5px;padding: 1px;padding-left: 10px;"  required name="ride_time">
 
                                         </div>
@@ -481,9 +494,11 @@
                                                 </select>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
+                            
+                            
                             <div class="form_payment_box">
                                 <div class="row w-100 m-0">
                                     <div class="col-lg-5 col-md-5 col-sm-6 col-12 pe-0 amount_box">
@@ -492,8 +507,18 @@
                                             <div class="form-dollar position-relative">
                                                 <input type="text" min="0" class="form-control down_form price_calculated_input" name="ride_cost" value="0" readonly placeholder="CHF"/>
                                                 <input type="hidden" name="distance" class="distance_calculated_input" id="distance_calculated_input">
-                                                <input type="hidden" name="payment_type" value="Cash" id="payment_type">
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 pe-0 amount_box payment-method">
+                                        <div class="form_box">
+                                            <label class="form_label down_form_label">Payment Method</label>
+                                            <select name="payment_type" class="form-select borderless_form_field select-payment-method" id="payment_type">
+                                                @foreach ($payment_types as $payment_type)
+                                                        <option value="{{ $payment_type->name }}">{{ $payment_type->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     
@@ -506,17 +531,10 @@
                                     <div class="map_frame" style="margin-top: 50px;padding:0px">
                                         <div id="googleMapNewBooking" class="googleMapDesktop"></div>
                                     </div>
+                                    <input type="hidden" name="route" class="ride_route" id="ride_route">
                                 </div>
                             </div>
-                            <div class="">
-                                <div class="row w-100 m-0">
-                                    <div class="col-lg-12 col-md-12 col-sm-12 pe-0 amount_box">
-                                        <label for="checkid">
-                                            <input id="checkid" type="checkbox" name="status" value="3" /> Mark the ride as completed
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="save_btn_box mobile_view">
                                 <button type="button" class="btn save_form_btn bottom_btn w-100 save_booking">Book Ride</button>
                             </div>
@@ -575,10 +593,12 @@
 
         <!-- <script src="https://cdn.jsdelivr.net/gh/dubrox/Multiple-Dates-Picker-for-jQuery-UI@master/jquery-ui.multidatespicker.js"></script> -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+        <script src="https://cdn.rawgit.com/weareoutman/clockpicker/v0.0.7/dist/jquery-clockpicker.min.js"></script>
 
         <script>
 
-        
+       
+
         var deletedRideId;
         $(function(){
         
@@ -607,6 +627,10 @@
 
             });
 
+            $('#time').clockpicker({
+                language: 'en', // Set the language to English
+                donetext: 'Done',
+            });
 
         </script>
        
@@ -667,9 +691,26 @@
         @yield('footer_scripts')
 
         @if (\Request::route()->getName() =='company.rides' || \Request::route()->getName()== 'managers.index' || \Request::route()->getName()== 'company-users.index' || \Request::route()->getName()== 'company.settings')
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCn7nxEJGDtQo1wl8Mzg9178JAU2x6-Y0E&libraries=geometry,places&callback=Function.prototype"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_API_KEY')}}&libraries=geometry,places&callback=Function.prototype"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
             <script>
+            $('.headerFontFamily ').on('change', function() {
+            var newFont = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-family', newFont, 'important');
+            });
+
+            $('.headerBg ').on('change', function() {
+            var newColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-color', newColor, 'important');
+            });
+             
+
+            $('.headerFont ').on('change', function() {
+            var newFontColor = $(this).val();
+            document.documentElement.style.setProperty('--primary-font-color', newFontColor, 'important');
+            });
+            
+
                 $("#users").select2();
                 var socket = io("{{env('SOCKET_URL')}}");
                 var map;
@@ -747,7 +788,7 @@
                             $('.ride_driver_details_div_driver_phone').html('+'+booking.driver.country_code+'-'+booking.driver.phone);
                             $('.ride_driver_details_div_driver_na').text('');
                         } else {
-                            $('.ride_driver_details_div_driver_na').text('N/A');
+                            $('.ride_driver_details_div_driver_na').text('');
                         }
                         
 
@@ -780,7 +821,11 @@
                         $('.passenger_details').html(booking.user.first_name+' '+booking.user.last_name+"  (+"+booking.user.country_code+'-'+booking.user.phone+")");
                     }
                     $('.ride_payment_type').html(booking.payment_type);
-                    $('.ride_car_price').html('CHF '+booking.ride_cost);
+                    if(booking && booking.ride_cost) {
+                        $('.ride_car_price').html('CHF '+booking.ride_cost);
+                    } else {
+                        $('.ride_car_price').html('CHF ');
+                    }
                     $('.ride_note_div').html(booking.note);
 
                     ride_status = ""
@@ -984,8 +1029,9 @@
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
-                                $("#note").val(response.data.ride_detail.note);
 
+                                $("#note").val(response.data.ride_detail.note);
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 if (response.data.ride_detail.pick_lat) {
                                     newBookingMapPoints = [{
                                         Latitude: response.data.ride_detail.pick_lat,
@@ -1065,7 +1111,7 @@
 
                 
 
-                $(document).on('click','.addNewBtn_cs ',function(){
+                $(document).on('click','.addNewBtn_cs, .add_new_booking_btn',function(){
                     newBookingMapPoints = [];
                     newBookingMarkers = [];
                     cur_lat = "";
@@ -1135,16 +1181,17 @@
                             lng: cur_lng
                         };
                         var defaultBounds = {
-                            north: center.lat + 5,
-                            south: center.lat - 5,
-                            east: center.lng + 5,
-                            west: center.lng - 5,
+                            north: center.lat + 0.1,
+                            south: center.lat - 0.1,
+                            east: center.lng + 0.1,
+                            west: center.lng - 0.1,
                         };
                         var options = {
                             bounds: defaultBounds,
                             // fields: ["address_components"], // Or whatever fields you need
-                            strictBounds: true, // Only if you want to restrict, not bias
+                            //strictBounds: true, // Only if you want to restrict, not bias
                             // types: ["establishment"], // Whatever types you need
+                          //  radius: 5000
                         };
                     } else {
                         var options = {
@@ -1320,6 +1367,8 @@
                                     distance = result.routes[shortestRouteIndex].legs[0].distance.value/1000;
                                     distance = Math.ceil(distance);
                                     $('#distance_calculated_input').val(distance);
+                                    var ride_route = result.routes[shortestRouteIndex].overview_polyline;
+                                    $('#ride_route').val(ride_route);
                                     calculate_amount();
                                 }
                             });
@@ -1478,26 +1527,9 @@
                     $('#pickup_latitude').val('');
                     $('#pickup_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     initializeMapReport([]);
                     calculate_amount();
-                });
-
-                $(document).on('click','.dropoffPointCloseBtn',function(){
-                        $('#dropoffPoint').val('');
-                        $('#dropoff_latitude').val('');
-                        $('#dropoff_longitude').val('');
-                        $(".distance_calculated_input").val(0);
-                        calculate_amount();
-                        if($('#pickup_latitude').val()!="")
-                        {
-                            initializeMapReport([{
-                                Latitude: $('#pickup_latitude').val(),
-                                Longitude: $('#pickup_longitude').val(),
-                                AddressLocation: $('#pickupPoint').val()
-                            }]);
-                        } else {
-                            initializeMapReport([]);
-                        }
                 });
 
                 $(document).on('click','.dropoffPointCloseBtn',function(){
@@ -1505,6 +1537,7 @@
                     $('#dropoff_latitude').val('');
                     $('#dropoff_longitude').val('');
                     $(".distance_calculated_input").val(0);
+                    $('#ride_route').val("");
                     calculate_amount();
                     if($('#pickup_latitude').val()!="")
                     {
@@ -1590,11 +1623,18 @@
                                 } else {
                                     $("#users").val(response.data.ride_detail.user_id).change();
                                 }
+
+                                if(response.data.ride_detail.payment_type){
+                                    $("#payment_type").val(response.data.ride_detail.payment_type).change();
+                                } else {
+                                    $("#payment_type").val("").change();
+                                }
+
                                 $(".price_calculated_input").val(response.data.ride_detail.ride_cost);
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
                                 $("#note").val(response.data.ride_detail.note);
-
+                                $("#ride_route").val(response.data.ride_detail.route);
                                 if (response.data.ride_detail.pick_lat) {
                                     newBookingMapPoints = [{
                                         Latitude: response.data.ride_detail.pick_lat,
@@ -2040,8 +2080,17 @@
             });
 
 
+            
            
-
+            $(document).ready(function(){
+                $('ul li a').click(function(){
+                    setTimeout(function() {
+                        $('li a').removeClass("active");
+                        $(this).addClass("active");
+                    }, 1000);
+                });
+                
+            });
           
 
         </script>
