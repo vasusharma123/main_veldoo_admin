@@ -18,12 +18,6 @@
     cursor: pointer;
 }
 
-b {
-	background-color: #fff;
-	padding: 16px;
-	font-family: sans-serif;
-}
-
 code {
 	font-size: 1.2rem;
 	background-color: lightslategray;
