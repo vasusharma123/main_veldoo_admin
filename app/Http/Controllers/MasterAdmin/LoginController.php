@@ -29,7 +29,8 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         Auth::logout();
-        return view('master_admin.login');
+        $data = array('page_title' => 'Login', 'action' => 'Login');
+        return view('master_admin.login')->with($data);
     }
 
 
