@@ -32,6 +32,13 @@
                 });
 
             });
+
+            // Handle row click event
+            function navigateTo(url){
+                window.location.href = url;
+            }
+
+
         </script>
 
     </body>
