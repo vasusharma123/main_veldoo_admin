@@ -142,7 +142,9 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('service_providers','user\ProfileController@service_providers');
 	Route::post('mark_favourite_service_provider','user\ProfileController@mark_favourite_service_provider');
 	Route::get('settings', 'user\ProfileController@settings');
+	Route::post('sp_based_settings', 'user\ProfileController@sp_based_settings');
 	Route::get('vehicleTypes', 'user\VehicleController@vehicleTypes');
+	Route::post('sp_based_vehicle_types', 'user\VehicleController@sp_based_vehicle_types');
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {
