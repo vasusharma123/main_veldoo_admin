@@ -15,23 +15,8 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td>21.10.23</td>
-                                                            <td>Veldoo</td>
-                                                            <td><a href="#" class="tableLinks">Billing</a><a href="#" class="tableLinks">Receipt</a><a href="/master-plan" class="tableLinks editblue">Edit</a></td>
-                                                            <td>CHF 200.00</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>21.10.23</td>
-                                                            <td>Veldoo</td>
-                                                            <td><a href="#" class="tableLinks">Billing</a><a href="#" class="tableLinks">Receipt</a><a href="/master-plan" class="tableLinks editblue">Edit</a></td>
-                                                            <td>CHF 200.00</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>21.10.23</td>
-                                                            <td>Veldoo</td>
-                                                            <td><a href="#" class="tableLinks">Billing</a><a href="#" class="tableLinks">Receipt</a><a href="/master-plan" class="tableLinks editblue">Edit</a></td>
-                                                            <td>CHF 200.00</td>
-                                                        </tr>
+                                                            <td colspan="4" style="text-align:center"> No data exist</td>
+                                                            </tr>
                                                         
                                                     </tbody>
                                                 </table>
