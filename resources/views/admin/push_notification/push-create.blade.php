@@ -47,8 +47,8 @@
 												<div class="img_user_settled h-100">
 													<div class="view_image_user">
 
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<input type="file" name="fileUser" class="form-control hiddenForm" />
 													</div>
 													

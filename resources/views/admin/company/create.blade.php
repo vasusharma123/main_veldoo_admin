@@ -102,8 +102,8 @@
 												<div class="img_user_settled h-100">
 													<div class="view_image_user">
 
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<input type="file" name="company_image_tmp" class="form-control hiddenForm" />
 													</div>
 													
@@ -115,8 +115,8 @@
 											<div class="col-lg-4 col-md-4 col-sm-12 col-12">
 												<div class="img_user_settled h-100">
 													<div class="view_image_user">
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<input type="file" name="background_image" class="form-control hiddenForm" />
 													</div>
 												</div>
@@ -182,8 +182,8 @@
 												<div class="img_user_settled h-100">
 													<div class="view_image_user">
 
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/avatar-2.png" class="img-fluid w-100 img_user_face diverSide" />
-														<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+														<img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<input type="file" name="image_tmp" class="form-control hiddenForm" />
 													</div>
 													

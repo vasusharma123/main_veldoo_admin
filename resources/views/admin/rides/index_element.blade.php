@@ -56,7 +56,7 @@
 				<td>{{ $record->user_country_code.'-'.$record->user_phone }}</td>
 				<td class="actionbtns">
 					<a href="rides_details.html" class="actionbtnsLinks"><i class="bi bi-eye viewRides"></i></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/deleteBox.png" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 				</td>
 			</tr>
 			@endforeach

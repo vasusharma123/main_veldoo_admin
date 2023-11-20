@@ -7,9 +7,9 @@
 		<!-- Bootstrap V5 JS -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 		<!-- JS -->
-		<script src="{{ URL::asset('public') }}/assets/js/main.js"></script>
+		<script src="{{ asset('assets/js/main.js') }}"></script>
 		
-		<script src="{{ URL::asset('public') }}/assets/plugins/sweetalert/sweetalert.min.js"></script>
+		<script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
 		
 		<script type="text/javascript">
 		$('body').on('keypress', '.custFloatVal', function(event) {
