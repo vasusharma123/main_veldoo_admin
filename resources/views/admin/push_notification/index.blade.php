@@ -1,71 +1,127 @@
 @extends('admin.layouts.master')
 
 @section('content')
-	<!-- Container fluid  -->
-	<!-- ============================================================== -->
-	<div class="container-fluid">
-		<!-- ============================================================== -->
-		<!-- Start Page Content -->
-		<!-- ============================================================== -->
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="card" >
-					<div class="card-body">
-						@include('admin.layouts.flash-message')
-						<div class="box" id="allDataUpdate">
-							<div class="table-responsive">
-                            <table class="table table-bordered data-table data-table" width="100%">
-                                <thead class="thead-light">
-                                    <tr>
-                                    <th>ID</th>
-                                    <th>
-                                        Title
-                                    </th>
-                                    <th>
-                                        Description
-                                    </th>
-                                    <th>
-                                        Image
-                                    </th>
-                                    {{-- <th>Action</th> --}}
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($notifications as $notification)
-                                        <tr>
-                                            <td>{{ $notification->id }}</td>
-                                            <td>{{ $notification->title }}</td>
-                                            <td>{{ $notification->description }}</td>
-                                            <td>
-                                                <img src="{{ asset('storage/push-notifications/3/notification-image.jpg') }}" alt="">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addonTable sectionsform pt-2">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
+									
+									<input name="page" type="hidden">
+									
+									<div id="allDataUpdate">
+										@include("admin.push_notification.index_element")
+									</div>
+								</article>
+							</section>
 						</div>
 					</div>
+					
 				</div>
 			</div>
 		</div>
-		<!-- ============================================================== -->
-		<!-- End PAge Content -->
-		<!-- ============================================================== -->
 	</div>
+</main>
 @endsection	
-	<!-- ============================================================== -->
-	<!-- End Container fluid  -->
+	
 @section('footer_scripts')
-<style>
-.table-responsive{
-	overflow-x: scroll;
+<script type="text/javascript">
+$(function () {
+	
+	//setup before functions
+	var typingTimer;                //timer identifier
+	var doneTypingInterval = 1000;  //time in ms, 5 second for example
+	var $input = $('.myInput');
+
+	//on keyup, start the countdown
+	$input.on('keyup', function () {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(doneTyping, doneTypingInterval);
+	});
+
+	//on keydown, clear the countdown
+	$input.on('keydown', function () {
+		clearTimeout(typingTimer);
+	});
+	
+	function doneTyping() {
+		var text = $('.myInput').val();
+		var orderby = $('input[name="orderBy"]').val().toString();
+		var order = $('input[name="order"]').val().toString();
+		$("#loading").fadeIn("slow");
+		$('.input-append input[name="page"]').val(1);
+		ajaxCall('', text, orderby, order, '');
+	};
+	
+	$('body').on('click', '.delete_user', function(){
+        var id = $(this).attr('data-id');
+		//var text = $('.myInput').val();
+		var text = '';
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = 0;
+        swal({
+            title: "Are you sure?",
+            text: "You want to delete this Record !",
+            type: "warning",
+            timer: 3000,
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel !",
+            closeOnConfirm: true,
+            closeOnCancel: true,
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true,
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $("#loading").fadeIn("slow");
+				ajaxCall(id, text, orderby, order, page, status,'delete');
+            } else {
+                swal();
+            }
+        });
+    });
+	
+	$('body').on('click', '.change_status', function(){
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = $(this).val();
+		var id = $(this).attr('data-id');
+		
+		//var text = $('.myInput').val();
+		var text = '';
+		
+		$("#loading").fadeIn("slow");
+		ajaxCall(id, text, orderby, order, page, status, 'status');
+	});
+});
+function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
+	var page = (!page ? 1 : page);
+	$.ajax({
+		type: "GET",
+		url: "{{url()->current()}}",
+		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
+		success: function (data) {
+			$("#loading").fadeOut("slow");
+			$('#allDataUpdate').html(data);
+			
+			//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
+			//$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
+		}
+	});
 }
-thead tr{
-	white-space: nowrap;
-}
-table.dataTable td.dataTables_empty {
-    text-align: center;
-}
-</style>
+</script>
 @stop
