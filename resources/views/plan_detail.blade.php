@@ -29,37 +29,37 @@
                                     </div>
                                     <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="tel" class="form-control inputText" id="phone1" value="{{ $data['user']['phone']  }}"  name="phone1" placeholder="1234" readonly/>
+                                            <input type="tel" class="form-control inputText" id="phone1" value="{{ $data['user']['phone']  }}"  name="phone1"  readonly/>
                                             <label for="phone1">Phone Number</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="email" class="form-control inputText" id="email" value="{{ $data['user']['email'] }}" name="email" placeholder="company@email-address.com" readonly/>
+                                            <input type="email" class="form-control inputText" id="email" value="{{ $data['user']['email'] }}" name="email"  readonly/>
                                             <label for="email">Email</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="text" class="form-control inputText" id="address" name="address"  value="{{ $data['user']['street']}}" placeholder="Street" readonly />
+                                            <input type="text" class="form-control inputText" id="address" name="address"  value="{{ $data['user']['street']}}"  readonly />
                                             <label for="address">Service street</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="text" class="form-control inputText" id="postcode" name="postcode" value="{{ $data['user']['zip']}}"  placeholder="Enter Post Code" readonly />
+                                            <input type="text" class="form-control inputText" id="postcode" name="postcode" value="{{ $data['user']['zip']}}"   readonly />
                                             <label for="postcode">Service post code</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="text" class="form-control inputText" id="usercity" name="usercity" value="{{ $data['user']['city']}}"  placeholder="Enter City" readonly />
+                                            <input type="text" class="form-control inputText" id="usercity" name="usercity" value="{{ $data['user']['city']}}"   readonly />
                                             <label for="usercity">Service city</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <input type="text" class="form-control inputText" id="usercountry" name="usercountry" value="{{ $data['user']['country']}}" placeholder="Enter Country" readonly />
+                                            <input type="text" class="form-control inputText" id="usercountry" name="usercountry" value="{{ $data['user']['country']}}"  readonly />
                                             <label for="usercountry">Service country</label>
                                         </div>
                                     </div>
