@@ -163,8 +163,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
 
 
-	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController',
-	// 'contact-support'=>'ContactSupportController',
+	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController',
 	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);
 
