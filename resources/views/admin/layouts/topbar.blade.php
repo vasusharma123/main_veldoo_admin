@@ -4,7 +4,7 @@
 			<div class="row">
 				<div class="col-lg-2 col-md-3 col-sm-5 col-5 align-self-center">
 					<div class="logo_box">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/brand_logo.png" class="img-fluid w-100 brnd_img" alt="Brnad Name Veldoo" />
+						<img src="{{ asset('assets/images/veldoo/brand_logo.png') }}" class="img-fluid w-100 brnd_img" alt="Brnad Name Veldoo" />
 					</div>
 				</div>
 				<?php
@@ -103,7 +103,7 @@
 							<a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
 						</div>
 						<div class="avatar_info_box">
-							<img src="{{ URL::asset('public') }}/assets/images/veldoo/avatar-2.png" class="img-fluid w-100 avatar_img" alt="user image" />
+							<img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 avatar_img" alt="user image" />
 							<div class="user_info">
 								<h4 class="nameOfUser">Jameson</h4>
 								<p class="userInfo">Admin</p>

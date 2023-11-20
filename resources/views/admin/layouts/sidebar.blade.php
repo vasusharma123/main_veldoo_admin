@@ -9,91 +9,91 @@
 				?>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ ($uri=='users.dashboard' ? 'active' : '') }}" href="{{ route('users.dashboard') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/dashboard.png" class="img-fluid w-100 sidebarImgs" alt="dashboard"/> 
+						<img src="{{ asset('assets/images/veldoo/dashboard.png') }}" class="img-fluid w-100 sidebarImgs" alt="dashboard"/> 
 						<span class="sidebarText">Dashboard</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ ($uri=='users.index' ? 'active' : '') }}" href="{{ route('users.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/users.png" class="img-fluid w-100 sidebarImgs" alt="users"/> 
+						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users"/> 
 						<span class="sidebarText">User</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='drivers.index' || $uri=='drivers.create') ? 'active' : '') }}" href="{{ route('drivers.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/users.png" class="img-fluid w-100 sidebarImgs" alt="Driver"/> 
+						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="Driver"/> 
 						<span class="sidebarText">Driver</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='company.index' || $uri=='company.create' || $uri=='company.edit') ? 'active' : '') }}" href="{{ route('company.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/bagplus.png" class="img-fluid w-100 sidebarImgs" alt="Company"/> 
+						<img src="{{ asset('assets/images/veldoo/bagplus.png') }}" class="img-fluid w-100 sidebarImgs" alt="Company"/> 
 						<span class="sidebarText">Company</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='rides.index' || $uri=='rides.show') ? 'active' : '') }}" href="{{ route('rides.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/riders.png" class="img-fluid w-100 sidebarImgs" alt="Riders"/> 
+						<img src="{{ asset('assets/images/veldoo/riders.png') }}" class="img-fluid w-100 sidebarImgs" alt="Riders"/> 
 						<span class="sidebarText">Rides</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ ($uri=='users.settings' ? 'active' : '') }}" href="{{ route('users.settings') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/setting.png" class="img-fluid w-100 sidebarImgs" alt="Settings"/> 
+						<img src="{{ asset('assets/images/veldoo/setting.png') }}" class="img-fluid w-100 sidebarImgs" alt="Settings"/> 
 						<span class="sidebarText">Settings</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='users.voucher' || $uri=='voucher.create') ? 'active' : '') }}" href="{{ route('users.voucher') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/voucher.png" class="img-fluid w-100 sidebarImgs" alt="Voucher"/> 
+						<img src="{{ asset('assets/images/veldoo/voucher.png') }}" class="img-fluid w-100 sidebarImgs" alt="Voucher"/> 
 						<span class="sidebarText">Vouchers</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/payment.png" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
+						<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
 						<span class="sidebarText">Payment method</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='sms-template.index' || $uri=='sms-template.create' || $uri=='sms-template.edit') ? 'active' : '') }}" href="{{ route('sms-template.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/sms.png" class="img-fluid w-100 sidebarImgs" alt="SMS"/> 
+						<img src="{{ asset('assets/images/veldoo/sms.png') }}" class="img-fluid w-100 sidebarImgs" alt="SMS"/> 
 						<span class="sidebarText">SMS</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ ($uri=='daily-report.vehicle_mileage' ? 'active' : '') }}" href="{{ route('daily-report.vehicle_mileage') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/report.png" class="img-fluid w-100 sidebarImgs" alt="Reports"/> 
+						<img src="{{ asset('assets/images/veldoo/report.png') }}" class="img-fluid w-100 sidebarImgs" alt="Reports"/> 
 						<span class="sidebarText">Reports and insight</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='contact-support.index' || $uri=='contact-support.create') ? 'active' : '') }}" href="{{ route('contact-support.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/contact.png" class="img-fluid w-100 sidebarImgs" alt="contact"/> 
+						<img src="{{ asset('assets/images/veldoo/contact.png') }}" class="img-fluid w-100 sidebarImgs" alt="contact"/> 
 						<span class="sidebarText">Contact Support</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='push-notifications.index' || $uri=='push-notifications.create') ? 'active' : '') }}" href="{{ route('push-notifications.index') }}">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/push.png" class="img-fluid w-100 sidebarImgs" alt="Push"/> 
+						<img src="{{ asset('assets/images/veldoo/push.png') }}" class="img-fluid w-100 sidebarImgs" alt="Push"/> 
 						<span class="sidebarText">Push Notification</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
 				<li class="nav-item w-100">
 					<a class="nav-link" href="car.html">
-						<img src="{{ URL::asset('public') }}/assets/images/veldoo/car.png" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
+						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
 						<span class="sidebarText">Car</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>

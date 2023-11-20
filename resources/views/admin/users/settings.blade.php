@@ -123,8 +123,8 @@
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
 															<div class="view_image_user m-auto">
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 																<input type="file" name="bgImage" class="form-control hiddenForm " />
 															</div>
 															<label for="bgImage">Background Image</label>
@@ -133,8 +133,8 @@
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
 															<div class="view_image_user m-auto">
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 																<input type="file" name="logoImg" class="form-control hiddenForm " />
 															</div>
 															<label for="logoImg">Logo Image</label>
@@ -143,8 +143,8 @@
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
 															<div class="view_image_user m-auto">
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 																<input type="file" name="FavImag" class="form-control hiddenForm " />
 															</div>
 															<label for="FavImag">Favicon Image</label>
@@ -153,8 +153,8 @@
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
 															<div class="view_image_user m-auto">
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded.png" class="img-fluid w-100 img_user_face" />
-																<img src="{{ URL::asset('public') }}/assets/images/veldoo/uploaded_icon.png" class="img-fluid w-100 img_user_icon" />
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 																<input type="file" name="SidebarImage" class="form-control hiddenForm " />
 															</div>
 															<label for="SidebarImage">Sidebar Logo</label>

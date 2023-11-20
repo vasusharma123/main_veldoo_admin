@@ -15,8 +15,8 @@
 				   200 CHF
 				</td>
 				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/editpen.png" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/deleteBox.png" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 				</td>
 			</tr>
 			<tr>
@@ -25,8 +25,8 @@
 				   200 CHF
 				</td>
 				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/editpen.png" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/deleteBox.png" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 				</td>
 			</tr>
 			<tr>
@@ -35,8 +35,8 @@
 				   200 CHF
 				</td>
 				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/editpen.png" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/deleteBox.png" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 				</td>
 			</tr>
 			
