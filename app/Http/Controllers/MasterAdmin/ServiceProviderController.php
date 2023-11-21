@@ -21,6 +21,8 @@ use App\Notification;
 use App\Http\Resources\RideResource;
 use App\SMSTemplate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
+
 
 class ServiceProviderController extends Controller
 
@@ -31,12 +33,40 @@ class ServiceProviderController extends Controller
     }
 
 
-    public function getAllServiceProvider(){
+    public function showServiceProvider(){
 
         try{
             $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider');
-            $data['user'] =  User::where('user_type', 3)->paginate(5);
+            $data['user'] =  User::where('user_type', 3)->get();
             return view('service_provider', compact('data'))->with($data);
+
+        }catch(Exception $e){
+            Log::info('Error in method getAllServiceProvider'. $e);
+        }
+        
+
+    }
+
+    public function getAllServiceProvider(){
+
+        try{
+            // $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider');
+            // $data['user'] =  User::where('user_type', 3)->get();
+            // return view('service_provider', compact('data'))->with($data);
+
+            $data = User::where('user_type',2)->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    $actionBtn ='<a href="/plan-detail?id='.Crypt::encrypt($row->id).'"  class="plan valid"> Silver</a>';
+                   // $actionBtn = '<a class="tableAnchor wordWrapText" href="/getAuthorDetails/' . Crypt::encrypt($data->id) . '" ><span class="user_full_name_span">' . $data->fullName . '</span></a>';
+                    // <td class="text-center"><a href="/plan-detail?id={{ encrypt($item->id) }}"  class="plan valid">Silver</a></td>
+                    return $actionBtn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+
+                
 
         }catch(Exception $e){
             Log::info('Error in method getAllServiceProvider'. $e);

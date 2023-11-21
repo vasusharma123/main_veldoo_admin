@@ -36,7 +36,7 @@
                                 <div class="search">
                                     <form class="search_form">
                                         <div class="form-group searchinput position-relative trigger_parent">
-                                            <input type="text" class="form-control input_search target" placeholder="Search"/>
+                                            <input type="text" class="form-control input_search target" placeholder="Search" id="searchInput" />
                                             <i class="bi bi-search search_icons"></i>
                                         </div>
                                     </form>
