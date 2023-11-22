@@ -13,14 +13,14 @@
 
                                     @if(\Request::get('token'))
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month','token' => \Request::get('token')]) }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
                                         @else 
 
                                         <li class="nav-item">
-                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides','month') }}">
+                                            <a class="nav-link active dotnot img_clone_menu" aria-current="page" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month']) }}">
                                                 <img src="{{ asset('new-design-company/assets/images/home_img.png') }}" class="img-fuild image_home" alt="home-icon"/>
                                             </a>
                                         </li>
@@ -28,16 +28,16 @@
                                         @endif
 
                                         @if(\Request::get('token'))
-                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',['month','token' => \Request::get('token')]) }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month' , 'token' => \Request::get('token')]) }}">My Booking</a></li>
                                         @else 
-                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides','month') }}">My Booking</a></li>
+                                            <li class="nav-item active"><a class="nav-link dotnot" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month']) }}">My Booking</a></li>
 
                                         @endif
                                        
 
                                         @if (Auth::check())
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('guest.logout') }}">Logout</a>
+                                            <a class="nav-link" href="{{ route('guest.logout', \Request::get('slugRecord')->slug) }}">Logout</a>
                                         </li>
                                         @endif
 
@@ -56,7 +56,7 @@
                                </div>
                                @else
                                <div class="name_occupation d-flex flex-column top_header_nav">
-                                   <a class="nav-link user_name" href="{{route('guest.login')}}">Login</a>
+                                   <a class="nav-link user_name" href="{{route('guest.login', \Request::get('slugRecord')->slug)}}">Login</a>
                                </div>
 
                                 <!-- <div class="viewUser_content d-flex align-items-center">

@@ -30,9 +30,9 @@
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                         <nav aria-label="breadcrumb" class="pageBreadcrumb">
                             <ol class="breadcrumb tab_lnks mb-0">
-                                <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('guest.rides',['month','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Month View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',['list','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">List View</a></li>
-                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',['week','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Week View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns active" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month','token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Month View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'list' ? 'active' : '' }}" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'list', 'token' => \Request::get('token'),'status' => \Request::get('status')]) }}">List View</a></li>
+                                <li class="breadcrumb-item"><a class="tabs_links_btns {{ \Request::segment(3) == 'week' ? 'active' : '' }}" href="{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'week', 'token' => \Request::get('token'),'status' => \Request::get('status')]) }}">Week View</a></li>
                             </ol>
                         </nav>
                     </div>
@@ -145,7 +145,7 @@
                                 useGrouping: false
                             });
                     
-                    window.location.href = "{{ route('guest.rides','month') }}?token="+token+"&m="+year+"-"+month+"-01&status="+fStatus;
+                    window.location.href = "{{ route('guest.rides',[\Request::get('slugRecord')->slug, 'month']) }}?token="+token+"&m="+year+"-"+month+"-01&status="+fStatus;
                     
 
 

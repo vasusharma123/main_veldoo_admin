@@ -9,4 +9,8 @@ class Setting extends Model
     protected $fillable = [
         'key','value', 'service_provider_id'
     ];
+
+    public function service_provider(){
+		return $this->belongsTo(User::class, 'service_provider_id', 'id');
+	}
 }

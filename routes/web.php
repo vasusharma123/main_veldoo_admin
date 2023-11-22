@@ -246,7 +246,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 
 });
 
-Route::group(['prefix' => 'taxi2000'], function () {
+Route::group(['prefix' => '{slug}','middleware' => 'guest_user'], function () {
 	Route::get('/booking/{type?}', 'Guest\RidesController@index')->name('guest.rides');
 	Route::delete('ride/delete_multiple', 'Guest\RidesController@delete_multiple')->name('guest.rides.delete_multiple');
 	Route::post('/ride_booking', 'Guest\RidesController@ride_booking')->name('guest.ride_booking');
@@ -276,35 +276,35 @@ Route::group(['prefix' => 'taxi2000'], function () {
 	});
 });
 
-Route::group(['prefix' => 'taxisteinemann'], function () {
-	Route::get('/booking/{type?}', 'Guest\taxisteinemann\RidesController@index')->name('guest.taxisteinemann.rides');
-	Route::delete('ride/delete_multiple', 'Guest\taxisteinemann\RidesController@delete_multiple')->name('guest.taxisteinemann.rides.delete_multiple');
-	Route::post('/ride_booking', 'Guest\taxisteinemann\RidesController@ride_booking')->name('guest.taxisteinemann.ride_booking');
-	Route::post('/user_exist', 'Guest\taxisteinemann\RidesController@user_exist')->name('guest.taxisteinemann.user_exist');
-	Route::get('/rides-history', 'Guest\taxisteinemann\RidesController@history')->name('guest.taxisteinemann.rides.history');
-	Route::get('rides-edit', 'Guest\taxisteinemann\RidesController@edit')->name('guest.taxisteinemann.rides.edit');
-	Route::get('rides-driver_detail', 'Guest\taxisteinemann\RidesController@ride_driver_detail')->name('guest.taxisteinemann.rides.driver_detail');
-	Route::post('rides/detail/{id}', 'Guest\taxisteinemann\RidesController@ride_detail')->name('guest.taxisteinemann.ride_detail');
-	Route::post('/ride_booking_update', 'Guest\taxisteinemann\RidesController@ride_booking_update')->name('guest.taxisteinemann.ride_booking_update');
-	Route::post('/cancel_booking', 'Guest\taxisteinemann\RidesController@cancel_booking')->name('guest.taxisteinemann.cancel_booking');
-	Route::post('/delete_booking', 'Guest\taxisteinemann\RidesController@delete_booking')->name('guest.taxisteinemann.delete_booking');
+// Route::group(['prefix' => 'taxisteinemann'], function () {
+// 	Route::get('/booking/{type?}', 'Guest\taxisteinemann\RidesController@index')->name('guest.taxisteinemann.rides');
+// 	Route::delete('ride/delete_multiple', 'Guest\taxisteinemann\RidesController@delete_multiple')->name('guest.taxisteinemann.rides.delete_multiple');
+// 	Route::post('/ride_booking', 'Guest\taxisteinemann\RidesController@ride_booking')->name('guest.taxisteinemann.ride_booking');
+// 	Route::post('/user_exist', 'Guest\taxisteinemann\RidesController@user_exist')->name('guest.taxisteinemann.user_exist');
+// 	Route::get('/rides-history', 'Guest\taxisteinemann\RidesController@history')->name('guest.taxisteinemann.rides.history');
+// 	Route::get('rides-edit', 'Guest\taxisteinemann\RidesController@edit')->name('guest.taxisteinemann.rides.edit');
+// 	Route::get('rides-driver_detail', 'Guest\taxisteinemann\RidesController@ride_driver_detail')->name('guest.taxisteinemann.rides.driver_detail');
+// 	Route::post('rides/detail/{id}', 'Guest\taxisteinemann\RidesController@ride_detail')->name('guest.taxisteinemann.ride_detail');
+// 	Route::post('/ride_booking_update', 'Guest\taxisteinemann\RidesController@ride_booking_update')->name('guest.taxisteinemann.ride_booking_update');
+// 	Route::post('/cancel_booking', 'Guest\taxisteinemann\RidesController@cancel_booking')->name('guest.taxisteinemann.cancel_booking');
+// 	Route::post('/delete_booking', 'Guest\taxisteinemann\RidesController@delete_booking')->name('guest.taxisteinemann.delete_booking');
 
-	Route::get('guest-login',  'Guest\taxisteinemann\LoginController@guestLogin')->name('guest.taxisteinemann.login');
-	Route::get('guest-register',  'Guest\taxisteinemann\LoginController@guestRegister')->name('guest.taxisteinemann.register');
-	Route::post('do-register-guest',  ['uses'=>'Guest\taxisteinemann\LoginController@doRegisterGuest'])->name('do-register-guest');
-	Route::post('/send_otp_before_register',  ['uses'=>'Guest\taxisteinemann\LoginController@send_otp_before_register'])->name('send_otp_before_register');
-	Route::post('/verify_otp_before_register',  ['uses'=>'Guest\taxisteinemann\LoginController@verify_otp_before_register'])->name('verify_otp_before_register');
-	Route::post('/send_otp_forgot_password',  ['uses'=>'Guest\taxisteinemann\LoginController@send_otp_forgot_password'])->name('send_otp_forgot_password');
-	Route::post('/verify_otp_forgot_password',  ['uses'=>'Guest\taxisteinemann\LoginController@verify_otp_forgot_password'])->name('verify_otp_forgot_password');
-	Route::get('forget-password',  'Guest\taxisteinemann\LoginController@forgetPassword')->name('forget.password');
-	Route::post('forget-password',  'Guest\taxisteinemann\LoginController@changeForgetPassword')->name('change.forget.password');
-	Route::group(['middleware' => 'guest'], function(){
-		Route::post('/do-login-guest',  ['uses'=>'Guest\taxisteinemann\LoginController@doLoginGuest'])->name('do-login-guest');
-	});
-	Route::group(['middleware' => 'auth'], function () {
-		Route::get('logout',  ['as' => 'guest.taxisteinemann.logout','uses' => 'Guest\taxisteinemann\LoginController@logout']);
-	});
-});
+// 	Route::get('guest-login',  'Guest\taxisteinemann\LoginController@guestLogin')->name('guest.taxisteinemann.login');
+// 	Route::get('guest-register',  'Guest\taxisteinemann\LoginController@guestRegister')->name('guest.taxisteinemann.register');
+// 	Route::post('do-register-guest',  ['uses'=>'Guest\taxisteinemann\LoginController@doRegisterGuest'])->name('do-register-guest');
+// 	Route::post('/send_otp_before_register',  ['uses'=>'Guest\taxisteinemann\LoginController@send_otp_before_register'])->name('send_otp_before_register');
+// 	Route::post('/verify_otp_before_register',  ['uses'=>'Guest\taxisteinemann\LoginController@verify_otp_before_register'])->name('verify_otp_before_register');
+// 	Route::post('/send_otp_forgot_password',  ['uses'=>'Guest\taxisteinemann\LoginController@send_otp_forgot_password'])->name('send_otp_forgot_password');
+// 	Route::post('/verify_otp_forgot_password',  ['uses'=>'Guest\taxisteinemann\LoginController@verify_otp_forgot_password'])->name('verify_otp_forgot_password');
+// 	Route::get('forget-password',  'Guest\taxisteinemann\LoginController@forgetPassword')->name('forget.password');
+// 	Route::post('forget-password',  'Guest\taxisteinemann\LoginController@changeForgetPassword')->name('change.forget.password');
+// 	Route::group(['middleware' => 'guest'], function(){
+// 		Route::post('/do-login-guest',  ['uses'=>'Guest\taxisteinemann\LoginController@doLoginGuest'])->name('do-login-guest');
+// 	});
+// 	Route::group(['middleware' => 'auth'], function () {
+// 		Route::get('logout',  ['as' => 'guest.taxisteinemann.logout','uses' => 'Guest\taxisteinemann\LoginController@logout']);
+// 	});
+// });
 
 
 Route::resource('company-users','Company\UsersController')->middleware(['auth','role_or_permission:Company']);

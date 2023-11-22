@@ -23,8 +23,12 @@ use App\PaymentMethod;
 use App\SMSTemplate;
 
 class RidesController extends Controller
-
 {
+
+    protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+
     public function __construct(Request $request = null)
     {
         $this->successCode = 200;
@@ -35,8 +39,9 @@ class RidesController extends Controller
     // protected $errorCode = 401;
     // protected $warningCode = 500;
 
-    public function index(Request $request, $type = null)
+    public function index(Request $request, $slug, $type = null)
     {
+        // dd($request->get('slugRecord')->service_provider);
         $type = ($type ? $type : 'month') . 'View';
         $type = !in_array($type, ['listView', 'monthView', 'weekView']) ? 'monthView' : $type;
         $data['user'] = '';
@@ -52,7 +57,6 @@ class RidesController extends Controller
 
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
-        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         return $this->$type($data, $request->all());
     }
 
@@ -142,7 +146,6 @@ class RidesController extends Controller
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
-        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         $data['date'] = $date;
 
         return view('guest.rides.month')->with($data);
@@ -199,11 +202,10 @@ class RidesController extends Controller
         }
         $data['vehicle_types'] = Price::orderBy('sort')->get();
         $data['payment_types'] = PaymentMethod::get();
-        $data['service_providers'] = User::select('id', 'name', 'user_type')->where(['user_type' => 3])->get();
         return view('guest.rides.week')->with($data);
     }
 
-    public function user_exist(Request $request) {
+    public function user_exist(Request $request, $slug) {
 
         try
 		{
@@ -223,7 +225,7 @@ class RidesController extends Controller
 			$userData = User::where(['country_code' => $request->country_code, 'phone' => (int) filter_var($request->phone, FILTER_SANITIZE_NUMBER_INT)])->first();
 
 			if(Auth::user()) {
-                return response()->json(['status' => 1, 'route' => route('guest.ride_booking'), ]);
+                return response()->json(['status' => 1, 'route' => route('guest.ride_booking', $slug) ]);
             } 
             // else if ($userExit) {
             //     return response()->json(['status' => 1, 'route' => route('without_otp_ride_booking'), ]);
@@ -312,7 +314,7 @@ class RidesController extends Controller
             $ride->ride_type = 3;
             $ride->created_by =  Auth::user() ? Auth::user()->user_type : 1; 
             $ride->creator_id = Auth::user() ? Auth::user()->id : NULL;
-            $ride->service_provider_id = $request->service_provider_id??"";
+            $ride->service_provider_id = $request->get('slugRecord')->service_provider_id;
             $ride->platform = "web";
             $ride->status = !empty($request->status) && $request->status > 0 ? $request->status : 0;
 
@@ -507,7 +509,7 @@ class RidesController extends Controller
                 $ride->car_type = $request->car_type;
                 $ride->created_by =  Auth::user() ? Auth::user()->user_type : 1; 
                 $ride->creator_id = Auth::user() ? Auth::user()->id : NULL;
-                $ride->service_provider_id = $request->service_provider_id??"";
+                $ride->service_provider_id = $request->get('slugRecord')->service_provider_id;
                 $ride->alert_time = 15;
                 $ride->user_id = Auth::user() ? Auth::user()->id : NULL; 
                 if (!empty($request->ride_time)) {
@@ -622,21 +624,15 @@ class RidesController extends Controller
         return view('guest.rides.history')->with($data);
     }
 
-    public function ride_detail($id)
+    public function ride_detail(Request $request, $slug, $id)
     {
-        $now = Carbon::now();
-        $ride = Ride::where(function($query){
-                                if(Auth::user()) {
-                                    $query->where(['user_id' => Auth::user()->id]);
-                                }
-                            // $query->where('status', '!=', '1')->where('status', '!=', '2')->where('status', '!=', '4');
-                        })->orderBy('rides.created_at','Desc')
-                        //->where('user_id','!=',null)
-                        ->with(['user','driver','vehicle','creator'])->find($id);
-                        //dd($ride);
-
-        // $ride->status = 2;
-        return response()->json(['status'=>1,'data'=>$ride]);
+        $ride = Ride::where(function ($query) {
+            if (Auth::user()) {
+                $query->where(['user_id' => Auth::user()->id]);
+            }
+        })
+            ->with(['user', 'driver', 'vehicle', 'creator'])->find($id);
+        return response()->json(['status' => 1, 'data' => $ride]);
     }
 
     public function edit(Request $request)

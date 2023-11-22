@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRideColorColumnToCompaniesTable extends Migration
+class AddColumnSlugToSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddRideColorColumnToCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::table('companies', function (Blueprint $table) {
-            $table->string('ride_color',50)->nullable()->default(null);
+        Schema::table('settings', function (Blueprint $table) {
+            $table->string('slug', 50)->nullable()->default(null)->after('value');
         });
     }
 
@@ -25,8 +25,8 @@ class AddRideColorColumnToCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::table('companies', function (Blueprint $table) {
-            $table->dropColumn('ride_color');
+        Schema::table('settings', function (Blueprint $table) {
+            $table->dropColumn('slug');
         });
     }
 }
