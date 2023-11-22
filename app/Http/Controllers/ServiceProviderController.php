@@ -350,6 +350,11 @@ class ServiceProviderController extends Controller
                     $message->to($verifyUser->email);
                     $message->subject('Update Credentials Link');
                 });
+
+                FacadesMail::send('email.updateDriverDetailLinkToServiceProvider', ['token' => $token], function ($message) use ($verifyUser) {
+                    $message->to($verifyUser->email);
+                    $message->subject('Update Credentials Link');
+                });
             }
             // $data['user'] = $user;
             // $data['driver'] = $driver;
@@ -364,6 +369,16 @@ class ServiceProviderController extends Controller
             $message = 'Sorry your email cannot be identified.';
             return redirect()->route('service-provider.register')->with('error', $message);
         }
+    }
+
+    public function selectPlan($token)
+    {
+      try{
+            return view('service_provider.select_plan');
+      }catch(Exception $e){
+        Log::info('Error in method selectPlan'. $e);
+      }
+
     }
 
     public function register_step1(Request $request)
