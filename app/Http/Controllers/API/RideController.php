@@ -2172,6 +2172,11 @@ class RideController extends Controller
                 $title = 'Pickup Location Changed';
                 $message = "The pickup location for your ride has been changed";
                 $type = 16;
+                if (!empty($request->dest_address)) {
+                    $title = 'Destination Location Changed';
+                    $message = "The destination location for your ride has been changed.";
+                    $type = 16;
+                }
                 $rideResponse = new RideResource(Ride::find($request->ride_id));
                 if (!empty($userdata)) {
                     $settings = Setting::first();
