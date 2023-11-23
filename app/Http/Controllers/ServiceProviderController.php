@@ -188,7 +188,8 @@ class ServiceProviderController extends Controller
                     "want_send_sms_to_user_when_driver_cancelled_the_ride" => 1
                 ];
                 $setting = new Setting();
-                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue)]);
+                $slug = $this->createUrlSlug($verifyUser->name);
+                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue), 'slug' => $slug]);
                 $setting->save();
 
                 //vehicle-type

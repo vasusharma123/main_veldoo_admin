@@ -2,4 +2,4 @@
   
 You can update the important details using the below link:
 <br>
-<a href="{{ route('serviceProviderVerify', $token) }}">Click to continue</a>
+<a href="{{ route('service-provider.register_step1',['token' => $token]) }}">Click to continue</a>
