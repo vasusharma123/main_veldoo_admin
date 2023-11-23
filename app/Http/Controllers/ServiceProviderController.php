@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Plan;
+use Illuminate\Support\Carbon;
+use App\PlanPurchaseHistory;
+
 
 class ServiceProviderController extends Controller
 {
@@ -351,9 +355,9 @@ class ServiceProviderController extends Controller
                     $message->subject('Update Credentials Link');
                 });
 
-                FacadesMail::send('email.updateDriverDetailLinkToServiceProvider', ['token' => $token], function ($message) use ($verifyUser) {
+                FacadesMail::send('email.choosePlanEmail', ['token' => $token], function ($message) use ($verifyUser) {
                     $message->to($verifyUser->email);
-                    $message->subject('Update Credentials Link');
+                    $message->subject('Select Plan');
                 });
             }
             // $data['user'] = $user;
@@ -374,12 +378,78 @@ class ServiceProviderController extends Controller
     public function selectPlan($token)
     {
       try{
-            return view('service_provider.select_plan');
+        $data = Plan::get()->toArray();
+        return view('service_provider.select_plan')->with(['data' => $data, 'token' => $token]);
       }catch(Exception $e){
         Log::info('Error in method selectPlan'. $e);
       }
 
     }
+    public function subscribePlan($token,$id)
+    {
+      try{
+        $data = Plan::where('id', $id)->first()->toArray();
+        return view('service_provider.subscribe_plan')->with(['data' => $data, 'token' => $token, 'plan_id' =>  $id]);
+      }catch(Exception $e){
+        Log::info('Error in method selectPlan'. $e);
+      }
+
+    }
+
+    public function subscribedPlanByUser(Request $request)
+    {
+      try{
+       
+      $userDetail =  User::where('is_email_verified_token', $request->token)->first();
+
+      if(!$userDetail){
+         return "There is some problem";
+      }
+
+      if(!Plan::where('id' ,$request->plan)->exists()){
+        return "Please select plan again";
+     }
+     $planDetail =  Plan::where('id' ,$request->plan)->get();
+     $PlanPurchaseHistory = new PlanPurchaseHistory();
+     $PlanPurchaseHistory->user_id = $userDetail->id;
+     $PlanPurchaseHistory->plan_id = $request->plan;
+     $today = Carbon::now();
+     if($planDetail[0]['plan_type'] == 'monthly'){
+       $expiry = $today->addMonth();
+     }else{
+        $expiry = $today->addYear();
+     }
+     $PlanPurchaseHistory->expire_at = $expiry;
+     $PlanPurchaseHistory->currency = 'CHF';
+     $PlanPurchaseHistory->purchase_date = Carbon::now();
+     $saved =  $PlanPurchaseHistory->save();
+     if($saved){
+        $randomString = Str::random(10);
+        $newPassword = Hash::make($randomString);
+        $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
+        if($updated){
+            FacadesMail::send('email.loginCredential', ['password' => $randomString], function ($message) use ($userDetail) {
+                $message->to($userDetail->email);
+                $message->subject('New Login Credential Veldoo');
+            });
+
+            return redirect('/thankyou');    
+        }
+     }else{
+        return "There is some problem";
+     }
+     
+      }catch(Exception $e){
+        Log::info('Error in method selectPlan'. $e);
+      }
+
+    }
+
+    public function thankyou (){
+        return view('service_provider.thankyou');
+    }
+    
+    
 
     public function register_step1(Request $request)
     {

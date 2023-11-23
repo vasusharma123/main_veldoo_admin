@@ -1,3 +1,3 @@
-Select plan
+Please Select a plan
 <br>
-<a href="{{ route('serviceProviderVerify', $token) }}">Click to continue</a>
+<a href="{{ route('selectPlan', $token) }}">Click to continue</a>
