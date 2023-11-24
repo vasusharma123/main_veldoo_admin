@@ -22,7 +22,7 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
-					<a class="nav-link {{ (($uri=='drivers.index' || $uri=='drivers.create') ? 'active' : '') }}" href="{{ route('drivers.index') }}">
+					<a class="nav-link {{ (($uri=='drivers.index' || $uri=='drivers.create' || $uri=='drivers.edit' || $uri=='drivers.regular' || $uri=='drivers.master') ? 'active' : '') }}" href="{{ route('drivers.index') }}">
 						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="Driver"/> 
 						<span class="sidebarText">Driver</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>

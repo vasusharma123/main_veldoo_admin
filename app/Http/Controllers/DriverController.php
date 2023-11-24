@@ -39,6 +39,11 @@ class DriverController extends Controller
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
 		}
 		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0");
+		}
+		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {
@@ -46,6 +51,92 @@ class DriverController extends Controller
 		}
 		
 		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0])->paginate($this->limit);
+		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] = $request->input('orderby');
+		$data['order'] = $request->input('order');
+        if ($request->ajax()) {
+            return view("admin.drivers.index_element")->with($data);
+        }
+		
+		return view('admin.drivers.index')->with($data);
+	}
+	
+	public function regularDriver(Request $request)
+	{
+		$this->limit = 20;
+		
+		$data = array();
+		$data = array('title' => 'Drivers', 'action' => 'Regular Drivers');
+		
+		$records = DB::table('users');
+		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status, is_master');
+		
+		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
+			$status = ($request->input('status')?0:1);
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('is_master' => $status));
+		}
+		
+		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+			$status = ($request->input('status')?0:1);
+			
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
+		}
+		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=0");
+		}
+		
+		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+			$records->orderBy($request->input('orderby'), $request->input('order'));
+		} else {
+			$records->orderBy('id', 'desc');
+		}
+		
+		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0, 'is_master' => 0])->paginate($this->limit);
+		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] = $request->input('orderby');
+		$data['order'] = $request->input('order');
+        if ($request->ajax()) {
+            return view("admin.drivers.index_element")->with($data);
+        }
+		
+		return view('admin.drivers.index')->with($data);
+	}
+	
+	public function masterDriver(Request $request)
+	{
+		$this->limit = 20;
+		
+		$data = array();
+		$data = array('title' => 'Drivers', 'action' => 'Master Drivers');
+		
+		$records = DB::table('users');
+		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status, is_master');
+		
+		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
+			$status = ($request->input('status')?0:1);
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('is_master' => $status));
+		}
+		
+		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+			$status = ($request->input('status')?0:1);
+			
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
+		}
+		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=1");
+		}
+		
+		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+			$records->orderBy($request->input('orderby'), $request->input('order'));
+		} else {
+			$records->orderBy('id', 'desc');
+		}
+		
+		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0, 'is_master' => 1])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');

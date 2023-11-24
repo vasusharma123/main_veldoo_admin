@@ -42,6 +42,11 @@ class CompanyController extends Controller
 			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
 		}
 		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(name LIKE '%$text%' OR email LIKE '%$text%' OR IFNULL((SELECT name FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT email FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT phone FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT state FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT city FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT country FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%') AND user_type IN(4,5) AND deleted=0");
+		}
+		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {

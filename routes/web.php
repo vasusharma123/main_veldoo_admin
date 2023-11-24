@@ -161,8 +161,10 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::get('driver/{id}','UserController@showDriver')->name('showDriver');
 	Route::post('driver/delete','DriverController@destroy')->name('admin.driver.delete');
 	Route::match(['put', 'patch'], '/users/storeImport',['as'=>'users.storeImport','uses'=>'UserController@storeImport']);
-
-
+	
+	Route::get('/drivers/regular',  ['as'=>'drivers.regular','uses'=>'DriverController@regularDriver']);
+	Route::get('/drivers/master',  ['as'=>'drivers.master','uses'=>'DriverController@masterDriver']);
+	
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController',
 	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);

@@ -95,17 +95,18 @@ $(function () {
 	
 	function doneTyping() {
 		var text = $('.myInput').val();
-		var orderby = $('input[name="orderBy"]').val().toString();
-		var order = $('input[name="order"]').val().toString();
-		$("#loading").fadeIn("slow");
-		$('.input-append input[name="page"]').val(1);
+		//var orderby = $('input[name="orderBy"]').val().toString();
+		var orderby = '';
+		//var order = $('input[name="order"]').val().toString();
+		var order = '';
+		//$("#loading").fadeIn("slow");
+		$('input[name="page"]').val(1);
 		ajaxCall('', text, orderby, order, '');
 	};
 	
 	$('body').on('click', '.delete_user', function(){
         var id = $(this).attr('data-id');
-		//var text = $('.myInput').val();
-		var text = '';
+		var text = $('.myInput').val();
 		//var orderby = $('input[name="orderBy"]').val();
 		var orderby = '';
 		//var order = $('input[name="order"]').val();
@@ -158,7 +159,7 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 		url: "{{url()->current()}}",
 		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
 		success: function (data) {
-			$("#loading").fadeOut("slow");
+			//$("#loading").fadeOut("slow");
 			$('#allDataUpdate').html(data);
 			
 			//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
