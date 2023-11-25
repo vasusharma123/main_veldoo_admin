@@ -1643,65 +1643,51 @@
                                     $(document).find(".save_booking").attr('disabled', true);
                                 }
 
-                                var booking_url = "{{ auth()->check() ? route('guest.ride_booking', \Request::get('slugRecord')->slug) : route('send_otp_before_ride_booking') }}";
-                                var authCheck = "{{ auth()->check() }}";
-
+                                var booking_url = "{{ auth()->check() ? route('guest.ride_booking', \Request::get('slugRecord')->slug) : route('guest.send_otp_before_ride_booking', \Request::get('slugRecord')->slug) }}";
                                 $.ajax({
-                                    url: "{{ route('guest.user_exist', \Request::get('slugRecord')->slug) }}",
+                                    url: booking_url,
                                     type: 'post',
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
-                                        $.ajax({
-                                            url: response.route,
-                                            type: 'post',
-                                            dataType: 'json',
-                                            data: $('form#booking_list_form').serialize(),
-                                            success: function(response) {
 
-                                                if(response.booking_status == 'direct' && response.user_data) {
-                                                    if (response.status) {    
-                                                        swal.fire("{{ __('Success') }}", response.message,"success");
-                                                        setTimeout(function() {
-                                                            var currentURL = (document.URL);
-                                                            var part = currentURL.split("/")[1];
-                                                            route = part+'?token='+response.user_data.random_token;
-                                                            window.location.href = route;
-                                                            var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
-                                                            socket.emit('master-driver-update-web', {"data":response.data});
-                                                        }, 1000);
-                                                       // socket.emit('master-driver-update-web', {"data":response.data});
-                                                    } else if (response.status == 0) {
-                                                        swal.fire("{{ __('Error') }}", response.message,
-                                                            "error");
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                } else if(response.booking_status == 'direct' && !response.user_data) {
-                                                    if (response.status) {          
-                                                        socket.emit('master-driver-update-web', {"data":response.data});
-                                                        swal.fire("{{ __('Success') }}", response.message,"success");
-                                                        
-                                                    } else if (response.status == 0) {
-                                                        swal.fire("{{ __('Error') }}", response.message,
-                                                            "error");
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                } else {
-                                                    if(response.status){
-                                                        $("#confirmOTPModal").modal('show');
-                                                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
-                                                    } else if(response.status == 0){
-                                                        new swal("{{ __('Error') }}",response.message,"error");
-                                                        $(document).find(".verify_otp").removeAttr('disabled');
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                }
-                                            },
-                                            error(response) {
-                                                swal.fire("{{ __('Error') }}", response.message, "error");
+                                        if(response.booking_status == 'direct' && response.user_data) {
+                                            if (response.status) {    
+                                                swal.fire("{{ __('Success') }}", response.message,"success");
+                                                setTimeout(function() {
+                                                    var currentURL = (document.URL);
+                                                    var part = currentURL.split("/")[1];
+                                                    route = part+'?token='+response.user_data.random_token;
+                                                    window.location.href = route;
+                                                    var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
+                                                    socket.emit('master-driver-update-web', {"data":response.data});
+                                                }, 1000);
+                                                // socket.emit('master-driver-update-web', {"data":response.data});
+                                            } else if (response.status == 0) {
+                                                swal.fire("{{ __('Error') }}", response.message,
+                                                    "error");
                                                 $(document).find(".save_booking").removeAttr('disabled');
                                             }
-                                        });
+                                        } else if(response.booking_status == 'direct' && !response.user_data) {
+                                            if (response.status) {          
+                                                socket.emit('master-driver-update-web', {"data":response.data});
+                                                swal.fire("{{ __('Success') }}", response.message,"success");
+                                                
+                                            } else if (response.status == 0) {
+                                                swal.fire("{{ __('Error') }}", response.message,
+                                                    "error");
+                                                $(document).find(".save_booking").removeAttr('disabled');
+                                            }
+                                        } else {
+                                            if(response.status){
+                                                $("#confirmOTPModal").modal('show');
+                                                timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
+                                            } else if(response.status == 0){
+                                                new swal("{{ __('Error') }}",response.message,"error");
+                                                $(document).find(".verify_otp").removeAttr('disabled');
+                                                $(document).find(".save_booking").removeAttr('disabled');
+                                            }
+                                        }
                                     },
                                     error(response) {
                                         swal.fire("{{ __('Error') }}", response.message, "error");
@@ -2296,7 +2282,7 @@
 
         $(document).on('click','.confirmOTPModalResendOtp',function(){
             $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
+                url: "{{ route('guest.send_otp_before_ride_booking', \Request::get('slugRecord')->slug) }}",
                 type: 'post',
                 dataType: 'json',
                 data: $('form#otp_form').serialize(),
@@ -2328,12 +2314,8 @@
             var post_data = $('form#otp_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
-            <?php
-                $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            ?>
-            post_data += '&url_type=taxi2000';
             $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking')}}",
+                url: "{{ route('guest.verify_otp_and_ride_booking',\Request::get('slugRecord')->slug )}}",
                 type: 'post',
                 dataType: 'json',
                 data: post_data,

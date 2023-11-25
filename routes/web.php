@@ -65,11 +65,7 @@ Route::group(['middleware' => 'locale'], function(){
 
 	// Route::get('/booking_form',  ['uses'=>'PageController@booking_form']);
 	// Route::post('/booking_form',  ['uses'=>'PageController@booking_form'])->name('booking_form');
-	Route::post('/send_otp_before_ride_booking',  ['uses'=>'PageController@send_otp_before_ride_booking'])->name('send_otp_before_ride_booking');
 	// Route::post('/verify_otp_before_register',  ['uses'=>'PageController@verify_otp_before_register'])->name('verify_otp_before_register');
-
-	Route::post('/verify_otp_and_ride_booking',  ['uses'=>'PageController@verify_otp_and_ride_booking'])->name('verify_otp_and_ride_booking');
-	Route::post('/without_otp_ride_booking',  ['uses'=>'PageController@without_otp_ride_booking'])->name('without_otp_ride_booking');
 
 	Route::get('/my-booking',  ['uses' => 'PageController@myBooking']);
 	Route::post('/send_otp_for_my_bookings',  ['uses' => 'PageController@send_otp_for_my_bookings'])->name('send_otp_for_my_bookings');
@@ -260,6 +256,8 @@ Route::group(['prefix' => '{slug}','middleware' => 'guest_user'], function () {
 	Route::post('/ride_booking_update', 'Guest\RidesController@ride_booking_update')->name('guest.ride_booking_update');
 	Route::post('/cancel_booking', 'Guest\RidesController@cancel_booking')->name('guest.cancel_booking');
 	Route::post('/delete_booking', 'Guest\RidesController@delete_booking')->name('guest.delete_booking');
+	Route::post('/send_otp_before_ride_booking',  ['uses'=>'Guest\RidesController@send_otp_before_ride_booking'])->name('guest.send_otp_before_ride_booking');
+	Route::post('/verify_otp_and_ride_booking',  ['uses'=>'Guest\RidesController@verify_otp_and_ride_booking'])->name('guest.verify_otp_and_ride_booking');
 
 	Route::get('guest-login',  'Guest\LoginController@guestLogin')->name('guest.login');
 	Route::get('guest-register',  'Guest\LoginController@guestRegister')->name('guest.register');
