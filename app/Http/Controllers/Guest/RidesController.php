@@ -56,15 +56,15 @@ class RidesController extends Controller
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
         }
 
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
-        return $this->$type($data, $request->all());
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->get();
+        return $this->$type($request, $data);
     }
 
 
 
 
-    public function listView($data,$request)
+    public function listView(Request $request, $data)
     {
 
         $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
@@ -100,7 +100,7 @@ class RidesController extends Controller
         return view('guest.rides.index')->with($data);
     }
 
-    public function monthView($data,$request)
+    public function monthView(Request $request, $data)
     {
         $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
 
@@ -137,22 +137,19 @@ class RidesController extends Controller
         //->whereMonth('ride_time',$month)
         //->whereYear('ride_time', $year)
         ->with(['vehicle','user:id,first_name,last_name'])->get();
-
-       
-
         }
         
         if($userId) {                
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
         }
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->get();
         $data['date'] = $date;
 
         return view('guest.rides.month')->with($data);
     }
 
-    public function weekView($data,$request)
+    public function weekView(Request $request, $data)
     {
         $getStatus = isset(request()->status) && request()->status != '' ?  request()->status : '';
 
@@ -201,8 +198,8 @@ class RidesController extends Controller
         if($userId) {                
             $data['users'] = User::where(['user_type' => 1, 'id' => $userId])->orderBy('name')->get();
         }
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $request->get('slugRecord')->service_provider_id])->get();
         return view('guest.rides.week')->with($data);
     }
 

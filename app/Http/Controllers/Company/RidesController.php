@@ -33,8 +33,8 @@ class RidesController extends Controller
         $type = ($type?$type:'list').'View';
         $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         return $this->$type($data,$request->all());
     }
 
@@ -93,8 +93,8 @@ class RidesController extends Controller
                                 }
                             })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         // dd($data['rides']);
         $data['date'] = $date;
         return view('company.rides.month')->with($data);
@@ -136,8 +136,8 @@ class RidesController extends Controller
                 }
             })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         // dd($data['rides']);
         return view('company.rides.week')->with($data);
     }

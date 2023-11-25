@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
 use App\OtpVerification;
-use App\Price;
 use App\SMSTemplate;
 use App\User;
 use Carbon\Carbon;
@@ -37,11 +36,9 @@ class LoginController extends Controller
         }
 
         $breadcrumb = array('title' => 'Home', 'action' => 'Login');
-        $vehicle_types = Price::orderBy('sort')->get();
         $data = [];
 
         $data = array_merge($breadcrumb, $data);
-        $data['vehicle_types'] = $vehicle_types;
         return view('guest.auth.login')->with($data);
     }
 
