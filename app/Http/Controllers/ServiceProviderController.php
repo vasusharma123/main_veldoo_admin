@@ -106,17 +106,13 @@ class ServiceProviderController extends Controller
                 $verifyUser->is_email_verified = 1;
                 $verifyUser->update();
 
-                $driver = new User();
+                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2]);
                 $driver->fill([
                     'email' => $verifyUser->email,
                     'first_name' => $verifyUser->first_name,
                     'last_name' => $verifyUser->last_name,
-                    'country_code' => $verifyUser->country_code,
-                    'phone' => $verifyUser->phone,
                     'country_code_iso' => $verifyUser->country_code_iso,
-                    'is_master' => 1,
-                    'user_type' => 2,
-                    'service_provider_id' => $verifyUser->id,
+                    'is_master' => 1
                 ]);
                 $driver->save();
                 $serviceProviderDriver = new ServiceProviderDriver();
