@@ -7,11 +7,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Company;
+use App\PaymentMethod;
+use App\Price;
 use App\Ride;
 use App\ServiceProviderDriver;
 use Carbon\Carbon;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 
 class CompanyController extends Controller
 {
@@ -334,5 +337,190 @@ class CompanyController extends Controller
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
     }
+
+	public function settings(Request $request)
+	{
+		$data = array('page_title' => 'Settings', 'action' => 'Settings');
+		$data['company'] = Company::find(Auth::user()->company_id);
+		$data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->paginate(20);
+		$data['vehicle_types'] = Price::orderBy('sort')->get();
+		$data['payment_types'] = PaymentMethod::get();
+		return view("company.settings.index")->with($data);
+	}
+
+	public function updateCompanyInformation(Request $request)
+	{
+		// dd($request->all());
+		$this->validate($request, [
+			'name' => 'required',
+			// 'email' => 'email',
+			// 'phone' => 'required',
+			// 'country_code' => 'required',
+			// 'state' => 'required|min:3',
+			'city' => 'required|min:3',
+			'zip_code' => 'required|min:3',
+			'country' => 'required',
+
+		]);
+		DB::beginTransaction();
+		try {
+			$data = ['name' => $request->name, 'email' => $request->email, 'phone' => $request->phone, 'country_code' => $request->country_code, 'street' => $request->street, 'state' => $request->state, 'zip' => $request->zip_code, 'country' => $request->country, 'city' => $request->city];
+			$company = Company::find(Auth::user()->company_id);
+			if ($company) {
+				$company->fill($data);
+				$company->update();
+			} else {
+				$company = new Company();
+				$company->fill($data);
+				$company->save();
+			}
+
+			if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+				$imageName = 'logo-' . time() . '.' . $request->logo->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'company/' . $company->id,
+					$request->logo,
+					$imageName
+				);
+				$company = Company::find($company->id);
+				$company->fill(['logo' => $image]);
+				$company->update();
+			}
+			if ($request->hasFile('background_image') && $request->file('background_image')->isValid()) {
+				$imageName = 'background-image-' . time() . '.' . $request->background_image->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'company/' . $company->id,
+					$request->background_image,
+					$imageName
+				);
+				$company = Company::find($company->id);
+				$company->fill(['background_image' => $image]);
+				$company->update();
+			}
+
+			User::where('id', Auth::user()->id)->update(['company_id' => $company->id]);
+			DB::commit();
+			return back()->with('success', 'Information updated!');
+		} catch (\Exception $exception) {
+			// dd($exception);
+			DB::rollBack();
+			return back()->with('error', $exception->getMessage());
+		}
+	}
+
+	public function updateCompanyThemeInformation(Request $request)
+	{
+		// dd($request->all());
+		$this->validate($request, [
+			//'header_color' => 'required',
+			// 'email' => 'email',
+			// 'phone' => 'required',
+			// 'country_code' => 'required',
+			// 'state' => 'required|min:3',
+			//'input_color' => 'required',
+			// 'zip_code' => 'required|min:3',
+			//'country' => 'required',
+
+		]);
+		DB::beginTransaction();
+		try {
+			$data = [];
+			if (!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design') {
+				$data = ['ride_color' => '', 'logo' => '', 'background_image' => '', 'header_color' => '', 'header_font_family' => '', 'header_font_color' => '', 'header_font_size' => '', 'input_color' => '', 'input_font_family' => '', 'input_font_color' => '', 'input_font_size' => ''];
+			} else {
+				$data = ['ride_color' => $request->ride_color, 'header_color' => $request->header_color, 'header_font_family' => $request->header_font_family, 'header_font_color' => $request->header_font_color, 'header_font_size' => $request->header_font_size, 'input_color' => $request->input_color, 'input_font_family' => $request->input_font_family, 'input_font_color' => $request->input_font_color, 'input_font_size' => $request->input_font_size];
+			}
+
+			$company = Company::find(Auth::user()->company_id);
+			if ($company) {
+				$company->fill($data);
+				$company->update();
+			} else {
+				$company = new Company();
+				$company->fill($data);
+				$company->save();
+			}
+
+			if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+				$imageName = 'logo-' . time() . '.' . $request->logo->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'company/' . $company->id,
+					$request->logo,
+					$imageName
+				);
+				$company = Company::find($company->id);
+				$company->fill(['logo' => $image]);
+				$company->update();
+			}
+			if ($request->hasFile('background_image') && $request->file('background_image')->isValid()) {
+				$imageName = 'background-image-' . time() . '.' . $request->background_image->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'company/' . $company->id,
+					$request->background_image,
+					$imageName
+				);
+				$company = Company::find($company->id);
+				$company->fill(['background_image' => $image]);
+				$company->update();
+			}
+
+			User::where('id', Auth::user()->id)->update(['company_id' => $company->id]);
+			DB::commit();
+			if (!empty($request->reset_theme_design) && $request->reset_theme_design == 'reset_theme_design') {
+				return response()->json(['status' => 1, 'message' => 'Information reset!']);
+			} else {
+				$urlToRedirect = URL::to('company/settings#weekView/');
+				return redirect($urlToRedirect)->with('success', 'Information updated!');
+			}
+		} catch (\Exception $exception) {
+			// dd($exception);
+			DB::rollBack();
+			return back()->with('error', $exception->getMessage());
+		}
+	}
+
+	public function updatePersonalInformation(Request $request)
+	{
+		//dd($request->all());
+		$this->validate($request, [
+			'name' => 'required',
+			'email' => 'email',
+			//'phone' => 'required',
+
+		]);
+		DB::beginTransaction();
+		try {
+			//dd($request->all());
+			$user = User::find(Auth::user()->id);
+
+			$data = ['name' => $request->name, 'first_name' => $request->name, 'email' => !empty($user->email) ? $user->email : $request->email, 'phone' => $request->phone, 'country_code' => $request->country_code];
+			if ($request->password) {
+				$data['password'] = Hash::make($request->password);
+			}
+
+			$user->fill($data);
+			$user->update();
+
+			if ($request->hasFile('image') && $request->file('image')->isValid()) {
+				$imageName = 'profile-image' . time() . '.' . $request->image->extension();
+				$image = Storage::disk('public')->putFileAs(
+					'user/' . $user->id,
+					$request->image,
+					$imageName
+				);
+				$user = User::find($user->id);
+				$user->fill(['image' => $image]);
+				$user->update();
+			}
+
+			DB::commit();
+			$urlToRedirect = URL::to('company/settings#monthView/');
+			return redirect($urlToRedirect)->with('success', 'Information updated!');
+		} catch (\Exception $exception) {
+			// dd($exception);
+			DB::rollBack();
+			return back()->with('error', $exception->getMessage());
+		}
+	}
 
 }
