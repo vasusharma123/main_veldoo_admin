@@ -1654,13 +1654,14 @@
                                         if(response.booking_status == 'direct' && response.user_data) {
                                             if (response.status) {    
                                                 swal.fire("{{ __('Success') }}", response.message,"success");
+                                                socket.emit('master-driver-update-web', {"data":response.data});
                                                 setTimeout(function() {
-                                                    var currentURL = (document.URL);
-                                                    var part = currentURL.split("/")[1];
-                                                    route = part+'?token='+response.user_data.random_token;
-                                                    window.location.href = route;
-                                                    var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
-                                                    socket.emit('master-driver-update-web', {"data":response.data});
+                                                    // var currentURL = (document.URL);
+                                                    // var part = currentURL.split("/")[1];
+                                                    // route = part+'?token='+response.user_data.random_token;
+                                                    // window.location.href = route;
+                                                    // var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
+                                                    window.location.reload();
                                                 }, 1000);
                                                 // socket.emit('master-driver-update-web', {"data":response.data});
                                             } else if (response.status == 0) {
@@ -2324,11 +2325,12 @@
                     if(response.status){
                         new swal("{{ __('Success') }}",response.message,"success");
                         setTimeout(function() {
-                            var currentURL = (document.URL); // returns http://myplace.com/abcd
-                            var part = currentURL.split("/")[1];
-                            route = part+'?token='+response.user_data.random_token;
-                           // route = route.replace('~',response.user_data.random_token);
-                            window.location.href = route;
+                        //     var currentURL = (document.URL); // returns http://myplace.com/abcd
+                        //     var part = currentURL.split("/")[1];
+                        //     route = part+'?token='+response.user_data.random_token;
+                        //    // route = route.replace('~',response.user_data.random_token);
+                        //     window.location.href = route;
+                        window.location.reload();
                         }, 2000);
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
