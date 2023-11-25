@@ -22,11 +22,17 @@
 						</li>
 					</ul>
 				@endif
-				@if($uri=='drivers.index' || $uri=='drivers.create')
+				@if($uri=='drivers.index' || $uri=='drivers.create' || $uri=='drivers.regular' || $uri=='drivers.master' || $uri=='drivers.edit')
 					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
 						<li class="nav-item">
 							<a class="nav-link {{ ($uri=='drivers.index' ? 'active' : '') }}" href="{{ route('drivers.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.regular' ? 'active' : '') }}" href="{{ route('drivers.regular') }}">Regular</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.master' ? 'active' : '') }}" href="{{ route('drivers.master') }}">Master</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link {{ ($uri=='drivers.create' ? 'active' : '') }}" href="{{ route('drivers.create') }}">Add</a>
@@ -94,7 +100,7 @@
 						<div class="search">
 							<form class="search_form">
 								<div class="form-group searchinput position-relative trigger_parent">
-									<input type="text" class="form-control input_search target" placeholder="Search"/>
+									<input type="text" name="data[q]" class="form-control input_search target myInput" placeholder="Search"/>
 									<i class="bi bi-search search_icons"></i>
 								</div>
 							</form>

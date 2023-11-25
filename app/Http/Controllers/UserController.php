@@ -199,6 +199,11 @@ class UserController extends Controller
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 1]])->limit(1)->update(array('deleted' => $status));
 		}
 		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=1 AND deleted=0");
+		}
+		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {

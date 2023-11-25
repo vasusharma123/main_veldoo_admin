@@ -13,7 +13,7 @@
 								<article class="container-fluid">
 									@include('admin.layouts.flash-message')
 								
-									{{ Form::model($record, array('url' => route( 'drivers.update', $record->id ),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
+									{{ Form::model($record, array('url' => route( 'drivers.update', $record->id ),'class'=>'form-horizontal form-material custom_form editForm','id'=>'store','enctype' => 'multipart/form-data')) }}
 									@method('PATCH')
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-8 col-md-8 col-sm-12 col-12">

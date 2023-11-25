@@ -42,15 +42,15 @@ class RideController extends Controller
                 ->where('rides.service_provider_id',Auth::user()->id)
                 ->orderBy('rides.id', 'DESC');
        
-		if ($request->has('search') && !empty($request->search)) {
+		if ($request->has('text') && !empty($request->text)) {
             $rides->where(function($query) use ($request){
-                $query->orWhere('rides.id','LIKE','%'.$request->search.'%');
-                $query->orWhereRaw("CONCAT(`users`.`first_name`,' ',`users`.`last_name`) LIKE '%".$request->search."%'");
-                $query->orWhereRaw("CONCAT(`guest`.`first_name`,' ',`guest`.`last_name`) LIKE '%".$request->search."%'");
-                $query->orWhere('vehicles.vehicle_number_plate','LIKE','%'.$request->search.'%');
-                $query->orWhere('rides.pickup_address','LIKE','%'.$request->search.'%');
-                $query->orWhere('rides.dest_address','LIKE','%'.$request->search.'%');
-                $query->orWhere('payment_type','LIKE','%'.$request->search.'%');
+                $query->orWhere('rides.id','LIKE','%'.$request->text.'%');
+                $query->orWhereRaw("CONCAT(`users`.`first_name`,' ',`users`.`last_name`) LIKE '%".$request->text."%'");
+                $query->orWhereRaw("CONCAT(`guest`.`first_name`,' ',`guest`.`last_name`) LIKE '%".$request->text."%'");
+                $query->orWhere('vehicles.vehicle_number_plate','LIKE','%'.$request->text.'%');
+                $query->orWhere('rides.pickup_address','LIKE','%'.$request->text.'%');
+                $query->orWhere('rides.dest_address','LIKE','%'.$request->text.'%');
+                $query->orWhere('payment_type','LIKE','%'.$request->text.'%');
             });
         }
 		
