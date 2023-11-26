@@ -3135,6 +3135,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$notification->type = $type;
 					$notification->user_id = $userdata['id'];
 					$notification->additional_data = json_encode($additional);
+					$notification->service_provider_id = $rideDetail->service_provider_id;
 					$notification->save();
 				}
 			}

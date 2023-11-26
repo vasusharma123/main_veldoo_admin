@@ -1080,6 +1080,7 @@ class RideController extends Controller
                     $notification->type = $type;
                     $notification->user_id = $userdata['id'];
                     $notification->additional_data = json_encode($additional);
+                    $notification->service_provider_id = $rideDetail->service_provider_id;
                     $notification->save();
                 }
                 return response()->json(['success' => true, 'message' => $message, 'data' => $rideResponse], $this->successCode);
