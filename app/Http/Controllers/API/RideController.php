@@ -1060,7 +1060,7 @@ class RideController extends Controller
                 }
                 $rideResponse = new RideResource(Ride::find($request->ride_id));
                 if (!empty($userdata)) {
-                    $settings = Setting::first();
+                    $settings = Setting::where(['service_provider_id' => $rideDetail->service_provider_id])->first();
                     $settingValue = json_decode($settings['value']);
                     $rideResponse['waiting_time'] = $settingValue->waiting_time;
 
