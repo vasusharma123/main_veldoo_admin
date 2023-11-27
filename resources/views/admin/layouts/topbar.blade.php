@@ -1,92 +1,123 @@
-<!-- Topbar header - style you can find in pages.scss -->
-<!-- ============================================================== -->
-<header class="topbar">
-	<nav class="navbar top-navbar navbar-expand-md navbar-light">
-		<!-- ============================================================== -->
-		<!-- Logo -->
-		<!-- ============================================================== -->
-		<div class="navbar-header">
-			<a class="navbar-brand" href="{{ route('users.dashboard') }}">
-				<!-- Logo icon -->
-				<b>
-					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-					<!-- Dark Logo icon -->
-					@if(!empty($setting['admin_logo']) && file_exists('storage/'.$setting['admin_logo']))
-						<img src="{{ env('URL_PUBLIC').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="40" height="40" /> 
-					@else
-						<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" class="dark-logo" style="height:25px;margin-top:5px" />
-					@endif
-				</b>
-				<!--End Logo icon -->
-				<!-- Logo text -->
-				<span>
-					<!-- dark Logo text -->
-					@if(!empty($setting['admin_sidebar_logo']) && file_exists('storage/'.$setting['admin_sidebar_logo']))
-						<img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" alt="user" alt="homepage" class="dark-logo" width="160" height="30" /> 
-					@else
-						<img src="{{ asset('/assets/images/logo-text.png')}}" alt="homepage" class="dark-logo" width="160" height="30"  />
-					@endif
-				</span>
-			</a>
-		</div>
-		<!-- ============================================================== -->
-		<!-- End Logo -->
-		<!-- ============================================================== -->
-		<div class="navbar-collapse">
-			<!-- ============================================================== -->
-			<!-- toggle and nav items -->
-			<!-- ============================================================== -->
-			<ul class="navbar-nav mr-auto mt-md-0">
-				<li class="nav-item"> <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>
-				<li class="nav-item m-l-10"> <a class="nav-link sidebartoggler hidden-sm-down text-muted waves-effect waves-dark" href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
-			</ul>
-			<!-- ============================================================== -->
-			<!-- User profile and search -->
-			<!-- ============================================================== -->
-			<ul class="navbar-nav my-lg-0">
-				<!-- Profile -->
-				<!-- ============================================================== -->
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						
-						@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
-							<img src="{{ env('URL_PUBLIC').'/'.$currentUser['image'] }}" class="profile-pic" /> 
-						@else
-							<img src="{{ asset('assets/images/users/1.jpg')}}" alt="user" class="profile-pic" />
-						@endif
-					</a>
-					<div class="dropdown-menu dropdown-menu-right scale-up">
-						<ul class="dropdown-user">
-							<li>
-								<div class="dw-user-box">
-									<div class="u-img">
-										@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
-											<img src="{{ config('app.url_public').'/'.$currentUser['image'] }}?time()" alt="user" /> 
-										@else
-											<img src="{{ asset('assets/images/users/1.jpg')}}" alt="user">
-										@endif
-									</div>
-									<div class="u-text">
-										<h4>{{$currentUser['first_name'].' '.$currentUser['last_name']}}</h4>
-										<p class="text-muted">{{$currentUser['email']}}</p>
-									</div>
-								</div>
-							</li>
-							<li role="separator" class="divider"></li>
-							<li><a href="{{ route('my-profile') }}"><i class="ti-user"></i> My Profile</a></li>
-							@if (Auth::user()->user_type==3)
-								<li>
-									<a href="{{ route('users.settings') }}"><i class="ti-settings"></i> Setting</a>
-								</li>
-							@endif
-							<li role="separator" class="divider"></li>
-							<li><a href="{{ route('logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
-						</ul>
+<header class="main_header">
+	<section class="menu_top">
+		<article class="container-fluid">
+			<div class="row">
+				<div class="col-lg-2 col-md-3 col-sm-5 col-5 align-self-center">
+					<div class="logo_box">
+						<img src="{{ asset('assets/images/veldoo/brand_logo.png') }}" class="img-fluid w-100 brnd_img" alt="Brnad Name Veldoo" />
 					</div>
-				</li>
-			</ul>
-		</div>
-	</nav>
+				</div>
+				<?php
+				$uri = Route::currentRouteName();
+				?>
+				<div class="col-lg-5 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+				@if($uri=='users.voucher' || $uri=='voucher.create')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='users.voucher' ? 'active' : '') }}" href="{{ route('users.voucher') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='voucher.create' ? 'active' : '') }}" href="{{ route('voucher.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='drivers.index' || $uri=='drivers.create' || $uri=='drivers.regular' || $uri=='drivers.master' || $uri=='drivers.edit')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.index' ? 'active' : '') }}" href="{{ route('drivers.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.regular' ? 'active' : '') }}" href="{{ route('drivers.regular') }}">Regular</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.master' ? 'active' : '') }}" href="{{ route('drivers.master') }}">Master</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='drivers.create' ? 'active' : '') }}" href="{{ route('drivers.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='company.index' || $uri=='company.create' || $uri=='company.edit')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='company.index' ? 'active' : '') }}" href="{{ route('company.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='company.create' ? 'active' : '') }}" href="{{ route('company.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='payment-method.index' || $uri=='payment-method.create' || $uri=='payment-method.edit')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='payment-method.index' ? 'active' : '') }}" href="{{ route('payment-method.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='payment-method.create' ? 'active' : '') }}" href="{{ route('payment-method.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='sms-template.index' || $uri=='sms-template.create' || $uri=='sms-template.edit')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='sms-template.index' ? 'active' : '') }}" href="{{ route('sms-template.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='sms-template.create' ? 'active' : '') }}" href="{{ route('sms-template.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='contact-support.index' || $uri=='contact-support.create')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='contact-support.index' ? 'active' : '') }}" href="{{ route('contact-support.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='contact-support.create' ? 'active' : '') }}" href="{{ route('contact-support.create') }}">Add</a>
+						</li>
+					</ul>
+				@endif
+				@if($uri=='push-notifications.index' || $uri=='push-notifications.create')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='push-notifications.index' ? 'active' : '') }}" href="{{ route('push-notifications.index') }}">List</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='push-notifications.create' ? 'active' : '') }}" href="{{ route('push-notifications.create') }}">Send Request</a>
+						</li>
+					</ul>
+				@endif
+				</div>
+				<div class="col-lg-5 col-md-7 col-sm-5 col-5 align-self-center">
+					<div class="right_content_menu">
+						<div class="search">
+							<form class="search_form">
+								<div class="form-group searchinput position-relative trigger_parent">
+									<input type="text" name="data[q]" class="form-control input_search target myInput" placeholder="Search"/>
+									<i class="bi bi-search search_icons"></i>
+								</div>
+							</form>
+						</div>
+						<div class="export_box">
+							<a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
+						</div>
+						<div class="avatar_info_box">
+							<img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 avatar_img" alt="user image" />
+							<div class="user_info">
+								<h4 class="nameOfUser">Jameson</h4>
+								<p class="userInfo">Admin</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</article>
+	</section>
 </header>
-<!-- ============================================================== -->
-<!-- End Topbar header -->

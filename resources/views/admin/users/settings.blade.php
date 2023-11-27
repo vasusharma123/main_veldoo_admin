@@ -1,371 +1,184 @@
 @extends('admin.layouts.master')
+
 @section('content')
-<style>
-    .form-check {
-        position: relative;
-        display: block;
-        padding-left: 0px !important;
-    }
-</style>
-    <!-- Container fluid  -->
-    <!-- ============================================================== -->
-    <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card card-outline-info">
-                    <div class="card-header">
-                        @if (!empty($action))
-                            <h4 class="m-b-0 text-white">{{ $action }}</h4>
-                        @endif
-                    </div>
-                    <div class="card-body">
-                        @include('admin.layouts.flash-message')
-
-                        {{ Form::model($record, ['url' => route('users.settingsUpdate'), 'class' => 'form-horizontal form-material', 'id' => 'store', 'enctype' => 'multipart/form-data']) }}
-                        @method('PATCH')
-                        <div class="form-body">
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('site_name', 'Site Name', ['class' => 'control-label']);
-                                        echo Form::text('site_name', null, ['class' => 'form-control', 'required' => true]);
-                                        ?>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('copyright', 'Copyright', ['class' => 'control-label']);
-                                        echo Form::text('copyright', null, ['class' => 'form-control', 'required' => true]);
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('admin_primary_color', 'Primary Color', ['class' => 'control-label']);
-                                        echo Form::color('admin_primary_color', null, ['class' => 'form-control', 'required' => true]);
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6" id="image1-section">
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <div class="form-group">
-                                                <?php
-                                                echo Form::label('admin_logo_tmp', 'My Logo', ['class' => 'control-label']);
-                                                ?>
-                                                <div class="fileinput fileinput-new input-group" data-provides="fileinput">
-                                                    <div class="form-control" data-trigger="fileinput"> <i
-                                                            class="glyphicon glyphicon-file fileinput-exists"></i> <span
-                                                            class="fileinput-filename"></span></div>
-                                                    <span class="input-group-addon btn btn-default btn-file">
-                                                        <span class="fileinput-new">Select file</span> <span
-                                                            class="fileinput-exists">Change</span>
-                                                        <input type="hidden">
-                                                        <?php
-                                                        echo Form::file('admin_logo_tmp', ['class' => 'form-control', 'onchange' => 'readURL(this,"image1");', 'required' => false]);
-                                                        ?>
-                                                    </span>
-                                                    <a href="#"
-                                                        class="input-group-addon btn btn-default fileinput-exists"
-                                                        data-dismiss="fileinput">Remove</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <?php
-                                            echo Html::image(((!empty($record->admin_logo)) ? (config('app.url_public').'/'.$record->admin_logo) : asset('no-images.png')), 'Background Image', ['id' => 'previewimage', 'width' => '50', 'height' => '50']);
-                                            ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6" id="image2-section">
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <div class="form-group">
-                                                <?php
-                                                echo Form::label('admin_favicon_tmp', 'Favicon', ['class' => 'control-label']);
-                                                ?>
-                                                <div class="fileinput fileinput-new input-group" data-provides="fileinput">
-                                                    <div class="form-control" data-trigger="fileinput"> <i
-                                                            class="glyphicon glyphicon-file fileinput-exists"></i> <span
-                                                            class="fileinput-filename"></span></div>
-                                                    <span class="input-group-addon btn btn-default btn-file">
-                                                        <span class="fileinput-new">Select file</span> <span
-                                                            class="fileinput-exists">Change</span>
-                                                        <input type="hidden">
-                                                        <?php
-                                                        echo Form::file('admin_favicon_tmp', ['class' => 'form-control', 'onchange' => 'readURL(this,"image2");', 'required' => false]);
-                                                        ?>
-                                                    </span>
-                                                    <a href="#"
-                                                        class="input-group-addon btn btn-default fileinput-exists"
-                                                        data-dismiss="fileinput">Remove</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <?php
-                                            echo Html::image(((!empty($record->admin_favicon)) ? (config('app.url_public').'/'.$record->admin_favicon) : asset('no-images.png')), 'Background Image', ['id' => 'previewimage', 'width' => '50', 'height' => '50']);
-                                            ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6" id="image3-section">
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <div class="form-group">
-                                                <?php
-                                                echo Form::label('admin_background_tmp', 'Background Image', ['class' => 'control-label']);
-                                                ?>
-                                                <div class="fileinput fileinput-new input-group" data-provides="fileinput">
-                                                    <div class="form-control" data-trigger="fileinput"> <i
-                                                            class="glyphicon glyphicon-file fileinput-exists"></i> <span
-                                                            class="fileinput-filename"></span></div>
-                                                    <span class="input-group-addon btn btn-default btn-file">
-                                                        <span class="fileinput-new">Select file</span> <span
-                                                            class="fileinput-exists">Change</span>
-                                                        <input type="hidden">
-                                                        <?php
-                                                        echo Form::file('admin_background_tmp', ['class' => 'form-control', 'onchange' => 'readURL(this,"image3");', 'required' => false]);
-                                                        ?>
-                                                    </span>
-                                                    <a href="#"
-                                                        class="input-group-addon btn btn-default fileinput-exists"
-                                                        data-dismiss="fileinput">Remove</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <?php
-                                            echo Html::image(((!empty($record->admin_background)) ? (config('app.url_public').'/'.$record->admin_background) : asset('no-images.png')), 'Background Image', ['id' => 'previewimage', 'width' => '50', 'height' => '50']);
-                                            ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6" id="image5-section">
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <div class="form-group">
-                                                <?php
-                                                echo Form::label('image', 'Sidebar Logo', ['class' => 'control-label']);
-                                                ?>
-                                                <div class="fileinput fileinput-new input-group" data-provides="fileinput">
-                                                    <div class="form-control" data-trigger="fileinput"> <i
-                                                            class="glyphicon glyphicon-file fileinput-exists"></i> <span
-                                                            class="fileinput-filename"></span></div>
-                                                    <span class="input-group-addon btn btn-default btn-file">
-                                                        <span class="fileinput-new">Select file</span> <span
-                                                            class="fileinput-exists">Change</span>
-                                                        <input type="hidden">
-                                                        <?php
-                                                        echo Form::file('admin_sidebar_logo_tmp', ['class' => 'form-control', 'onchange' => 'readURL(this,"image5");', 'required' => false]);
-                                                        ?>
-                                                    </span>
-                                                    <a href="#"
-                                                        class="input-group-addon btn btn-default fileinput-exists"
-                                                        data-dismiss="fileinput">Remove</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <?php
-                                            echo Html::image(((!empty($record->admin_sidebar_logo)) ? (config('app.url_public').'/'.$record->admin_sidebar_logo) : asset('no-images.png')), 'sidebar logo', ['id' => 'previewimage', 'width' => '50', 'height' => '50']);
-                                            ?>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('currency_symbol', trans('admin.Currency Symbol'), ['class' => 'control-label']);
-                                        echo Form::text('currency_symbol', null, ['class' => 'form-control', 'required' => true]);
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('currency_name', trans('admin.Currency Name'), ['class' => 'control-label']);
-                                        echo Form::text('currency_name', null, ['class' => 'form-control', 'required' => true]);
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('driver_requests', 'Driver Requests', ['class' => 'control-label']);
-                                        echo Form::number('driver_requests', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">(we will send request to X drivers)</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('waiting_time', 'Waiting Time', ['class' => 'control-label']);
-                                        echo Form::number('waiting_time', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">Driver will have time to accept Request(In seconds)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('radius', 'Radius', ['class' => 'control-label']);
-                                        echo Form::number('radius', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">Driver will search in this radius(In Miles)</span>
-
-
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('join_radius', 'Radius for Join rides', ['class' => 'control-label']);
-                                        echo Form::number('join_radius', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">User will see join rides in this radius(In Miles)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-								<div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('driver_idle_time', 'Driver Idle Time(In minutes)', ['class' => 'control-label']);
-                                        echo Form::number('driver_idle_time', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">After ___ minutes of staying idle, the driver receives a notification alert.</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('current_ride_distance_addition', 'Current ride distance addition (In miles)', ['class' => 'control-label']);
-                                        echo Form::number('current_ride_distance_addition', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">While searching for driver, if ride have no destination location than add ___ miles</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('waiting_ride_distance_addition', 'Waiting ride distance addition (In miles)', ['class' => 'control-label']);
-                                        echo Form::number('waiting_ride_distance_addition', null, ['class' => 'form-control', 'required' => true, 'min' => 1]);
-                                        ?>
-                                        <span class="subtitle">While searching for driver, if ride have no destination location of waiting ride than add ___ miles</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('notification', 'Notification', ['class' => 'control-label']);
-                                        ?>
-                                        <div class="switch">
-                                            <label>
-                                                <input type="checkbox" name="notification" class="change_status"
-                                                    value="1" {{ $record->notification == 1 ? 'checked' : '' }}><span
-                                                    class="lever"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('temporary_phone_number_users', 'Delete only phone number users (In days)', ['class' => 'control-label']);
-                                        echo Form::number('temporary_phone_number_users', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
-                                        ?>
-                                        <span class="subtitle">When creating a user from driver app by inputting only the phone number, will delete in ___ days</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('temporary_last_name_users', 'Delete only last name users (In days)', ['class' => 'control-label']);
-                                        echo Form::number('temporary_last_name_users', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
-                                        ?>
-                                        <span class="subtitle">When creating a user from driver app by inputting only the last name, will delete in ___ days</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <?php
-                                        echo Form::label('driver_count_to_display', 'Driver count to Display', ['class' => 'control-label']);
-                                        echo Form::number('driver_count_to_display', null, ['class' => 'form-control', 'required' => true, 'min' => 1, 'step' => '1']);
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-                        </div>
-                        {{ Form::close() }}
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
-    </div>
-    <!-- ============================================================== -->
-    <!-- End Container fluid  -->
-    <style>
-        span.subtitle {
-            font-size: 12px;
-        }
-    </style>
-@endsection
-
-@section('footer_scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#store').validate();
-        });
-
-        function readURL(input, section) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#' + section + '-section #previewimage').attr('src', e.target.result);
-                    $('#' + section + '-section #previewimage').attr('height', '50px');
-                    $('#' + section + '-section #previewimage').attr('width', '50px');
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
-@stop
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addEditForm sectionsform">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
+									<form class="custom_form editForm" id="EditUser">
+										<div class="row w-100 m-0 form_inside_row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+												<div class="row w-100 m-0">
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="name" name="name" placeholder="Name" />
+															<label for="name">Site Name</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="copyright" name="copyright" placeholder="Copyright" />
+															<label for="copyright">Copyright</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="currency" name="currency" placeholder="Currency" />
+															<label for="currency">Currency Symbol</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="currencyname" name="currencyname" placeholder="Currency Name" />
+															<label for="currencyname">Currency Name</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="driverRequest" name="driverRequest" placeholder="Driver Request" />
+															<label for="driverRequest">(We will send request to X drivers)</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="WaitingTime" name="WaitingTime" placeholder="Waiting Time" />
+															<label for="WaitingTime">Driver will have time to accept Request(In seconds)</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="Radius" name="Radius" placeholder="Radius" />
+															<label for="Radius">Driver will search in this radius(In Miles)</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RadiusJoin" name="RadiusJoin" placeholder="Radius for Join rides" />
+															<label for="RadiusJoin">User will see join rides in this radius(In Miles)</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="Idle" name="Idle" placeholder="Driver Idle Time(In minutes)" />
+															<label for="Idle">After ___ minutes of staying idle, the driver receives a notification alert.</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Current ride distance addition (In miles)" />
+															<label for="RideDistance">While searching for driver, if ride have no destination location than add ___ miles.</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Waiting ride distance addition (In miles)" />
+															<label for="RideDistance">While searching for driver, if ride have no destination location of waiting ride than add ___ miles</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Delete only phone number users (In days)" />
+															<label for="RideDistance">When creating a user from driver app by inputting only the phone number, will delete in ___ days</label>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Delete only last name users (In days)" />
+															<label for="RideDistance">When creating a user from driver app by inputting only the last name, will delete in ___ days</label>
+														</div>
+													</div>
+													
+													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Driver count to Display" />
+															<label for="RideDistance">Driver count to Display</label>
+														</div>
+													</div>
+													
+													<div class="col-lg-2 col-md-6 col-sm-6 col-6">
+														<div class="form-group">
+															<input type="color" style="height: 46px;" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Driver count to Display" />
+															<label for="RideDistance">Primary Color</label>
+														</div>
+													</div>
+													<div class="col-lg-2 col-md-6 col-sm-6 col-6">
+														<div class="form-group">
+															<label class="mb-0" for="RideDistance"><b>Notification</b></label>
+															<div class="switch_btn">
+																<label class="switch">
+																	<input type="checkbox">
+																	<span class="slider round"></span>
+																</label>
+															</div>
+															
+														</div>
+													</div>
+													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
+															<div class="view_image_user m-auto">
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+																<input type="file" name="bgImage" class="form-control hiddenForm " />
+															</div>
+															<label for="bgImage">Background Image</label>
+														</div>
+													</div>
+													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
+															<div class="view_image_user m-auto">
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+																<input type="file" name="logoImg" class="form-control hiddenForm " />
+															</div>
+															<label for="logoImg">Logo Image</label>
+														</div>
+													</div>
+													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
+															<div class="view_image_user m-auto">
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+																<input type="file" name="FavImag" class="form-control hiddenForm " />
+															</div>
+															<label for="FavImag">Favicon Image</label>
+														</div>
+													</div>
+													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
+															<div class="view_image_user m-auto">
+																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+																<input type="file" name="SidebarImage" class="form-control hiddenForm " />
+															</div>
+															<label for="SidebarImage">Sidebar Logo</label>
+														</div>
+													</div>
+													
+													
+												</div>
+											</div>
+											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+												<div class="form-group">
+													<input type="submit" value="Save" name="submit" class="form-control submit_btn mt-2" />
+												</div>
+											</div>
+										</div>
+									</form>
+								</article>
+							</section>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+@endsection	

@@ -102,6 +102,8 @@ class ProfileController extends Controller
         }
     }
 
+    /* Settings based on default Service Provider */
+
     public function settings(Request $request)
     {
         $user = Auth::user();
@@ -110,5 +112,19 @@ class ProfileController extends Controller
         $settings = Setting::where(['service_provider_id' => $service_provider_id])->first();
         $settingValue = json_decode($settings['value']);
         return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol, 'currency_name' => $settingValue->currency_name, 'driver_count_to_display' => $settingValue->driver_count_to_display], $this->successCode);
+    }
+
+    /* Settings based on Service Provider ID */
+
+    public function sp_based_settings(Request $request)
+    {
+        $service_provider_id = $request->service_provider_id ?? "";
+        $payment_method = [];
+        if (!empty($service_provider_id)) {
+            $payment_method = PaymentMethod::where(['service_provider_id' => $service_provider_id])->get();
+            $settings = Setting::where(['service_provider_id' => $service_provider_id])->first();
+            $settingValue = json_decode($settings['value']);
+        }
+        return response()->json(['message' => 'Success', 'payment_method' => $payment_method, 'currency_symbol' => $settingValue->currency_symbol ?? "", 'currency_name' => $settingValue->currency_name ?? "", 'driver_count_to_display' => $settingValue->driver_count_to_display ?? ""], $this->successCode);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Validator;
 use App\User;
 //use App\UserData;
@@ -58,6 +58,25 @@ class UserController extends Controller
 		 return view('admin.guest_message');
 	}
 
+
+	public function guestLogin(){
+		$breadcrumb = array('title'=>'Home','action'=>'Login');
+		$vehicle_types = Price::orderBy('sort')->get();
+
+
+		$data = [];
+		$data = array_merge($breadcrumb,$data);
+		$data['vehicle_types'] = $vehicle_types;
+		return view('guest.auth.login')->with($data);
+	}
+
+	public function guestRegister(){
+		$breadcrumb = array('title'=>'Home','action'=>'Login');
+		$data = [];
+		$data = array_merge($breadcrumb,$data);
+		return view('guest.auth.register')->with($data);
+	}
+
 	public function login(){
 		$breadcrumb = array('title'=>'Home','action'=>'Login');
 		$data = [];
@@ -88,8 +107,51 @@ class UserController extends Controller
 
 	}
 
-	public function dashboard(){
+	public function doLoginGuest(Request $request){
 
+
+
+		$rules = [
+			'phone' => 'required',
+			'country_code' => 'required',
+			'password' => 'required|min:6',
+		];
+		$request->validate($rules);
+		$input = $request->all();
+
+		//$whereData = array('phone' => '7355551203', 'country_code' => '91', 'password' => '123456');
+		//$whereData = array('email' => 'suryamishra20794@gmail.com', 'password' => '123456');
+		$phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
+
+		$user = User::where('phone', $phone_number)->where('country_code', $request->country_code)->where('user_type', 1)->first();
+		//dd(Hash::check($request->password, $user->password));
+		if (!empty($user) && Hash::check($request->password, $user->password)) {
+			\Auth::login($user);
+			if (in_array(Auth::user()->user_type,[1])) {
+				Auth::user()->syncRoles('Customer');
+				return redirect()->route('guest.rides','month');
+			}
+			Auth::logout();
+			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'These credentials do not match our records.']);
+
+		} else{
+			Auth::logout();
+			return redirect()->back()->withInput(array('phone' => $request->phone, 'country_code' => $request->country_code))->withErrors(['message' => 'Please check your credentials and try again.']);
+		}
+		
+		
+	}
+	
+	public function dashboard(){
+		
+		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
+		$data = [];
+		$data = array_merge($breadcrumb, $data);
+		
+		return view('admin.dashboard')->with($data);
+    }
+	
+	public function dashboardOld(){
 		
 		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
@@ -112,32 +174,65 @@ class UserController extends Controller
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company');
-            return redirect()->route('company.rides','month');
+            return redirect()->route("company.rides");
 		}
 		elseif(Auth::user()->user_type==5)
 		{
 			$data['booking_count'] = Ride::where('company_id',Auth::user()->company_id)->count();
 			Auth::user()->syncRoles('Company');
-            return redirect()->route('company.rides','month');
-		}elseif(Auth::user()->user_type == 1){
-
-			Auth::user()->syncRoles('Customer');
-			return redirect()->route('guest.rides','month');
-
+            return redirect()->route("company.rides");
 		}
-		if(Auth::user()->user_type == 3){
-			return view('dashboards.admin')->with($data);
-		} else {
-			return view('dashboards.'.Auth::user()->user_role)->with($data);
-		}
+		return view('dashboards.'.Auth::user()->user_role)->with($data);
 	}
-
+	
+	public function index(Request $request) {
+		
+		$data = array();
+		$data = array('title' => 'Users', 'action' => 'List Users');
+		
+		$records = DB::table('users');
+		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status');
+		
+		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+			$status = ($request->input('status')?0:1);
+			
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 1]])->limit(1)->update(array('deleted' => $status));
+		}
+		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=1 AND deleted=0");
+		}
+		
+		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+			$records->orderBy($request->input('orderby'), $request->input('order'));
+		} else {
+			$records->orderBy('id', 'desc');
+		}
+		
+		$data['records'] = $records->where(['user_type'=>1, 'deleted'=>0])->paginate($this->limit);
+		
+		/* echo '<pre>';
+		print_r($data['array']->toArray());
+		exit; */
+		
+		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] =$request->input('orderby');
+		$data['order'] = $request->input('order');
+		
+        if ($request->ajax()) {
+            return view("admin.users.index_element")->with($data);
+        }
+		
+		return view('admin.users.index')->with($data);
+	}
+	
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-	public function index(Request $request)
+	public function indexOld(Request $request)
 	{
 		$data = array();
 		$data = array('title' => 'Users', 'action' => 'List Users');
@@ -262,15 +357,18 @@ class UserController extends Controller
 	public function store(Request $request)
 	{
 		$this->validate($request, [
-			// 'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+			'image_tmp' => 'required|image|mimes:jpeg,png,jpg|max:2048',
 			//'user_name' => 'required|regex:/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/u|unique:users',
 			'first_name' => 'required',
 			'last_name' => 'required',
-			// 'email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
 			'password' => 'required|min:6',
-			'status' => 'required',
+			'country_code' => 'required',
 			'phone' => 'required',
-			'country_code' => 'required'
+			'email' => 'email|unique:users,email,NULL,id,deleted_at,NULL',
+			'addresses' => 'required',
+			'zip' => 'required',
+			'city' => 'required',
+			'country' => 'required',
 		]);
 
 		$userData = User::where('country_code', str_replace('+', '', $request->country_code))->where('phone', ltrim($request->phone, "0"))->where('user_type', 2)->get()->count();
@@ -584,8 +682,7 @@ class UserController extends Controller
 		return redirect()->route('guest.login')->with('success', __('Password updated successfully.'));
 	
 	}
-
-
+	
     public function settings()
     {
 	    $breadcrumb = array('title'=>'User','action'=>'Settings');
@@ -597,6 +694,7 @@ class UserController extends Controller
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.settings')->with($data);
     }
+	
 	public function settingsUpdate(Request $request)
 	{
 		$rules = [
@@ -693,6 +791,7 @@ class UserController extends Controller
 		$setting->save();
 		return back()->with('success', __('Record updated!'));
 	}
+	
 	public function vouchers()
     {
 	    $breadcrumb = array('title'=>'User','action'=>'Vouchers');
@@ -704,13 +803,23 @@ class UserController extends Controller
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.voucher')->with($data);
     }
+	
+	public function createVoucher()
+    {
+	    $breadcrumb = array('title'=>'Vouchers','action'=>'Create');
+		$data = [];
+		$data = array_merge($breadcrumb,$data);
+		
+	    return view('admin.users.createvoucher')->with($data);
+    }
+	
 	public function vouchersUpdate(Request $request)
 	{
 		$matchThese = ['key'=>'_configuration','service_provider_id'=>Auth::user()->id];
 		Voucher::updateOrCreate($matchThese,['value'=>json_encode(['mile_per_ride'=>$request->mile_per_ride,'mile_to_currency'=>$request->mile_to_currency,'mile_on_invitation'=>$request->mile_on_invitation])]);
 		return back()->with('success', __('Record updated!'));
 	}
-
+	
 	public function driver(Request $request)
 	{
 		$data = array();

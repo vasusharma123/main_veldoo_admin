@@ -142,7 +142,9 @@ Route::group(['prefix' => 'user','namespace' => 'API','middleware' => ['auth:api
 	Route::get('service_providers','user\ProfileController@service_providers');
 	Route::post('mark_favourite_service_provider','user\ProfileController@mark_favourite_service_provider');
 	Route::get('settings', 'user\ProfileController@settings');
+	Route::post('sp_based_settings', 'user\ProfileController@sp_based_settings');
 	Route::get('vehicleTypes', 'user\VehicleController@vehicleTypes');
+	Route::post('sp_based_vehicle_types', 'user\VehicleController@sp_based_vehicle_types');
 });
 Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth:api']], function () {
 	Route::group(['middleware' => ['driver_still_active']], function () {
@@ -185,15 +187,11 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::get('still_active_notification_response', 'DriverActivityController@still_active_notification_response');
 		Route::get('rides/upcoming_rides_count', 'RideController@upcoming_rides_count');
 		Route::post('rides/unassign_current_ride', 'RideController@unassign_current_ride');
-		Route::post('calendarViewRides', 'RideController@calendarViewRides');
 		Route::post('ride/delete', 'RideController@delete');
-		Route::post('calendarViewRidesDateBase', 'RideController@calendarViewRidesDateBase');
-		Route::post('calendarViewRidesUpDown', 'RideController@calendarViewRidesUpDown');
 		Route::post('calendarBasedRides', 'RideController@calendarBasedRides');
 		Route::post('cancel_ride', 'RideController@cancel_ride');
 		Route::post('make_driver_logout', 'UserController@make_driver_logout');
 		Route::post('calendarViewRidesUpDownLimited', 'RideController@calendarViewRidesUpDownLimited');
-		Route::post('calendarViewRideLimitedDataTimeBased', 'RideController@calendarViewRideLimitedDataTimeBased');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });

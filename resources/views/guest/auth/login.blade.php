@@ -34,7 +34,7 @@
 
             
 
-                <form class="login_form" action="{{ route('do-login-guest')}}" method="post" autocomplete="off">
+                <form class="login_form" action="{{ route('do-login-guest', \Request::get('slugRecord')->slug)}}" method="post" autocomplete="off">
                         @csrf
                         @include('company.company_flash_message')
 
@@ -43,7 +43,7 @@
                         <div class="col-12 p-0">
 
                             <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
-                            <a class="close_modal" href="{{route('guest.rides','month')}}">×</a>
+                            <a class="close_modal" href="{{route('guest.rides',[\Request::get('slugRecord')->slug, 'month'])}}">×</a>
 
                             <div class="form_title text-center">
                                 <h4 class="sub_title">Log in</h4>
@@ -119,7 +119,6 @@
 
 
                             <div class="form_title text-center">
-                                <!-- <a href="{{route('guest.register')}}" class="tagline sign-up-account">Don't have an account? Sign up</a> -->
                                 <a href="javascript:void(0)" class=" sd d-block tagline sign-up-account my-3" data-bs-toggle="modal" data-bs-target="#otpModal">Don't have an account? Sign up</a>
                                
                             </div>
@@ -184,7 +183,6 @@
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Not Logged in</h4>
                                         <p class="tagline">To continue enter mobile number</p>
-                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.register')}}" class="hyperinline">Register</a></p> -->
                                         <hr class="divider_form" />
                                     </div>
                                     <!-- /Form Title -->
@@ -295,7 +293,6 @@
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Forgot Password</h4>
                                         <p class="tagline">To continue enter mobile number</p>
-                                        <!-- <p class="tagline">To continue enter mobile number, or <a href="{{route('guest.register')}}" class="hyperinline">Register</a></p> -->
                                         <hr class="divider_form" />
                                     </div>
                                     <!-- /Form Title -->
@@ -602,7 +599,7 @@
 
     $(document).on('click','.confirmOTPModalResendOtp',function(){
         $.ajax({
-            url: "{{ route('send_otp_before_register')}}",
+            url: "{{ route('send_otp_before_register', \Request::get('slugRecord')->slug)}}",
             type: 'post',
             dataType: 'json',
             data: $('form#toContinueLoginForm').serialize(),
@@ -624,7 +621,7 @@
 
     $(document).on('click','.confirmOTPModalResendOtpForgetPassword',function(){
         $.ajax({
-            url: "{{ route('send_otp_forgot_password')}}",
+            url: "{{ route('send_otp_forgot_password', \Request::get('slugRecord')->slug)}}",
             type: 'post',
             dataType: 'json',
             data: $('form#toContinueLoginFormForgetPassword').serialize(),
@@ -682,9 +679,9 @@
         }
 
         if(phoneNumber > 1 && otp_entered.toString().length >= 4) {
-            var url = "{{ route('verify_otp_before_register')}}";
+            var url = "{{ route('verify_otp_before_register', \Request::get('slugRecord')->slug)}}";
         } else {
-            var url = "{{ route('send_otp_before_register')}}"
+            var url = "{{ route('send_otp_before_register', \Request::get('slugRecord')->slug)}}"
         }
 
         var post_data = $('form#toContinueLoginForm').serialize();
@@ -713,7 +710,7 @@
                     timer(30,"registerOTPModalTimer","register_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-                    var route = "{{route('guest.register')}}"+"?code="+response.code+"&phone="+response.phone;
+                    var route = "{{route('guest.register', \Request::get('slugRecord')->slug)}}"+"?code="+response.code+"&phone="+response.phone;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");
@@ -748,9 +745,9 @@
         }
 
         if(phoneNumber > 1 && otp_entered.toString().length >= 4) {
-            var url = "{{ route('verify_otp_forgot_password')}}";
+            var url = "{{ route('verify_otp_forgot_password', \Request::get('slugRecord')->slug)}}";
         } else {
-            var url = "{{ route('send_otp_forgot_password')}}"
+            var url = "{{ route('send_otp_forgot_password', \Request::get('slugRecord')->slug)}}"
         }
 
         var post_data = $('form#toContinueLoginFormForgetPassword').serialize();
@@ -779,7 +776,7 @@
                     timer(30,"forgotPasswordOTPModalTimer","forgot_password_otp_not_rec");
                     new swal("{{ __('Success') }}",response.message,"success");
                 } else if(response.status == 2) {
-                    var route = "{{route('forget.password')}}"+"?token="+response.auth_token;
+                    var route = "{{route('forget.password', \Request::get('slugRecord')->slug)}}"+"?token="+response.auth_token;
                     window.location.href = route;
 
                     new swal("{{ __('Success') }}",response.message,"success");

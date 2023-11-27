@@ -16,7 +16,7 @@
 
                             <div class="login_form_box_cover">
 
-                                <form class="login_form" action="{{ route('change.forget.password')}}" method="post" autocomplete="off">
+                                <form class="login_form" action="{{ route('change.forget.password', \Request::get('slugRecord')->slug)}}" method="post" autocomplete="off">
                                 @csrf
                                 <input type="hidden" name="auth_token" value="{{ \Request::get('token') }}" />
                                     <div class="form-row">
@@ -68,7 +68,7 @@
                                                 <div class="col-lg-6 col-sm-6 col-12">
                                                         <button type="button" class="btn submit_btn">
                                                             <!-- <span class="btn_text">Back</span> -->
-                                                            <a href="{{route('guest.rides')}}" class="btn_text back-btn-text">Back</a>
+                                                            <a href="{{route('guest.rides', \Request::get('slugRecord')->slug)}}" class="btn_text back-btn-text">Back</a>
                                                         </button>
                                                     </div>
                                                     <div class="col-lg-6 col-sm-6 col-12">

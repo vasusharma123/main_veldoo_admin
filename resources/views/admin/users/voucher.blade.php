@@ -1,94 +1,127 @@
 @extends('admin.layouts.master')
+
 @section('content')
-		<!-- Container fluid  -->
-		<!-- ============================================================== -->
-		<div class="container-fluid">
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card card-outline-info">
-						<div class="card-header">
-							@if(!empty($action))
-								<h4 class="m-b-0 text-white">{{ $action }}</h4>
-							@endif
-						</div>
-						<div class="card-body">
-							@include('admin.layouts.flash-message')
-							{{ Form::model($record, array('url' => route( 'users.vouchersUpdate'),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
-							@method('PATCH')
-								<div class="form-body">							
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<?php
-													echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'control-label']);
-													echo Form::text('mile_per_ride',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<?php
-													echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'control-label']);
-													echo Form::text('mile_to_currency',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<?php
-													echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'control-label']);
-													echo Form::text('mile_on_invitation',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-										</div>
-									</div>
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addEditForm sectionsform">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
 									
-								</div>
-								<div class="form-actions">
-									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-								</div>
-							 {{ Form::close() }}
+									<input name="page" type="hidden">
+									
+									<div id="allDataUpdate">
+										@include("admin.users.voucher_element")
+									</div>
+								</article>
+							</section>
 						</div>
 					</div>
+					
 				</div>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<style>
-			span.subtitle {
-				font-size: 12px;
-			}
-		</style>
-@endsection
-
+	</div>
+</main>
+@endsection	
+	
 @section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
 <script type="text/javascript">
-	$(document).ready(function () {
-		$('#store').validate();
+$(function () {
+	
+	//setup before functions
+	var typingTimer;                //timer identifier
+	var doneTypingInterval = 1000;  //time in ms, 5 second for example
+	var $input = $('.myInput');
+
+	//on keyup, start the countdown
+	$input.on('keyup', function () {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(doneTyping, doneTypingInterval);
 	});
-	function readURL(input,section){
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				$('#'+section+'-section #previewimage').attr('src', e.target.result);
-				$('#'+section+'-section #previewimage').attr('height','50px');
-				$('#'+section+'-section #previewimage').attr('width','50px');
-			}
-			reader.readAsDataURL(input.files[0]);
+
+	//on keydown, clear the countdown
+	$input.on('keydown', function () {
+		clearTimeout(typingTimer);
+	});
+	
+	function doneTyping() {
+		var text = $('.myInput').val();
+		var orderby = $('input[name="orderBy"]').val().toString();
+		var order = $('input[name="order"]').val().toString();
+		$("#loading").fadeIn("slow");
+		$('.input-append input[name="page"]').val(1);
+		ajaxCall('', text, orderby, order, '');
+	};
+	
+	$('body').on('click', '.delete_user', function(){
+        var id = $(this).attr('data-id');
+		//var text = $('.myInput').val();
+		var text = '';
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = 0;
+        swal({
+            title: "Are you sure?",
+            text: "You want to delete this Record !",
+            type: "warning",
+            timer: 3000,
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel !",
+            closeOnConfirm: true,
+            closeOnCancel: true,
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true,
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $("#loading").fadeIn("slow");
+				ajaxCall(id, text, orderby, order, page, status,'delete');
+            } else {
+                swal();
+            }
+        });
+    });
+	
+	$('body').on('click', '.change_status', function(){
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = $(this).val();
+		var id = $(this).attr('data-id');
+		
+		//var text = $('.myInput').val();
+		var text = '';
+		
+		$("#loading").fadeIn("slow");
+		ajaxCall(id, text, orderby, order, page, status, 'status');
+	});
+});
+function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
+	var page = (!page ? 1 : page);
+	$.ajax({
+		type: "GET",
+		url: "{{url()->current()}}",
+		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
+		success: function (data) {
+			$("#loading").fadeOut("slow");
+			$('#allDataUpdate').html(data);
+			
+			//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
+			//$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
 		}
-	}
-	</script>
+	});
+}
+</script>
 @stop

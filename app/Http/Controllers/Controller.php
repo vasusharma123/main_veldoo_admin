@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Setting;
 use App\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -127,5 +128,16 @@ class Controller extends BaseController
             return $this->generateRandomString($length);
         }
         return $randomString;
+    }
+
+    function createUrlSlug($urlString)
+    {
+        $slug = preg_replace('/[^A-Za-z0-9-]+/', '-', $urlString);
+        $checkSlug = Setting::where(['slug'=>$slug])->first();
+        if ($checkSlug) 
+        {
+            return $this->createUrlSlug($slug.rand(1,9));
+        }
+        return $slug;
     }
 }

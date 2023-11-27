@@ -1,246 +1,104 @@
-<!-- Left Sidebar - style you can find in sidebar.scss  -->
-<!-- ============================================================== -->
-<aside class="left-sidebar">
-	<!-- Sidebar scroll-->
-	<div class="scroll-sidebar">
-		<!-- User profile -->
-		<div class="user-profile">
-			<!-- User profile image -->
-			<div class="profile-img"> 
-					@if(!empty($currentUser['image']) && file_exists('storage/'.$currentUser['image']))
-						<img src="{{ env('URL_PUBLIC').'/'.$currentUser['image'] }}" alt="user" /> 
-					@else
-						<img src="{{ asset('/assets/images/users/profile.png')}}" alt="user" class="" />
-					@endif
-					 <!-- this is blinking heartbit-->
-					<div class="notify setpos"> <span class="heartbit"></span> <span class="point"></span> </div>
-			</div>
-			<!-- User profile text-->
-			<div class="profile-text"> 
-					<h5>{{ $currentUser['name'] }}</h5>
-			</div>
-		</div>
-		<!-- End User profile text-->
-		<!-- Sidebar navigation-->
-		<nav class="sidebar-nav">
-			<ul id="sidebarnav">
-				<li class="nav-devider"></li>
-				{{-- <li class="nav-small-cap">{{ trans("api.Admin") }}</li> --}}
-				<li> 
-					<a class="waves-effect waves-dark" href="{{ route('users.dashboard') }}" aria-expanded="false">
-						<i class="mdi mdi-gauge"></i><span class="hide-menu">{{ trans("admin.Dashboard") }}</span>
+<div class="sidebarFlow">
+	<i class="bi bi-chevron-right sidebarToggler"></i>
+	<section class="sidebar">
+		<i class="bi bi-x-lg sidebarToggler">&nbsp; <span>Close</span></i>
+		<article class="all_sidebar_box">
+			<ul class="nav sidebarLists w-100">
+				<?php
+				$uri = Route::currentRouteName();
+				?>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ ($uri=='users.dashboard' ? 'active' : '') }}" href="{{ route('users.dashboard') }}">
+						<img src="{{ asset('assets/images/veldoo/dashboard.png') }}" class="img-fluid w-100 sidebarImgs" alt="dashboard"/> 
+						<span class="sidebarText">Dashboard</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
-				<li> 
-					{{-- <a class="waves-effect waves-dark" href="{{url('admin/rides')}}" aria-expanded="false">
-						<i class="mdi mdi-car-connected"></i>
-						<span class="hide-menu">{{ trans("Rides") }}</span>
-					</a> --}}
-					<a class="waves-effect waves-dark" href="{{ route('users.index') }}" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.User Account Management") }}</span>
-					</a>
-					{{-- <ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('users.index') }}">{{ trans("admin.List") }}</a></li>
-					</ul> --}}
-				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Driver Account Management") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/driver/create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('users.drivers') }}">{{ trans("admin.List") }}</a></li>
-					</ul>
-				</li>
-				
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Company Account Management") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('company.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('company.index') }}">{{ trans("admin.List") }}</a></li>
-					</ul>
-				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Vehicle Type Management")}}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('vehicle-type.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('vehicle-type.index') }}">{{ trans("admin.List") }}</a></li>
-				
-					</ul>
-				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Vehicle Management") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('vehicle.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('vehicle.index') }}">{{ trans("admin.List") }}</a></li>
-				
-					</ul>
-				</li>
-				<li> 
-					<a class="waves-effect waves-dark" href="{{url('admin/rides')}}" aria-expanded="false">
-						<i class="mdi mdi-car-connected"></i>
-						<span class="hide-menu">{{ trans("Rides") }}</span>
-					</a>
-					
-				</li>
-				<!--<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Category") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('category.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('category.index') }}">{{ trans("admin.List") }}</a></li>
-				
-					</ul>
-				</li>-->
-			<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Payment Method") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('payment-method.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('payment-method.index') }}">{{ trans("admin.List") }}</a></li>
-					</ul>
-				</li>
-				<li> 
-					<a class="waves-effect waves-dark" href="{{url('admin/users/settings')}}" aria-expanded="false">
-						<i class="mdi mdi-settings"></i>
-						<span class="hide-menu">{{ trans("admin.Settings") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ ($uri=='users.index' ? 'active' : '') }}" href="{{ route('users.index') }}">
+						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users"/> 
+						<span class="sidebarText">User</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
-				<li> 
-					<a class="waves-effect waves-dark" href="{{ route('sms-template.index') }}" aria-expanded="false">
-						<i class="mdi mdi-message-alert"></i>
-						<span class="hide-menu">{{ __("SMS Template") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='drivers.index' || $uri=='drivers.create' || $uri=='drivers.edit' || $uri=='drivers.regular' || $uri=='drivers.master') ? 'active' : '') }}" href="{{ route('drivers.index') }}">
+						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="Driver"/> 
+						<span class="sidebarText">Driver</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Manage Bookings") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='company.index' || $uri=='company.create' || $uri=='company.edit') ? 'active' : '') }}" href="{{ route('company.index') }}">
+						<img src="{{ asset('assets/images/veldoo/bagplus.png') }}" class="img-fluid w-100 sidebarImgs" alt="Company"/> 
+						<span class="sidebarText">Company</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('bookings.index') }}">{{ trans("admin.Trip Management") }}</a></li>
-						<li><a href="{{ url('admin/scheduled-rides') }}">{{ trans("admin.Manage Scheduled Ride") }}</a></li>
-					</ul>
 				</li>
-
-				
-				
-			
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Reports And Insights") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='rides.index' || $uri=='rides.show') ? 'active' : '') }}" href="{{ route('rides.index') }}">
+						<img src="{{ asset('assets/images/veldoo/riders.png') }}" class="img-fluid w-100 sidebarImgs" alt="Riders"/> 
+						<span class="sidebarText">Rides</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						{{-- <li><a href="{{ route('daily-report.index') }}">{{ trans("admin.Daily Report") }}</a></li>
-						<li><a href="{{ route('daily-report.vehicles') }}">Vehicle Reports</a></li> --}}
-						<li><a href="{{ route('daily-report.vehicle_mileage') }}">Vehicles Mileage Report</a></li>
-					</ul>
 				</li>
-				{{-- <li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Contact Support") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ ($uri=='users.settings' ? 'active' : '') }}" href="{{ route('users.settings') }}">
+						<img src="{{ asset('assets/images/veldoo/setting.png') }}" class="img-fluid w-100 sidebarImgs" alt="Settings"/> 
+						<span class="sidebarText">Settings</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{route('contact-support.create')}}">{{ trans("admin.Send Email") }}</a></li>
-					</ul>
-				</li> --}}
-				<!--<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Complaint Management") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ url('admin/complaints') }}">{{ trans("admin.Complaint List") }}</a></li>
-					</ul>
-				</li>-->
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Push Notifications") }}</span>
-					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{route('push-notifications.create')}}">{{ trans("Send") }}</a></li>
-						<li><a href="{{route('push-notifications.index')}}">{{ trans("Listing") }}</a></li>
-					</ul>
 				</li>
-			
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Manage Content") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='users.voucher' || $uri=='voucher.create') ? 'active' : '') }}" href="{{ route('users.voucher') }}">
+						<img src="{{ asset('assets/images/veldoo/voucher.png') }}" class="img-fluid w-100 sidebarImgs" alt="Voucher"/> 
+						<span class="sidebarText">Vouchers</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('page.about') }}">{{ trans("admin.About Us") }}</a></li>
-						<li><a href="{{ route('page.policy') }}">{{ trans("admin.Privacy Policy") }}</a></li>
-						<li><a href="{{ route('page.terms') }}">{{ trans("admin.Terms & Conditions") }}</a></li>
-					</ul>
 				</li>
-				
-				
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="{{url('admin/users/vouchers')}}" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Voucher") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
+						<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
+						<span class="sidebarText">Payment method</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					
 				</li>
-				
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript:;" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">{{ trans("admin.Promotions") }}</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='sms-template.index' || $uri=='sms-template.create' || $uri=='sms-template.edit') ? 'active' : '') }}" href="{{ route('sms-template.index') }}">
+						<img src="{{ asset('assets/images/veldoo/sms.png') }}" class="img-fluid w-100 sidebarImgs" alt="SMS"/> 
+						<span class="sidebarText">SMS</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('promotion.create') }}">{{ trans("admin.Add") }}</a></li>
-						<li><a href="{{ route('promotion.index') }}">{{ trans("admin.List") }}</a></li>
-						
-					</ul>
 				</li>
-
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript::void(0);" aria-expanded="false">
-						<i class="mdi mdi-arrange-send-backward"></i>
-						<span class="hide-menu">Expenses</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ ($uri=='daily-report.vehicle_mileage' ? 'active' : '') }}" href="{{ route('daily-report.vehicle_mileage') }}">
+						<img src="{{ asset('assets/images/veldoo/report.png') }}" class="img-fluid w-100 sidebarImgs" alt="Reports"/> 
+						<span class="sidebarText">Reports and insight</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('expenses.type_list') }}">Types</a></li>
-						<li><a href="{{ route('expenses.list') }}">List</a></li>
-						{{-- <li><a href="{{ route('daily-report.expenses') }}">Expenses Report</a></li> --}}
-					</ul>
 				</li>
-
-				<li> 
-					<a class="has-arrow waves-effect waves-dark" href="javascript::void(0);" aria-expanded="false">
-						<i class="mdi mdi-account-alert"></i>
-						<span class="hide-menu">Temporary Guest Users</span>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='contact-support.index' || $uri=='contact-support.create') ? 'active' : '') }}" href="{{ route('contact-support.index') }}">
+						<img src="{{ asset('assets/images/veldoo/contact.png') }}" class="img-fluid w-100 sidebarImgs" alt="contact"/> 
+						<span class="sidebarText">Contact Support</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-					<ul aria-expanded="false" class="collapse">
-						<li><a href="{{ route('temporary_users.only_phone') }}">Only Phone</a></li>
-						<li><a href="{{ route('temporary_users.only_last_name') }}">Only Last Name</a></li>
-					</ul>
+				</li>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='push-notifications.index' || $uri=='push-notifications.create') ? 'active' : '') }}" href="{{ route('push-notifications.index') }}">
+						<img src="{{ asset('assets/images/veldoo/push.png') }}" class="img-fluid w-100 sidebarImgs" alt="Push"/> 
+						<span class="sidebarText">Push Notification</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+					</a>
+				</li>
+				<li class="nav-item w-100">
+					<a class="nav-link" href="car.html">
+						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
+						<span class="sidebarText">Car</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+					</a>
 				</li>
 			</ul>
-		</nav>
-		<!-- End Sidebar navigation -->
-	</div>
-	<!-- End Sidebar scroll-->
-</aside>
-<!-- ============================================================== -->
-<!-- End Left Sidebar - style you can find in sidebar.scss  -->
+		</article>
+	</section>
+</div>

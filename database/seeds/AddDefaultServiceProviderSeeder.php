@@ -1,5 +1,7 @@
 <?php
 
+use App\ServiceProviderDriver;
+use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -22,6 +24,14 @@ class AddDefaultServiceProviderSeeder extends Seeder
         ->update([
             'service_provider_id' => 1
         ]);
+
+        $allDrivers = User::select('id')->where(['user_type' => 2])->get();
+
+        foreach($allDrivers as $driver_value){
+            ServiceProviderDriver::updateOrCreate(
+                ['driver_id' => $driver_value->id, 'service_provider_id' => 1]
+            );
+        }
 
         DB::table('settings')->where(function($query){
             $query->where(['service_provider_id' => ''])

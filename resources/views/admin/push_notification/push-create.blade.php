@@ -1,91 +1,72 @@
 @extends('admin.layouts.master')
-@section('content')
 
-		<!-- Container fluid  -->
-		<!-- ============================================================== -->
-		<div class="container-fluid">
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card card-outline-info">
-						<div class="card-header">
-							@if(!empty($action))
-								<h4 class="m-b-0 text-white">{{ $action }}</h4>
-							@endif
-						</div>
-						<div class="card-body">
-							@include('admin.layouts.flash-message')
-							
-							{{ Form::open(array('url' => route('push-notifications.store'),'class'=>'form-horizontal form-material','id'=>'store','enctype' => 'multipart/form-data')) }}
-								<div class="form-body">
-									<div class="row p-t-4">
-										<div class="col-md-8">
-											<div class="form-group">
-												<?php
-													echo Form::label('Receiver', 'Receiver',['class'=>'control-label']);
-												?>
-												<select name="receiver" id="receiver" class="form-control" required>
-													<option value="">---Select at least one---</option>
-													<option value="1">All Users</option>
-													<option value="2">All Drivers</option>
-													<option value="3">All Drivers and Users</option>
-												</select>
+@section('content')
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addonTable sectionsform">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
+									<form class="custom_form editForm " id="EditCarType">
+										<div class="row w-100 m-0 form_inside_row">
+											<div class="col-lg-8 col-md-8 col-sm-12 col-12">
+												<div class="row w-100 m-0">
+
+													<div class="col-lg-6 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<select class="form-select inputText" id="Receiver" name="Receiver">
+																<option value="">-- Select at least one --</option>
+																<option value="all_users">All Users</option>
+																<option value="all_drivers">All Drivers</option>
+																<option value="all_companies">All Companies</option>
+																
+															</select>
+															<label for="city">Receiver</label>
+														</div>
+													</div>
+													<div class="col-lg-6 col-md-6 col-sm-12 col-12">
+														<div class="form-group">
+															<input type="text" class="form-control inputText" id="enterName" name="enterName" placeholder="Title" />
+															<label for="enterName">Enter Title</label>
+														</div>
+													</div>
+													<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
+															<textarea type="text" class="form-control inputText" id="Description" name="Description" ></textarea>
+															<label for="Description">Description</label>
+														</div>
+													</div>
+												</div>
 											</div>
-											<div class="form-group">
-												<?php
-													echo Form::label('Title', 'Title',['class'=>'control-label']);
-												?>
-												<input type="text" name="title" class="form-control" required	>
-											</div>
-											<div class="form-group">
-												<?php
-													echo Form::label('Description', 'Description',['class'=>'control-label']);
-												?>
-												<textarea name="description" rows="5" class="form-control" required></textarea>
-											</div>
-											<div class="form-group">
-												<?php
-													echo Form::label('Image', 'Image',['class'=>'control-label']);
-												?>
-												<input type="file" name="image" class="form-control">
+											<div class="col-lg-4 col-md-4 col-sm-12 col-12">
+												<div class="img_user_settled h-100">
+													<div class="view_image_user">
+
+														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+														<input type="file" name="fileUser" class="form-control hiddenForm" />
+													</div>
+													
+													<div class="form-group">
+														<input type="submit" value="Save" name="submit" class="form-control submit_btn carSide"/>
+													</div>
+												</div>
 											</div>
 										</div>
-									</div>
-								</div>
-								<div class="form-actions">
-									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-							{{ Form::close() }}
+									</form>
+								</article>
+							</section>
 						</div>
 					</div>
+					
 				</div>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
+	</div>
+</main>
 @endsection
-
-@section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
-<script type="text/javascript">
-	function readURL(input){
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				$('#previewimage').attr('src', e.target.result);
-				$('#previewimage').attr('height','50px');
-				$('#previewimage').attr('width','50px');
-			}
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
-
-	</script>
-@stop
