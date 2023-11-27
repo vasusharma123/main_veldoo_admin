@@ -1,5 +1,5 @@
 $(function(){
-
+    $('.moreOptions').fadeOut();
     
     //Password View 
     $(document).on('click','.password_icon', function(){
@@ -12,6 +12,12 @@ $(function(){
             $(this).parents('.field').find('.input_text').attr({'type':'password'});
             $(this).css({'opacity':'.5'});
         }
+    });
+
+    //Show more
+    $('.showmore').on('click',function(){
+        $(this).parents('.list-group-item').fadeOut();
+        $(this).parents('.checklistcars').find('.moreOptions').fadeIn();
     });
 
 });
