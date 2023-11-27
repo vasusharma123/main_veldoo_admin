@@ -306,7 +306,10 @@ Route::get('master-login',  'MasterAdmin\LoginController@login');
 Route::post('adminLogin',  [ 'uses' => 'MasterAdmin\LoginController@masterLogin'])->name('masterLogin');
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
-	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
+	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@showServiceProvider');
+	Route::get('fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
+
+	
 	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings');
 	Route::get('master-plan',  'MasterAdmin\PlansController@getServiceProviderPlan');
 	Route::get('plan-detail',  'MasterAdmin\PlansController@getPlanDetail');
