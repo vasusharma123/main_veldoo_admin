@@ -54,7 +54,7 @@ class ServiceProviderController extends Controller
             // $data['user'] =  User::where('user_type', 3)->get();
             // return view('service_provider', compact('data'))->with($data);
 
-            $data = User::where('user_type',2)->orderBy('created_at', 'desc')->get();
+            $data = User::where('user_type',3)->orderBy('created_at', 'desc')->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
