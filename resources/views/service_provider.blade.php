@@ -111,7 +111,7 @@
             }
         ],
         columns: [
-            {data: 'name', name: 'name'},
+            {data: 'expire_at', name: 'expire_at'},
             {data: 'name', name: 'name'},
             {data: 'phone', name: 'phone'},
             {data: 'email', name: 'email'},

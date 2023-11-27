@@ -54,7 +54,17 @@ class ServiceProviderController extends Controller
             // $data['user'] =  User::where('user_type', 3)->get();
             // return view('service_provider', compact('data'))->with($data);
 
-            $data = User::where('user_type',3)->orderBy('created_at', 'desc')->get();
+            $data = User::where('user_type', 3)
+            ->join('plan_purchase_history', function ($join) {
+                $join->on('plan_purchase_history.user_id', '=', 'users.id')
+                    ->where('plan_purchase_history.created_at', '=', DB::raw('(SELECT MAX(created_at) FROM plan_purchase_history WHERE user_id = users.id)'));
+            })
+            ->orderBy('plan_purchase_history.created_at', 'desc') // Order by the purchase date
+            ->orderBy('users.created_at', 'desc') // Then, order by the user's creation date
+            ->get();
+
+            // Log::info(print_r($data->toArray(),1));
+            // dd($data->toArray());
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
