@@ -96,7 +96,7 @@
                 text: 'Download CSV',
                 filename: 'service_provider',
                 exportOptions: {
-                    columns: [0, 1, 3] // Include only columns with indices 0, 1, and 3
+                    columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
                 }
             
             },
@@ -105,7 +105,7 @@
                 text: 'Download excel',
                 filename: 'service_provider',
                 exportOptions: {
-                    columns: [0, 1, 3] // Include only columns with indices 0, 1, and 3
+                    columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
                 }
             
             }
