@@ -419,6 +419,8 @@ class ServiceProviderController extends Controller
      $PlanPurchaseHistory->expire_at = $expiry;
      $PlanPurchaseHistory->currency = 'CHF';
      $PlanPurchaseHistory->purchase_date = Carbon::now();
+     $PlanPurchaseHistory->license_type = $planDetail[0]['plan_type'];
+     $PlanPurchaseHistory->plan_status = 'active';
      $saved =  $PlanPurchaseHistory->save();
      if($saved){
         $randomString = Str::random(10);
