@@ -115,7 +115,7 @@
             {data: 'name', name: 'name'},
             {data: 'phone', name: 'phone'},
             {data: 'email', name: 'email'},
-            {data: 'name', name: 'name'},
+            {data: 'license_type', name: 'license_type'},
            
                 {
                 data: 'action', 
