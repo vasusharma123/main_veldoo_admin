@@ -61,6 +61,16 @@
         table.dataTable td.dataTables_empty {
             text-align: center;
         }
+        .buttons-csv {
+            display:none !important;
+        
+        }
+        .buttons-excel  {
+            display:none !important;
+        }
+        #DataTables_Table_0_filter{
+            display:none !important;
+        }
     </style>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10.5.0/dist/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">

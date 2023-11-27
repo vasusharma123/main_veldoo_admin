@@ -18,13 +18,13 @@
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="name" name="name" value="{{ $data['user']['first_name'] }}" placeholder="Name"  readonly/>
-                                            <label for="name">Service provider first name</label>
+                                            <label for="name">Owner first name</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="name" name="name" value="{{ $data['user']['last_name']  }}" placeholder="Surname" readonly/>
-                                            <label for="name">Service provider last Name</label>
+                                            <label for="name">Owner last name</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-12 col-sm-12 col-12">
@@ -42,25 +42,25 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="address" name="address"  value="{{ $data['user']['street']}}"  readonly />
-                                            <label for="address">Service street</label>
+                                            <label for="address">Street</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="postcode" name="postcode" value="{{ $data['user']['zip']}}"   readonly />
-                                            <label for="postcode">Service post code</label>
+                                            <label for="postcode">Post code</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="usercity" name="usercity" value="{{ $data['user']['city']}}"   readonly />
-                                            <label for="usercity">Service city</label>
+                                            <label for="usercity">City</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="usercountry" name="usercountry" value="{{ $data['user']['country']}}"  readonly />
-                                            <label for="usercountry">Service country</label>
+                                            <label for="usercountry">Country</label>
                                         </div>
                                     </div>
                                     
