@@ -458,7 +458,7 @@
                                         
                                             <div class="swiper-slide">
                                                 <div class="car_option position-relative">
-                                                    <input type="radio" class="car_checked" value="{{ $vehicle_type->id }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
+                                                    <input type="radio" class="car_checked" value="{{ $vehicle_type->car_type }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
                                                     @if(!empty($vehicle_type->car_type) && file_exists($vehicle_type->image_with_url))
                                                     <img src="{{ $vehicle_type->image_with_url }}" class="img-fluid car_img" alt="Vehicle" />
                                                     @else
@@ -1254,7 +1254,7 @@
                         swal.fire("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                         return false;
                     }
-                    var carType = $('input[name="car_type"]:checked').val();
+                    var carType = $('input[name="car_type"]:checked').data('text');
                     var vehicle_basic_fee = $('input[name="car_type"]:checked').data('basic_fee');
                     var vehicle_price_per_km = $('input[name="car_type"]:checked').data('price_per_km');
                     if (distance_calculated == 0) {

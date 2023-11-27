@@ -254,8 +254,6 @@ class RidesController extends Controller
     public function ride_booking(Request $request)
     {
         $now = Carbon::now();
-        $vehicle_type = Price::find($request->car_type);
-        $request->car_type = $vehicle_type->car_type;
         $dates = count(explode(",",$request->ride_date));
         $reqDate = $dates <= 1 ? ($request->ride_date.' '.$request->ride_time.":00") : '';
         
@@ -349,8 +347,7 @@ class RidesController extends Controller
                 $ride->note = $request->note;
             }
             if (!empty($request->car_type)) {
-                $vehicle_type = Price::find($request->car_type);
-                $ride->car_type = $vehicle_type->car_type ?? $request->car_type;
+                $ride->car_type = $request->car_type;
             }
             if (!empty($request->distance)) {
                 $ride->distance = $request->distance;
@@ -673,8 +670,6 @@ class RidesController extends Controller
     public function ride_booking_update(Request $request)
 	{
 		$now = Carbon::now();
-        $vehicle_type = Price::find($request->car_type);
-        $request->car_type = $vehicle_type->car_type;
 
         $request['ride_time'] = ($request->ride_date.' '.$request->ride_time.":00");
 
