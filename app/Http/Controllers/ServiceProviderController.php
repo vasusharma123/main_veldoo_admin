@@ -189,7 +189,7 @@ class ServiceProviderController extends Controller
                 ];
                 $setting = new Setting();
                 $slug = $this->createUrlSlug($verifyUser->name);
-                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue), 'slug' => $slug]);
+                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue), 'slug' => $slug, 'demo_expiry' => Carbon::today()->addDays(14)]);
                 $setting->save();
 
                 //vehicle-type
@@ -374,14 +374,15 @@ class ServiceProviderController extends Controller
 
     public function selectPlan($token)
     {
-      try{
-        $data = Plan::get()->toArray();
-        return view('service_provider.select_plan')->with(['data' => $data, 'token' => $token]);
-      }catch(Exception $e){
-        Log::info('Error in method selectPlan'. $e);
-      }
-
+        try {
+            $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
+            $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
+            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token]);
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+        }
     }
+    
     public function subscribePlan($token,$id)
     {
       try{
