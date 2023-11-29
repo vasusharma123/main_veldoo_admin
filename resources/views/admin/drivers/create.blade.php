@@ -44,9 +44,10 @@
 													<div class="col-lg-4 col-md-8 col-sm-8 col-8">
 														<div class="form-group">
 															<?php
-															echo Form::text('phone',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '1234']);
+															echo Form::text('phone',null,['class'=>'form-control inputText','required'=>true, 'id'=>'phone', 'placeholder' => '1234']);
 															echo Form::label('phone', 'Example: 123 456 7899',['class'=>'']);
 															?>
+															<input type="hidden" value="+1" id="admin_phone_country_code" name="admin_country_code" />
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
@@ -106,5 +107,15 @@
 @endsection	
 	
 @section('footer_scripts')
+<script>
+$(document).ready(function(){
+	
+	setTimeout(function(){
+		
+		//var admin_phone = $('#phone').intlTelInput("setNumber", "+1");
+	}, 1000);
+});
 
+//$("#admin_phone_country_code").val($("#admin_phone").intlTelInput("getSelectedCountryData").dialCode);
+</script>
 @stop

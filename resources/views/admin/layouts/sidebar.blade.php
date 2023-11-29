@@ -15,7 +15,7 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
-					<a class="nav-link {{ ($uri=='users.index' ? 'active' : '') }}" href="{{ route('users.index') }}">
+					<a class="nav-link {{ (($uri=='users.index' ||  $uri=='users.show') ? 'active' : '') }}" href="{{ route('users.index') }}">
 						<img src="{{ asset('assets/images/veldoo/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users"/> 
 						<span class="sidebarText">User</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>

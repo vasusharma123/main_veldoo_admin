@@ -15,48 +15,50 @@
 									
 									<input name="page" type="hidden">
 									
-									<form class="custom_form editForm" id="SearchForm">
-										<div class="row w-100 m-0 form_inside_row">
-											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
-												<div class="row w-100 m-0">
-													
+									<div class="row w-100 m-0 form_inside_row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+											<div class="row w-100 m-0">
+												<form class="custom_form editForm" id="SearchForm">
 													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
 														<div class="form-group">
 															<label for="startDate">Start Date</label>
-															<input type="date" class="form-control inputText" id="startDate" name="startDate" placeholder="start Date" value="DD-MM-SS" />
-														   
+															<input type="date" class="form-control inputText" id="startDate" name="start_date" placeholder="start Date" value="DD-MM-SS" />
 														</div>
 													</div>
 													
 													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
 														<div class="form-group">
 															<label for="endDate">End Date</label>
-															<input type="date" class="form-control inputText" id="endDate" name="endDate" placeholder="End Date" value="DD-MM-SS" />
-														   
+															<input type="date" class="form-control inputText" id="endDate" name="end_date" placeholder="End Date" value="DD-MM-SS" />
 														</div>
 													</div>
 													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
-														<div class="form-group">
+														<!--<div class="form-group">
 															<label for="keywords">Search Keyword</label>
 															<input type="search" class="form-control inputText" id="keywords" name="keywords" placeholder="Search..." />
 														   
-														</div>
+														</div>-->
 													</div>
 													<div class="col-lg-2 col-md-4 col-sm-4 col-6 align-self-end">
 														<div class="form-group">
 															<input type="submit" value="Filter" name="search" class="form-control submit_btn searchbtn"/>
 														</div>
 													</div>
-													<div class="col-lg-1 col-md-2 col-sm-2 col-4 align-self-end">
-														<div class="form-group">
-															<button class="btn submit_btn searchbtn exportbtn" type="button"><i class="bi bi-download"></i></button>
-														</div>
+												</form>
+												{{ Form::open(array('url' => route('rides.export'), 'class'=>'custom_form editForm','id'=>'exportForm','enctype' => 'multipart/form-data')) }}
+												<input type="hidden" name="exp_start_date">
+												<input type="hidden" name="exp_end_date">
+												<input type="hidden" name="exp_search">
+												<div class="col-lg-1 col-md-2 col-sm-2 col-4 align-self-end">
+													<div class="form-group">
+														<button class="btn submit_btn searchbtn exportbtn" type="submit"><i class="bi bi-download"></i></button>
 													</div>
-												   
 												</div>
+												{{ Form::close() }}
 											</div>
 										</div>
-									</form>
+									</div>
+									
 									
 									<div id="allDataUpdate">
 										@include("admin.rides.index_element")
@@ -95,14 +97,29 @@ $(function () {
 	
 	function doneTyping() {
 		var text = $('.myInput').val();
+		
+		$('input[name="exp_search"]').val(text);
+		
 		//var orderby = $('input[name="orderBy"]').val().toString();
 		var orderby = '';
 		//var order = $('input[name="order"]').val().toString();
 		var order = '';
 		//$("#loading").fadeIn("slow");
+		
+		var start_date = $('input[name="start_date"]').val();
+		var end_date = $('input[name="end_date"]').val();
+		
 		$('input[name="page"]').val(1);
-		ajaxCall('', text, orderby, order, '');
+		ajaxCall('', text, orderby, order, '', '', '', start_date, end_date);
 	};
+	
+	$('body').on('change', 'input[name="start_date"]', function(){
+		$('input[name="exp_start_date"]').val($(this).val());
+	});
+	
+	$('body').on('change', 'input[name="end_date"]', function(){
+		$('input[name="exp_end_date"]').val($(this).val());
+	});
 	
 	$('body').on('click', '.delete_user', function(){
         var id = $(this).attr('data-id');
@@ -151,13 +168,33 @@ $(function () {
 		$("#loading").fadeIn("slow");
 		ajaxCall(id, text, orderby, order, page, status, 'status');
 	});
+	
+	$('body').on('submit', '#SearchForm', function(e){
+		
+		e.preventDefault();
+		
+		var text = $('.myInput').val();
+		//var orderby = $('input[name="orderBy"]').val().toString();
+		var orderby = '';
+		//var order = $('input[name="order"]').val().toString();
+		var order = '';
+		//$("#loading").fadeIn("slow");
+		
+		var start_date = $('input[name="start_date"]').val();
+		var end_date = $('input[name="end_date"]').val();
+		
+		$('input[name="page"]').val(1);
+		ajaxCall('', text, orderby, order, '', '', '', start_date, end_date);
+		
+		return false;
+	});
 });
-function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
+function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='', start_date='', end_date='') {
 	var page = (!page ? 1 : page);
 	$.ajax({
 		type: "GET",
 		url: "{{url()->current()}}",
-		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
+		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type,start_date:start_date,end_date:end_date},
 		success: function (data) {
 			//$("#loading").fadeOut("slow");
 			$('#allDataUpdate').html(data);

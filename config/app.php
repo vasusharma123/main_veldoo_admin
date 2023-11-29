@@ -167,6 +167,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 		Laravel\Socialite\SocialiteServiceProvider::class,
+		Maatwebsite\Excel\ExcelServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -236,6 +237,7 @@ return [
 		'Helper' => App\Helpers\Helper::class,
 		'Datatables' => Yajra\Datatables\Facades\Datatables::class,
 		'Agent' => Jenssegers\Agent\Facades\Agent::class,
+		'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];
