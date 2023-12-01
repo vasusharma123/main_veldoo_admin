@@ -82,6 +82,7 @@ Route::group(['middleware' => 'locale'], function(){
 Route::group(['middleware' => 'guest'], function(){
 	// Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
     Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
+	Route::post('/spLogin',  ['uses'=>'UserController@spLogin']);
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
     Route::get('/register',  ['as'=>'service-provider.register','uses'=>'ServiceProviderController@register']);
     Route::post('/service-provider/register_submit',  ['as'=>'service-provider.register_submit', 'uses'=>'ServiceProviderController@register_submit']);

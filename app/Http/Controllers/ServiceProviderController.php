@@ -372,85 +372,6 @@ class ServiceProviderController extends Controller
         }
     }
 
-    public function selectPlan($token)
-    {
-        try {
-            $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
-            $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
-            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token]);
-        } catch (Exception $e) {
-            Log::info('Error in method selectPlan' . $e);
-        }
-    }
-    
-    public function subscribePlan($token,$id)
-    {
-      try{
-        $data = Plan::where('id', $id)->first()->toArray();
-        return view('service_provider.subscribe_plan')->with(['data' => $data, 'token' => $token, 'plan_id' =>  $id]);
-      }catch(Exception $e){
-        Log::info('Error in method selectPlan'. $e);
-      }
-
-    }
-
-    public function subscribedPlanByUser(Request $request)
-    {
-      try{
-       
-      $userDetail =  User::where('is_email_verified_token', $request->token)->first();
-
-      if(!$userDetail){
-         return "There is some problem";
-      }
-
-      if(!Plan::where('id' ,$request->plan)->exists()){
-        return "Please select plan again";
-     }
-     $planDetail =  Plan::where('id' ,$request->plan)->get();
-     $PlanPurchaseHistory = new PlanPurchaseHistory();
-     $PlanPurchaseHistory->user_id = $userDetail->id;
-     $PlanPurchaseHistory->plan_id = $request->plan;
-     $today = Carbon::now();
-     if($planDetail[0]['plan_type'] == 'monthly'){
-       $expiry = $today->addMonth();
-     }else{
-        $expiry = $today->addYear();
-     }
-     $PlanPurchaseHistory->expire_at = $expiry;
-     $PlanPurchaseHistory->currency = 'CHF';
-     $PlanPurchaseHistory->purchase_date = Carbon::now();
-     $PlanPurchaseHistory->license_type = $planDetail[0]['plan_type'];
-     $PlanPurchaseHistory->plan_status = 'active';
-     $saved =  $PlanPurchaseHistory->save();
-     if($saved){
-        $randomString = Str::random(10);
-        $newPassword = Hash::make($randomString);
-        $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
-        if($updated){
-            FacadesMail::send('email.loginCredential', ['password' => $randomString], function ($message) use ($userDetail) {
-                $message->to($userDetail->email);
-                $message->subject('New Login Credential Veldoo');
-            });
-
-            return redirect('/thankyou');    
-        }
-     }else{
-        return "There is some problem";
-     }
-     
-      }catch(Exception $e){
-        Log::info('Error in method selectPlan'. $e);
-      }
-
-    }
-
-    public function thankyou (){
-        return view('service_provider.thankyou');
-    }
-    
-    
-
     public function register_step1(Request $request)
     {
         $input = $request->all();
@@ -669,4 +590,80 @@ class ServiceProviderController extends Controller
     {
         return view('service_provider.registration_finish');
     }
+
+    public function selectPlan($token)
+    {
+        try {
+            $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
+            $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
+            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token]);
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+        }
+    }
+
+    public function subscribePlan($token, $id)
+    {
+        try {
+            $plan_detail = Plan::find($id);
+            return view('service_provider.subscribe_plan')->with(['plan_detail' => $plan_detail, 'token' => $token]);
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+        }
+    }
+
+    public function subscribedPlanByUser(Request $request)
+    {
+        try {
+            $userDetail =  User::where('is_email_verified_token', $request->token)->first();
+            if (!$userDetail) {
+                return redirect()->back()->with('error', __("Something went wrong."));
+            }
+
+            $planDetail =  Plan::find($request->plan_id);
+            if (!$planDetail) {
+                return redirect()->back()->with('error', __("Please select plan again"));
+            }
+            $PlanPurchaseHistory = new PlanPurchaseHistory();
+            $PlanPurchaseHistory->user_id = $userDetail->id;
+            $PlanPurchaseHistory->plan_id = $request->plan_id;
+            $today = Carbon::now();
+            if ($planDetail->plan_type == 'monthly') {
+                $expiry = $today->addMonth();
+            } else {
+                $expiry = $today->addYear();
+            }
+            $PlanPurchaseHistory->expire_at = $expiry;
+            $PlanPurchaseHistory->currency = 'CHF';
+            $PlanPurchaseHistory->purchase_date = Carbon::now();
+            $PlanPurchaseHistory->license_type = $planDetail->plan_type;
+            $PlanPurchaseHistory->plan_status = 'active';
+            $saved =  $PlanPurchaseHistory->save();
+            if ($saved) {
+                $settingDetail = Setting::where(['service_provider_id' => $userDetail->id])->first();
+                $settingDetail->is_subscribed = 1;
+                $settingDetail->save();
+                $randomString = Str::random(10);
+                $newPassword = Hash::make($randomString);
+                $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
+                if ($updated) {
+                    FacadesMail::send('email.loginCredential', ['userDetail' => $userDetail, 'password' => $randomString], function ($message) use ($userDetail) {
+                        $message->to($userDetail->email);
+                        $message->subject('New Login Credential Veldoo');
+                    });
+                    return redirect('/thankyou');
+                }
+            } else {
+                return redirect()->back()->with('error', __("Something went wrong."));
+            }
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function thankyou (){
+        return view('service_provider.thankyou');
+    }
+    
 }

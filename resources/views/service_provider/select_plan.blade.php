@@ -98,7 +98,7 @@
                                                     </li>
                                                 </ul>
                                                 <h4 class="permonthprice ">
-                                                    {{ ($month_value->charges == 0)?$month_value->plan_name : ($month_value->currency_type.' '.$month_value->charges . '/ month')}}
+                                                    {{ ($month_value->charges == 0)?'Free' : ($month_value->currency_type.' '.$month_value->charges . '/ month')}}
                                                 </h4>
                                                 @if($month_value->charges == 0)
                                                 <a href="/service-provider/subscribe-plan/{{ $token }}/{{$month_value->id}}"> <button class="btn submit_btn planBtnSelect mt-4">Select</button></a>

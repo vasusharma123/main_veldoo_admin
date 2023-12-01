@@ -24,7 +24,7 @@
                 <div class="card-body">
 					@include('admin.layouts.flash-message')
 					
-					{{ Form::open(array('url' => 'doLogin','class'=>'form-horizontal form-material','id'=>'loginform')) }}
+					{{ Form::open(array('url' => 'spLogin','class'=>'form-horizontal form-material','id'=>'loginform')) }}
                         <h3 class="box-title m-b-20">Log In</h3>
                         <div class="form-group ">
                             <div class="col-xs-12">
