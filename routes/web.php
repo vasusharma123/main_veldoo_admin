@@ -131,6 +131,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('/users/settings',  ['as' => 'users.settings', 'uses' => 'UserController@settings']);
 	Route::get('/users/vouchers',  ['as' => 'users.voucher', 'uses' => 'UserController@vouchers']);
 	Route::get('/vouchers/create',  ['as' => 'voucher.create', 'uses' => 'UserController@createVoucher']);
+	#Route::post('/vouchers/store',  ['as' => 'voucher.store', 'uses' => 'UserController@storeVoucher']);
 	Route::match(['put', 'patch'], '/users/vouchersUpdate', ['as' => 'users.vouchersUpdate', 'uses' => 'UserController@vouchersUpdate']);
 	Route::match(['put', 'patch'], '/users/{user}/profileUpdate', ['as' => 'users.profileUpdate', 'uses' => 'UserController@profileUpdate']);
 	Route::match(['put', 'patch'], '/users/settingsUpdate', ['as' => 'users.settingsUpdate', 'uses' => 'UserController@settingsUpdate']);

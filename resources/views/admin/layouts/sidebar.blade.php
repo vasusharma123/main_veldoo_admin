@@ -50,9 +50,16 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
-					<a class="nav-link {{ (($uri=='users.voucher' || $uri=='voucher.create') ? 'active' : '') }}" href="{{ route('users.voucher') }}">
+					<a class="nav-link {{ (($uri=='users.voucher' || $uri=='voucher.create') ? 'active' : '') }}" href="{{ route('voucher.create') }}">
 						<img src="{{ asset('assets/images/veldoo/voucher.png') }}" class="img-fluid w-100 sidebarImgs" alt="Voucher"/> 
 						<span class="sidebarText">Vouchers</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+					</a>
+				</li>
+				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.create' || $uri=='vehicle.index' || $uri=='vehicle.edit') ? 'active' : '') }}" href="{{ route('vehicle-type.index') }}">
+						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
+						<span class="sidebarText">Car</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
@@ -88,13 +95,6 @@
 					<a class="nav-link {{ (($uri=='push-notifications.index' || $uri=='push-notifications.create') ? 'active' : '') }}" href="{{ route('push-notifications.index') }}">
 						<img src="{{ asset('assets/images/veldoo/push.png') }}" class="img-fluid w-100 sidebarImgs" alt="Push"/> 
 						<span class="sidebarText">Push Notification</span>
-						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
-					</a>
-				</li>
-				<li class="nav-item w-100">
-					<a class="nav-link" href="car.html">
-						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
-						<span class="sidebarText">Car</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>

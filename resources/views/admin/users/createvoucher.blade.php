@@ -12,27 +12,35 @@
 							<section class="addEditForm sectionsform">
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
-									<form class="custom_form editForm " id="EditCarType">
+									{{ Form::open(array('url' => route('users.vouchersUpdate'),'class'=>'custom_form editForm','id'=>'EditCarType','enctype' => 'multipart/form-data')) }}
+									@csrf
+									@method('PATCH')
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="row w-100 m-0">
 
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="form-group">
-															<input type="text" class="form-control inputText" id="milesPercentage" name="milesPercentage" placeholder="Mile Per Ride(%)" />
-															<label for="milesPercentage">Mile Per Ride(In percentage)</label>
+															<?php
+															echo Form::text('mile_per_ride',(!empty($record->mile_per_ride) ? $record->mile_per_ride : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile Per Ride']);
+															echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="form-group">
-															<input type="text" class="form-control inputText" id="milesCurrency" name="milesCurrency" placeholder="Mile to Currency" />
-															<label for="milesCurrency">Mile to Currency</label>
+															<?php
+															echo Form::text('mile_to_currency',(!empty($record->mile_to_currency) ? $record->mile_to_currency : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile to Currency']);
+															echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
 														<div class="form-group">
-															<input type="text" class="form-control inputText" id="milesInvitation" name="milesInvitation" placeholder="Mile on Invitation" />
-															<label for="milesInvitation">Mile on Invitation</label>
+															<?php
+															echo Form::text('mile_on_invitation',(!empty($record->mile_on_invitation) ? $record->mile_on_invitation : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile on Invitation']);
+															echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
@@ -42,9 +50,8 @@
 													</div>
 												</div>
 											</div>
-				 
 										</div>
-									</form>
+									{{ Form::close() }}
 								</article>
 							</section>
 						</div>

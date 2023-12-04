@@ -41,40 +41,39 @@ class VehicleController extends Controller
     {
         $data = array();
         $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
-		
-		$records = Vehicle::with(['last_driver_choosen', 'carType']);
-		
-		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
-			Vehicle::where([['id', $request->input('id')]])->limit(1)->delete();
-		}
-		
-		if(!empty($request->input('text'))){
-			$text = $request->input('text');
-			$service_provider_id = Auth::user()->id;
-			$records->whereRaw("(year LIKE '%$text%' OR model LIKE '%$text%' OR color LIKE '%$text%' OR vehicle_number_plate LIKE '%$text%') AND service_provider_id=$service_provider_id");
-		}
-		
-		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
-			$records->orderBy($request->input('orderby'), $request->input('order'));
-		} else {
-			$records->orderBy('id', 'desc');
-		}
-		
-		#$this->limit = 2;
-		
-		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id])->paginate($this->limit);
-		
-		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
-		$data['orderby'] =$request->input('orderby');
-		$data['order'] = $request->input('order');
-		
+
         if ($request->ajax()) {
-            return view("admin.vehicle.index_element")->with($data);
+            $data = Vehicle::with(['last_driver_choosen', 'carType'])->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $dataCar = DriverChooseCar::where('car_id', $row->id)->where('logout', 0)->first();
+                    $btn = '<div class="btn-group dropright">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Action
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="' . route('vehicle.show', $row->id) . '">' . trans("admin.View") . '</a>
+                                <a class="dropdown-item" href="' . route('vehicle.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+                                <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>';
+                    if (!empty($dataCar)) {
+                        $btn .= '<a class="dropdown-item car_free" data-id="' . $row->id . '">Free Now</a>';
+                    }
+                    $btn .= '</div></div>';
+                    return $btn;
+                })
+                ->addColumn('car_type', function ($row) {
+                    return (!empty($row->carType))?ucfirst($row->carType->car_type):"";
+                })->addColumn('vehicle_image', function ($row) {
+                    return (!empty($row->vehicle_image)) ? '<img src="' .  asset('storage/'.$row->vehicle_image) . '" height="50px" width="80px">' : '<img src="' . asset('no-images.png') . '" height="50px" width="80px">';
+                })
+                ->addColumn('mileage', function ($row) {
+                    return (!empty($row->last_driver_choosen))?$row->last_driver_choosen->logout_mileage:"";
+                })
+                ->rawColumns(['action', 'car_type', 'vehicle_image'])
+                ->make(true);
         }
-		
-		return view('admin.vehicle.index')->with($data);
+        return view('admin.vehicle.index')->with($data);
     }
 
     /**
@@ -87,7 +86,7 @@ class VehicleController extends Controller
         $breadcrumb = array('title'=>'Vehicle','action'=>'Add Vehicle');
         
         $data = [];
-        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->pluck('car_type', 'id');
+        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->get();
         $data = array_merge($breadcrumb,$data);
         return view('admin.vehicle.create')->with($data);
     }
@@ -137,17 +136,6 @@ class VehicleController extends Controller
                 $vehicleObj->save();
             }
         }
-		
-		if(isset($request->mileage)){
-            $choosenVehicle = DriverChooseCar::where(['car_id' => $vehicleObj->id])->latest()->first();
-            if(!empty($choosenVehicle)){
-				
-				if($choosenVehicle->logout_mileage != $request->mileage){
-					$choosenVehicle->logout_mileage = $request->mileage;
-					$choosenVehicle->save();
-				}
-			}
-        }
 
         return back()->with('success', 'Record created!');
     }
@@ -191,20 +179,18 @@ class VehicleController extends Controller
         $data = [];
         $where = array('id' => $id);
         $record = \App\Vehicle::with(['last_driver_choosen'])->where('service_provider_id',Auth::user()->id)->where($where)->first();
-		
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
         }
-		
-		if(!empty($request->type) && $request->type=="remove_image"){
-			$filename1 = parse_url($record->vehicle_image);
-			$filename2 = public_path($filename1['path']);
-			///if( File::exists($filename1['path']) ) {
+         if(!empty($request->type) && $request->type=="remove_image"){
+			  $filename1 = parse_url($record->vehicle_image);
+			 $filename2 = public_path($filename1['path']);
+			 ///if( File::exists($filename1['path']) ) {
 			\App\Vehicle::where('id',$id)->update(['vehicle_image'=>'']);
-			return response()->json(['message'=>'success']);
-		}
+			 return response()->json(['message'=>'success']);
+		 }
         $data['record'] = $record;
-        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->pluck('car_type', 'id');
+        $data['car_types']=\App\Price::get();
         $data = array_merge($breadcrumb,$data);
         return view("admin.{$this->folder}.edit")->with($data);
     }
@@ -220,14 +206,12 @@ class VehicleController extends Controller
     public function update(Request $request, $id)
     {
         $vehicle = \App\Vehicle::find($id);
-		
+
         $rules = [
-            'vehicle_number_plate' =>  'required',
+            // 'user_name' =>  'required|'.(!empty($haveUser->id) ? 'unique:users,user_name,'.$haveUser->id : ''),
             'vehicle_image' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'year' => 'required',
-            'model' => 'required',
-            'color' => 'required',
-            'car_type' => 'required',
+            //'gender' => 'required|integer|between:1,2',
+            //'dob' => 'required',
         ];
         if (!empty($request->reset_password)) {
             $rules['password'] = 'required|min:6';
@@ -235,8 +219,8 @@ class VehicleController extends Controller
         $request->validate($rules);
         $input = $request->all();
         $input['category_id'] = $input['car_type'];
-        
-		unset($input['_method'], $input['_token'], $input['image_tmp'], $input['car_type'], $input['submit']);
+        unset($input['_method'], $input['_token'], $input['image_tmp'], $input['car_type'], $input['mileage']);
+        // dd($_FILES['vehicle_image']);
         
         if (!empty($_FILES['vehicle_image'])) {
             if (isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['name'] !== '' && !empty($_FILES['vehicle_image']['name'])) {
@@ -260,15 +244,12 @@ class VehicleController extends Controller
         }
 
         \App\Vehicle::where('id', $id)->update($input);
-		
         if(isset($request->mileage)){
             $choosenVehicle = DriverChooseCar::where(['car_id' => $id])->latest()->first();
-            if(!empty($choosenVehicle)){
-				if($choosenVehicle->logout_mileage != $request->mileage){
-					$choosenVehicle->logout_mileage = $request->mileage;
-					$choosenVehicle->save();
-				}
-			}
+            if($choosenVehicle->logout_mileage != $request->mileage){
+                $choosenVehicle->logout_mileage = $request->mileage;
+                $choosenVehicle->save();
+            }
         }
         
         return back()->with('success', __('Record updated!'));

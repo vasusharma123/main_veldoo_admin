@@ -11,7 +11,7 @@ class Vehicle extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-        'year', 'model', 'color', 'vehicle_number_plate', 'vehicle_image', 'category_id', 'service_provider_id'
+        'year', 'model', 'color', 'vehicle_number_plate', 'vehicle_image', 'category_id', 'service_provider_id', 'mileage'
     ];
 
     protected $appends = [
