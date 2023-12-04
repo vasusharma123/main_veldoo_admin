@@ -32,35 +32,41 @@ class VehicleTypeController extends Controller
         $data = array();
         $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
-		$records = DB::table('prices');
-		
-        $records->selectRaw('id, car_type, car_image, price_per_km, basic_fee, seating_capacity, alert_time, status')->where('service_provider_id',Auth::user()->id);
-		
-		if(!empty($request->input('text'))){
-			$text = $request->input('text');
-			$service_provider_id = Auth::user()->id;
-			$records->whereRaw("(car_type LIKE '%$text%' OR basic_fee LIKE '%$text%' OR price_per_km LIKE '%$text%' OR seating_capacity LIKE '%$text%' OR alert_time LIKE '%$text%') AND service_provider_id=$service_provider_id");
-		}
-		
-		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
-			$records->orderBy($request->input('orderby'), $request->input('order'));
-		} else {
-			$records->orderBy('id', 'desc');
-		}
-		
-		#$this->limit = 1;
-		
-		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id])->paginate($this->limit);
-		
-		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
-		$data['orderby'] =$request->input('orderby');
-		$data['order'] = $request->input('order');
-		
         if ($request->ajax()) {
-            return view("admin.vehicle_type.index_element")->with($data);
+
+            $data = Price::select(['id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status'])->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
+            // print_r($data);die;
+            return Datatables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function ($row) {
+                    $btn = '<div class="btn-group dropright">
+                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Action
+                            </button>
+                            <div class="dropdown-menu">
+
+                                <a class="dropdown-item" href="' . route('vehicle-type.show', $row->id) . '">' . trans("admin.View") . '</a>
+                                <a class="dropdown-item" href="' . route('vehicle-type.edit', $row->id) . '">' . trans("admin.Edit") . '</a>
+                                <a class="dropdown-item delete_record" data-id="' . $row->id . '">' . trans("admin.Delete") . '</a>
+                            </div>
+                        </div>';
+                    return $btn;
+                })
+                ->addColumn('status', function ($row) {
+                    $status = ($row->status === 1) ? 'checked' : '';
+                    $btn = '<div class="switch">
+                            <label>
+                                <input type="checkbox" class="change_status" data-status="' . $row->status . '" data-id="' . $row->id . '" ' . $status . '><span class="lever" data-id="' . $row->id . '" ></span>
+                            </label>
+                        </div>';
+                    return $btn;
+                })->addColumn('car_type', function ($row) {
+                    return ucfirst($row->car_type);
+                })
+                ->rawColumns(['action', 'status', 'car_type'])
+                ->make(true);
         }
-		
-		return view('admin.vehicle_type.index')->with($data);
+        return view('admin.vehicle_type.index')->with($data);
     }
 
     /**
@@ -93,7 +99,7 @@ class VehicleTypeController extends Controller
     {
         $breadcrumb = array('title'=>'Vehicle Type','action'=>'Add Vehicle Type');
         $data = [];
-        $data['car_types'] =\App\Category::where('status',1)->get();
+         $data['car_types'] =\App\Category::where('status',1)->get();
         $data = array_merge($breadcrumb,$data);
         return view("admin.{$this->folder}.create")->with($data);
     }
@@ -107,20 +113,20 @@ class VehicleTypeController extends Controller
     public function store(Request $request)
     {
          $rules = [
-			'car_type'=>'required',
-			'basic_fee'=>'required',
-			'price_per_km'=>'required',
-			// 'commission'=>'required',
-			'seating_capacity'=>'required',
-			// 'pick_time_from'=>'required',
-			//'pick_time_to'=>'required'
+          'car_type'=>'required',
+          'basic_fee'=>'required',
+          'price_per_km'=>'required',
+         // 'commission'=>'required',
+          'seating_capacity'=>'required',
+         // 'pick_time_from'=>'required',
+          //'pick_time_to'=>'required'
          ];
 
         $request->validate($rules);
         $input = $request->all();
         $input['service_provider_id'] = Auth::user()->id;
-        unset($input['_method'],$input['_token'],$input['submit']);
-		//  unset($input['basic_fee']);
+        unset($input['_method'],$input['_token']);
+      //  unset($input['basic_fee']);
         $result=\App\Price::create($input);
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
 
@@ -188,22 +194,22 @@ class VehicleTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $vehicle = \App\Price::where(['id'=>$id])->first();;
+            $vehicle = \App\Price::where(['id'=>$id])->first();;
 
         $rules = [
-			'car_type'=>'required',
-			'basic_fee'=>'required',
-			'price_per_km'=>'required',
-			#'price_per_min_mile'=>'required',
-			#'commission'=>'required',
-			'seating_capacity'=>'required',
-			#'pick_time_from'=>'required',
-			#'pick_time_to'=>'required'
-		];
+          'car_type'=>'required',
+          'basic_fee'=>'required',
+          'price_per_km'=>'required',
+         // 'price_per_min_mile'=>'required',
+         // 'commission'=>'required',
+          'seating_capacity'=>'required',
+        //  'pick_time_from'=>'required',
+         // 'pick_time_to'=>'required'
+         ];
 
-		$request->validate($rules);
+        $request->validate($rules);
         $input = $request->all();
-        unset($input['_method'], $input['_token'], $input['submit']);
+        unset($input['_method'],$input['_token']);
 
         if($request->hasFile('car_image') && $request->file('car_image')->isValid()){
 

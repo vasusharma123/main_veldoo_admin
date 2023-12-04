@@ -1,151 +1,115 @@
 @extends('admin.layouts.master')
+
 @section('content')
-		<!-- Container fluid  -->
-		<!-- ============================================================== -->
-		<div class="container-fluid">
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card card-outline-info">
-						<div class="card-header">
-							@if(!empty($action))
-								<h4 class="m-b-0 text-white">{{ $action }}</h4>
-							@endif
-						</div>
-						<div class="card-body">
-							@include('admin.layouts.flash-message')
-							
-							{{ Form::open(array('url' => route('vehicle-type.store'),'class'=>'form-horizontal form-material','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
-								<div class="form-body">
-									<div class="row p-t-5">
-										<div class="col-md-6">
-										
-											<!--<div class="form-group">
-												<?php
-												echo Form::label('cart_type', 'Car Type',['class'=>'control-label']);
-												?>
-												<select name="car_type" class="form-control" required="required">
-													@foreach($car_types as $car_type)
-												<option value="{{$car_type->name}}">{{$car_type->name}}</option>
-													@endforeach
-												</select>
-											</div>-->
-											<div class="form-group">
-												<?php
-												echo Form::label('car_type', 'Car Type',['class'=>'control-label']);
-												echo Form::text('car_type',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('price_per_km', 'Price Per KM',['class'=>'control-label']);
-												echo Form::number('price_per_km',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('basic_fee', 'Basic Fee',['class'=>'control-label']);
-												echo Form::number('basic_fee',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('alert_time', 'Min. Alert Time',['class'=>'control-label']);
-												echo Form::number('alert_time',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												echo Form::label('seating_capacity', 'Seating Capacity',['class'=>'control-label']);
-												echo Form::number('seating_capacity',null,['class'=>'form-control','required'=>true]);
-												?>
-											</div>
-											<!--<div class="form-group">
-												<?php
-												/* echo Form::label('pick_time_from', 'Pick Time From',['class'=>'control-label']);
-												echo Form::time('pick_time_from',null,['class'=>'form-control','required'=>true,'id'=>'pick_time']); */
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-											/* 	echo Form::label('pick_time_to', 'Pick Time To',['class'=>'control-label']);
-												echo Form::time('pick_time_to',null,['class'=>'form-control','required'=>true,'id'=>'pick_time']); */
-												?>
-											</div>
-											<div class="form-group">
-												<?php
-												//echo Form::label('night_charges', 'Night Charges',['class'=>'control-label']);
-												?>
-												<div class="switch">
-													<label>
-														<input type="checkbox" name="night_charges" class="night_charges" value="1"><span class="lever"></span>
-													</label>
-												</div>
-											</div>-->
-												<div class="row">
-												<div class="col-md-10">
-													<div class="form-group">
-														<?php
-														echo Form::label('car_image', 'Car Image',['class'=>'control-label']);
-														?>
-														<div class="fileinput fileinput-new input-group" data-provides="fileinput">
-															<div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> 
-															<span class="input-group-addon btn btn-default btn-file" > 
-																<span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
-															<input type="hidden">
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addEditForm sectionsform">
+								<article class="container-fluid">
+									@include('admin.layouts.flash-message')
+								
+									{{ Form::open(array('url' => route('vehicle-type.store'),'class'=>'custom_form editForm','id'=>'vehicletypeCreate','enctype' => 'multipart/form-data')) }}
+										<div class="row w-100 m-0 form_inside_row">
+											<div class="col-lg-8 col-md-8 col-sm-12 col-12">
+												<div class="row w-100 m-0">
+													
+													<div class="col-lg-4 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
 															<?php
-															echo Form::file('car_image',['class'=>'form-control','onchange'=>'readURL(this);','required'=>true]);
+															echo Form::text('car_type',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Car type']);
+															echo Form::label('car_type', 'Enter car type',['class'=>'']);
 															?>
-															</span>
-															<a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> 
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
+															<?php
+															$seatingArr = array('1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9, '10' => 10);
+															echo Form::select('seating_capacity',$seatingArr, null, ['class'=>'form-select inputText','required'=>true, 'id' => 'capacity']);
+															echo Form::label('seating_capacity', 'Configure seating capacity',['class'=>'control-label']);
+															?>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
+															<?php
+															echo Form::text('alert_time',null,['class'=>'form-control inputText custNumFieldCls','required'=>true, 'placeholder' => 'Min. alert time']);
+															echo Form::label('alert_time', 'Configure min. alert time',['class'=>'control-label']);
+															?>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
+															<div class="inputForm position-relative">
+																<?php
+																echo Form::text('basic_fee',null,['class'=>'form-control inputText childlabelfield custFloatVal','required'=>true, 'placeholder' => 'Start fee']);
+																?>
+																<label class="absoultLabel">CHF</label>
+															</div>
+															<?php
+															echo Form::label('basic_fee', 'Configure start fee',['class'=>'control-label']);
+															?>
+														</div>
+													</div>
+													<div class="col-lg-4 col-md-12 col-sm-12 col-12">
+														<div class="form-group">
+															<div class="inputForm position-relative">
+																<?php
+																echo Form::text('price_per_km',null,['class'=>'form-control inputText childlabelfield custFloatVal','required'=>true, 'placeholder' => 'Price per KM']);
+																?>
+																<label class="absoultLabel">CHF</label>
+															</div>
+															<?php
+															echo Form::label('price_per_km', 'Configure price per km',['class'=>'control-label']);
+															?>
 														</div>
 													</div>
 												</div>
-												<div class="col-md-2">
-													<img id="previewimage" src="#" alt="" />
+											</div>
+											<div class="col-lg-4 col-md-4 col-sm-12 col-12">
+												<div class="img_user_settled h-100">
+													<div class="view_image_user">
+
+														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
+														<?php
+														echo Form::file('car_image',['class'=>'form-control hiddenForm','required'=>true]);
+														?>
+													</div>
+													
+													<div class="form-group">
+														<input type="submit" value="Save" name="submit" class="form-control submit_btn carSide"/>
+													</div>
 												</div>
 											</div>
 										</div>
-									</div>
-								</div>
-								<div class="form-actions">
-									<button type="submit" class="btn btn-success"> <i class="fa fa-check"></i> Save</button>
-									<a href="{{route('vehicle-type.index')}}" class="btn btn-inverse">Cancel</a>
-								</div>
-							 {{ Form::close() }}
+									{{ Form::close() }}
+								</article>
+							</section>
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-@endsection
-
+	</div>
+</main>
+@endsection	
+	
 @section('footer_scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>  
-<script type="text/javascript">
-	$(document).ready(function () {
-		$('#userCreate').validate();
-	});
-	function readURL(input){
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function (e) {
-				$('#previewimage').attr('src', e.target.result);
-				$('#previewimage').attr('height','50px');
-				$('#previewimage').attr('width','50px');
-			}
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
-	</script>
+<script>
+$(document).ready(function(){
+	
+	setTimeout(function(){
+		
+		//var admin_phone = $('#phone').intlTelInput("setNumber", "+1");
+	}, 1000);
+});
+
+//$("#admin_phone_country_code").val($("#admin_phone").intlTelInput("getSelectedCountryData").dialCode);
+</script>
 @stop

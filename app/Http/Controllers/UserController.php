@@ -829,8 +829,13 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		
+		$record = (object)[];
+		$configuration =  Voucher::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first();
+		$data['record'] = json_decode($configuration->value);
+		
 	    return view('admin.users.createvoucher')->with($data);
     }
+	
 	
 	public function vouchersUpdate(Request $request)
 	{

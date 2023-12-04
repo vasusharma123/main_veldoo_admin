@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use Carbon\Carbon;
+use App\Exports\RideExport;
 
 class RideController extends Controller
 {
@@ -27,7 +28,20 @@ class RideController extends Controller
 		
 		$this->limit = 20;
     }
-	 
+	
+	public function exportRides(Request $request){
+		
+		if(empty($request->exp_start_date) && empty($request->exp_end_date)){
+			
+			return back()->with('error', __('From Date and To Date are required!'));
+		}
+		
+		$req_params = $request->all();
+		
+		$file_name = 'rides_'.date('Y_m_d_H_i_s').'.csv';
+		return Excel::download(new RideExport($req_params), $file_name);
+    }
+	
     public function index(Request $request) {
 		
         $data = array('title' => 'Ride', 'action' => 'Ride Lists');
@@ -59,8 +73,13 @@ class RideController extends Controller
         if (($request->has('start_date') && !empty($request->start_date)) && ($request->has('end_date') && !empty($request->end_date))) {
             $data['start_date'] = $request->start_date;
             $data['end_date'] = $request->end_date;
-            $startDate = Carbon::createFromFormat('d/m/Y', $request->start_date);
-            $endDate = Carbon::createFromFormat('d/m/Y', $request->end_date);
+			
+            #$startDate = Carbon::createFromFormat('d/m/Y', $request->start_date);
+            #$endDate = Carbon::createFromFormat('d/m/Y', $request->end_date);
+			
+			$startDate = $request->start_date;
+            $endDate = $request->end_date;
+			
             $rides->whereRaw('date(ride_time) between date("'.$startDate.'") and date("'.$endDate.'")');
         }
 		

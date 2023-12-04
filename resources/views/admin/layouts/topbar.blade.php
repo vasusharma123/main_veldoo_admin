@@ -12,13 +12,30 @@
 				?>
 				<div class="col-lg-5 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
 				@if($uri=='users.voucher' || $uri=='voucher.create')
-					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<!--<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
 						<li class="nav-item">
 							<a class="nav-link {{ ($uri=='users.voucher' ? 'active' : '') }}" href="{{ route('users.voucher') }}">List</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link {{ ($uri=='voucher.create' ? 'active' : '') }}" href="{{ route('voucher.create') }}">Add</a>
+						</li>
+					</ul>-->
+				@endif
+				@if($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.index' || $uri=='vehicle.create' || $uri=='vehicle.edit')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='vehicle-type.index' ? 'active' : '') }}" href="{{ route('vehicle-type.index') }}">Car Type</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='vehicle-type.create' ? 'active' : '') }}" href="{{ route('vehicle-type.create') }}">Add Car Type</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='vehicle.index' ? 'active' : '') }}" href="{{ route('vehicle.index') }}">Car Pool</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='vehicle.create' ? 'active' : '') }}" href="{{ route('vehicle.create') }}">Add Car Pool</a>
 						</li>
 					</ul>
 				@endif

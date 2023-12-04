@@ -1,218 +1,127 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <!-- Container fluid  -->
-    <!-- ============================================================== -->
-    <div class="container-fluid">
-        <!-- ============================================================== -->
-        <!-- Start Page Content -->
-        <!-- ============================================================== -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
-                        @include('admin.layouts.flash-message')
-
-                        <div class="box" id="allDataUpdate">
-                            <div class="table-responsive">
-                                <table class="table table-bordered data-table">
-                                    <thead class="thead-light">
-                                        <th>ID</th>
-                                        <th>Car Type</th>
-                                        <th>Year</th>
-                                        <th>Model</th>
-                                        <th>Color</th>
-                                        <th>Vehicle Image</th>
-                                        <th>Vehicle Number Plate</th>
-                                        <th>Mileage</th>
-                                        <th>Action</th>
-                                    </thead>
-                                    <tbody>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- End PAge Content -->
-        <!-- ============================================================== -->
-    </div>
-@endsection
-<!-- ============================================================== -->
-<!-- End Container fluid  -->
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addonTable sectionsform">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
+									<input name="page" type="hidden">
+									<div id="allDataUpdate">
+										@include("admin.vehicle.index_element")
+									</div>
+								</article>
+							</section>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+@endsection	
+	
 @section('footer_scripts')
+<script type="text/javascript">
+$(function () {
+	
+	//setup before functions
+	var typingTimer;                //timer identifier
+	var doneTypingInterval = 1000;  //time in ms, 5 second for example
+	var $input = $('.myInput');
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.0/css/toastr.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.0/js/toastr.js"></script>
-    <style>
-        .table-responsive {
-            overflow-x: scroll;
-        }
+	//on keyup, start the countdown
+	$input.on('keyup', function () {
+		clearTimeout(typingTimer);
+		typingTimer = setTimeout(doneTyping, doneTypingInterval);
+	});
 
-        thead tr {
-            white-space: nowrap;
-        }
-
-        table.dataTable td.dataTables_empty {
-            text-align: center;
-        }
-    </style>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10.5.0/dist/sweetalert2.all.min.js"></script>
-
-    <script type="text/javascript">
-        $(function() {
-            var table = $('.data-table').DataTable({
-                processing: false,
-                serverSide: true,
-                ajax: "{{ url('admin/vehicle') }}",
-                'columnDefs': [{
-                    'targets': [0, 1, 2, 3, 4, 5, 6, 7],
-                    'searchable': true,
-                    'orderable': true,
-                    'className': 'dt-body-center text-center new-class',
-
-                }],
-
-                //   'order': [1, 'desc'],
-
-                columns: [{
-                        data: 'id',
-                        name: 'id'
-                    },
-                    // {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
-                    {
-                        data: 'car_type',
-                        name: 'car_type',
-                        orderable: true,
-                        searchable: true
-                    },
-
-                    {
-                        data: 'year',
-                        name: 'year'
-                    },
-                    {
-                        data: 'model',
-                        name: 'model'
-                    },
-                    {
-                        data: 'color',
-                        name: 'color'
-                    },
-                    {
-                        data: 'vehicle_image',
-                        name: 'vehicle_image'
-                    },
-                    {
-                        data: 'vehicle_number_plate',
-                        name: 'vehicle_number_plate'
-                    }, {
-                        data: 'mileage',
-                        name: 'mileage'
-                    }, {
-                        data: 'action',
-                        name: 'action'
-                    },
-
-                ],
-                dom: 'Bfrtip',
-                buttons: [
-                        {
-                            "extend": 'excel',
-                            "text": 'Excel',
-                            "titleAttr": 'Excel Export',
-                            "action": excelexportaction
-                        },
-                        'pageLength'
-                    ],
-            });
+	//on keydown, clear the countdown
+	$input.on('keydown', function () {
+		clearTimeout(typingTimer);
+	});
+	
+	function doneTyping() {
+		var text = $('.myInput').val();
+		//var orderby = $('input[name="orderBy"]').val().toString();
+		var orderby = '';
+		//var order = $('input[name="order"]').val().toString();
+		var order = '';
+		//$("#loading").fadeIn("slow");
+		$('input[name="page"]').val(1);
+		ajaxCall('', text, orderby, order, '');
+	};
+	
+	$('body').on('click', '.delete_vehicle_type', function(){
+        var id = $(this).attr('data-id');
+		//var text = $('.myInput').val();
+		var text = '';
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = 0;
+        swal({
+            title: "Are you sure?",
+            text: "You want to delete this Record !",
+            type: "warning",
+            timer: 3000,
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel !",
+            closeOnConfirm: true,
+            closeOnCancel: true,
+            closeOnConfirm: true,
+            showLoaderOnConfirm: true,
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $("#loading").fadeIn("slow");
+				ajaxCall(id, text, orderby, order, page, status,'delete');
+            } else {
+                swal();
+            }
         });
-
-        function excelexportaction() {
-            window.location.href = "{{ route('vehicle_export') }}";
-        }
-
-
-        $(document).on('click', '.delete_record', function() {
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.value) {
-                    Swal.fire({
-                        title: 'Deleted',
-                        text: "Vehicle has been deleted.",
-                        icon: 'success',
-                        showCancelButton: false,
-                        showConfirmButton: false
-                    });
-                    var user_id = $(this).attr('data-id');
-
-                    $.ajax({
-                        type: "post",
-                        url: "{{ url('admin/vehicle/delete') }}",
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            "id": user_id,
-                        },
-                        success: function(data) {
-
-                            if (data) {
-                                location.reload(true);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '.car_free', function() {
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Free it!'
-            }).then((result) => {
-                if (result.value) {
-                    Swal.fire({
-                        title: 'Success',
-                        text: "Car has been update  successfully.",
-                        icon: 'success',
-                        showCancelButton: false,
-                        showConfirmButton: false
-                    });
-                    var carId = $(this).attr('data-id');
-
-                    $.ajax({
-                        type: "post",
-                        url: "{{ url('admin/vehicle/carFree') }}",
-                        data: {
-                            "_token": "{{ csrf_token() }}",
-                            "id": carId,
-                        },
-                        success: function(data) {
-
-                            if (data) {
-                                location.reload(true);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+    });
+	
+	$('body').on('click', '.change_status', function(){
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = $(this).val();
+		var id = $(this).attr('data-id');
+		
+		//var text = $('.myInput').val();
+		var text = '';
+		
+		$("#loading").fadeIn("slow");
+		ajaxCall(id, text, orderby, order, page, status, 'status');
+	});
+});
+function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
+	var page = (!page ? 1 : page);
+	$.ajax({
+		type: "GET",
+		url: "{{url()->current()}}",
+		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
+		success: function (data) {
+			//$("#loading").fadeOut("slow");
+			$('#allDataUpdate').html(data);
+			
+			//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
+			//$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
+		}
+	});
+}
+</script>
 @stop
