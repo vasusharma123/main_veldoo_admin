@@ -77,8 +77,13 @@
 											<div class="col-lg-4 col-md-4 col-sm-12 col-12">
 												<div class="img_user_settled h-100">
 													<div class="view_image_user">
-
-														<img src="{{ env('URL_PUBLIC').'/'.$record->vehicle_image }}" class="img-fluid w-100 img_user_face" />
+														
+														@if(!empty($record->car_image))
+															<img src="{{ env('URL_PUBLIC').'/'.$record->vehicle_image }}" class="img-fluid w-100 img_user_face" />
+														@else
+															<img src="{{ asset('assets/images/veldoo/placeholder.png') }}" class="img-fluid w-100 img_user_face" />
+														@endif
+														
 														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<?php
 														echo Form::file('vehicle_image',['class'=>'form-control hiddenForm','required'=>false]);

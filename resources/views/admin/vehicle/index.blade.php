@@ -34,7 +34,7 @@ $(function () {
 	
 	//setup before functions
 	var typingTimer;                //timer identifier
-	var doneTypingInterval = 1000;  //time in ms, 5 second for example
+	var doneTypingInterval = 500;  //time in ms, 5 second for example
 	var $input = $('.myInput');
 
 	//on keyup, start the countdown
@@ -61,8 +61,8 @@ $(function () {
 	
 	$('body').on('click', '.delete_vehicle_type', function(){
         var id = $(this).attr('data-id');
-		//var text = $('.myInput').val();
-		var text = '';
+		var text = $('.myInput').val();
+		//var text = '';
 		//var orderby = $('input[name="orderBy"]').val();
 		var orderby = '';
 		//var order = $('input[name="order"]').val();

@@ -62,7 +62,7 @@
 														<div class="form-group">
 															<div class="inputForm position-relative">
 																<?php
-																echo Form::text('mileage',null,['class'=>'form-control inputText childlabelfield custFloatVal','required'=>true, 'placeholder' => 'Car Mileage']);
+																echo Form::text('mileage',null,['class'=>'form-control inputText childlabelfield custFloatVal','required'=>false, 'placeholder' => 'Car Mileage']);
 																?>
 																<label class="absoultLabel">KM</label>
 															</div>
@@ -80,7 +80,7 @@
 														<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
 														<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
 														<?php
-														echo Form::file('image',['class'=>'form-control hiddenForm','required'=>true]);
+														echo Form::file('image',['class'=>'form-control hiddenForm','required'=>false]);
 														?>
 													</div>
 													
