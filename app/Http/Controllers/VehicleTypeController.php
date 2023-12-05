@@ -36,6 +36,13 @@ class VehicleTypeController extends Controller
 		
         $records->selectRaw('id, car_type, car_image, price_per_km, basic_fee, seating_capacity, alert_time, status')->where('service_provider_id',Auth::user()->id);
 		
+		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+			
+			#$price = Price::deleteData($request->input('id'));
+			#$price->delete();
+			Price::where(['id' => $request->input('id')])->limit(1)->delete();
+		}
+		
 		if(!empty($request->input('text'))){
 			$text = $request->input('text');
 			$service_provider_id = Auth::user()->id;
@@ -50,7 +57,7 @@ class VehicleTypeController extends Controller
 		
 		#$this->limit = 1;
 		
-		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id])->paginate($this->limit);
+		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id, 'deleted_at' => null])->paginate($this->limit);
 		
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
