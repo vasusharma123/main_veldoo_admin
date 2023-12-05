@@ -378,8 +378,9 @@ class ServiceProviderController extends Controller
         if ($request->token) {
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
-                $drivers = User::where(['user_type' => 2, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers]);
+                $serviceProviderDriverIds = ServiceProviderDriver::where(['service_provider_id' => $user_exist->id])->pluck('driver_id')->toArray();
+                $drivers = User::where(['user_type' => 2])->whereIn('id', $serviceProviderDriverIds)->get();
+                return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -505,7 +506,7 @@ class ServiceProviderController extends Controller
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
                 $prices = Price::where(['status' => 1, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step2')->with(['token' => $input['token'], 'prices' => $prices]);
+                return view('service_provider.register_step2')->with(['token' => $input['token'], 'prices' => $prices, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -549,7 +550,7 @@ class ServiceProviderController extends Controller
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
                 $prices = Price::with('cars')->where(['status' => 1, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step3')->with(['token' => $input['token'], 'prices' => $prices]);
+                return view('service_provider.register_step3')->with(['token' => $input['token'], 'prices' => $prices, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -580,7 +581,7 @@ class ServiceProviderController extends Controller
                     ]);
                     $vehicleObj->save();
                 }
-                return redirect()->route('service-provider.registration_finish');
+                return redirect()->route('service-provider.registration_finish', ['token' => $request->service_provider_token]);
             }
         }
         return abort(404);
@@ -588,15 +589,21 @@ class ServiceProviderController extends Controller
 
     public function registration_finish(Request $request)
     {
-        return view('service_provider.registration_finish');
+        $input = $request->all();
+        if ($request->token) {
+            $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
+            return view('service_provider.registration_finish')->with(['user_exist' => $user_exist]);
+        }
+        return abort(404);
     }
 
     public function selectPlan($token)
     {
         try {
+            $user_exist = User::where(['is_email_verified_token' => $token])->first();
             $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
             $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
-            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token]);
+            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token, 'user_exist' => $user_exist]);
         } catch (Exception $e) {
             Log::info('Error in method selectPlan' . $e);
         }
@@ -605,8 +612,9 @@ class ServiceProviderController extends Controller
     public function subscribePlan($token, $id)
     {
         try {
+            $user_exist = User::where(['is_email_verified_token' => $token])->first();
             $plan_detail = Plan::find($id);
-            return view('service_provider.subscribe_plan')->with(['plan_detail' => $plan_detail, 'token' => $token]);
+            return view('service_provider.subscribe_plan')->with(['plan_detail' => $plan_detail, 'token' => $token, 'user_exist' => $user_exist]);
         } catch (Exception $e) {
             Log::info('Error in method selectPlan' . $e);
         }

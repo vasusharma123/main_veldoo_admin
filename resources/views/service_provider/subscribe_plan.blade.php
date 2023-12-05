@@ -1,6 +1,81 @@
 @extends('layouts.service_provider_registration')
 
 @section('css')
+<style>
+    .voltop {
+        margin-top: -61px;
+        margin-bottom: 00px;
+        float: left;
+        margin-left: -200px;
+    }
+
+    @media (max-width:1200px) {
+        .actinbtnsoption {
+            flex-wrap: wrap;
+        }
+
+        .actinbtnsoption button {
+            margin-left: 0px !important;
+            margin-right: 0px !important;
+        }
+
+    }
+
+    @media (max-width:1024px) {
+        .voltop {
+            margin-top: -110px;
+            margin-bottom: 50px;
+            margin-left: 0px;
+        }
+
+    }
+
+    @media (max-width:798px) {
+        .voltop {
+            margin-top: 20px;
+            margin-bottom: 0px;
+            text-align: center !important;
+            width: 100% !important;
+        }
+
+        .voltop .form_bold_text {
+            font-size: 30px;
+            text-align: center !important;
+            margin: auto;
+        }
+
+        .plansTb {
+            margin-top: 160px;
+        }
+
+        .art_form.planArtform:before {
+            top: 200px;
+        }
+
+        .planArtform .sm_text.shadow_text {
+            text-align: center;
+            font-size: 50px;
+        }
+    }
+
+    @media (max-width: 492px) {
+
+        .planArtform .form_bold_text {
+            text-align: center;
+            margin-right: 0px;
+            margin-bottom: 0px;
+            margin-top: 10px;
+        }
+
+        .planArtform .sm_text.shadow_text {
+            text-align: center;
+            font-size: 50px;
+            line-height: 46px;
+        }
+    }
+
+</style>
+
 @endsection
 
 @section('content')
@@ -18,7 +93,10 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                         <p class="sm_text shadow_text mb-0">Payment process</p>
                         <h3 class="form_bold_text">Set your payment process</h3>
                     </div>
-
+                    <div class="voltop text-start">
+                        <h3 class="form_bold_text text-start">{{ $user_exist->name }}</h3>
+                        <label class="label_form d-block mt-1">Test License, expiration date: {{ date('d.m.Y', strtotime($user_exist->setting->demo_expiry)) }}</label>    
+                    </div>
                     <div class="plansTb">
 
                         <div class="tab-content" id="planTabsButtonsContent">

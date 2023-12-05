@@ -1,6 +1,33 @@
 @extends('layouts.service_provider_registration')
 
 @section('css')
+<style>
+    .voltop {
+        margin-top: -81px;
+        margin-bottom: 40px;
+        float: left;
+    }
+
+    @media (max-width:1024px) {
+        .voltop {
+            margin-top: -110px;
+            margin-bottom: 50px;
+        }
+    }
+
+    @media (max-width:798px) {
+        .voltop {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-align: center;
+        }
+
+        .voltop .form_bold_text {
+            font-size: 30px;
+        }
+    }
+</style>
+
 @endsection
 
 @section('content')
@@ -10,8 +37,16 @@
             <div class="row">
                 <div class="col-12">
                     <div class="top_form_heading text-end position-relative">
-                        <p class="sm_text shadow_text mb-0 sm_white_space">{{__('Download from App Store or Play Store')}}</p>
-                        <h3 class="form_bold_text pe-5 mb-5">{{__('Install Veldoo App')}}</h3>
+                        <p class="sm_text shadow_text mb-0 sm_white_space">Download from App Store or Play Store</p>
+                        <div class="thankyoubox mt-1 justify-content-start" style="min-height:100%;">
+                            <h3 class="thnxtext">Setup finished!</h3>
+                            <p class="thnxsubpara">To change the setup please follow the instruction in the mail</p>
+                        </div>
+                    </div>
+
+                    <div class="voltop">
+                        <h3 class="form_bold_text">{{ $user_exist->name }}</h3>
+                        <label class="label_form d-block mt-1">Test License, expiration date: {{ date('d.m.Y', strtotime($user_exist->setting->demo_expiry)) }}</label>    
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 ps-0 align-self-start">

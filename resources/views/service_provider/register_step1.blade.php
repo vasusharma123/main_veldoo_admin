@@ -2,6 +2,32 @@
 
 @section('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css">
+<style>
+    .voltop {
+        margin-top: -192px;
+    }
+
+    @media (max-width:1024px) {
+        .voltop {
+            margin-top: -402px;
+            margin-bottom: 100px;
+        }
+    }
+
+    @media (max-width:798px) {
+        .voltop {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-align: center;
+        }
+
+        .voltop .form_bold_text {
+            font-size: 30px;
+        }
+    }
+
+</style>
+
 @endsection
 
 @section('content')
@@ -10,6 +36,10 @@
         <article class="container-fluid">
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 ps-0 align-self-center">
+                    <div class="voltop">
+                        <h3 class="form_bold_text">{{ $user_exist->name }}</h3>
+                        <label class="label_form d-block mt-1">Test License, expiration date: {{ date('d.m.Y', strtotime($user_exist->setting->demo_expiry)) }}</label>    
+                    </div>
                     <div class="side_img_section text-center position-relative">
                         <p class="big_text shadow_text">Veldoo</p>
                         <img src="{{ asset('service_provider_assets/imgs/mobiles-2.png') }}" alt="side Phones" class="img-fluid w-100 side_mobile_image" />
