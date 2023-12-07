@@ -29,7 +29,7 @@
                         <th class="text-center">Expires</th>
                         <th>Service provider</th>
                         <th>Phone number</th>
-                        <th>Email Adress</th>
+                        <th>Email Address</th>
                         <th>License type</th>
                         <th class="text-center">Plan</th>
                     </tr>
@@ -112,9 +112,9 @@
         ],
         columns: [
             {data: 'expire_at', name: 'expire_at'},
-            {data: 'name', name: 'name'},
-            {data: 'phone', name: 'phone'},
-            {data: 'email', name: 'email'},
+            {data: 'service_provider_name', name: 'service_provider_name'},
+            {data: 'phone_number', name: 'phone_number'},
+            {data: 'email_address', name: 'email_address'},
             {data: 'license_type', name: 'license_type'},
            
                 {
