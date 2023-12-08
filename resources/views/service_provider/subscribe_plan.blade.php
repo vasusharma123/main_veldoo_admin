@@ -179,12 +179,11 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                                                     {{-- <button class="btn submit_btn planBtnSelect mt-4">Select</button> --}}
                                                 </div>
                                             </section>
-                                            <p class="notpara"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
-                                            @if($plan_detail->charges == 0)
-                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0" type="submit">Subscribe now</button>
-                                            @endif
+                                            
+                                           
+                                           
                                         </div>
-
+                                      
                                         @if($plan_detail->charges != 0)
                                         <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                                             <section class="planSections totalplantextbox">
@@ -225,10 +224,30 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                                                     </div>
                                                 </div>
                                             </section>
-                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0" type="submit">Subscribe now</button>
+                                        </div>
+                                        
+                                            
+                                        <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
+                                            
+                                                <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="button" style="float: unset; background: #356681;">Upgrade Plan</button>
+                                            
+                                                <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
+                                                
+                                            </div>
+                                            <p class="notpara d-block my-2 text-end"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
                                         </div>
                                         @endif
+                                        @if($plan_detail->charges == 0)
+                                        <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
+                                            
+                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="button" style="float: unset; background: #356681;">Upgrade Plan</button>
+                                         
+                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
+                                            
+                                        </div>
+                                        <p class="notpara d-block my-2 text-end"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
                                     </div>
+                                    @endif
                                 </form>
                                 <!--- /Monthly Plan --->
                             </div>
