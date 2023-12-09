@@ -18,43 +18,49 @@
 									<div class="row w-100 m-0 form_inside_row">
 										<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 											<div class="row w-100 m-0">
+												<div class="col-lg-11 col-md-10 col-sm-10 col-8">
 												<form class="custom_form editForm" id="SearchForm">
-													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
+												<div class="row w-100 m-0">
+													<div class="col-lg-5 col-md-4 col-sm-12 col-12">
 														<div class="form-group">
 															<label for="startDate">Start Date</label>
 															<input type="date" class="form-control inputText" id="startDate" name="start_date" placeholder="start Date" value="DD-MM-SS" />
 														</div>
 													</div>
 													
-													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
+													<div class="col-lg-5 col-md-4 col-sm-12 col-12">
 														<div class="form-group">
 															<label for="endDate">End Date</label>
 															<input type="date" class="form-control inputText" id="endDate" name="end_date" placeholder="End Date" value="DD-MM-SS" />
 														</div>
 													</div>
-													<div class="col-lg-3 col-md-4 col-sm-12 col-12">
-														<!--<div class="form-group">
+													<!--<div class="col-lg-3 col-md-4 col-sm-12 col-12">
+														<div class="form-group">
 															<label for="keywords">Search Keyword</label>
 															<input type="search" class="form-control inputText" id="keywords" name="keywords" placeholder="Search..." />
 														   
-														</div>-->
-													</div>
+														</div>
+													</div>-->
 													<div class="col-lg-2 col-md-4 col-sm-4 col-6 align-self-end">
 														<div class="form-group">
 															<input type="submit" value="Filter" name="search" class="form-control submit_btn searchbtn"/>
 														</div>
 													</div>
+												</div>
 												</form>
+												</div>
+												<div class="col-lg-1 col-md-2 col-sm-2 col-4 align-self-end">
 												{{ Form::open(array('url' => route('rides.export'), 'class'=>'custom_form editForm','id'=>'exportForm','enctype' => 'multipart/form-data')) }}
 												<input type="hidden" name="exp_start_date">
 												<input type="hidden" name="exp_end_date">
 												<input type="hidden" name="exp_search">
-												<div class="col-lg-1 col-md-2 col-sm-2 col-4 align-self-end">
+												<div class="">
 													<div class="form-group">
 														<button class="btn submit_btn searchbtn exportbtn" type="submit"><i class="bi bi-download"></i></button>
 													</div>
 												</div>
 												{{ Form::close() }}
+												</div>
 											</div>
 										</div>
 									</div>

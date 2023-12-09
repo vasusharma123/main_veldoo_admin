@@ -64,7 +64,7 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
-					<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
+					<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create' || $uri=='payment-method.edit') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
 						<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
 						<span class="sidebarText">Payment method</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>

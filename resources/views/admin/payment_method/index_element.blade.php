@@ -10,50 +10,22 @@
 			</tr>
 		</thead>
 		<tbody>
+		@foreach ($records as $record)
 			<tr>
-				<td class="text-center">1</td>
-				<td>MobilPlus</td>
+				<td class="text-center">{{ $record->id }}</td>
+				<td>{{ $record->name }}</td>
 				<td class="switch_btn">
-					<label class="switch">
-						<input type="checkbox" checked>
-						<span class="slider round"></span>
-					</label>
-				</td>
+						<label class="switch">
+							<input type="checkbox" class="change_status" value="{{ $record->status }}" data-id="{{ $record->id }}" {{ $record->status == 1 ? "checked" : "" }}>
+							<span class="slider round"></span>
+						</label>
+					</td>
 				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="{{ route('payment-method.edit',$record->id) }}" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+					<a href="javascript:void(0);" class="actionbtnsLinks delete_method" data-id="{{ $record->id }}"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 				</td>
 			</tr>
-			<tr>
-				<td class="text-center">2</td>
-				<td>MobilPlus</td>
-				<td class="switch_btn">
-					<label class="switch">
-						<input type="checkbox" checked>
-						<span class="slider round"></span>
-					</label>
-				</td>
-				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
-				</td>
-			</tr>
-			<tr>
-				<td class="text-center">3</td>
-				<td>MobilPlus</td>
-				<td class="switch_btn">
-					<label class="switch">
-						<input type="checkbox" checked>
-						<span class="slider round"></span>
-					</label>
-				</td>
-				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
-				</td>
-			</tr>
-			
-			
+		@endforeach
 		</tbody>
 	</table>
 </div>

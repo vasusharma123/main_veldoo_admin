@@ -13,7 +13,7 @@
 			@foreach ($records as $record)
 			
 				<tr>
-					<td><a href="{{ route('users.show', $record->id) }}">{{ $record->first_name }}</a></td>
+					<td><a style="color: #060F21" href="{{ route('users.show', $record->id) }}">{{ $record->first_name }}</a></td>
 					<td>{{ $record->last_name }}</td>
 					<td>{{ $record->country_code.' '.$record->phone }}</td>
 					<td>{{ $record->email }}</td>

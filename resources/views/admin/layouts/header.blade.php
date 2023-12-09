@@ -12,6 +12,7 @@
 	<link href="{{ asset('assets/plugins/sweetalert/sweetalert.css') }}" id="theme" rel="stylesheet" />
     <!-- Style -->
     <link rel="stylesheet" href="{{ asset('assets/css/veldoo-style.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/veldoo-dev-style.css') }}" />
 	
 	<!-- Editor -->
 	<script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script>

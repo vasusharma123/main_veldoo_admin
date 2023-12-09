@@ -51,7 +51,7 @@ class PaymentManagementController extends Controller
 	{
 		$breadcrumb = array('title' => 'Payment Method', 'action' => 'List Payment Method');
 		$data = [];
-		
+
 		if ($request->has('status') && !empty($request->input('id'))) {
 			$status = ($request->input('status') ? 0 : 1);
 			\App\PaymentMethod::where([['id', $request->input('id')]])->where('service_provider_id',Auth::user()->id)->limit(1)->update(array('status' => $status));
@@ -69,7 +69,7 @@ class PaymentManagementController extends Controller
 			$payment_methods->orderBy('id', 'desc');
 		}
 
-		$data['records'] = $payment_methods->where('service_provider_id',Auth::user()->id)->paginate($this->limit);
+		$data['payment_methods'] = $payment_methods->where('service_provider_id',Auth::user()->id)->paginate($this->limit);
 		$data['i'] = (($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');

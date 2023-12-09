@@ -9,168 +9,381 @@
 					<div class="body_flow">
 						@include('admin.layouts.sidebar')
 						<div class="formTableContent">
-							<section class="addEditForm sectionsform">
+							<section class="addEditForm sectionsform bg-transparent">
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
-									<form class="custom_form editForm" id="EditUser">
-										<div class="row w-100 m-0 form_inside_row">
-											<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
-												<div class="row w-100 m-0">
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="name" name="name" placeholder="Name" />
-															<label for="name">Site Name</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="copyright" name="copyright" placeholder="Copyright" />
-															<label for="copyright">Copyright</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="currency" name="currency" placeholder="Currency" />
-															<label for="currency">Currency Symbol</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="currencyname" name="currencyname" placeholder="Currency Name" />
-															<label for="currencyname">Currency Name</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="driverRequest" name="driverRequest" placeholder="Driver Request" />
-															<label for="driverRequest">(We will send request to X drivers)</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="WaitingTime" name="WaitingTime" placeholder="Waiting Time" />
-															<label for="WaitingTime">Driver will have time to accept Request(In seconds)</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="Radius" name="Radius" placeholder="Radius" />
-															<label for="Radius">Driver will search in this radius(In Miles)</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RadiusJoin" name="RadiusJoin" placeholder="Radius for Join rides" />
-															<label for="RadiusJoin">User will see join rides in this radius(In Miles)</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="Idle" name="Idle" placeholder="Driver Idle Time(In minutes)" />
-															<label for="Idle">After ___ minutes of staying idle, the driver receives a notification alert.</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Current ride distance addition (In miles)" />
-															<label for="RideDistance">While searching for driver, if ride have no destination location than add ___ miles.</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Waiting ride distance addition (In miles)" />
-															<label for="RideDistance">While searching for driver, if ride have no destination location of waiting ride than add ___ miles</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Delete only phone number users (In days)" />
-															<label for="RideDistance">When creating a user from driver app by inputting only the phone number, will delete in ___ days</label>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Delete only last name users (In days)" />
-															<label for="RideDistance">When creating a user from driver app by inputting only the last name, will delete in ___ days</label>
-														</div>
-													</div>
-													
-													<div class="col-lg-4 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="text" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Driver count to Display" />
-															<label for="RideDistance">Driver count to Display</label>
-														</div>
-													</div>
-													
-													<div class="col-lg-2 col-md-6 col-sm-6 col-6">
-														<div class="form-group">
-															<input type="color" style="height: 46px;" class="form-control inputText" id="RideDistance" name="RideDistance" placeholder="Driver count to Display" />
-															<label for="RideDistance">Primary Color</label>
-														</div>
-													</div>
-													<div class="col-lg-2 col-md-6 col-sm-6 col-6">
-														<div class="form-group">
-															<label class="mb-0" for="RideDistance"><b>Notification</b></label>
+									{{ Form::model($record, ['url' => route('users.settingsUpdate'), 'class' => 'custom_form editForm', 'id' => 'EditUser', 'enctype' => 'multipart/form-data']) }}
+									@method('PATCH')
+										<div class="table_boxes" id="countrySetting">
+											<h2 class="table_header">Country settings</h2>
+											<table class="table table-borderless table-fixed customTable longTbl">
+												<thead>
+													<tr>
+														<th class="text-center" style="width: 70px;">ID</th>
+														<th>Country settings</th>
+														<th>Parametar</th>
+														<th class="text-center">Action</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td class="text-center">1</td>
+														<td>Curency symbol</td>
+														<td>
+															<div class="text-curreny-symbol">{{ (!empty($record->currency_symbol) ? $record->currency_symbol : '') }}</div>
+															<?php echo Form::text('currency_symbol', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Curency symbol']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-curreny-symbol" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr>
+														<td class="text-center">2</td>
+														<td>Curency Name</td>
+														<td>
+															<div class="text-curreny-name">{{ (!empty($record->currency_name) ? $record->currency_name : '') }}</div>
+															<?php echo Form::text('currency_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Curency Name']); ?>
+														</td>
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-curreny-name" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div class="table_boxes" id="generalSetting">
+											<h2 class="table_header">General settings</h2>
+											<table class="table table-borderless table-fixed customTable longTbl">
+												<thead>
+													<tr>
+														<th class="text-center" style="width: 70px;">ID</th>
+														<th>Name</th>
+														<th>Parametar</th>
+														<th class="text-center">Action</th>
+													</tr>
+												</thead>
+												<tbody>
+													<!--<tr>
+														<td class="text-center">1</td>
+														<td>Voucher km per ride</td>
+														<td>
+															<div class="text-kmper-ride">10</div>
+															<?php //echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Voucher km per ride']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-kmper-ride" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr>
+														<td class="text-center">2</td>
+														<td>Voucher km per invitation</td>
+														<td>
+															<div class="text-kmper-invitation">15</div>
+															<?php //echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Voucher km per invitation']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-kmper-invitation" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>-->
+													<tr>
+														<td class="text-center">3</td>
+														<td>Notification</td>
+														<td></td>
+														
+														<td class="actionbtns">
+															<div class="switch_btn">
+																<label class="switch">
+																	<input type="checkbox" name="notification" value="1" {{ $record->notification == 1 ? 'checked' : '' }}>
+																	<span class="slider round whitegrey_btn"></span>
+																</label>
+															</div>
+														</td>
+													</tr>
+													<tr>
+														<td class="text-center">4</td>
+														<td>Delete only phone number users (in days)</td>
+														<td>
+															<div class="text-delete-users">{{ (!empty($record->temporary_phone_number_users) ? $record->temporary_phone_number_users : '') }}</div>
+															<?php echo Form::text('temporary_phone_number_users', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only phone number users (in days)']); ?>
+														</td>
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-delete-users" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">User from driver app by the phone number, will delete in n days</td>
+													</tr>
+													<tr>
+														<td class="text-center">5</td>
+														<td>Delete only last name users (In days)</td>
+														<td>
+															<div class="text-delete-lastusers">{{ (!empty($record->temporary_last_name_users) ? $record->temporary_last_name_users : '') }}</div>
+															<?php echo Form::text('temporary_last_name_users', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only last name users (In days)']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-delete-lastusers" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">User from driver app by last name, will delete in n days</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<!--<div class="table_boxes" id="RideSetting">
+											<h2 class="table_header">Ride settings</h2>
+											<table class="table table-borderless table-fixed customTable longTbl">
+												<thead>
+													<tr>
+														<th class="text-center" style="width: 70px;">ID</th>
+														<th>Name</th>
+														<th>Parametar</th>
+														<th class="text-center">Action</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td class="text-center">1</td>
+														<td>Driver requests</td>
+														<td>
+															<div class="text-driver-req">15</div>
+															<?php echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver requests']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-driver-req" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">Send request to defined number of drivers</td>
+													</tr>
+													<tr>
+														<td class="text-center">2</td>
+														<td>Waiting time</td>
+														<td>
+															<div class="text-waiting-time">15</div>
+															<?php echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting time']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-waiting-time" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">Driver will have time to accept Request(In seconds)</td>
+													</tr>
+													<tr>
+														<td class="text-center">3</td>
+														<td>Notification</td>
+														<td></td>
+														
+														<td class="actionbtns">
 															<div class="switch_btn">
 																<label class="switch">
 																	<input type="checkbox">
-																	<span class="slider round"></span>
+																	<span class="slider round whitegrey_btn"></span>
 																</label>
 															</div>
-															
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
-															<div class="view_image_user m-auto">
-																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
-																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-																<input type="file" name="bgImage" class="form-control hiddenForm " />
-															</div>
-															<label for="bgImage">Background Image</label>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
-															<div class="view_image_user m-auto">
-																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
-																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-																<input type="file" name="logoImg" class="form-control hiddenForm " />
-															</div>
-															<label for="logoImg">Logo Image</label>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
-															<div class="view_image_user m-auto">
-																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
-																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-																<input type="file" name="FavImag" class="form-control hiddenForm " />
-															</div>
-															<label for="FavImag">Favicon Image</label>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="img_user_settled settings_images h-100 mx-0 my-3 text-center">
-															<div class="view_image_user m-auto">
-																<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
-																<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-																<input type="file" name="SidebarImage" class="form-control hiddenForm " />
-															</div>
-															<label for="SidebarImage">Sidebar Logo</label>
-														</div>
-													</div>
+														</td>
+													</tr>
+													<tr>
+														<td class="text-center">4</td>
+														<td>Delete only phone number users (in days)</td>
+														<td>
+															<div class="text-delete-rideusers">15</div>
+															<?php echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only phone number users']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-delete-rideusers" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">User from driver app by the phone number, will delete in n days</td>
+													</tr>
+													<tr>
+														<td class="text-center">5</td>
+														<td>Delete only last name users (In days)</td>
+														<td>
+															<div class="text-delete-ridelastusers">15</div>
+															<?php echo Form::text('site_name', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only phone number users']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-delete-ridelastusers" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">User from driver app by last name, will delete in n days</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>-->
+
+										<div class="table_boxes" id="RideSetting2">
+											<h2 class="table_header">Ride settings</h2>
+											<table class="table table-borderless table-fixed customTable longTbl">
+												<thead>
+													<tr>
+														<th class="text-center" style="width: 70px;">ID</th>
+														<th>Name</th>
+														<th>Parametar</th>
+														<th class="text-center">Action</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr>
+														<td class="text-center">1</td>
+														<td>Driver requests</td>
+														<td>
+															<div class="text-delete-ridelastusers-2">{{ (!empty($record->driver_requests) ? $record->driver_requests : '') }}</div>
+															<?php echo Form::text('driver_requests', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver requests']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-delete-ridelastusers-2" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">Send request to defined number of drivers</td>
+													</tr>
+													<tr>
+														<td class="text-center">2</td>
+														<td>Waiting time</td>
+														<td>
+															<div class="text-waiting-time-2">{{ (!empty($record->waiting_time) ? $record->waiting_time : '') }}</div>
+															<?php echo Form::text('waiting_time', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting time']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-waiting-time-2" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">Driver will have time to accept Request(In seconds)</td>
+													</tr>
 													
-													
-												</div>
-											</div>
-											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
-												<div class="form-group">
-													<input type="submit" value="Save" name="submit" class="form-control submit_btn mt-2" />
+													<tr>
+														<td class="text-center">3</td>
+														<td>Radius</td>
+														<td>
+															<div class="text-radius">{{ (!empty($record->radius) ? $record->radius : '') }}</div>
+															<?php echo Form::text('radius', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-radius" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">Driver will search in this radius (in km)</td>
+													</tr>
+
+													<tr>
+														<td class="text-center">4</td>
+														<td>Radius for join rides (in km)</td>
+														<td>
+															<div class="text-radius-join">{{ (!empty($record->join_radius) ? $record->join_radius : '') }}</div>
+															<?php echo Form::text('join_radius', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius for join']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-radius-join" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">User will see join rides in this radius (in km)</td>
+													</tr>
+
+													<tr>
+														<td class="text-center">5</td>
+														<td>Driver Idle Time (In minutes)</td>
+														<td>
+															<div class="text-driver-idle">{{ (!empty($record->driver_idle_time) ? $record->driver_idle_time : '') }}</div>
+															<?php echo Form::text('driver_idle_time', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver Idle Time']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-driver-idle" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">After n minutes of staying idle, the driver receives a notification alert</td>
+													</tr>
+
+													<tr>
+														<td class="text-center">6</td>
+														<td>Current ride distance addition (in km)</td>
+														<td>
+															<div class="text-current-ride">{{ (!empty($record->current_ride_distance_addition) ? $record->current_ride_distance_addition : '') }}</div>
+															<?php echo Form::text('current_ride_distance_addition', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Current ride distance']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-current-ride" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">While searching for driver, up to the n miles</td>
+													</tr>
+													<tr>
+														<td class="text-center">7</td>
+														<td>Waiting ride distance addition (in km)</td>
+														<td>
+															<div class="text-waiting-ride">{{ (!empty($record->waiting_ride_distance_addition) ? $record->waiting_ride_distance_addition : '') }}</div>
+															<?php echo Form::text('waiting_ride_distance_addition', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting ride distance']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-waiting-ride" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+													<tr class="hintrow">
+														<td class="hinttext"></td>
+														<td colspan="3" class="hinttext">If ride have no destination location of waiting ride than add n miles</td>
+													</tr>
+
+													<tr>
+														<td class="text-center">8</td>
+														<td>Driver count to display</td>
+														<td>
+															<div class="text-driver-count">{{ (!empty($record->driver_count_to_display) ? $record->driver_count_to_display : '') }}</div>
+															<?php echo Form::text('driver_count_to_display', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver count to display']); ?>
+														</td>
+														
+														<td class="actionbtns">
+															<a href="javascript:void(0);" data-class="text-driver-count" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+
+											<div class="action_btns_main">
+												<div class="btns_forms d-flex align-items-center">
+													<button style="opacity: 0;pointer-events:none;" class="form-control submit_btn mt-2 greyBtns" type="button">Default</button>
+													<button class="form-control submit_btn mt-2 ms-2" type="submit">Save</button>
 												</div>
 											</div>
 										</div>
-									</form>
+									{{ Form::close() }}
 								</article>
 							</section>
 						</div>
@@ -182,3 +395,16 @@
 	</div>
 </main>
 @endsection	
+
+@section('footer_scripts')
+<script type="text/javascript">
+$(document).ready(function(){
+	
+	$('body').on('click', '.settings-data-edit-click', function(){
+		var classname = $(this).attr('data-class');
+		$('.'+classname).hide();
+		$('.'+classname).next().show();
+	});
+});
+</script>
+@stop

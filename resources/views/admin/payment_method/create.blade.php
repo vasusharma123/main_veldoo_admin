@@ -15,14 +15,16 @@
 									
 									<input name="page" type="hidden">
 									
-									<form class="custom_form editForm " id="EditDriver">
+									{{ Form::open(array('url' => route('payment-method.store'),'class'=>'custom_form editForm','id'=>'paymentManagementCreate','enctype' => 'multipart/form-data')) }}
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="row w-100 m-0">
 													<div class="col-lg-10 col-md-10 col-sm-8 col-12">
 														<div class="form-group">
-															<input type="text" class="form-control inputText" id="name" name="name" placeholder="Name" />
-															<label for="name">Enter Payment Name</label>
+															<?php
+															echo Form::text('name',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Name']);
+															echo Form::label('name', 'Enter Payment Name',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-2 col-md-2 col-sm-12 col-12">
@@ -36,7 +38,7 @@
 												</div>
 											</div>
 										</div>
-									</form>
+									{{ Form::close() }}
 								</article>
 							</section>
 						</div>
