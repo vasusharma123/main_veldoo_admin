@@ -31,7 +31,7 @@ Route::get('/test_notification',  ['as'=>'test_notification','uses'=>'PageContro
 /* Route::get('/', function () {
    return 'No Home Yet';
 }); */
-Route::get('/',  ['as'=>'about','uses'=>'PageController@home']);
+Route::get('/',  ['as'=>'homepage','uses'=>'PageController@home']);
 Route::get('/phpinfo',  ['as'=>'about','uses'=>'PageController@phpinfo']);
 Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
 Route::get('/terms',  ['as'=>'terms','uses'=>'PageController@terms_front']);
