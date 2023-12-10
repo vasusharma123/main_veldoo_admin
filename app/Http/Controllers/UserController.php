@@ -710,6 +710,11 @@ class UserController extends Controller
 		$record = (object)[];
 		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first()->value;
 		$data['record'] = json_decode($configuration);
+		
+		/* echo '<pre>';
+		print_r($data['record']);
+		exit; */
+		
 		$data = array_merge($breadcrumb,$data);
 	    return view('admin.users.settings')->with($data);
     }

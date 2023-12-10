@@ -160,7 +160,7 @@
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
+														<div class="form-group password-fieldd-lt">
 															<?php
 															echo Form::password('password',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Address']);
 															echo Form::label('password', 'Enter Password',['class'=>'']);
@@ -168,7 +168,7 @@
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
+														<div class="form-group password-fieldd-lt">
 															<?php
 															echo Form::password('confirm_password',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Address']);
 															echo Form::label('confirm_password', 'Re-enter Password',['class'=>'']);

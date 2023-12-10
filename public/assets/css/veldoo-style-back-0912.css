@@ -26,7 +26,7 @@ html{
     overflow: hidden;
 }
 body{
-    background: url('../imgs/bg_body.png');
+    background: url('../images/veldoo/bg_body.png');
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -74,14 +74,14 @@ body{
 }
 .input_search, .input_search:focus {
     border-radius: 400px;
-    background: rgba(253, 122, 53, 1.0);
+    background: #FD7035;
     border: 1px solid transparent;
     color: #FFF;
     font-family: var(--roboto-font);
     font-size: 16px;
     font-weight: 400;
     line-height: normal;
-    padding: 8px 20px 8px 50px;
+    padding: 15px 20px 15px 50px;
     box-shadow: none;
 }
 .input_search::placeholder {
@@ -120,7 +120,7 @@ body{
     margin: 0px 10px;
     padding: 10px 13px;
     border-radius: 100px;
-    background: rgba(253, 122, 53, 1.0);
+    background: rgba(255, 255, 255, 0.20);
     color: white;
     text-decoration: none;
 }
@@ -159,7 +159,7 @@ body{
 }
 
 .top_tab_menu li a.nav-link.active{
-    background: rgba(253, 122, 53, 1.0);
+    background: #fd7035;
 }
 
 .top_tab_menu li a.nav-link:hover, .top_tab_menu li a.nav-link:focus{
@@ -215,7 +215,7 @@ body{
     margin-bottom: 10px;
 }
 .sidebarLists li a.active{
-    background: rgba(253, 122, 53, 1.0);
+    background: #fd7035;
 }
 .sidebarLists li a:hover, .sidebarLists li a:focus{
     background: rgba(255, 255, 255, 0.40);
@@ -312,7 +312,7 @@ body{
 
 .sectionsform {
     border-radius: 10px;
-    background: rgba(234, 235, 239, 0.50);
+    background: rgba(234, 235, 239, 0.90);
     padding: 40px 0px;
     margin: 40px;
 }
@@ -406,14 +406,13 @@ body{
 .customTable thead{
     position: sticky;
     top: 0;
-    z-index: 1;
 }
 .customTable tr th {
-    background: rgba(6, 15, 33, 0.5) !important;
+    background: rgba(6, 15, 33, 0.7) !important;
     color: white !important;
     font-size: 14px;
     font-weight: 500;
-    padding: 5px 10px;
+    padding: 10px;
     font-family: var(--roboto-font);
 }
 .actionbtnsLinks{
@@ -428,9 +427,8 @@ body{
     color: #060F21 !important;
     font-family: var(--roboto-font);
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     padding: 10px;
-    vertical-align: middle;
 }
 .switch_btn .switch {
     position: relative;
@@ -679,47 +677,6 @@ a.action_tabs_btn.active{
 }
 
 
-.table_header {
-    font-size: 20px;
-    font-weight: 600;
-    font-family: var(--roboto-font);
-}
-.switch_btn .slider.whitegrey_btn{
-    background-color: #DADADC;
-}
-.switch_btn .slider.whitegrey_btn:before {
-  
-    outline: 1px solid #D0D1D5;
-    border: 4px solid #fff;
-    background-color: #DADADC;
-    -webkit-transition: .4s;
-}
-
-.customTable tr td.hinttext {
-    padding: 0px !important;
-    color: rgba(6, 15, 33, 0.50) !important;
-    font-family: var(--roboto-font);
-    font-size: 11px;
-    font-style: italic;
-    font-weight: 400;
-    line-height: normal;
-    background: transparent !important;
-}
-.form-control.submit_btn.greyBtns {
-    background: rgba(48, 92, 117, 1);
-    border-color: rgba(48, 92, 117, 1);
-}
-
-
-.form-control.submit_btn.greyBtns:focus{
-    background: white;
-    border-color: white;
-
-}
-
-
-
-
 
 
 
@@ -903,7 +860,7 @@ a.action_tabs_btn.active{
     }
     .sectionsform {
         border-radius: 10px;
-        background: rgba(234, 235, 239, 0.50);
+        background: rgba(234, 235, 239, 0.90);
         padding: 30px 20px;
         margin: 10px;
     }
