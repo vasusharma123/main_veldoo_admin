@@ -81,7 +81,7 @@
 @section('content')
 @php
 $checkmarksImage = asset('service_provider_assets/imgs/checkmarks.png');
-$unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
+$unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
 @endphp
 <section class="form_section p_form">
     <div class="art_form planArtform">
@@ -179,9 +179,6 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                                                     {{-- <button class="btn submit_btn planBtnSelect mt-4">Select</button> --}}
                                                 </div>
                                             </section>
-                                            
-                                           
-                                           
                                         </div>
                                       
                                         @if($plan_detail->charges != 0)

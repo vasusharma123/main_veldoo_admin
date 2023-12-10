@@ -67,7 +67,7 @@
 @section('content')
 @php
     $checkmarksImage = asset('service_provider_assets/imgs/checkmarks.png');
-    $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
+    $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
 @endphp
 <section class="form_section p_form">
     <div class="art_form planArtform">
@@ -194,51 +194,51 @@
                                                 </p>
                                                 <ul class="list-group checklistcars">
                                                     <li class="list-group-item {{ $year_value->organise_rides_and_bookings == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->organise_rides_and_bookings == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->organise_rides_and_bookings == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Organize Rides and Bookings</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->book_rides_with_app == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->book_rides_with_app == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->book_rides_with_app == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Book Rides with UserApp & DriverApp</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->driver_statement == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->driver_statement == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->driver_statement == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Driver Statement</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->client_company_management == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->client_company_management == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->client_company_management == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Client / Company Management</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->export_ride_deails == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->export_ride_deails == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->export_ride_deails == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Export Ride details</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->assign_rides_to_driver == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->assign_rides_to_driver == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->assign_rides_to_driver == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Assign Rides to drivers</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->info_notes_to_drivers == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->info_notes_to_drivers == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->info_notes_to_drivers == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Information Notes to drivers</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->promotion_notes_to_client == 0  ? 'notused' : '' }}">
-                                                        <img src="{{ $month_value->promotion_notes_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->promotion_notes_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Promotion Notes to clients</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->algorithm_config == 0  ? 'notused' : '' }}  moreOptions">
-                                                        <img src="{{ $month_value->algorithm_config == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->algorithm_config == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Algorithms config</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->online_company_booking == 0  ? 'notused' : '' }} moreOptions">
-                                                        <img src="{{ $month_value->online_company_booking == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->online_company_booking == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Online Company booking</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->send_sms_to_client == 0  ? 'notused' : '' }} moreOptions">
-                                                        <img src="{{ $month_value->send_sms_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->send_sms_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Onine Guest booking</span>
                                                     </li>
                                                     <li class="list-group-item {{ $year_value->send_sms_to_client == 0  ? 'notused' : '' }} moreOptions">
-                                                        <img src="{{ $month_value->send_sms_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
+                                                        <img src="{{ $year_value->send_sms_to_client == 0 ? $unCheckmarksImage:$checkmarksImage }}" alt="user icon" class="img-fluid w-100 checkmarkIconsImgs">
                                                         <span class="listcheckmarktext">Send SMS to clients</span>
                                                     </li>
                                                     <li class="list-group-item">

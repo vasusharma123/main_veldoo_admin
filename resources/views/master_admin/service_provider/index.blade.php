@@ -1,48 +1,69 @@
-@extends('master_admin.layouts.plans')
+@extends('master_admin.layouts.after_login')
+
+@section('header_menu_list')
+    <li class="nav-item">
+        <a class="nav-link active" href="/service-provider">List</a>
+    </li>
+@endsection
+
+@section('header_search_export')
+    <div class="search">
+        <form class="search_form">
+            <div class="form-group searchinput position-relative trigger_parent">
+                <input type="text" class="form-control input_search target" placeholder="Search" id="searchInput" />
+                <i class="bi bi-search search_icons"></i>
+            </div>
+        </form>
+    </div>
+    <div class="export_box">
+        <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
+    </div>
+@endsection
+
 @section('content')
-<section class="addonTable sectionsform">
-    <article class="container-fluid">
-        <div class="table-responsive marginTbl">
-            
-            <!-- <table class="table table-borderless table-fixed customTable" id="service-provider">
-                <thead>
-                    <tr>
-                        <th class="text-center">Expires</th>
-                        <th>Service provider</th>
-                        <th>Phone number</th>
-                        <th>Email Adress</th>
-                        <th>License type</th>
-                        <th class="text-center">Plan</th>
-                    </tr>
-                </thead>
-                <tbody>
-               
-                    
-                    
-                </tbody>
-            </table> -->
+    <section class="addonTable sectionsform">
+        <article class="container-fluid">
+            <div class="table-responsive marginTbl">
+
+                <!-- <table class="table table-borderless table-fixed customTable" id="service-provider">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Expires</th>
+                            <th>Service provider</th>
+                            <th>Phone number</th>
+                            <th>Email Adress</th>
+                            <th>License type</th>
+                            <th class="text-center">Plan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                   
+                        
+                        
+                    </tbody>
+                </table> -->
 
 
-            <table class="table table-bordered yajra-datatable">
-                <thead>
-                    <tr>
-                        <th class="text-center">Expires</th>
-                        <th>Service provider</th>
-                        <th>Phone number</th>
-                        <th>Email Address</th>
-                        <th>License type</th>
-                        <th class="text-center">Plan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+                <table class="table table-bordered yajra-datatable">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Expires</th>
+                            <th>Service provider</th>
+                            <th>Phone number</th>
+                            <th>Email Address</th>
+                            <th>License type</th>
+                            <th class="text-center">Plan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
 
 
 
-        </div>
-    </article>
-</section>
+            </div>
+        </article>
+    </section>
 @endsection
 
 @section('footer_scripts')
@@ -61,15 +82,18 @@
         table.dataTable td.dataTables_empty {
             text-align: center;
         }
+
         .buttons-csv {
-            display:none !important;
-        
+            display: none !important;
+
         }
-        .buttons-excel  {
-            display:none !important;
+
+        .buttons-excel {
+            display: none !important;
         }
-        #DataTables_Table_0_filter{
-            display:none !important;
+
+        #DataTables_Table_0_filter {
+            display: none !important;
         }
     </style>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@10.5.0/dist/sweetalert2.all.min.js"></script>
@@ -82,61 +106,72 @@
     <script src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
 
     <script type="text/javascript">
-  $(function () {
+        $(function() {
 
-    var table = $('.yajra-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        "lengthMenu": [10],
-        ajax: "/fetchServiceProvider",
-        dom: 'Bfrtip',
-        buttons: [
-            {
-                extend: 'csv',
-                text: 'Download CSV',
-                filename: 'service_provider',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
-                }
-            
-            },
-            {
-                extend: 'excel',
-                text: 'Download excel',
-                filename: 'service_provider',
-                exportOptions: {
-                    columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
-                }
-            
-            }
-        ],
-        columns: [
-            {data: 'expire_at', name: 'expire_at'},
-            {data: 'service_provider_name', name: 'service_provider_name'},
-            {data: 'phone_number', name: 'phone_number'},
-            {data: 'email_address', name: 'email_address'},
-            {data: 'license_type', name: 'license_type'},
-           
-                {
-                data: 'action', 
-                name: 'action', 
-                orderable: true, 
-                searchable: true
-            },
-        ]
-    });
+            var table = $('.yajra-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                "lengthMenu": [10],
+                ajax: "/fetchServiceProvider",
+                dom: 'Bfrtip',
+                buttons: [{
+                        extend: 'csv',
+                        text: 'Download CSV',
+                        filename: 'service_provider',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
+                        }
 
-        $('#searchInput').on('keyup', function() {
-            var searchValue = $(this).val();
-            table.search(searchValue).draw();
+                    },
+                    {
+                        extend: 'excel',
+                        text: 'Download excel',
+                        filename: 'service_provider',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4] // Include only columns with indices 0, 1, and 3
+                        }
+
+                    }
+                ],
+                columns: [{
+                        data: 'expire_at',
+                        name: 'expire_at'
+                    },
+                    {
+                        data: 'service_provider_name',
+                        name: 'service_provider_name'
+                    },
+                    {
+                        data: 'phone_number',
+                        name: 'phone_number'
+                    },
+                    {
+                        data: 'email_address',
+                        name: 'email_address'
+                    },
+                    {
+                        data: 'license_type',
+                        name: 'license_type'
+                    },
+
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: true,
+                        searchable: true
+                    },
+                ]
+            });
+
+            $('#searchInput').on('keyup', function() {
+                var searchValue = $(this).val();
+                table.search(searchValue).draw();
+            });
+
+            $('.iconExportLink').on('click', function() {
+                // Trigger the DataTables CSV export
+                table.button('.buttons-csv').trigger();
+            });
         });
-
-        $('.iconExportLink').on('click', function() {
-        // Trigger the DataTables CSV export
-        table.button('.buttons-csv').trigger();
-    });
-
-
-  });
-</script>
+    </script>
 @stop

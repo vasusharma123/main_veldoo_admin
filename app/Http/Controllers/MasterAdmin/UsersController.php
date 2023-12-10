@@ -30,7 +30,7 @@ class UsersController extends Controller
 
      public function dashboard(){
         $data = array('page_title' => 'Dashboard', 'action' => 'Dashboard');
-        return view('dashboards.master_admin')->with($data);
+        return view('master_admin.dashboard')->with($data);
 
     }
 

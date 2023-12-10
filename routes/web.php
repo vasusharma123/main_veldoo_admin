@@ -312,13 +312,10 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
 	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@showServiceProvider');
 	Route::get('fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
-
-	
-	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings');
-	Route::get('master-plan',  'MasterAdmin\PlansController@getServiceProviderPlan');
-	Route::get('plan-detail',  'MasterAdmin\PlansController@getPlanDetail');
-	Route::get('billing',  'MasterAdmin\PlansController@getBillingDetail');
-	Route::get('master-logout',  ['as' => 'logout','uses' => 'MasterAdmin\UsersController@logout']);
-	Route::post('updateServiceProvider',  [ 'uses' => 'MasterAdmin\ServiceProviderController@updateServiceProvider'])->name('updateServiceProvider');
+	Route::get('service-provider/profile-detail',  'MasterAdmin\ServiceProviderController@profile_detail')->name('service-provider.profile-detail');
+	Route::get('service-provider/current-plan',  'MasterAdmin\ServiceProviderController@current_plan')->name('service-provider.current_plan');
+	Route::get('service-provider/billing',  'MasterAdmin\ServiceProviderController@billing_detail')->name('service-provider.billing_detail');
+	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings')->name('master_admin.setting');
+	Route::get('master-logout',  ['as' => 'master_admin.logout','uses' => 'MasterAdmin\UsersController@logout']);
 
 });
