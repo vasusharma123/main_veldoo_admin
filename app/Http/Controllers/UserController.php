@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\User;
 //use App\UserData;
@@ -82,6 +82,25 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		return view('admin.login')->with($data);
+	}
+
+
+	/* Service provider Login */
+	
+	public function spLogin(Request $request){
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required|min:6'
+		];
+		$request->validate($rules);
+		$input = $request->all();
+		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
+        if(auth()->attempt($whereData)){
+            return redirect()->route('users.dashboard');
+        } else{
+			Auth::logout();
+			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+		}
 	}
 
 	public function doLogin(Request $request){

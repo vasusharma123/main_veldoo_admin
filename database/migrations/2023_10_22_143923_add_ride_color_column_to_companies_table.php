@@ -26,7 +26,7 @@ class AddRideColorColumnToCompaniesTable extends Migration
     public function down()
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->string('ride_color',50)->nullable()->default(null);
+            $table->dropColumn('ride_color');
         });
     }
 }

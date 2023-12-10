@@ -33,8 +33,8 @@ class RidesController extends Controller
         $type = ($type?$type:'list').'View';
         $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         return $this->$type($data,$request->all());
     }
 
@@ -93,8 +93,8 @@ class RidesController extends Controller
                                 }
                             })->where('company_id','!=',null)->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         // dd($data['rides']);
         $data['date'] = $date;
         return view('company.rides.month')->with($data);
@@ -136,8 +136,8 @@ class RidesController extends Controller
                 }
             })->where('company_id','!=',null)->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         // dd($data['rides']);
         return view('company.rides.week')->with($data);
     }
@@ -248,13 +248,13 @@ class RidesController extends Controller
             //     $ride->alert_notification_date_time = Carbon::now()->format("Y-m-d H:i:s");
             // }
 
-
+            $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
+            $settingValue = json_decode($settings['value']);
+            $driverlimit = $settingValue->driver_requests;
             if (!empty($request->pick_lat) && !empty($request->pick_lng)) {
                 $lat = $request->pick_lat;
                 $lon = $request->pick_lng;
-                $settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
-                $settingValue = json_decode($settings['value']);
-                $driverlimit = $settingValue->driver_requests;
+
                 $query = User::select(
                     "users.*",
                     DB::raw("3959 * acos(cos(radians(" . $lat . "))
@@ -263,7 +263,7 @@ class RidesController extends Controller
                         + sin(radians(" . $lat . "))
                         * sin(radians(users.current_lat))) AS distance")
                 );
-                $query->where([['user_type', '=', 2], ['availability', '=', 1]])->where('service_provider_id',Auth::user()->service_provider_id)->orderBy('distance', 'asc')->limit($driverlimit);
+                $query->where(['user_type' => 2, 'availability' => 1, 'service_provider_id' => Auth::user()->service_provider_id])->orderBy('distance', 'asc')->limit($driverlimit);
                 $drivers = $query->get()->toArray();
             }
 
@@ -287,8 +287,6 @@ class RidesController extends Controller
 
             $ride->save();
             $ride_data = new RideResource(Ride::find($ride->id));
-            $settings = Setting::first();
-			$settingValue = json_decode($settings['value']);
 
             $driverids = explode(",", $driverids);
             $title = 'New Booking';
@@ -308,8 +306,8 @@ class RidesController extends Controller
                 $notification_data = [];
                 $ridehistory_data = [];
                 foreach ($driverids as $driverid) {
-                    $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
-                    $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                    $notification_data[] = ['title' => $title, 'description' => $message, 'type' => 1, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+                    $ridehistory_data[] = ['ride_id' => $ride->id, 'driver_id' => $driverid, 'status' => '2', 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
                 }
                 Notification::insert($notification_data);
                 RideHistory::insert($ridehistory_data);
@@ -473,10 +471,10 @@ class RidesController extends Controller
 			}
 
             DB::commit();
-            $settings = Setting::first();
+            $settings = Setting::where(['service_provider_id' => Auth::user()->service_provider_id])->first();
 			$settingValue = json_decode($settings['value']);
 
-			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1])->pluck('id')->toArray();
+			$masterDriverIds = User::whereNotNull('device_token')->whereNotNull('device_type')->where(['user_type' => 2, 'is_master' => 1, 'service_provider_id' => Auth::user()->service_provider_id])->pluck('id')->toArray();
 			//$ride = new RideResource(Ride::find($ride->id));
             $ride = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at','creator_id', 'route')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image,random_token', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])->find($ride->id);
             $ride['is_newly_created'] = 1;
@@ -497,7 +495,7 @@ class RidesController extends Controller
 				}
 				$notification_data = [];
 				foreach ($masterDriverIds as $driverid) {
-					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
+					$notification_data[] = ['title' => $title, 'description' => $message, 'type' => 15, 'user_id' => $driverid, 'additional_data' => json_encode($additional), 'service_provider_id' => Auth::user()->service_provider_id, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()];
 				}
 				Notification::insert($notification_data);
 			}

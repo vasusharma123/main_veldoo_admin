@@ -14,7 +14,7 @@ use App\Exports\RideExport;
 use App\PaymentMethod;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Validator;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Hash;
 use Storage;
 use App\Price;
@@ -36,8 +36,8 @@ class ManagersController extends Controller
         $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
 
-        $data['vehicle_types'] = Price::orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
         return view('company.managers.index')->with($data);
     }
 

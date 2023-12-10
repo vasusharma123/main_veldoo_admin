@@ -7,7 +7,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
         <!-- /Scripts -->
         <!-- Custom Js -->
+
         <script src="assets/js/master-admin.js" type="application/javascript"></script>
+
+        @yield('footer_scripts')
         <script>
 
           
@@ -32,6 +35,12 @@
                 });
 
             });
+
+            // Handle row click event
+            function navigateTo(url){
+                window.location.href = url;
+            }
+
         </script>
 
     </body>

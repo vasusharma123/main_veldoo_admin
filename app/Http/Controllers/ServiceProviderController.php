@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Plan;
+use Illuminate\Support\Carbon;
+use App\PlanPurchaseHistory;
+
 
 class ServiceProviderController extends Controller
 {
@@ -106,17 +110,13 @@ class ServiceProviderController extends Controller
                 $verifyUser->is_email_verified = 1;
                 $verifyUser->update();
 
-                $driver = new User();
+                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2]);
                 $driver->fill([
                     'email' => $verifyUser->email,
                     'first_name' => $verifyUser->first_name,
                     'last_name' => $verifyUser->last_name,
-                    'country_code' => $verifyUser->country_code,
-                    'phone' => $verifyUser->phone,
                     'country_code_iso' => $verifyUser->country_code_iso,
-                    'is_master' => 1,
-                    'user_type' => 2,
-                    'service_provider_id' => $verifyUser->id,
+                    'is_master' => 1
                 ]);
                 $driver->save();
                 $serviceProviderDriver = new ServiceProviderDriver();
@@ -188,7 +188,8 @@ class ServiceProviderController extends Controller
                     "want_send_sms_to_user_when_driver_cancelled_the_ride" => 1
                 ];
                 $setting = new Setting();
-                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue)]);
+                $slug = $this->createUrlSlug($verifyUser->name);
+                $setting->fill(['key' => '_configuration', 'service_provider_id' => $verifyUser->id, 'value' => json_encode($settingValue), 'slug' => $slug, 'demo_expiry' => Carbon::today()->addDays(14)]);
                 $setting->save();
 
                 //vehicle-type
@@ -350,6 +351,11 @@ class ServiceProviderController extends Controller
                     $message->to($verifyUser->email);
                     $message->subject('Update Credentials Link');
                 });
+
+                FacadesMail::send('email.choosePlanEmail', ['token' => $token], function ($message) use ($verifyUser) {
+                    $message->to($verifyUser->email);
+                    $message->subject('Select Plan');
+                });
             }
             // $data['user'] = $user;
             // $data['driver'] = $driver;
@@ -372,8 +378,9 @@ class ServiceProviderController extends Controller
         if ($request->token) {
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
-                $drivers = User::where(['user_type' => 2, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers]);
+                $serviceProviderDriverIds = ServiceProviderDriver::where(['service_provider_id' => $user_exist->id])->pluck('driver_id')->toArray();
+                $drivers = User::where(['user_type' => 2])->whereIn('id', $serviceProviderDriverIds)->get();
+                return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -499,7 +506,7 @@ class ServiceProviderController extends Controller
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
                 $prices = Price::where(['status' => 1, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step2')->with(['token' => $input['token'], 'prices' => $prices]);
+                return view('service_provider.register_step2')->with(['token' => $input['token'], 'prices' => $prices, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -543,7 +550,7 @@ class ServiceProviderController extends Controller
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
                 $prices = Price::with('cars')->where(['status' => 1, 'service_provider_id' => $user_exist->id])->get();
-                return view('service_provider.register_step3')->with(['token' => $input['token'], 'prices' => $prices]);
+                return view('service_provider.register_step3')->with(['token' => $input['token'], 'prices' => $prices, 'user_exist' => $user_exist]);
             }
         }
         return abort(404);
@@ -574,7 +581,7 @@ class ServiceProviderController extends Controller
                     ]);
                     $vehicleObj->save();
                 }
-                return redirect()->route('service-provider.registration_finish');
+                return redirect()->route('service-provider.registration_finish', ['token' => $request->service_provider_token]);
             }
         }
         return abort(404);
@@ -582,6 +589,89 @@ class ServiceProviderController extends Controller
 
     public function registration_finish(Request $request)
     {
-        return view('service_provider.registration_finish');
+        $input = $request->all();
+        if ($request->token) {
+            $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
+            return view('service_provider.registration_finish')->with(['user_exist' => $user_exist]);
+        }
+        return abort(404);
     }
+
+    public function selectPlan($token)
+    {
+        try {
+            $user_exist = User::where(['is_email_verified_token' => $token])->first();
+            $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
+            $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
+            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token, 'user_exist' => $user_exist]);
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+        }
+    }
+
+    public function subscribePlan($token, $id)
+    {
+        try {
+            $user_exist = User::where(['is_email_verified_token' => $token])->first();
+            $plan_detail = Plan::find($id);
+            return view('service_provider.subscribe_plan')->with(['plan_detail' => $plan_detail, 'token' => $token, 'user_exist' => $user_exist]);
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+        }
+    }
+
+    public function subscribedPlanByUser(Request $request)
+    {
+        try {
+            $userDetail =  User::where('is_email_verified_token', $request->token)->first();
+            if (!$userDetail) {
+                return redirect()->back()->with('error', __("Something went wrong."));
+            }
+
+            $planDetail =  Plan::find($request->plan_id);
+            if (!$planDetail) {
+                return redirect()->back()->with('error', __("Please select plan again"));
+            }
+            $PlanPurchaseHistory = new PlanPurchaseHistory();
+            $PlanPurchaseHistory->user_id = $userDetail->id;
+            $PlanPurchaseHistory->plan_id = $request->plan_id;
+            $today = Carbon::now();
+            if ($planDetail->plan_type == 'monthly') {
+                $expiry = $today->addMonth();
+            } else {
+                $expiry = $today->addYear();
+            }
+            $PlanPurchaseHistory->expire_at = $expiry;
+            $PlanPurchaseHistory->currency = 'CHF';
+            $PlanPurchaseHistory->purchase_date = Carbon::now();
+            $PlanPurchaseHistory->license_type = $planDetail->plan_type;
+            $PlanPurchaseHistory->plan_status = 'active';
+            $saved =  $PlanPurchaseHistory->save();
+            if ($saved) {
+                $settingDetail = Setting::where(['service_provider_id' => $userDetail->id])->first();
+                $settingDetail->is_subscribed = 1;
+                $settingDetail->save();
+                $randomString = Str::random(10);
+                $newPassword = Hash::make($randomString);
+                $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
+                if ($updated) {
+                    FacadesMail::send('email.loginCredential', ['userDetail' => $userDetail, 'password' => $randomString], function ($message) use ($userDetail) {
+                        $message->to($userDetail->email);
+                        $message->subject('New Login Credential Veldoo');
+                    });
+                    return redirect('/thankyou');
+                }
+            } else {
+                return redirect()->back()->with('error', __("Something went wrong."));
+            }
+        } catch (Exception $e) {
+            Log::info('Error in method selectPlan' . $e);
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function thankyou (){
+        return view('service_provider.thankyou');
+    }
+    
 }

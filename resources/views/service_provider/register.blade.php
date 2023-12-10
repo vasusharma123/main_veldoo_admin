@@ -18,7 +18,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 ps-0">
                     <div class="top_form_heading text-center position-relative">
                         <p class="sm_text shadow_text mb-0">{{__('REGISTRATION')}}</p>
-                        <h3 class="form_bold_text">Veldoo 2000 {{__('Driver App')}}</h3>
+                        <h3 class="form_bold_text">Veldoo App</h3>
                     </div>
                     {{-- @include('service_provider.includes.flash_alerts') --}}
                     {{ Form::open(array('url' => 'service-provider/register_submit','class'=>'input_form','id'=>'registerform','method'=>"post")) }}

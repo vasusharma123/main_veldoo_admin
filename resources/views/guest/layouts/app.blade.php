@@ -356,8 +356,12 @@
                                         
                                             <div class="swiper-slide">
                                                 <div class="car_option position-relative">
-                                                    <input type="radio" class="car_checked" value="{{ $vehicle_type->id }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
-                                                    <img src="{{ $vehicle_type->image_with_url }}" class="img-fluid car_img" alt="Small" />
+                                                    <input type="radio" class="car_checked" value="{{ $vehicle_type->car_type }}"  data-basic_fee="{{ $vehicle_type->basic_fee }}" data-price_per_km="{{ $vehicle_type->price_per_km }}" data-seating_capacity="{{ $vehicle_type->seating_capacity }}" data-text="{{ $vehicle_type->car_type }}" name="car_type" {{ $key==0?'checked':'' }} required />
+                                                    @if(!empty($vehicle_type->car_type) && file_exists($vehicle_type->image_with_url))
+                                                    <img src="{{ $vehicle_type->image_with_url }}" class="img-fluid car_img" alt="Vehicle" />
+                                                    @else
+                                                    <img src="{{ asset('new-design-company/assets/images/small.png') }}" class="img-fluid car_img" alt="Vehicle" />
+                                                    @endif
                                                     <label class="car_lable">{{ $vehicle_type->car_type }}</label>
                                                 </div>
                                             </div>
@@ -423,21 +427,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form_payment_box">
                                 <div class="row w-100 m-0">
-                                    <div class="col-lg-5 col-md-5 col-sm-6 col-12 ps-0 amount_box">
-                                        <div class="form_box">
-                                            <label class="form_label down_form_label">Service Provider</label>
-                                            <select name="service_provider_id" class="form-select borderless_form_field select-payment-method" id="service_provider">
-                                                <option value="">-- Select --</option>
-                                                @foreach ($service_providers as $service_provider)
-                                                        <option value="{{ $service_provider->id }}">{{ $service_provider->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 px-0">
                                         <div class="form_box add_note">
                                             <label class="form_label down_form_label ">Add Note</label>
@@ -603,7 +593,6 @@
                                         <input type="hidden" id="otp_car_type" name="car_type">
                                         <input type="hidden" id="otp_ride_cost" name="ride_cost">
                                         <input type="hidden" id="otp_note" name="note">
-                                        <input type="hidden" id="otp_service_provider" name="service_provider_id">
                                         <input type="hidden" id="otp_ride_route" name="route">
                                         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" value="{{ env('RECAPTCHA_KEY') }}">
 
@@ -887,7 +876,7 @@
                 async function showRideModal(rideId,Dclass)
                 {
                     selected_ride_id = rideId;
-                    route = "{{ route('guest.ride_detail','~') }}";
+                    route = "{{ route('guest.ride_detail',[\Request::get('slugRecord')->slug, '~']) }}";
                     route = route.replace('~',selected_ride_id);
                     await $.ajax({
                         url: route,
@@ -1143,7 +1132,7 @@
                     $(document).find(".save_booking").show();
 
                     $.ajax({
-                        url: "{{ route('guest.rides.edit') }}",
+                        url: "{{ route('guest.rides.edit', \Request::get('slugRecord')->slug) }}",
                         type: 'get',
                         data: {
                             ride_id: ride_id
@@ -1184,8 +1173,6 @@
                                 } else {
                                     $("#payment_type").val("").change();
                                 }
-
-                                $("#service_provider").val(response.data.ride_detail.service_provider_id).removeAttr('disabled');
 
                                 $("#note").val(response.data.ride_detail.note);
                                 $("#ride_route").val(response.data.ride_detail.route);
@@ -1305,7 +1292,6 @@
                     $("input[name='car_type']").attr("disabled",false);
                     $("#numberOfPassenger").attr("disabled",false);
                     $("#note").attr("readonly",false);
-                    $("#service_provider").removeAttr('disabled');
 
                     $("input[name='car_type']:first").attr('checked', 'checked').change();
                     $('#view_booking').css({'margin-right':'-660px','transition':'all 400ms linear'});
@@ -1428,7 +1414,7 @@
                         swal.fire("{{ __('Error') }}", "{{ __('Please select Car type') }}", "error");
                         return false;
                     }
-                    var carType = $('input[name="car_type"]:checked').val();
+                    var carType = $('input[name="car_type"]:checked').data('text');
                     var vehicle_basic_fee = $('input[name="car_type"]:checked').data('basic_fee');
                     var vehicle_price_per_km = $('input[name="car_type"]:checked').data('price_per_km');
                     if (distance_calculated == 0) {
@@ -1637,9 +1623,8 @@
                     $('#otp_distance_calculated_input').val($('input[name="distance"]').val());  
                     $('#otp_payment_type').val($('#payment_type').val()); 
                     $('#otp_numberOfPassenger').val($('input[name="passanger"]').val());  
-                    $('#otp_car_type').val($('input[name="car_type"]:checked').val());  
+                    $('#otp_car_type').val($('input[name="car_type"]:checked').data('text'));  
                     $('#otp_ride_cost').val($('input[name="ride_cost"]').val());
-                    $('#otp_service_provider').val($('#service_provider').val()); 
                     $('#otp_note').val($('textarea[name="note"]').val());
                     $('#otp_ride_route').val($('#ride_route').val());  
 
@@ -1662,65 +1647,52 @@
                                     $(document).find(".save_booking").attr('disabled', true);
                                 }
 
-                                var booking_url = "{{ auth()->check() ? route('guest.ride_booking') : route('send_otp_before_ride_booking') }}";
-                                var authCheck = "{{ auth()->check() }}";
-
+                                var booking_url = "{{ auth()->check() ? route('guest.ride_booking', \Request::get('slugRecord')->slug) : route('guest.send_otp_before_ride_booking', \Request::get('slugRecord')->slug) }}";
                                 $.ajax({
-                                    url: "{{ route('guest.user_exist') }}",
+                                    url: booking_url,
                                     type: 'post',
                                     dataType: 'json',
                                     data: $('form#booking_list_form').serialize(),
                                     success: function(response) {
-                                        $.ajax({
-                                            url: response.route,
-                                            type: 'post',
-                                            dataType: 'json',
-                                            data: $('form#booking_list_form').serialize(),
-                                            success: function(response) {
 
-                                                if(response.booking_status == 'direct' && response.user_data) {
-                                                    if (response.status) {    
-                                                        swal.fire("{{ __('Success') }}", response.message,"success");
-                                                        setTimeout(function() {
-                                                            var currentURL = (document.URL);
-                                                            var part = currentURL.split("/")[1];
-                                                            route = part+'?token='+response.user_data.random_token;
-                                                            window.location.href = route;
-                                                            var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
-                                                            socket.emit('master-driver-update-web', {"data":response.data});
-                                                        }, 1000);
-                                                       // socket.emit('master-driver-update-web', {"data":response.data});
-                                                    } else if (response.status == 0) {
-                                                        swal.fire("{{ __('Error') }}", response.message,
-                                                            "error");
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                } else if(response.booking_status == 'direct' && !response.user_data) {
-                                                    if (response.status) {          
-                                                        socket.emit('master-driver-update-web', {"data":response.data});
-                                                        swal.fire("{{ __('Success') }}", response.message,"success");
-                                                        
-                                                    } else if (response.status == 0) {
-                                                        swal.fire("{{ __('Error') }}", response.message,
-                                                            "error");
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                } else {
-                                                    if(response.status){
-                                                        $("#confirmOTPModal").modal('show');
-                                                        timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
-                                                    } else if(response.status == 0){
-                                                        new swal("{{ __('Error') }}",response.message,"error");
-                                                        $(document).find(".verify_otp").removeAttr('disabled');
-                                                        $(document).find(".save_booking").removeAttr('disabled');
-                                                    }
-                                                }
-                                            },
-                                            error(response) {
-                                                swal.fire("{{ __('Error') }}", response.message, "error");
+                                        if(response.booking_status == 'direct' && response.user_data) {
+                                            if (response.status) {    
+                                                swal.fire("{{ __('Success') }}", response.message,"success");
+                                                socket.emit('master-driver-update-web', {"data":response.data});
+                                                setTimeout(function() {
+                                                    // var currentURL = (document.URL);
+                                                    // var part = currentURL.split("/")[1];
+                                                    // route = part+'?token='+response.user_data.random_token;
+                                                    // window.location.href = route;
+                                                    // var isRandomToken = "{{ Auth::check() ? Auth::user()->random_token : '' }}";
+                                                    window.location.reload();
+                                                }, 1000);
+                                                // socket.emit('master-driver-update-web', {"data":response.data});
+                                            } else if (response.status == 0) {
+                                                swal.fire("{{ __('Error') }}", response.message,
+                                                    "error");
                                                 $(document).find(".save_booking").removeAttr('disabled');
                                             }
-                                        });
+                                        } else if(response.booking_status == 'direct' && !response.user_data) {
+                                            if (response.status) {          
+                                                socket.emit('master-driver-update-web', {"data":response.data});
+                                                swal.fire("{{ __('Success') }}", response.message,"success");
+                                                
+                                            } else if (response.status == 0) {
+                                                swal.fire("{{ __('Error') }}", response.message,
+                                                    "error");
+                                                $(document).find(".save_booking").removeAttr('disabled');
+                                            }
+                                        } else {
+                                            if(response.status){
+                                                $("#confirmOTPModal").modal('show');
+                                                timer(30,"bookingOTPModalTimer","booking_otp_not_rec");
+                                            } else if(response.status == 0){
+                                                new swal("{{ __('Error') }}",response.message,"error");
+                                                $(document).find(".verify_otp").removeAttr('disabled');
+                                                $(document).find(".save_booking").removeAttr('disabled');
+                                            }
+                                        }
                                     },
                                     error(response) {
                                         swal.fire("{{ __('Error') }}", response.message, "error");
@@ -1835,7 +1807,7 @@
                     $(document).find(".edit_booking").show();
                     $(document).find(".edit_booking").attr('data-parentid', parent_id);
                     $.ajax({
-                        url: "{{ route('guest.rides.edit') }}",
+                        url: "{{ route('guest.rides.edit', \Request::get('slugRecord')->slug) }}",
                         type: 'get',
                         data: {
                             ride_id: ride_id
@@ -1871,7 +1843,6 @@
 
                                 $("#distance_calculated_input").val(response.data.ride_detail.distance);
                                 $("#payment_type").val(response.data.ride_detail.payment_type);
-                                $("#service_provider").val(response.data.ride_detail.service_provider_id).attr('disabled',true);
                                 $("#note").val(response.data.ride_detail.note);
                                 $("#ride_route").val(response.data.ride_detail.route);
                                 $("#otpPhone").val(response.data.ride_detail.user_phone);
@@ -1971,7 +1942,7 @@
                                 var change_for_all = result.value === 1 ? 1 : 0;
 
                                 $.ajax({
-                                    url: "{{ route('guest.ride_booking_update') }}",
+                                    url: "{{ route('guest.ride_booking_update', \Request::get('slugRecord')->slug) }}",
                                     type: 'post',
                                     headers: {'X-CSRF-TOKEN': token},
                                     dataType: 'json',
@@ -2030,7 +2001,7 @@
                     }).then((result) => {
                         if (result.value === 0 || result.value) {
                             $.ajax({
-                                url: "{{ route('guest.cancel_booking') }}",
+                                url: "{{ route('guest.cancel_booking', \Request::get('slugRecord')->slug) }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {
@@ -2080,7 +2051,7 @@
                             var ride_id = $(this).attr('data-id');
 
                             $.ajax({
-                                url: "{{ route('guest.delete_booking') }}",
+                                url: "{{ route('guest.delete_booking', \Request::get('slugRecord')->slug) }}",
                                 type: 'post',
                                 dataType: 'json',
                                 data: {
@@ -2316,7 +2287,7 @@
 
         $(document).on('click','.confirmOTPModalResendOtp',function(){
             $.ajax({
-                url: "{{ route('send_otp_before_ride_booking')}}",
+                url: "{{ route('guest.send_otp_before_ride_booking', \Request::get('slugRecord')->slug) }}",
                 type: 'post',
                 dataType: 'json',
                 data: $('form#otp_form').serialize(),
@@ -2348,12 +2319,8 @@
             var post_data = $('form#otp_form').serialize();
             post_data += '&otp='+otp_entered;
             $(document).find(".verify_otp").attr('disabled',true);
-            <?php
-                $url = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            ?>
-            post_data += '&url_type=taxi2000';
             $.ajax({
-                url: "{{ route('verify_otp_and_ride_booking')}}",
+                url: "{{ route('guest.verify_otp_and_ride_booking',\Request::get('slugRecord')->slug )}}",
                 type: 'post',
                 dataType: 'json',
                 data: post_data,
@@ -2362,11 +2329,12 @@
                     if(response.status){
                         new swal("{{ __('Success') }}",response.message,"success");
                         setTimeout(function() {
-                            var currentURL = (document.URL); // returns http://myplace.com/abcd
-                            var part = currentURL.split("/")[1];
-                            route = part+'?token='+response.user_data.random_token;
-                           // route = route.replace('~',response.user_data.random_token);
-                            window.location.href = route;
+                        //     var currentURL = (document.URL); // returns http://myplace.com/abcd
+                        //     var part = currentURL.split("/")[1];
+                        //     route = part+'?token='+response.user_data.random_token;
+                        //    // route = route.replace('~',response.user_data.random_token);
+                        //     window.location.href = route;
+                        window.location.reload();
                         }, 2000);
                     } else if(response.status == 0){
                         new swal("{{ __('Error') }}",response.message,"error");
