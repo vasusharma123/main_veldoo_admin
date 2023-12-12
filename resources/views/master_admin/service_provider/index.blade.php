@@ -100,58 +100,55 @@
             },
             success: function (data) {
                 // Handle the received data
-               
-                console.log(data);
+                var rowHtml ="";
                 $('#service-provider tbody').empty();
                 if(data.length !=0){
                     //alert('sdfs');
-                    var rowHtml ="";
                     data.forEach(function(user) {
-                        console.log('--->')
                         rowHtml += '<tr>';
 
-                            if(user.expire_at){
-                                rowHtml += '<td>' + user.expire_at+ '</td>';
-                            }else{
-                                rowHtml += '<td> </td>';
-                            }
+                    // $('#service-provider tbody').append('<tr><td>' + user.expire_at + '</td><td>' + user.name + '</td><td>' + '+' + user.country_code + ' ' + user.phone + '</td><td>' + user.email + '</td><td>' + user.license_type + '</td><td>' + user.plan_name + '</td></tr>');
+                    if(user.expire_at){
+                        rowHtml += '<td>' + user.expire_at+ '</td>';
+                    }else{
+                        rowHtml += '<td> </td>';
+                    }
 
-                            if(user.name){
-                                rowHtml += '<td>' + user.name+ '</td>';
-                            }else{
-                                rowHtml += '<td> </td>';
-                            }
-                            if(user.phone){
-                                rowHtml += '<td>' + '+' + user.country_code + ' ' + user.phone+ '</td>';
-                            }else{
-                                rowHtml += '<td> </td>';
-                            }
-                            if(user.email){
-                                rowHtml += '<td>' + user.email+ '</td>';
-                            }else{
-                                rowHtml += '<td> </td>';
-                            }
-                            if(user.license_type){
-                                rowHtml += '<td>' + user.license_type+ '</td>';
-                            }else{
-                                rowHtml += '<td> </td>';
-                            }
-                            if(user.plan_name){
-                                rowHtml += '<td class="text-center"><a class="plan valid"  href="/service-provider/current-plan?id='+user.encrypted_plan_attribute+'"</a>' + user.plan_name+ '</a></td>';
-                            }else{
-                                rowHtml += '<td class="text-center"> </td>';
-                            }
+                    if(user.name){
+                        rowHtml += '<td>' + user.name+ '</td>';
+                    }else{
+                        rowHtml += '<td> </td>';
+                    }
+                    if(user.phone){
+                        rowHtml += '<td>' + '+' + user.country_code + ' ' + user.phone+ '</td>';
+                    }else{
+                        rowHtml += '<td> </td>';
+                    }
+                    if(user.email){
+                        rowHtml += '<td>' + user.email+ '</td>';
+                    }else{
+                        rowHtml += '<td> </td>';
+                    }
+                    if(user.license_type){
+                        rowHtml += '<td>' + user.license_type+ '</td>';
+                    }else{
+                        rowHtml += '<td> </td>';
+                    }
+                    if(user.plan_name){
+                        rowHtml += '<td class="text-center"><a class="plan valid"  href="/service-provider/current-plan?id='+user.encrypted_plan_attribute+'"</a>' + user.plan_name+ '</a></td>';
+                    }else{
+                        rowHtml += '<td class="text-center"> </td>';
+                    }
                     
                     rowHtml += '</tr>';
                     });
-                    $('#service-provider tbody').append(rowHtml);
+
                 
                     
                 }else{
-                    var rowHtml ="";
                     rowHtml += '<tr style="text-align: center;"><td colspan="6"> No data found</td></tr>';
                 }
-                
+                $('#service-provider tbody').append(rowHtml);
             },
             error: function (error) {
                 console.log('Error:', error);
