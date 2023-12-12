@@ -42,19 +42,27 @@ class ServiceProviderController extends Controller
 
             $searchTerm = $request->input('search');
 
-            $results =     User::select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
-            ->leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
-            ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
-            ->where('users.user_type', 3)
-            ->where(function ($query) use ($searchTerm) {
-                $query->where('users.name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('users.country_code', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('plan_purchase_history.license_type', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('plan_purchase_history.expire_at', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('plans.plan_name', 'like', '%' . $searchTerm . '%');
-            })->get();
+            if($searchTerm){
+                $results =     User::select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
+                                ->leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
+                                ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
+                                ->where('users.user_type', 3)
+                                ->where(function ($query) use ($searchTerm) {
+                                    $query->where('users.name', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('users.country_code', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('plan_purchase_history.license_type', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('plan_purchase_history.expire_at', 'like', '%' . $searchTerm . '%')
+                                        ->orWhere('plans.plan_name', 'like', '%' . $searchTerm . '%');
+                                })->orderBy('users.created_at','DESC')->get();
+            }else{
+                $results =     User::select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
+                ->leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
+                ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
+                ->where('users.user_type', 3)->orderBy('users.created_at','DESC')->get();
+            }
+            
 
             $results = $results->map(function ($result) {
                 $result->encrypted_plan_attribute = $this->computeAttribute($result);
