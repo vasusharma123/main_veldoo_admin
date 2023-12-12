@@ -17,6 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -346,4 +347,15 @@ class User extends Authenticatable implements HasMedia
 	public function service_provider(){
 		return $this->belongsTo(User::class, 'service_provider_id', 'id');
 	}
+
+	public function plans()
+    {
+        return $this->hasOne(PlanPurchaseHistory::class)->latest();
+    }
+
+	// public function getEncryptedIdAttribute()
+    // {
+    //     return Crypt::encrypt($this->attributes['id']);
+    // }
+
 }

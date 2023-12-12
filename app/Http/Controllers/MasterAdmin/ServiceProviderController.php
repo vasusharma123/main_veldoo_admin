@@ -27,44 +27,51 @@ class ServiceProviderController extends Controller
     {
         try {
             $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider');
-            // $data['user'] =  User::where('user_type', 3)->get();
+            $userData =  User::where('user_type', 3)->with(['plans', 'plans.plan'])->get();
+            $data['user'] = $userData->toArray();
+           // dd($data);
             return view('master_admin.service_provider.index', compact('data'))->with($data);
         } catch (Exception $e) {
             Log::info('Error in method getAllServiceProvider' . $e);
         }
     }
 
-    public function getAllServiceProvider()
+    public function getAllServiceProvider(Request $request)
     {
         try {
-            $data = PlanPurchaseHistory::groupBy('user_id')->orderBy('created_at', 'desc')->get();
-            return Datatables::of($data)
-                ->addIndexColumn()
-                ->addColumn('expire_at', function ($row) {
-                    return date('d/m/Y', strtotime($row->expire_at));
-                })->addColumn('service_provider_name', function ($row) {
-                    return $row->service_provider->name;
-                })->addColumn('phone_number', function ($row) {
-                    return '+' . $row->service_provider->country_code . ' ' . $row->service_provider->phone;
-                })->addColumn('email_address', function ($row) {
-                    return $row->service_provider->email;
-                })->addColumn('license_type', function ($row) {
-                    return ucfirst($row->plan->plan_type);
-                })
-                ->addColumn('action', function ($row) {
-                    if ($row->expire_at >= Carbon::now()->format('Y-m-d')) {
-                        $actionBtn = '<a href="'.route("service-provider.current_plan",["id" => Crypt::encrypt($row->id)]) . '"  class="plan valid"> ' . $row->plan->plan_name . '</a>';
-                    } else {
-                        $actionBtn = '<a href="'.route("service-provider.current_plan",["id" => Crypt::encrypt($row->id)]) . '"  class="plan invalid">Inactive</a>';
-                    }
-                    return $actionBtn;
-                })
-                ->rawColumns(['service_provider_name', 'phone_number', 'email_address', 'license_type', 'action'])
-                ->make(true);
+
+            $searchTerm = $request->input('search');
+
+            $results =     User::leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
+            ->select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
+            ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
+            ->where('users.name', 'like', '%' . $searchTerm . '%')
+            ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
+            ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
+            ->orWhere('users.country_code', 'like', '%' . $searchTerm . '%')
+            ->orWhere('plan_purchase_history.license_type', 'like', '%' . $searchTerm . '%')
+            ->orWhere('plan_purchase_history.expire_at', 'like', '%' . $searchTerm . '%')
+            ->orWhere('plans.plan_name', 'like', '%' . $searchTerm . '%')->get();
+
+            $results = $results->map(function ($result) {
+                $result->encrypted_plan_attribute = $this->computeAttribute($result);
+                return $result;
+            });
+            return response()->json($results);
+
+
         } catch (Exception $e) {
             Log::info('Error in method getAllServiceProvider' . $e);
         }
     }
+
+    private function computeAttribute($result)
+{
+    // Your logic to compute the attribute value based on $result
+    // For example, concatenate values from different columns
+    return Crypt::encrypt($result->plan_purchase_id);
+}
+
 
     public function getServiceProviderPlan()
     {
