@@ -29,7 +29,7 @@ class UsersController extends Controller
     protected $redirectTo = '/home';
 
      public function dashboard(){
-        $data = array('page_title' => 'Dashboard', 'action' => 'Dashboard');
+        $data = array('page_title' => 'Dashboard', 'action' => 'Dashboard','page' => 'master-dashboard');
         return view('master_admin.dashboard')->with($data);
 
     }

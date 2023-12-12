@@ -26,7 +26,7 @@ class ServiceProviderController extends Controller
     public function showServiceProvider()
     {
         try {
-            $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider');
+            $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider','page' => 'service-provider');
             $userData =  User::where('user_type', 3)->with(['plans', 'plans.plan'])->get();
             $data['user'] = $userData->toArray();
            // dd($data);
@@ -80,7 +80,7 @@ class ServiceProviderController extends Controller
 
     public function current_plan(Request $request)
     {
-        $data = array('page_title' => 'Service Provider Plan', 'action' => 'current_plan');
+        $data = array('page_title' => 'Service Provider Plan', 'action' => 'current_plan','page' => 'service-provider');
         $latest_plan_id = decrypt($request->id);
         $data['latest_plan'] = PlanPurchaseHistory::find($latest_plan_id);
         return view('master_admin.service_provider.current_plan')->with($data);
@@ -88,7 +88,7 @@ class ServiceProviderController extends Controller
 
     public function profile_detail(Request $request){
         try{
-            $data = array('page_title' => 'Service Provider Detail', 'action' => 'profile_detail');
+            $data = array('page_title' => 'Service Provider Detail', 'action' => 'profile_detail','page' => 'service-provider');
             $latest_plan_id = decrypt($request->id);
             $data['latest_plan'] = PlanPurchaseHistory::find($latest_plan_id);
             $data['user'] = User::find($data['latest_plan']->user_id);
@@ -100,7 +100,7 @@ class ServiceProviderController extends Controller
 
     public function billing_detail(Request $request)
     {
-        $data = array('page_title' => 'Billing', 'action' => 'billing_detail');
+        $data = array('page_title' => 'Billing', 'action' => 'billing_detail','page' => 'service-provider');
         return view('master_admin.service_provider.billing_detail')->with($data);
     }
 
