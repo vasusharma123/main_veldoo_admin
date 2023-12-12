@@ -636,7 +636,7 @@ class ServiceProviderController extends Controller
             $PlanPurchaseHistory->user_id = $userDetail->id;
             $PlanPurchaseHistory->plan_id = $request->plan_id;
             $today = Carbon::now();
-            if ($planDetail->plan_type == 'monthly') {
+            if ($planDetail->plan_type == 'monthly' || $planDetail->plan_type == 'Monthly') {
                 $expiry = $today->addMonth();
             } else {
                 $expiry = $today->addYear();
