@@ -45,6 +45,7 @@ class ServiceProviderController extends Controller
             $results =     User::leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
             ->select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
             ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
+            ->where('users.user_type', 3)
             ->where('users.name', 'like', '%' . $searchTerm . '%')
             ->orWhere('users.email', 'like', '%' . $searchTerm . '%')
             ->orWhere('users.phone', 'like', '%' . $searchTerm . '%')
