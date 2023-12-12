@@ -43,12 +43,13 @@ class ServiceProviderController extends Controller
             $searchTerm = $request->input('search');
 
             if($searchTerm){
+                Log::info('in if');
                 $results =     User::select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
-                                ->leftJoin('plan_purchase_history', 'users.id', '=', 'plan_purchase_history.user_id')
                                 ->leftJoin('plan_purchase_history', function ($join) {
                                     $join->on('users.id', '=', 'plan_purchase_history.user_id')
                                          ->whereRaw('plan_purchase_history.id = (select max(id) from plan_purchase_history where user_id = users.id)');
                                 })
+                                ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
                                 ->where('users.user_type', 3)
                                 ->where(function ($query) use ($searchTerm) {
                                     $query->where('users.name', 'like', '%' . $searchTerm . '%')
@@ -61,14 +62,14 @@ class ServiceProviderController extends Controller
                                 })->orderBy('users.created_at','DESC')->get();
             }else{
                 $results =     User::select('users.name','users.email','users.phone','users.country_code','plan_purchase_history.id as plan_purchase_id', 'plan_purchase_history.license_type','plan_purchase_history.expire_at','plans.plan_name' )
-                ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
                 ->leftJoin('plan_purchase_history', function ($join) {
                     $join->on('users.id', '=', 'plan_purchase_history.user_id')
                          ->whereRaw('plan_purchase_history.id = (select max(id) from plan_purchase_history where user_id = users.id)');
                 })
+                ->leftJoin('plans', 'plan_purchase_history.plan_id', '=', 'plans.id')
                 ->where('users.user_type', 3)
-                ->groupBy('plan_purchase_history.user_id')
                 ->orderBy('users.created_at','DESC')->get();
+                Log::info('in else');
             }
             
 
