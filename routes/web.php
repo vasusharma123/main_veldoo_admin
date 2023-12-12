@@ -314,6 +314,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('service-provider/profile-detail',  'MasterAdmin\ServiceProviderController@profile_detail')->name('service-provider.profile-detail');
 	Route::get('service-provider/current-plan',  'MasterAdmin\ServiceProviderController@current_plan')->name('service-provider.current_plan');
 	Route::get('service-provider/billing',  'MasterAdmin\ServiceProviderController@billing_detail')->name('service-provider.billing_detail');
+	Route::get('service-provider/update-expiry',  'MasterAdmin\ServiceProviderController@update_expiry')->name('service-provider.update_expiry');
 	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings')->name('master_admin.setting');
 	Route::get('master-logout',  ['as' => 'master_admin.logout','uses' => 'MasterAdmin\UsersController@logout']);
 	Route::get('/fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
