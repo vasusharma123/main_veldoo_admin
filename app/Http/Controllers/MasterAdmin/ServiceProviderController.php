@@ -120,7 +120,10 @@ class ServiceProviderController extends Controller
 
     public function billing_detail(Request $request)
     {
-        $data = array('page_title' => 'Billing', 'action' => 'billing_detail','page' => 'service-provider');
+        $data = array('page_title' => 'Billing', 'action' => 'billing_detail', 'page' => 'service-provider');
+        $latest_plan_id = decrypt($request->id);
+        $data['latest_plan'] = PlanPurchaseHistory::find($latest_plan_id);
+        $data['all_purchases'] = PlanPurchaseHistory::where(['user_id' => $data['latest_plan']->user_id])->orderBy('purchase_date', 'desc')->get();
         return view('master_admin.service_provider.billing_detail')->with($data);
     }
 
