@@ -104,6 +104,7 @@
                 $('#service-provider tbody').empty();
                 if(data.length !=0){
                     //alert('sdfs');
+                    console.log(data);
                     data.forEach(function(user) {
                         rowHtml += '<tr>';
 
