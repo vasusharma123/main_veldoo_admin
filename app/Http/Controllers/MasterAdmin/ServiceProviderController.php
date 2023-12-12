@@ -27,7 +27,7 @@ class ServiceProviderController extends Controller
     {
         try {
             $data = array('page_title' => 'Service Provider', 'action' => 'Service Provider','page' => 'service-provider');
-            $userData =  User::where('user_type', 3)->with(['plans', 'plans.plan'])->get();
+            $userData =  User::where('user_type', 3)->with(['plans', 'plans.plan'])->orderBy('created_at','DESC')->get();
             $data['user'] = $userData->toArray();
            // dd($data);
             return view('master_admin.service_provider.index', compact('data'))->with($data);
