@@ -71,17 +71,16 @@
                                             <ul class="nav sidebarLists w-100">
                                                 @php
                                                 $currentUri = request()->path();
-                                                $uriWithoutSlashOrAsterisk = str_replace('/', '', $currentUri);
-                                                @endphp
+                                                $uriWithoutSlashOrAsterisk = str_replace('/', '', $currentUri);                                                @endphp
                                                 <li class="nav-item w-100">
-                                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'master-dashboard') { echo "active";  }  ?>" href="/master-dashboard">
+                                                    <a class="nav-link <?php if($page == 'master-dashboard') { echo "active";  }  ?>" href="/master-dashboard">
                                                         <img src="{{ asset('assets/imgs/dashboard.png')}}" class="img-fluid w-100 sidebarImgs" alt="dashboard" />
                                                         <span class="sidebarText">Dashboard</span>
                                                         <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
                                                     </a>
                                                 </li>
                                                 <li class="nav-item w-100">
-                                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'service-provider' || $uriWithoutSlashOrAsterisk == 'master-plan' || $uriWithoutSlashOrAsterisk == 'plan-detail' || $uriWithoutSlashOrAsterisk == 'billing') { echo "active";  }  ?>" href="/service-provider">
+                                                    <a class="nav-link <?php if($page == 'service-provider') { echo "active";  }  ?>" href="/service-provider">
                                                         <img src="{{ asset('assets/imgs/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users" />
                                                         <span class="sidebarText">Service provider</span>
                                                         <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
