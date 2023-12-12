@@ -12,7 +12,7 @@
 							<section class="addEditForm sectionsform bg-transparent">
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
-									{{ Form::model($record, ['url' => route('users.settingsUpdate'), 'class' => 'custom_form editForm', 'id' => 'EditUser', 'enctype' => 'multipart/form-data']) }}
+									{{ Form::model($record, ['url' => route('users.settingsUpdate'), 'class' => 'custom_form editForm', 'id' => 'updateSettings', 'enctype' => 'multipart/form-data']) }}
 									@method('PATCH')
 										<div class="table_boxes" id="countrySetting">
 											<h2 class="table_header">Country settings</h2>
@@ -108,7 +108,7 @@
 														<td>Delete only phone number users (in days)</td>
 														<td>
 															<div class="text-delete-users">{{ (!empty($record->temporary_phone_number_users) ? $record->temporary_phone_number_users : '') }}</div>
-															<?php echo Form::text('temporary_phone_number_users', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only phone number users (in days)']); ?>
+															<?php echo Form::text('temporary_phone_number_users', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only phone number users (in days)']); ?>
 														</td>
 														<td class="actionbtns">
 															<a href="javascript:void(0);" data-class="text-delete-users" class="actionbtnsLinks settings-data-edit-click"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
@@ -123,7 +123,7 @@
 														<td>Delete only last name users (In days)</td>
 														<td>
 															<div class="text-delete-lastusers">{{ (!empty($record->temporary_last_name_users) ? $record->temporary_last_name_users : '') }}</div>
-															<?php echo Form::text('temporary_last_name_users', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only last name users (In days)']); ?>
+															<?php echo Form::text('temporary_last_name_users', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Delete only last name users (In days)']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -249,7 +249,7 @@
 														<td>Driver requests</td>
 														<td>
 															<div class="text-delete-ridelastusers-2">{{ (!empty($record->driver_requests) ? $record->driver_requests : '') }}</div>
-															<?php echo Form::text('driver_requests', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver requests']); ?>
+															<?php echo Form::text('driver_requests', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver requests']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -265,7 +265,7 @@
 														<td>Waiting time</td>
 														<td>
 															<div class="text-waiting-time-2">{{ (!empty($record->waiting_time) ? $record->waiting_time : '') }}</div>
-															<?php echo Form::text('waiting_time', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting time']); ?>
+															<?php echo Form::text('waiting_time', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting time']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -282,7 +282,7 @@
 														<td>Radius</td>
 														<td>
 															<div class="text-radius">{{ (!empty($record->radius) ? $record->radius : '') }}</div>
-															<?php echo Form::text('radius', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius']); ?>
+															<?php echo Form::text('radius', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -299,7 +299,7 @@
 														<td>Radius for join rides (in km)</td>
 														<td>
 															<div class="text-radius-join">{{ (!empty($record->join_radius) ? $record->join_radius : '') }}</div>
-															<?php echo Form::text('join_radius', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius for join']); ?>
+															<?php echo Form::text('join_radius', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Radius for join']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -316,7 +316,7 @@
 														<td>Driver Idle Time (In minutes)</td>
 														<td>
 															<div class="text-driver-idle">{{ (!empty($record->driver_idle_time) ? $record->driver_idle_time : '') }}</div>
-															<?php echo Form::text('driver_idle_time', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver Idle Time']); ?>
+															<?php echo Form::text('driver_idle_time', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver Idle Time']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -333,7 +333,7 @@
 														<td>Current ride distance addition (in km)</td>
 														<td>
 															<div class="text-current-ride">{{ (!empty($record->current_ride_distance_addition) ? $record->current_ride_distance_addition : '') }}</div>
-															<?php echo Form::text('current_ride_distance_addition', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Current ride distance']); ?>
+															<?php echo Form::text('current_ride_distance_addition', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Current ride distance']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -349,7 +349,7 @@
 														<td>Waiting ride distance addition (in km)</td>
 														<td>
 															<div class="text-waiting-ride">{{ (!empty($record->waiting_ride_distance_addition) ? $record->waiting_ride_distance_addition : '') }}</div>
-															<?php echo Form::text('waiting_ride_distance_addition', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting ride distance']); ?>
+															<?php echo Form::text('waiting_ride_distance_addition', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Waiting ride distance']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -366,7 +366,7 @@
 														<td>Driver count to display</td>
 														<td>
 															<div class="text-driver-count">{{ (!empty($record->driver_count_to_display) ? $record->driver_count_to_display : '') }}</div>
-															<?php echo Form::text('driver_count_to_display', null, ['class' => 'form-control inputText"', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver count to display']); ?>
+															<?php echo Form::text('driver_count_to_display', null, ['class' => 'form-control inputText custNumFieldCls', 'required' => true, 'style' => 'display:none', 'placeholder' => 'Driver count to display']); ?>
 														</td>
 														
 														<td class="actionbtns">
@@ -378,7 +378,8 @@
 
 											<div class="action_btns_main">
 												<div class="btns_forms d-flex align-items-center">
-													<button style="opacity: 0;pointer-events:none;" class="form-control submit_btn mt-2 greyBtns" type="button">Default</button>
+													<!--style="opacity: 0;pointer-events:none;"-->
+													<button class="form-control submit_btn mt-2 greyBtns settings-data-default-click" type="button">Default</button>
 													<button class="form-control submit_btn mt-2 ms-2" type="submit">Save</button>
 												</div>
 											</div>
@@ -404,6 +405,25 @@ $(document).ready(function(){
 		var classname = $(this).attr('data-class');
 		$('.'+classname).hide();
 		$('.'+classname).next().show();
+	});
+	
+	$('body').on('click', '.settings-data-default-click', function(){
+		
+		var notification = 1;
+		
+		var data_array = {'currency_symbol' : 'CHF', 'currency_name' : 'Franken', 'temporary_phone_number_users' : 40, 'temporary_last_name_users' : 20, 'driver_requests' : 10, 'waiting_time' : 30, 'radius' : 50, 'join_radius' : 5, 'driver_idle_time' : 60, 'current_ride_distance_addition' : 10, 'waiting_ride_distance_addition' : 15, 'driver_count_to_display' : 3};
+		
+		for(var key in data_array){
+			$('input[name="'+key+'"]').prev().hide();
+			$('input[name="'+key+'"]').show();
+			$('input[name="'+key+'"]').val(data_array[key]);
+		}
+		
+		var isnotif = document.querySelector('.switch input[name="notification"]');
+		
+		isnotif.checked = true;
+		
+		$('#updateSettings').submit();
 	});
 });
 </script>

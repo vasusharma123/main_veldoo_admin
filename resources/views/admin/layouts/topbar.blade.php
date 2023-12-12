@@ -22,6 +22,31 @@
 						</li>
 					</ul>-->
 				@endif
+				
+				@if($uri=='users.settings')
+					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+					<ul class="nav top_tab_menu target">
+						<li class="nav-item">
+							<a class="nav-link {{ ($uri=='users.settings' ? 'active' : '') }}" href="{{ route('users.settings') }}">General</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ route('payment-method.index') }}">Payment Method</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ route('sms-template.index') }}">SMS</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ route('push-notifications.index') }}">Notification</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="">My Design</a>
+						</li>
+					</ul>
+				@endif
+				
 				@if($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.index' || $uri=='vehicle.create' || $uri=='vehicle.edit')
 					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
