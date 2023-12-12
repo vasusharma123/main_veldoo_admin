@@ -137,7 +137,6 @@
                     }
                     if(user.plan_name){
                         rowHtml += '<td><a class="plan valid"  href="/service-provider/current-plan?id='+user.encrypted_plan_attribute+'"</a>' + user.plan_name+ '</a></td>';
-                        //rowHtml += '<td class="text-center"><a class="plan valid"  href="/service-provider/current-plan?id=</a></td>';
                     }else{
                         rowHtml += '<td> </td>';
                     }
