@@ -16,7 +16,7 @@
 
     <!-- Style -->
     <link href="{{ asset('/assets/css/master-admin.css')}}" rel="stylesheet">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
     {{-- Section Added for custom css --}}
     @yield('css')
 </head>
@@ -123,7 +123,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JS -->
     <script src="{{ asset('assets/js/main.js')}}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- Section Added for footer script --}}
     @yield('footer_scripts')
 </body>

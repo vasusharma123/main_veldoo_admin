@@ -127,12 +127,32 @@ class ServiceProviderController extends Controller
         return view('master_admin.service_provider.billing_detail')->with($data);
     }
 
-    public function update_expiry(Request $request)
+    public function show_plan_expiry(Request $request)
     {
         $data = array('page_title' => 'Service Provider Plan', 'action' => 'billing_detail','page' => 'service-provider');
         $latest_plan_id = decrypt($request->id);
         $data['latest_plan'] = PlanPurchaseHistory::find($latest_plan_id);
-        return view('master_admin.service_provider.update_expiry')->with($data);
+        return view('master_admin.service_provider.show_plan_expiry')->with($data);
+    }
+
+    public function update_expiry(Request $request)
+    {
+        $input = $request->all();
+        $request->validate(
+            [
+                'plan_purchase_id' => 'required',
+                'expiration_date' => 'required'
+            ]
+        );
+        try {
+            $planHistoryObj = PlanPurchaseHistory::find($request->plan_purchase_id);
+            $planHistoryObj->expire_at = $request->expiration_date;
+            $planHistoryObj->save();
+            return redirect()->back()->with('success', __('The expiration date of the plan was updated successfully.'));
+        } catch (Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
+            return redirect()->back()->withInput($input)->with('error', $e->getMessage());
+        }
     }
 
 }

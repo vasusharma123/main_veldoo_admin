@@ -80,32 +80,60 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
             </div>
 
             <div class="col-lg-6 col-md-12 col-sm-12 ">
-                <section class="sectionsform">
-                    <div class="leftcontent">
-                        <h2 class="sidePaidTitle">
-                            {{ ($latest_plan->plan->charges == 0)?'Free' :'Paid'}} license
-                        </h2>
-                        <ul class="list-group paidList">
-                            <li class="list-group-item">
-                                <span class="LeftItmes">{{ $latest_plan->plan->plan_name}} licenses ({{ $latest_plan->plan->number_of_driver}})</span>
-                                <span class="RightItmes">{{ ($latest_plan->plan->charges == 0)?'Free' : ($latest_plan->plan->currency_type.' '.$latest_plan->plan->charges )}}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <span class="LeftItmes highbold">EXPIRATION DATE</span>
-                                <span class="RightItmes highbold">{{ date('d.m.Y',strtotime($latest_plan->expire_at))}}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <span class="LeftItmes highbold">Set new expiration date</span>
-                                <input type="date" class="form-control RightItmes timerclock" required/>
-                            </li>
-                        </ul>
+                <form method="Post" action="{{ route('service-provider.update_expiry') }}">
+                    @csrf
+                    <input type="hidden" name="plan_purchase_id" value="{{$latest_plan->id}}">
+                    <section class="sectionsform">
+                        <div class="leftcontent">
+                            <h2 class="sidePaidTitle">
+                                {{ ($latest_plan->plan->charges == 0)?'Free' :'Paid'}} license
+                            </h2>
 
-                    </div>
-                </section>
-                <input type="submit" class="form-control submit_btn planbuttons" value="Save" />
+                            <ul class="list-group paidList">
+                                <li class="list-group-item">
+                                    <span class="LeftItmes">{{ $latest_plan->plan->plan_name}} licenses ({{ $latest_plan->plan->number_of_driver}})</span>
+                                    <span class="RightItmes">{{ ($latest_plan->plan->charges == 0)?'Free' : ($latest_plan->plan->currency_type.' '.$latest_plan->plan->charges )}}</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="LeftItmes highbold">EXPIRATION DATE</span>
+                                    <span class="RightItmes highbold">{{ date('d.m.Y',strtotime($latest_plan->expire_at))}}</span>
+                                </li>
+                                <li class="list-group-item">
+                                    <span class="LeftItmes highbold">Set new expiration date</span>
+                                    <input type="date" name="expiration_date" class="form-control RightItmes timerclock" value="{{$latest_plan->expire_at}}" required />
+                                </li>
+                                @error('expiration_date')
+                                <div class="text-danger fw-bold">{{ $message }}</div>
+                                @enderror
+                            </ul>
+
+                        </div>
+                    </section>
+                    <input type="submit" class="form-control submit_btn planbuttons" value="Save" />
+                </form>
             </div>
+
         </div>
     </article>
 </section>
 
+@endsection
+
+@section('footer_scripts')
+<script>
+    @if(Session::has('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "{{ Session::get('success') }}"
+    })
+    @endif
+    @if(Session::has('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: "{{ Session::get('error') }}"
+    })
+    @endif
+</script>
 @endsection

@@ -28,7 +28,7 @@
                                         <a href="#" class="tableLinks">Billing</a>
                                         <a href="#" class="tableLinks">Receipt</a>
                                         @if($purchase_key == 0)
-                                        <a href="{{ route('service-provider.update_expiry',['id' => request('id')])}}" class="tableLinks editblue">Edit</a>
+                                        <a href="{{ route('service-provider.show_plan_expiry',['id' => request('id')])}}" class="tableLinks editblue">Edit</a>
                                         @endif
                                     </td>
                                     <td>{{ $purchase_value->currency . ' ' . $purchase_value->paid_amount }}</td>
