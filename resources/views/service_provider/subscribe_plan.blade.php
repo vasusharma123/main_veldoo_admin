@@ -226,7 +226,7 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                             
                                         <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
                                             
-                                                <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a>
+                                                {{-- <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a> --}}
                                             
                                                 <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
                                                 
@@ -237,7 +237,7 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                         @if($plan_detail->charges == 0)
                                         <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
                                             
-                                            <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a>
+                                            {{-- <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a> --}}
                                          
                                             <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
                                             
