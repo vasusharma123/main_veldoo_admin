@@ -81,7 +81,7 @@
 @section('content')
 @php
 $checkmarksImage = asset('service_provider_assets/imgs/checkmarks.png');
-$unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
+$unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
 @endphp
 <section class="form_section p_form">
     <div class="art_form planArtform">
@@ -179,12 +179,8 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                                                     {{-- <button class="btn submit_btn planBtnSelect mt-4">Select</button> --}}
                                                 </div>
                                             </section>
-                                            <p class="notpara"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
-                                            @if($plan_detail->charges == 0)
-                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0" type="submit">Subscribe now</button>
-                                            @endif
                                         </div>
-
+                                      
                                         @if($plan_detail->charges != 0)
                                         <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                                             <section class="planSections totalplantextbox">
@@ -225,10 +221,30 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/unCheckmarks.png');
                                                     </div>
                                                 </div>
                                             </section>
-                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0" type="submit">Subscribe now</button>
+                                        </div>
+                                        
+                                            
+                                        <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
+                                            
+                                                {{-- <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a> --}}
+                                            
+                                                <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
+                                                
+                                            </div>
+                                            <p class="notpara d-block my-2 text-end"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
                                         </div>
                                         @endif
+                                        @if($plan_detail->charges == 0)
+                                        <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
+                                            
+                                            {{-- <a href="{{ route('selectPlan', $token) }}" class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" style="background: #356681;">Switch Plan</a> --}}
+                                         
+                                            <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
+                                            
+                                        </div>
+                                        <p class="notpara d-block my-2 text-end"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
                                     </div>
+                                    @endif
                                 </form>
                                 <!--- /Monthly Plan --->
                             </div>

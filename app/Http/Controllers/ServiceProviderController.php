@@ -601,8 +601,8 @@ class ServiceProviderController extends Controller
     {
         try {
             $user_exist = User::where(['is_email_verified_token' => $token])->first();
-            $monthyPlan = Plan::where(['plan_type' => 'monthly'])->get();
-            $yearlyPlan = Plan::where(['plan_type' => 'yearly'])->get();
+            $monthyPlan = Plan::where(['plan_type' => 'Monthly'])->get();
+            $yearlyPlan = Plan::where(['plan_type' => 'Yearly'])->get();
             return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token, 'user_exist' => $user_exist]);
         } catch (Exception $e) {
             Log::info('Error in method selectPlan' . $e);
@@ -636,7 +636,7 @@ class ServiceProviderController extends Controller
             $PlanPurchaseHistory->user_id = $userDetail->id;
             $PlanPurchaseHistory->plan_id = $request->plan_id;
             $today = Carbon::now();
-            if ($planDetail->plan_type == 'monthly') {
+            if ($planDetail->plan_type == 'monthly' || $planDetail->plan_type == 'Monthly') {
                 $expiry = $today->addMonth();
             } else {
                 $expiry = $today->addYear();

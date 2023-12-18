@@ -149,7 +149,7 @@
         allowOutsideClick:false
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "https://new.veldoo.com";
+            window.location.href = "{{ route('homepage')}}";
         }
     })
     @endif

@@ -1,4 +1,9 @@
-@extends('master_admin.layouts.plans')
+@extends('master_admin.layouts.after_login')
+
+@section('header_menu_list')
+    @include('master_admin.includes.service_provider_detail_header_menu_list')
+@endsection
+
 @section('content')
 <div class="row m-0 w-100">
     <div class="col-lg-7 col-md-7 col-sm-12 col-12">
@@ -10,7 +15,6 @@
                                 <div class="row w-100 m-0">
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
-                                            <?php //dd($data); ?>
                                             <input type="text" class="form-control inputText" id="name" name="name" value="{{ $data['user']['name'] }}" placeholder="Service provider" readonly />
                                             <label for="name">Service provider name</label>
                                         </div>
@@ -42,25 +46,25 @@
                                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="address" name="address"  value="{{ $data['user']['street']}}"  readonly />
-                                            <label for="address">Street</label>
+                                            <label for="address">Service street</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="postcode" name="postcode" value="{{ $data['user']['zip']}}"   readonly />
-                                            <label for="postcode">Post code</label>
+                                            <label for="postcode">Service post code</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-6 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="usercity" name="usercity" value="{{ $data['user']['city']}}"   readonly />
-                                            <label for="usercity">City</label>
+                                            <label for="usercity">Service city</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-4 col-md-12 col-sm-12 col-12">
                                         <div class="form-group">
                                             <input type="text" class="form-control inputText" id="usercountry" name="usercountry" value="{{ $data['user']['country']}}"  readonly />
-                                            <label for="usercountry">Country</label>
+                                            <label for="usercountry">Service country</label>
                                         </div>
                                     </div>
                                     
