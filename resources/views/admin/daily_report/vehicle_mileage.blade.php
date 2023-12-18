@@ -12,24 +12,26 @@
 							<section class="addonTable sectionsform">
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
-									<form class="custom_form editForm" id="SearchForm">
+									{{ Form::open(array('url' => route('daily-report.vehicle_mileage_export'),'class'=>'custom_form editForm','id'=>'userCreate','enctype' => 'multipart/form-data')) }}
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="row w-100 m-0">
 													
 													<div class="col-lg-5 col-md-6 col-sm-6 col-12">
 														<div class="form-group">
-															<label for="startDate">Start Date</label>
-															<input type="date" class="form-control inputText" id="startDate" name="startDate" placeholder="start Date" value="DD-MM-SS" />
-														   
+															<?php
+															echo Form::label('start_date', 'Start Date',['class'=>'']);
+															echo Form::date('start_date',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Start Date']);
+															?>
 														</div>
 													</div>
 													
 													<div class="col-lg-5 col-md-6 col-sm-6 col-12">
 														<div class="form-group">
-															<label for="endDate">End Date</label>
-															<input type="date" class="form-control inputText" id="endDate" name="endDate" placeholder="End Date" value="DD-MM-SS" />
-														   
+															<?php
+															echo Form::label('end_date', 'End Date',['class'=>'']);
+															echo Form::date('end_date',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'End Date']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-2 col-md-12 col-sm-12 col-12 align-self-end">

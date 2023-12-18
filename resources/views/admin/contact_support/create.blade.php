@@ -12,29 +12,25 @@
 							<section class="addonTable sectionsform">
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
-									<form class="custom_form editForm " id="EditDriver">
+									{{ Form::open(array('url' => route( $route.'.store'),'class'=>'custom_form editForm','id'=>'sendEmail','enctype' => 'multipart/form-data')) }}
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="row w-100 m-0">
 													<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 														<div class="form-group">
-															<select type="text" class="form-select inputText" id="options" name="options">
-																<option value="">--Select at least one--</option>
-																<option value="users">Users</option>
-																<option value="drivers">Drivers</option>
-																<option value="Companies">Companies</option>
-															</select>
-
-															<label for="options">Users</label>
+															<?php
+															$typeArray = array('0' => '--Select at least one--', '1' => 'Users', '2' => 'Drivers', '3' => 'Companies');
+															echo Form::select('user', $typeArray,null,['class'=>'form-select inputText','required'=>true]);
+															echo Form::label('user', 'Users',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 														<div class="form-group">
-															<textarea  id="editor2" name="content"></textarea>
-															<script>
-																CKEDITOR.replace('content');
-															</script>
-															<label for="editor2">Message</label>
+															<?php
+															echo Form::textarea('message',null,['class'=>'form-control inputText ckeditor','required'=>true, 'placeholder' => 'Message']);
+															echo Form::label('message', 'Message',['class'=>'']);
+															?>
 														</div>
 													</div>
 													
@@ -50,7 +46,7 @@
 											</div>
 											
 										</div>
-									</form>
+									{{ Form::close() }}
 								</article>
 							</section>
 						</div>

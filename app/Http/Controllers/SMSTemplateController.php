@@ -18,12 +18,41 @@ class SMSTemplateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+	 
+	public function __construct(){
+		
+		$this->limit = 20;
+    }
+	 
     public function index(Request $request)
     {
-        $data['title'] = 'SMS Templates';
-        $data['action'] = 'SMS Templates';
-        $data['templates'] = SMSTemplate::where('service_provider_id',Auth::user()->id)->get();
-        return view('admin.sms-templates.index')->with($data);
+		$data = array();
+		$data = array('title' => 'List', 'action' => 'SMS Templates');
+		
+		$records = DB::table('sms_templates');
+		
+		$user_id = Auth::user()->id;
+		
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("title LIKE '%$text%' AND service_provider_id=$user_id");
+		}
+		
+		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+			$records->orderBy($request->input('orderby'), $request->input('order'));
+		} else {
+			$records->orderBy('id', 'desc');
+		}
+		
+		$data['records'] = $records->where(['service_provider_id'=>$user_id])->paginate($this->limit);
+		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] = $request->input('orderby');
+		$data['order'] = $request->input('order');
+        if ($request->ajax()) {
+            return view("admin.sms-templates.index_element")->with($data);
+        }
+		
+		return view('admin.sms-templates.index')->with($data);
     }
 
     /**
@@ -46,20 +75,20 @@ class SMSTemplateController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $this->validate($request, [
             'title' => 'required',
             'english_content' => 'required',
             'german_content' => 'required',
         ]);
 
-        DB::beginTransaction();
-        try 
+        $input = $request->except(['_method', '_token', 'submit']);
+        
+		try 
         {
-            $sms = new SMSTemplate();
-            $sms->fill(collect($request->all())->put('service_provider_id',Auth::user()->id));
-            $sms->save();    
-            DB::commit();
+            $input['service_provider_id'] = Auth::user()->id;
+			
+			$isuser = SMSTemplate::create($input);
+			
             return redirect()->route('sms-template.index')->with('success', 'Template created!');
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollBack();
@@ -109,13 +138,13 @@ class SMSTemplateController extends Controller
             'german_content' => 'required',
         ]);
 
-        DB::beginTransaction();
+        $input = $request->except(['_method', '_token', 'submit']);
         try 
         {
-            $sms = SMSTemplate::where('service_provider_id',Auth::user()->id)->find($id);
-            $sms->fill($request->all());
-            $sms->update();    
-            DB::commit();
+            $sms = SMSTemplate::where(['service_provider_id' => Auth::user()->id, 'id' => $id])->find($id);
+			
+			$sms->update($input);
+			
             return redirect()->route('sms-template.index')->with('success', 'Template updated!');
         } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollBack();

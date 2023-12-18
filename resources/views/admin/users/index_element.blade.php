@@ -13,10 +13,10 @@
 			@foreach ($records as $record)
 			
 				<tr>
-					<td><a style="color: #060F21" href="{{ route('users.show', $record->id) }}">{{ $record->first_name }}</a></td>
-					<td>{{ $record->last_name }}</td>
-					<td>{{ $record->country_code.' '.$record->phone }}</td>
-					<td>{{ $record->email }}</td>
+					<td class="whole-box-link"><a href="{{ route('users.show', $record->id) }}"></a>{{ $record->first_name }}</td>
+					<td class="whole-box-link"><a href="{{ route('users.show', $record->id) }}"></a>{{ $record->last_name }}</td>
+					<td class="whole-box-link"><a href="{{ route('users.show', $record->id) }}"></a>{{ $record->country_code.' '.$record->phone }}</td>
+					<td class="whole-box-link"><a href="{{ route('users.show', $record->id) }}"></a>{{ $record->email }}</td>
 					<td class="actionbtns">
 						<!--<a href="#" class="actionbtnsLinks"><img src="{{ URL::asset('public') }}/assets/images/veldoo/editpen.png" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>-->
 						<a href="javascript:void(0);" class="actionbtnsLinks delete_user" data-id="{{ $record->id }}"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>

@@ -10,7 +10,11 @@
 				<?php
 				$uri = Route::currentRouteName();
 				?>
-				<div class="col-lg-5 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+				@if($uri=='users.settings')
+					<div class="col-lg-6 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+				@else
+					<div class="col-lg-5 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+				@endif
 				@if($uri=='users.voucher' || $uri=='voucher.create')
 					<!--<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
@@ -39,7 +43,8 @@
 							<a class="nav-link" href="{{ route('push-notifications.index') }}">Notification</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>
+							<!--<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>-->
+							<a class="nav-link" href="">Promotion</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="">My Design</a>
@@ -121,7 +126,7 @@
 							<a class="nav-link {{ ($uri=='contact-support.index' ? 'active' : '') }}" href="{{ route('contact-support.index') }}">List</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {{ ($uri=='contact-support.create' ? 'active' : '') }}" href="{{ route('contact-support.create') }}">Add</a>
+							<a class="nav-link {{ ($uri=='contact-support.create' ? 'active' : '') }}" href="{{ route('contact-support.create') }}">Send</a>
 						</li>
 					</ul>
 				@endif
@@ -137,7 +142,11 @@
 					</ul>
 				@endif
 				</div>
-				<div class="col-lg-5 col-md-7 col-sm-5 col-5 align-self-center">
+				@if($uri=='users.settings')
+					<div class="col-lg-4 col-md-7 col-sm-5 col-5 align-self-center">
+				@else
+					<div class="col-lg-5 col-md-7 col-sm-5 col-5 align-self-center">
+				@endif
 					<div class="right_content_menu">
 						<div class="search">
 							<form class="search_form">
