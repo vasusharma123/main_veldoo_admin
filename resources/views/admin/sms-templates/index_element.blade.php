@@ -8,35 +8,23 @@
 			</tr>
 		</thead>
 		<tbody>
+			@foreach ($records as $record)
 			<tr>
-				<td class="text-center">1</td>
-				<td>Send OTP (create booking)</td>
+				<td class="text-center">{{ $record->id }}</td>
+				<td>{{ $record->title }}</td>
 				
 				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+					<a href="{{ route('sms-template.edit', $record->id) }}" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
 				</td>
 			</tr>
-			<tr>
-				<td class="text-center">2</td>
-				<td>Send OTP (create booking)</td>
-			   
-				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
-				</td>
-			</tr>
-			<tr>
-				<td class="text-center">3</td>
-				<td>Send OTP (create booking)</td>
-				
-				<td class="actionbtns">
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-					<a href="#" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
-				</td>
-			</tr>
-			
-			
+			@endforeach
+			@if(count($records) == 0)
+				<tr>
+					<td class="text-center" colspan="3">No Record Found</td>
+				</tr>
+			@endif
 		</tbody>
 	</table>
 </div>
+
+{{ $records->appends(Request::all())->links('vendor.pagination.bootstrap-4') }}

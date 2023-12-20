@@ -76,30 +76,35 @@ class ContactSupportController extends Controller
 		$rules = [
 			'message' => 'required',
 		];
+		
 		$request->validate($rules);
+		
 		$data = array('text' => $request->message);
+		
 		if(!empty($request->user) && $request->user==1){
 			$users=\App\User::whereIn('user_type',['1','2']);
-		 }elseif(!empty($request->user) && $request->user==2){
-				$users=\App\User::where('user_type',2);
-		 }elseif(!empty($request->user) && $request->user==3){
-			  $users=\App\User::where('user_type',1);
-		 }
-		  $users=$users->get();
-		 foreach($users as $email){
-					$res=Mail::send('admin.contact_support.contact_email', $data, function($message) use ($email) {
-					$message->to($email->email)->subject('Contact Support');
-					if(!empty($request->from)){
-						$message->from($request->from,'Haylup Admin');
-					}
-				});
-				 $insertDataArr=[
-					'user_id'=>$email->id,
-					'email'=>$email->email,
-					'message'=>$request->message
-					];
-				\App\Contact::create($insertDataArr);
+		}elseif(!empty($request->user) && $request->user==2){
+			$users=\App\User::where('user_type',2);
+		}elseif(!empty($request->user) && $request->user==3){
+			$users=\App\User::where('user_type',1);
+		}
+		
+		$users=$users->whereRaw("email!=''")->get();
+		
+		foreach($users as $email){
+			/* $res=Mail::send('admin.contact_support.contact_email', $data, function($message) use ($email) {
+				$message->to($email->email)->subject('Contact Support');
+				if(!empty($request->from)){
+					$message->from($request->from,'Haylup Admin');
 				}
+			}); */
+			$insertDataArr=[
+				'user_id'=>$email->id,
+				'email'=>$email->email,
+				'message'=>$request->message
+			];
+			\App\Contact::create($insertDataArr);
+		}
 		return back()->with('success', __('Message Sent Successfully!'));
     }
 

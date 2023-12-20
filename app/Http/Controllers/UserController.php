@@ -78,28 +78,30 @@ class UserController extends Controller
 	}
 
 	public function login(){
-		$breadcrumb = array('title'=>'Home','action'=>'Login');
-		$data = [];
-		$data = array_merge($breadcrumb,$data);
+		$data = array('page_title' => 'Login', 'action' => 'Login');
 		return view('admin.login')->with($data);
 	}
 
 
 	/* Service provider Login */
-	
-	public function spLogin(Request $request){
+
+	public function spLogin(Request $request)
+	{
 		$rules = [
 			'email' => 'required|email',
 			'password' => 'required|min:6'
 		];
 		$request->validate($rules);
 		$input = $request->all();
+		$remember_me = $request->has('remember') ? true : false;
 		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
-        if(auth()->attempt($whereData)){
-            return redirect()->route('users.dashboard');
-        } else{
+		if (auth()->attempt($whereData, $remember_me)) {
+			Auth::user()->syncRoles('Administrator');
+			return redirect()->route('users.dashboard');
+		} else {
 			Auth::logout();
-			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+			return redirect()->back()->withInput($input)->with('error', 'Please check your credentials and try again.');
+			// return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
 	}
 
