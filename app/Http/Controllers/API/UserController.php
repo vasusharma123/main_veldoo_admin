@@ -60,6 +60,7 @@ use Illuminate\Support\Facades\Validator;
 use Mail;
 use \stdClass;
 use App\SMSTemplate;
+use App\Expense;
 
 class UserController extends Controller
 {
@@ -2908,10 +2909,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
+		//dd(Auth::user());
 		$settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
-        $settingValue = json_decode($settings['value']);
+       
+		$settingValue = json_decode($settings['value']);
+		
 		try {
+			
 			$rideDetail = Ride::find($request->ride_id);
+			
 			$ride = Ride::find($request->ride_id);
 
 			if (!empty($request->note)) {
@@ -3112,6 +3118,29 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$ride->save();
+			$deduction = null;
+			$expense_ride_cost = null;
+			if($rideDetail->payment_type == 'Cash'){
+				$deduction = $rideDetail->ride_cost;
+				$type = 'deduction';
+				$type_detail = 'cash';
+			}else{
+				$expense_ride_cost =  $rideDetail->ride_cost;
+				$type = 'revenue';
+				$type_detail = $rideDetail->payment_type;
+			}
+			
+			$expense = new Expense();
+			$expense->driver_id = $rideDetail->driver_id;
+			$expense->type = $type;
+			$expense->type_detail = $type_detail;
+			$expense->ride_id = $rideDetail->id;
+			$expense->revenue =  $expense_ride_cost;
+			$expense->deductions =  $deduction;
+			$expense->date = Carbon::now()->format('Y-m-d');
+			$expense->service_provider_id = $rideDetail->service_provider_id;
+			$expense->save();
+			
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
@@ -7353,4 +7382,163 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['status' => 0, 'message' => $e->getMessage()], $this->warningCode);
 		}
 	}
+
+
+	public function getStatements(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			$rules = [
+				'driver_id' => 'required',
+				'type' => 'required',
+
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			} 
+			$userId = $request->driver_id;
+			$driverData =  User::where('id', $userId)->first();
+		    $service_provider_id  =$driverData->service_provider_id;
+			if($request->type == 'daily'){
+				
+				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','driver_id','service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
+				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				
+			}else if($request->type == 'weekly'){
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'driver_id','service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
+				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+				->paginate(10);
+				
+			}else if($request->type == 'monthly'){
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'driver_id','service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
+				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->orderBy('date','desc')
+				->groupBy(DB::raw('MONTH(date)'))
+				->paginate(10);
+				
+			}
+			
+			if (!empty($data)) {
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
+			} else {
+				return response()->json(['message' => 'Record Not found'], $this->successCode);
+			}
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+	public function getStatementDetail(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			$rules = [
+				'driver_id' => 'required',
+				'type' => 'required',
+				'date' => 'required',
+
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			} 
+			$userId = $request->driver_id;
+			$driverData =  User::where('id', $userId)->first();
+		    $service_provider_id  =$driverData->service_provider_id;
+			$detailArray = [];
+			if($request->type == 'weekly'){
+				$carbonDate = Carbon::parse($request->date);
+				$year = $carbonDate->year;
+				$weekNumber = $request->week_number;
+				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
+				->get()->toArray();
+				
+				$this->loopingForStatements($weeklyData,$detailArray);
+
+			}
+
+			if($request->type == 'monthly'){
+				$carbonDate = Carbon::parse($request->date);
+				$selectedYear = $carbonDate->year;
+				$month = $request->month;
+				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
+				->whereMonth('date', $month)
+				->get()->toArray();
+
+				$this->loopingForStatements($monthlyData,$detailArray);
+
+			}
+			if($request->type == 'daily'){
+				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
+				->where('date', $request->date)
+				->get()->toArray();
+				$this->loopingForStatements($dailyData,$detailArray);
+			}
+
+			if (!empty($detailArray)) {
+				$detailArray['driver_id'] = $userId;
+				$detailArray['type'] = $request->type;
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $detailArray], $this->successCode);
+			} else {
+				return response()->json(['message' => 'Record Not found'], $this->successCode);
+			}
+
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+
+	public function loopingForStatements($userData, &$detailArray)
+	{
+		try{
+			
+				foreach($userData as $single){
+					if($single['type'] == 'salary'){
+						$detailArray['salary'] =  $single['salary'];
+					}else if($single['type'] == 'revenue'){
+					
+						$this->createStatementData($single, $detailArray,'revenue');
+						
+					}else if($single['type'] == 'deduction'){
+						
+						$this->createStatementData($single, $detailArray,'deductions');
+					}
+					else if($single['type'] == 'expense'){
+						
+						$this->createStatementData($single, $detailArray,'amount');
+					}
+				}
+
+			} catch (\Illuminate\Database\QueryException $exception) {
+				$errorCode = $exception->errorInfo[1];
+				return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			} catch (\Exception $exception) {
+				return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			}
+					
+					
+	}
+
+
+public function createStatementData($single, &$detailArray,$type)
+{
+	try{
+		if (array_key_exists(strtolower($single['type_detail']) , $detailArray)) {
+			$detailArray[strtolower($single['type_detail'])] = $detailArray[strtolower($single['type_detail'])] + $single[$type];
+		}else{
+			$detailArray[strtolower($single['type_detail'])] =  $single[$type];
+		}
+	} catch (\Illuminate\Database\QueryException $exception) {
+		$errorCode = $exception->errorInfo[1];
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	} catch (\Exception $exception) {
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	}
+}
+
 }
