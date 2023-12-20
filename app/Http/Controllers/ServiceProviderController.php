@@ -20,7 +20,7 @@ use Illuminate\Validation\Rule;
 use App\Plan;
 use Illuminate\Support\Carbon;
 use App\PlanPurchaseHistory;
-
+use App\Mail\AccountVerificationEmail;
 
 class ServiceProviderController extends Controller
 {
@@ -89,10 +89,7 @@ class ServiceProviderController extends Controller
             $serviceProvider->is_email_verified_token = $token;
             $serviceProvider->save();
 
-            FacadesMail::send('email.emailVerificationEmail', ['token' => $token], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Email Verification Mail');
-            });
+            FacadesMail::to($request->email)->send(new AccountVerificationEmail($token));
             return redirect()->back()->with('success', __('Thank you for registering with Veldoo. Check your mail for a confirmation email.'));
         } catch (Exception $e) {
             Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
