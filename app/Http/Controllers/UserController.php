@@ -96,6 +96,7 @@ class UserController extends Controller
 		$remember_me = $request->has('remember') ? true : false;
 		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
 		if (auth()->attempt($whereData, $remember_me)) {
+			Auth::user()->syncRoles('Administrator');
 			return redirect()->route('users.dashboard');
 		} else {
 			Auth::logout();
