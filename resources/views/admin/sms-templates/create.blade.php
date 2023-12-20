@@ -13,14 +13,17 @@
 								@include('admin.layouts.flash-message')
 								<article class="container-fluid">
 									
-									<form class="custom_form editForm " id="EditDriver">
+									{{ Form::open(array('url' => route('sms-template.store'),'class'=>'custom_form editForm','id'=>'createTemplate','enctype' => 'multipart/form-data','autocomplete'=>"off",'role'=>"presentation")) }}
+									
 										<div class="row w-100 m-0 form_inside_row">
 											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 												<div class="row w-100 m-0">
 													<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 														<div class="form-group">
-															<input type="text" class="form-control inputText" id="name" name="name" placeholder="Template Title" />
-															<label for="name">SMS Title</label>
+															<?php
+															echo Form::text('title',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Template Title']);
+															echo Form::label('title', 'SMS Title',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-12 col-md-12 col-sm-12 col-12">
@@ -30,14 +33,18 @@
 													</div>
 													<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 														<div class="form-group">
-															<textarea type="text" class="form-control inputText" id="ENG" name="ENG" placeholder="SMS in English"></textarea>
-															<label for="ENG">SMS in English</label>
+															<?php
+															echo Form::textarea('english_content',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'SMS in English']);
+															echo Form::label('english_content', 'SMS in English',['class'=>'']);
+															?>
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-6 col-sm-6 col-12">
 														<div class="form-group">
-															<textarea type="text" class="form-control inputText" id="GRM" name="GRM" placeholder="SMS in German"></textarea>
-															<label for="GRM">SMS in German</label>
+															<?php
+															echo Form::textarea('german_content',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'SMS in German']);
+															echo Form::label('german_content', 'SMS in German',['class'=>'']);
+															?>
 														</div>
 													</div>
 													
@@ -53,7 +60,7 @@
 											</div>
 											
 										</div>
-									</form>
+									{{ Form::close() }}
 								</article>
 							</section>
 						</div>

@@ -63,7 +63,7 @@
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
-				<li class="nav-item w-100">
+				<!--<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create' || $uri=='payment-method.edit') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
 						<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
 						<span class="sidebarText">Payment method</span>
@@ -76,7 +76,7 @@
 						<span class="sidebarText">SMS</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-				</li>
+				</li>-->
 				<li class="nav-item w-100">
 					<a class="nav-link {{ ($uri=='daily-report.vehicle_mileage' ? 'active' : '') }}" href="{{ route('daily-report.vehicle_mileage') }}">
 						<img src="{{ asset('assets/images/veldoo/report.png') }}" class="img-fluid w-100 sidebarImgs" alt="Reports"/> 
@@ -91,13 +91,13 @@
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
-				<li class="nav-item w-100">
+				<!--<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='push-notifications.index' || $uri=='push-notifications.create') ? 'active' : '') }}" href="{{ route('push-notifications.index') }}">
 						<img src="{{ asset('assets/images/veldoo/push.png') }}" class="img-fluid w-100 sidebarImgs" alt="Push"/> 
 						<span class="sidebarText">Push Notification</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
-				</li>
+				</li>-->
 			</ul>
 		</article>
 	</section>

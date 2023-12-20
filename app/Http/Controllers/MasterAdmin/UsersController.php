@@ -35,7 +35,7 @@ class UsersController extends Controller
     }
 
     public function getSettings(){
-        $data = array('page_title' => 'Settings', 'action' => 'Settings');
+        $data = array('page_title' => 'Settings', 'action' => 'Settings','page' => 'master-setting');
         return view('master_admin.setting')->with($data);
 
     }

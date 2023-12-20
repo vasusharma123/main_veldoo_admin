@@ -27,9 +27,7 @@ class ServiceProviderController extends Controller
 
     public function register()
     {
-        $breadcrumb = array('title' => 'Home', 'action' => 'Register');
-        $data = [];
-        $data = array_merge($breadcrumb, $data);
+        $data = array('page_title' => 'Register', 'action' => 'Register');
         return view('service_provider.register')->with($data);
     }
 
@@ -48,14 +46,14 @@ class ServiceProviderController extends Controller
                 'required',
                 'email',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('user_type', 3);
+                    return $query->where(['user_type' => 3, 'is_email_verified' => 1]);
                 }),
             ],
             'country_code' => 'required',
             'phone' => [
                 'required',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('user_type', 3);
+                    return $query->where(['user_type' => 3, 'is_email_verified' => 1]);
                 }),
             ],
         ];
@@ -68,7 +66,7 @@ class ServiceProviderController extends Controller
             ]
         );
         try {
-            $serviceProvider = new User();
+            $serviceProvider = User::firstOrNew(['email' =>  request('email'), 'user_type' => 3]);
             $phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
             if (str_contains($phone_number, "+" . $request->country_code)) {
                 $phone_number = str_replace("+" . $request->country_code, '', $phone_number);

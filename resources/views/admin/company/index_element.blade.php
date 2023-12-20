@@ -3,13 +3,13 @@
 		<thead>
 			<tr>
 				<th>Owner Name</th>
-				<th>Owner Email</th>
+				<!--<th>Owner Email</th>-->
 				<th>Name</th>
 				<th>Email</th>
 				<th>Phone</th>
-				<th>State</th>
+				<!--<th>State</th>
 				<th>City</th>
-				<th>Country</th>
+				<th>Country</th>-->
 				<th>Status</th>
 				<th>Action</th>
 			</tr>
@@ -19,13 +19,13 @@
 			
 				<tr>
 					<td>{{ $record->name }}</td>
-					<td>{{ $record->email }}</td>
+					<!--<td>{{ $record->email }}</td>-->
 					<td>{{ $record->company_name }}</td>
 					<td>{{ $record->company_email }}</td>
 					<td>{{ $record->company_country_code.' '.$record->company_phone }}</td>
-					<td>{{ $record->company_state }}</td>
+					<!--<td>{{ $record->company_state }}</td>
 					<td>{{ $record->company_city }}</td>
-					<td>{{ $record->company_country }}</td>
+					<td>{{ $record->company_country }}</td>-->
 					<td class="switch_btn">
 						<label class="switch">
 							<input type="checkbox" class="change_status" value="{{ $record->company_status }}" data-id="{{ $record->company_id }}" {{ $record->company_status == 1 ? "checked" : "" }}>
@@ -41,7 +41,7 @@
 			@endforeach
 			@if(count($records) == 0)
 				<tr>
-					<td class="text-center" colspan="10">No Record Found</td>
+					<td class="text-center" colspan="6">No Record Found</td>
 				</tr>
 			@endif
 		</tbody>

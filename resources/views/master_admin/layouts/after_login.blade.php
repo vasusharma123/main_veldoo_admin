@@ -69,9 +69,6 @@
                                         <i class="bi bi-x-lg sidebarToggler">&nbsp; <span>Close</span></i>
                                         <article class="all_sidebar_box">
                                             <ul class="nav sidebarLists w-100">
-                                                @php
-                                                $currentUri = request()->path();
-                                                $uriWithoutSlashOrAsterisk = str_replace('/', '', $currentUri);                                                @endphp
                                                 <li class="nav-item w-100">
                                                     <a class="nav-link <?php if($page == 'master-dashboard') { echo "active";  }  ?>" href="/master-dashboard">
                                                         <img src="{{ asset('assets/imgs/dashboard.png')}}" class="img-fluid w-100 sidebarImgs" alt="dashboard" />
@@ -88,7 +85,7 @@
                                                 </li>
 
                                                 <li class="nav-item w-100">
-                                                    <a class="nav-link <?php if($uriWithoutSlashOrAsterisk == 'master-setting') { echo "active";  }  ?> " href="{{ route('master_admin.setting') }}">
+                                                    <a class="nav-link <?php if($page == 'master-setting') { echo "active";  }  ?> " href="{{ route('master_admin.setting') }}">
                                                         <img src="{{ asset('assets/imgs/setting.png')}}" class="img-fluid w-100 sidebarImgs" alt="Settings" />
                                                         <span class="sidebarText">Settings</span>
                                                         <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
