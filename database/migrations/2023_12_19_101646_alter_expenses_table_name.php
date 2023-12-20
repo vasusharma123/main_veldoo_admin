@@ -17,7 +17,7 @@ class AlterExpensesTableName extends Migration
             $table->double('salary', 8, 2)->nullable();
             $table->double('revenue', 8, 2)->nullable();
             $table->double('deductions', 8, 2)->nullable();
-            $table->date('date')-nullable();
+            $table->date('date')->nullable();
             $table->string('type_detail');
         });
     }
