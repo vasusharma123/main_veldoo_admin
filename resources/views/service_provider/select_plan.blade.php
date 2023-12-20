@@ -69,6 +69,7 @@
     $checkmarksImage = asset('service_provider_assets/imgs/checkmarks.png');
     $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
 @endphp
+<div class="content-wrapper">
 <section class="form_section p_form">
     <div class="art_form planArtform">
         <article class="container-fluid position-relative">
@@ -267,6 +268,7 @@
     </div>
 
 </section>
+</div>
 @endsection
 
 @section('script')
