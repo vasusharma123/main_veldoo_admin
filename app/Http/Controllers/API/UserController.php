@@ -7399,7 +7399,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} 
 			$userId = $request->driver_id;
 			$driverData =  User::where('id', $userId)->first();
+			if(!$driverData){
+				return response()->json(['message' => "Driver not found"], $this->warningCode);
+			}
 		    $service_provider_id  =$driverData->service_provider_id;
+			
 			if($request->type == 'daily'){
 				
 				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','driver_id','service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
@@ -7448,6 +7452,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			} 
 			$userId = $request->driver_id;
 			$driverData =  User::where('id', $userId)->first();
+			if(!$driverData){
+				return response()->json(['message' => "Driver not found"], $this->warningCode);
+			}
 		    $service_provider_id  =$driverData->service_provider_id;
 			$detailArray = [];
 			if($request->type == 'weekly'){
