@@ -2928,6 +2928,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			if (!empty($ride)) {
+				$cost = $rideDetail->ride_cost;
 				if(!empty($request->user_id)){
 					$userdata = User::find($request->user_id);
 					$user_id = $request->user_id;
@@ -3121,11 +3122,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$deduction = null;
 			$expense_ride_cost = null;
 			if($rideDetail->payment_type == 'Cash'){
-				$deduction = $rideDetail->ride_cost;
+				$deduction = $cost;
 				$type = 'deduction';
 				$type_detail = 'cash';
 			}else{
-				$expense_ride_cost =  $rideDetail->ride_cost;
+				$expense_ride_cost =  $cost;
 				$type = 'revenue';
 				$type_detail = $rideDetail->payment_type;
 			}
