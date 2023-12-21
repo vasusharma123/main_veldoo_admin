@@ -7462,7 +7462,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$year = $carbonDate->year;
 				$weekNumber = $request->week_number;
 				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
-				->get()->toArray();
+				->where('driver_id',$userId)->get()->toArray();
 				
 				$this->loopingForStatements($weeklyData,$detailArray);
 
@@ -7473,7 +7473,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$selectedYear = $carbonDate->year;
 				$month = $request->month;
 				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
-				->whereMonth('date', $month)
+				->whereMonth('date', $month)->where('driver_id',$userId)
 				->get()->toArray();
 
 				$this->loopingForStatements($monthlyData,$detailArray);
@@ -7481,7 +7481,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 			if($request->type == 'daily'){
 				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
-				->where('date', $request->date)
+				->where('date', $request->date)->where('driver_id',$userId)
 				->get()->toArray();
 				$this->loopingForStatements($dailyData,$detailArray);
 			}
