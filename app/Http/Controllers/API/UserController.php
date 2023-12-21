@@ -7389,8 +7389,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			DB::beginTransaction();
 			$rules = [
-				'driver_id' => 'required',
-				'type' => 'required',
+				'driver_id' => 'required|integer',
+				'type' => 'required|string',
 
 			];
 			$validator = Validator::make($request->all(), $rules);
@@ -7435,9 +7435,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			DB::beginTransaction();
 			$rules = [
-				'driver_id' => 'required',
-				'type' => 'required',
+				'driver_id' => 'required|integer',
+				'type' => 'required|string',
 				'date' => 'required',
+				'month' => 'required_if:type,monthly',
+				'week_number' => 'required_if:type,weekly',
 
 			];
 			$validator = Validator::make($request->all(), $rules);
