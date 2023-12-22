@@ -3122,26 +3122,42 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$ride->save();
 			$deduction = null;
 			$expense_ride_cost = null;
-			if($rideDetail->payment_type == 'Cash'){
-				Log::info('In rideStatusChange cash->'.$cost);
-				if (!empty($request->ride_cost)) {
-					$deduction = $request->ride_cost;
+			if($request->payment_type){
+					if($request->payment_type == 'Cash'){
+						Log::info('In request rideStatusChange cash->'.$cost);
+					if (!empty($request->ride_cost)) {
+						$deduction = $request->ride_cost;
+					}else{
+						$deduction = $cost;
+					}
+					
+					$type = 'deduction';
+					$type_detail = 'cash';
 				}else{
-					$deduction = $cost;
+					Log::info('In rideStatusChange else->'.$cost);
+					if (!empty($request->ride_cost)) {
+						$expense_ride_cost = $request->ride_cost;
+					}else{
+					$expense_ride_cost =  $cost;
+					}
+					$type = 'revenue';
+					$type_detail = $rideDetail->payment_type;
 				}
 				
-				$type = 'deduction';
-				$type_detail = 'cash';
 			}else{
-				Log::info('In rideStatusChange else->'.$cost);
-				if (!empty($request->ride_cost)) {
-					$expense_ride_cost = $request->ride_cost;
+				Log::info('In request payment  not ->');
+				if($rideDetail->payment_type == 'Cash'){
+					$type = 'deduction';
+					$deduction = $cost;
+					$type_detail = 'cash';
 				}else{
-				$expense_ride_cost =  $cost;
+					$expense_ride_cost =  $cost;
+					$type = 'revenue';
+					$type_detail = $rideDetail->payment_type;
 				}
-				$type = 'revenue';
-				$type_detail = $rideDetail->payment_type;
+				
 			}
+			
 			
 			$expense = new Expense();
 			$expense->driver_id = $rideDetail->driver_id;
