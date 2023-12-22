@@ -3124,12 +3124,21 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$expense_ride_cost = null;
 			if($rideDetail->payment_type == 'Cash'){
 				Log::info('In rideStatusChange cash->'.$cost);
-				$deduction = $cost;
+				if (!empty($request->ride_cost)) {
+					$deduction = $request->ride_cost;
+				}else{
+					$deduction = $cost;
+				}
+				
 				$type = 'deduction';
 				$type_detail = 'cash';
 			}else{
 				Log::info('In rideStatusChange else->'.$cost);
+				if (!empty($request->ride_cost)) {
+					$expense_ride_cost = $request->ride_cost;
+				}else{
 				$expense_ride_cost =  $cost;
+				}
 				$type = 'revenue';
 				$type_detail = $rideDetail->payment_type;
 			}
