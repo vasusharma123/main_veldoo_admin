@@ -2899,6 +2899,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideStatusChange(Request $request)
 	{
+		Log::info('In rideStatusChange method');
 		$logged_in_user = Auth::user();
 		$rules = [
 			'status' => 'required',
@@ -3122,10 +3123,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$deduction = null;
 			$expense_ride_cost = null;
 			if($rideDetail->payment_type == 'Cash'){
+				Log::info('In rideStatusChange cash->'.$cost);
 				$deduction = $cost;
 				$type = 'deduction';
 				$type_detail = 'cash';
 			}else{
+				Log::info('In rideStatusChange else->'.$cost);
 				$expense_ride_cost =  $cost;
 				$type = 'revenue';
 				$type_detail = $rideDetail->payment_type;
