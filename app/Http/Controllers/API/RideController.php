@@ -1428,8 +1428,11 @@ class RideController extends Controller
                         $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
-                                $query->orWhere('status', 0);
-                                $query->orWhere('driver_id', $userId);
+                                $query->where(function ($query) use ($userId) {
+                                    $query->orWhere('status', 0);
+                                    $query->orWhere('driver_id', $userId);
+                                })
+                                ->orWhere('status', -4);
                             })
                             ->where(['service_provider_id' => $user->service_provider_id])
                             ->orderBy('ride_time', $ride_order)->take($take)->skip($skip)->get();
