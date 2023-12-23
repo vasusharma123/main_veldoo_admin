@@ -21,6 +21,8 @@ use App\Plan;
 use Illuminate\Support\Carbon;
 use App\PlanPurchaseHistory;
 use App\Mail\AccountVerificationEmail;
+use App\Mail\SpLoginCredentials;
+use App\Mail\UpdateSettingsOrGoLive;
 
 class ServiceProviderController extends Controller
 {
@@ -342,15 +344,7 @@ class ServiceProviderController extends Controller
                     ],
                 ]);
 
-                FacadesMail::send('email.updateDriverDetailLinkToServiceProvider', ['token' => $token], function ($message) use ($verifyUser) {
-                    $message->to($verifyUser->email);
-                    $message->subject('Update Credentials Link');
-                });
-
-                FacadesMail::send('email.choosePlanEmail', ['token' => $token], function ($message) use ($verifyUser) {
-                    $message->to($verifyUser->email);
-                    $message->subject('Select Plan');
-                });
+                FacadesMail::to($verifyUser->email)->send(new UpdateSettingsOrGoLive($token));
             }
             // $data['user'] = $user;
             // $data['driver'] = $driver;
@@ -650,10 +644,7 @@ class ServiceProviderController extends Controller
                 $newPassword = Hash::make($randomString);
                 $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
                 if ($updated) {
-                    FacadesMail::send('email.loginCredential', ['userDetail' => $userDetail, 'password' => $randomString], function ($message) use ($userDetail) {
-                        $message->to($userDetail->email);
-                        $message->subject('New Login Credential Veldoo');
-                    });
+                    FacadesMail::to($userDetail->email)->send(new SpLoginCredentials($userDetail, $randomString));
                     return redirect('/thankyou');
                 }
             } else {
