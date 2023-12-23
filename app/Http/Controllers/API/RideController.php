@@ -396,7 +396,7 @@ class RideController extends Controller
                                 $query1->where(['status' => 1, 'waiting' => 1]);
                             });
                             $query->orWhere(function ($query1) use ($userId) {
-                                $query1->where('creator_id', $userId);
+                               // $query1->where('creator_id', $userId);
                                 $query1->where(['status' => -4]);
                             });
                         })->where(['service_provider_id' => $user->service_provider_id])->orderBy('ride_time', 'asc')->with(['user', 'driver', 'company_data', 'vehicle_category:id,car_type,car_image'])->paginate($this->limit);
@@ -642,7 +642,7 @@ class RideController extends Controller
                         $rides = Ride::select('id', 'note', 'pick_lat', 'pick_lng', 'pickup_address', 'dest_address', 'dest_lat', 'dest_lng', 'distance', 'passanger', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'user_id', 'driver_id', 'payment_type', 'alert_time', 'car_type', 'company_id', 'vehicle_id', 'parent_ride_id', 'created_at')->with(['user:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'driver:id,first_name,last_name,country_code,phone,current_lat,current_lng,image', 'company_data:id,name,logo,state,city,street,zip,country', 'car_data:id,model,vehicle_image,vehicle_number_plate,category_id', 'car_data.carType:id,car_type,car_image', 'vehicle_category:id,car_type,car_image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
-                                $query->where([['status', '=', 0]]);
+                                $query->where([['status', '=', 0]])->orwhere([['status', '=', -4]]);
                                 $query->orWhere(function ($query1) use ($userId) {
                                     $query1->where('driver_id', $userId);
                                     $query1->where(['status' => 1, 'waiting' => 1]);
@@ -1200,7 +1200,7 @@ class RideController extends Controller
                         $rides = Ride::select('id', 'pickup_address', 'dest_address', 'ride_cost', 'ride_time', 'ride_type', 'waiting', 'created_by', 'status', 'driver_id', 'payment_type', 'parent_ride_id', 'created_at', 'note', 'car_type')->with(['driver:id,first_name,last_name,country_code,phone,image'])
                         ->whereDate('rides.ride_time', $compareVariable, $startDate)
                             ->where(function ($query) use ($userId) {
-                                $query->where([['status', '=', 0]]);
+                                $query->where([['status', '=', 0]])->orWhere(['status', '=', -4]);
                                 $query->orWhere(function ($query1) use ($userId) {
                                     $query1->where('driver_id', $userId);
                                     $query1->where(['status' => 1, 'waiting' => 1]);
