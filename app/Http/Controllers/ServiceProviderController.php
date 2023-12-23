@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
 use App\PlanPurchaseHistory;
 use App\Mail\AccountVerificationEmail;
 use App\Mail\SpLoginCredentials;
+use App\Mail\TestPeriodExtended;
 use App\Mail\UpdateSettingsOrGoLive;
 
 class ServiceProviderController extends Controller
@@ -584,6 +585,35 @@ class ServiceProviderController extends Controller
             return view('service_provider.registration_finish')->with(['user_exist' => $user_exist]);
         }
         return abort(404);
+    }
+
+    public function extendTwoWeekTestPlan($token)
+    {
+        try {
+            $verifyUser = User::where('is_email_verified_token', $token)->first();
+            if (!is_null($verifyUser) && $verifyUser->is_email_verified == 1) {
+                $setting = Setting::where(['service_provider_id' => $verifyUser->id])->first();
+                if ($setting->is_test_plan_updated == 0) {
+                    $setting->is_test_plan_updated = 1;
+                    if($setting->demo_expiry <= Carbon::today()){
+                        $setting->demo_expiry = Carbon::today()->addDays(14);
+                    } else {
+                        $demo_expiry = Carbon::createFromFormat('Y-m-d h:i:s', $setting->demo_expiry);
+                        $setting->demo_expiry = $demo_expiry->addDays(14);
+                    }
+                    $setting->save();
+
+                    FacadesMail::to($verifyUser->email)->send(new TestPeriodExtended($token));
+                }
+                return redirect()->route('service-provider.register_step1', ['token' => $token]);
+            } else {
+                $message = 'Sorry your email cannot be identified.';
+                return redirect()->route('service-provider.register')->with('error', $message);
+            }
+        } catch (Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
+            return redirect()->route('service-provider.register_step1', ['token' => $token])->with('error', $e->getMessage());
+        }
     }
 
     public function selectPlan($token)
