@@ -124,7 +124,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
 	Route::get('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
 	Route::post('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
-	Route::get('logout',  ['as' => 'logout','uses' => 'UserController@logout']);
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
@@ -153,7 +152,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
 });
 
-Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
+Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:Administrator']], function(){
 	Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
 	Route::get('/drivers',  ['as'=>'users.drivers','uses'=>'UserController@driver']);
@@ -216,6 +215,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);
+	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
@@ -252,7 +252,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
 	Route::post('/delete_booking','Company\RidesController@delete_booking')->name('company.delete_booking');
-
+	Route::get('logout','Company\LoginController@logout')->name('company_logout');
 });
 
 Route::group(['prefix' => '{slug}','middleware' => 'guest_user'], function () {

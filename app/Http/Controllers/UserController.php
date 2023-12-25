@@ -1275,18 +1275,6 @@ class UserController extends Controller
 		}
 	}
 
-	public function logout(Request $request){
-        Session::flush();
-        Auth::logout();
-		$route = "adminLogin";
-		if ($request->has('company')) {
-			$route = "company_login";
-		} else if ($request->has('customer')) {
-			$route = "booking_taxisteinemann";
-		}
-        return redirect()->route($route);
-	}
-
 	/**
      * Created By Anil Dogra
      * Created At 09-08-2022
