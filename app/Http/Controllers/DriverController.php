@@ -9,10 +9,11 @@ use App\User;
 use App\Ride;
 use App\ServiceProviderDriver;
 use Carbon\Carbon;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class DriverController extends Controller
 {
+	protected $limit;
 
     public function __construct()
     {
@@ -20,19 +21,19 @@ class DriverController extends Controller
 	
 	public function index(Request $request)
 	{
+		$serviceProvider = Auth::user();
 		$this->limit = 20;
 		
 		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'List Drivers');
 		
-		$records = DB::table('users');
-		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status, is_master');
+		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('is_master' => $status));
 		}
-		
+
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
 			
@@ -43,13 +44,17 @@ class DriverController extends Controller
 			$text = $request->input('text');
 			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0");
 		}
-		
+
+		$records->whereHas('service_provider_driver',function($q){
+			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
+		});
+
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-		
+
 		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
@@ -68,8 +73,7 @@ class DriverController extends Controller
 		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'Regular Drivers');
 		
-		$records = DB::table('users');
-		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status, is_master');
+		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -86,6 +90,10 @@ class DriverController extends Controller
 			$text = $request->input('text');
 			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=0");
 		}
+
+		$records->whereHas('service_provider_driver',function($q){
+			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
+		});
 		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
@@ -111,8 +119,7 @@ class DriverController extends Controller
 		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'Master Drivers');
 		
-		$records = DB::table('users');
-		$records->selectRaw('id, first_name, last_name, email, phone, status, name, country_code, invoice_status, is_master');
+		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -135,6 +142,10 @@ class DriverController extends Controller
 		} else {
 			$records->orderBy('id', 'desc');
 		}
+
+		$records->whereHas('service_provider_driver',function($q){
+			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
+		});
 		
 		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0, 'is_master' => 1])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
@@ -167,8 +178,9 @@ class DriverController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request){
-		
+	public function store(Request $request)
+	{
+
 		$rules = [
 			'first_name' => 'required',
 			'last_name' => 'required',
@@ -178,49 +190,38 @@ class DriverController extends Controller
 			'password' => 'required|min:6',
 			'confirm_password' => 'required|min:6|same:password',
 		];
-		
+
 		$request->validate($rules);
-		
-		$input = $request->except(['_method', '_token']);
-		
-		try{
-			
-			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2])->first();
-			if(!empty($request->email)){
-				$userQuery2 = User::where(['email' => $request->email, 'user_type' => 2]);
-				$isUserEmail = $userQuery2->first();
-			}
-			
-			if(!empty($isUser)){
-				return back()->withErrors(['message' => 'Phone number already exists']);
-			}
-			
-			if(!empty($isUserEmail)){
-				return back()->withErrors(['message' => 'Email already exists']);
-			}
-			
+
+		$input = $request->except(['_method', '_token', 'country_code', 'phone']);
+
+		try {
 			$input['user_type'] = 2;
 			$input['status'] = 1;
-			
-			$isuser = User::create($input);
-			
-			if(!empty($request->image_tmp)){
-				$imgname = 'img-'.time().'.'.$request->image_tmp->extension();
-				
+
+			$isuser = User::updateOrCreate(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2], $input);
+
+			if (!empty($request->image_tmp)) {
+				$imgname = 'img-' . time() . '.' . $request->image_tmp->extension();
+
 				$isuser->image = Storage::disk('public')->putFileAs(
-					'drivers/'.$isuser->id.'/', $request->image_tmp, $imgname
+					'drivers/' . $isuser->id ,
+					$request->image_tmp,
+					$imgname
 				);
-				
+
 				$isuser->save();
 			}
-			
-			return back()->with('success', __('Created successfully!'));
-		}catch (\Illuminate\Database\QueryException $exception){
-			return back()->with('success', $exception->getMessage());
-		} catch(\Exception $exception){
-			return back()->with('success', $exception->getMessage());
+
+			ServiceProviderDriver::updateOrCreate(['service_provider_id' => Auth::user()->id, 'driver_id' => $isuser->id],[]);
+
+			return back()->with('success', __('Driver created successfully!'));
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return back()->with('error', $exception->getMessage());
+		} catch (\Exception $exception) {
+			return back()->with('error', $exception->getMessage());
 		}
-    }
+	}
 	
 	/**
      * Show the form for editing the specified resource.
@@ -232,8 +233,7 @@ class DriverController extends Controller
     {
 	    $breadcrumb = array('title'=>'Drivers','action'=>'Edit Driver');
 		$data = [];
-        $where = array('id' => $id);
-        $record = User::where($where)->first();
+        $record = User::find($id);
 		if(empty($record)){
 			return redirect()->route("drivers.index")->with('warning', 'Record not found!');
 		}
@@ -251,9 +251,10 @@ class DriverController extends Controller
      * @param  \App\Posts  $posts
      * @return \Illuminate\Http\Response
      */
-    // public function update(Request $request, Posts $posts)
-    public function update(Request $request, $id){
-		
+	// public function update(Request $request, Posts $posts)
+	public function update(Request $request, $id)
+	{
+
 		$rules = [
 			'first_name' => 'required',
 			'last_name' => 'required',
@@ -261,48 +262,43 @@ class DriverController extends Controller
 			'phone' => 'required',
 			'email' => 'required|email',
 		];
-		
-		if(!empty($request->password)){
+
+		if (!empty($request->password)) {
 			$rules['password'] = 'required|min:6';
 			$rules['confirm_password'] = 'required|min:6|same:password';
 		}
-		
+
 		$request->validate($rules);
 		$input = $request->except(['_method', '_token']);
-		
+
 		$input = $request->all();
-		
+
 		$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2])->first();
-		if(!empty($isUser) && $isUser->id != $id){
+		if (!empty($isUser) && $isUser->id != $id) {
 			return back()->withErrors(['message' => 'Phone number already exists']);
 		}
-		
-		$userQuery2 = User::where(['email' => $input['email'], 'user_type' => 2]);
-		$isUserEmail = $userQuery2->first();
-		
-		if(!empty($isUserEmail) && $isUserEmail->id != $id){
-			return back()->withErrors(['message' => 'Email already exists']);
-		}
-		
-		$udata = User::where('id', $id)->first();
-		
-		if(!empty($request->image_tmp)){
-			
-			if(!empty($udata->image)){
+
+		$udata = User::find($id);
+		$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
+		if (!empty($request->image_tmp)) {
+
+			if (!empty($udata->image)) {
 				Storage::disk('public')->delete($udata->image);
 			}
-			
-			$imgname = 'img-'.time().'.'.$request->image_tmp->extension();
-			
+
+			$imgname = 'img-' . time() . '.' . $request->image_tmp->extension();
+
 			$input['image'] = Storage::disk('public')->putFileAs(
-				'drivers/'.$udata->id.'/', $request->image_tmp, $imgname
+				'drivers/' . $udata->id,
+				$request->image_tmp,
+				$imgname
 			);
 		}
-		
+
 		$udata->update($input);
-		
+
 		return back()->with('success', trans('admin.Record updated!'));
-    }
+	}
 	
     public function destroy(Request $request)
     {

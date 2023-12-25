@@ -16,6 +16,7 @@
 	
 	<!-- Editor -->
 	<script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script>
+    @yield('css')
 </head>
 <body>
     <div class="main_wrapper">
