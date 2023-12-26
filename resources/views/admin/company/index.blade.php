@@ -61,26 +61,23 @@ $(function () {
 	
 	$('body').on('click', '.delete_user', function(){
         var id = $(this).attr('data-id');
-		//var text = $('.myInput').val();
 		var text = '';
-		//var orderby = $('input[name="orderBy"]').val();
 		var orderby = '';
-		//var order = $('input[name="order"]').val();
 		var order = '';
 		var page = $('input[name="page"]').val();
 		var status = 0;
         swal({
             title: "Are you sure?",
-            text: "You want to delete this Record !",
+            text: "It will permanently delete this company",
             type: "warning",
             timer: 3000,
             showCancelButton: true,
-            confirmButtonClass: "btn-danger",
+            // confirmButtonClass: "btn-danger",
+			confirmButtonColor: '#FF0000',
             confirmButtonText: "Yes, delete it!",
             cancelButtonText: "No, cancel !",
             closeOnConfirm: true,
             closeOnCancel: true,
-            closeOnConfirm: true,
             showLoaderOnConfirm: true,
         }, function (isConfirm) {
             if (isConfirm) {
@@ -92,20 +89,39 @@ $(function () {
         });
     });
 	
-	$('body').on('click', '.change_status', function(){
-		//var orderby = $('input[name="orderBy"]').val();
+	$('body').on('change', '.change_status', function(e){
+		var thiss = $(this);
 		var orderby = '';
-		//var order = $('input[name="order"]').val();
 		var order = '';
 		var page = $('input[name="page"]').val();
 		var status = $(this).val();
 		var id = $(this).attr('data-id');
-		
-		//var text = $('.myInput').val();
 		var text = '';
-		
-		$("#loading").fadeIn("slow");
-		ajaxCall(id, text, orderby, order, page, status, 'status');
+
+		swal({
+            title: "Are you sure?",
+            text: "You want to change the status !",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Yes, change it!",
+            cancelButtonText: "No, cancel !",
+            closeOnConfirm: true,
+            closeOnCancel: true,
+            showLoaderOnConfirm: true,
+        }, function (isConfirm) {
+            if (isConfirm) {
+				$("#loading").fadeIn("slow");
+				ajaxCall(id, text, orderby, order, page, status, 'status');
+            } else {
+				console.log(status);
+				if(status == 1){
+					thiss.prop('checked', true);
+				} else {
+					thiss.prop('checked', false);
+				}
+            }
+        });
 	});
 });
 function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {

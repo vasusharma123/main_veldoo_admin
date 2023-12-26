@@ -18,29 +18,29 @@ use Illuminate\Support\Facades\URL;
 class CompanyController extends Controller
 {
 
+	protected $limit;
+
     public function __construct()
     {
     }
 	
 	public function index(Request $request)
 	{
-		$this->limit = 20;
+		$this->limit = 10;
 		
 		$data = array();
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
 		
-		$records = DB::table('users');
+		$records = Company::with(['user']);
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
 			DB::table('companies')->where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
 		}
-		
-		$records->selectRaw("id, name, email, company_id, IFNULL((SELECT name FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_name, IFNULL((SELECT email FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_email, IFNULL((SELECT country_code FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_country_code, IFNULL((SELECT phone FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_phone, IFNULL((SELECT state FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_state, IFNULL((SELECT city FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_city, IFNULL((SELECT country FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_country, IFNULL((SELECT status FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_status");
-		
+	
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
+			Company::where(['id' => $request->id])->delete();
+			User::where(['company_id' => $request->id])->forceDelete();
 			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
 		}
 		
@@ -55,7 +55,7 @@ class CompanyController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 		
-		$data['records'] = $records->where(['deleted'=>0])->whereIn('user_type', [4,5])->paginate($this->limit);
+		$data['records'] = $records->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
 		$data['order'] = $request->input('order');

@@ -286,7 +286,7 @@ class DriverController extends Controller
 				$imgname
 			);
 		}
-
+		$input['is_active'] = $request->is_active??0;
 		$udata->update($input);
 
 		return back()->with('success', trans('admin.Record updated!'));
