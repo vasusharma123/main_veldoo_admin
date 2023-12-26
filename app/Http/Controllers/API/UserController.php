@@ -7617,15 +7617,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$detailArray['salary'] =  $single['salary'];
 					}else if($single['type'] == 'revenue'){
 					
-						$this->createStatementData($single, $detailArray,'revenue');
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
 						
 					}else if($single['type'] == 'deduction'){
 						
-						$this->createStatementData($single, $detailArray,'deductions');
+						$this->createStatementData($single, $detailArray,'deductions','deductions');
+
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
 					}
 					else if($single['type'] == 'expense'){
 						
-						$this->createStatementData($single, $detailArray,'amount');
+						$this->createStatementData($single, $detailArray,'amount','expense');
 					}
 				}
 
@@ -7640,14 +7642,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	}
 
 
-public function createStatementData($single, &$detailArray,$type)
+public function createStatementData($single, &$detailArray,$type,$method)
 {
 	try{
-		if (array_key_exists(strtolower($single['type_detail']) , $detailArray)) {
-			$detailArray[strtolower($single['type_detail'])] = $detailArray[strtolower($single['type_detail'])] + $single[$type];
+		
+		if (array_key_exists(strtolower($method) , $detailArray)) {
+			if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+				$detailArray[$method][strtolower($single['type_detail'])] = $detailArray[$method][strtolower($single['type_detail'])] + $single[$type];
+			}else{
+				$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
+			}
 		}else{
-			$detailArray[strtolower($single['type_detail'])] =  $single[$type];
+			$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
 		}
+		
 	} catch (\Illuminate\Database\QueryException $exception) {
 		$errorCode = $exception->errorInfo[1];
 		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
