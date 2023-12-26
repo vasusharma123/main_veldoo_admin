@@ -1555,9 +1555,15 @@ class UserController extends Controller
 			// OtpVerification
 			$expiryMin = config('app.otp_expiry_minutes');
 			$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
-			$otp = rand(1000, 9999);
+			$recordExist = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+			if ($recordExist && $recordExist->expiry >= Carbon::now()) {
+				$otp = $recordExist->otp;
+			} else {
+				$otp = rand(1000, 9999);
+			}
+			
 			OtpVerification::updateOrCreate(
-				['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")],
+				['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1],
 				['otp' => $otp, 'expiry' => $endTime, 'device_type' => $request->device_type??""]
 			);
 			$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is ".$otp);
@@ -1584,7 +1590,7 @@ class UserController extends Controller
 			$expiryMin = config('app.otp_expiry_minutes');
 			// OtpVerification
 			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+			$haveOtp = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp, 'user_type' => 1])->first();
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Invalid OTP'], $this->warningCode);
 			}

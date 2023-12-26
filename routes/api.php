@@ -26,8 +26,7 @@ Route::group(['namespace' => 'API'], function(){
 	Route::post('driverLogin', 'UserController@driverLogin');
 	Route::post('social_login', 'UserController@social_login');
 	Route::post('verifyOtp', 'UserController@verifyOtp');
-	Route::post('resend_otp', 'user\ProfileController@resendOtp');
-	Route::post('driver/resend_otp', 'UserController@resendOtp');
+	Route::post('resend_otp', 'UserController@resendOtp');
 	Route::get('driverClassList', 'UserController@driverClassList');
 	Route::get('complainedTypes', 'UserController@complainedTypes');
 	Route::get('rideTypes', 'UserController@rideTypes');
