@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API\user;
 
 use App\Http\Controllers\Controller;
+use App\OtpVerification;
 use App\PaymentMethod;
 use App\Setting;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +21,45 @@ class ProfileController extends Controller
     public function __construct(Request $request = null)
     {
     }
+
+    public function resendOtp(Request $request)
+	{
+
+		$rules = [
+			'country_code' => 'required',
+			'phone' => 'required',
+		];
+
+		$validator = Validator::make($request->all(), $rules);
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		}
+
+		$isUser = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		if (empty($isUser)) {
+			return response()->json(['message' => 'Your number is not registered with us.'], $this->warningCode);
+		}
+
+		$expiryMin = config('app.otp_expiry_minutes');
+
+		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
+
+		$recordExist = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 1])->first();
+		$otpverify = OtpVerification::firstOrNew(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'service_provider_id' => $request->service_provider_id, 'user_type' => 1]);
+		if ($recordExist && $recordExist->expiry >= Carbon::now()) {
+			$otp = $recordExist->otp;
+		} else {
+			$otp = rand(1000, 9999);
+			$otpverify->otp = $otp;
+			$otpverify->expiry = $endTime;
+		}
+		$otpverify->device_type = $request->device_type??"";
+        $otpverify->save();
+
+        $this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
+
+		return response()->json(['message' => 'The verification code has been sent', 'data' => ['otp' => $otp]], $this->successCode);
+	}
 
     public function my_profile(Request $request)
     {

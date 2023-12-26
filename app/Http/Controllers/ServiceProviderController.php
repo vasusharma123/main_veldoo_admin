@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\PaymentMethod;
 use App\Price;
-use App\ServiceProviderDriver;
 use App\Setting;
 use App\SMSTemplate;
 use App\User;
@@ -108,7 +107,7 @@ class ServiceProviderController extends Controller
                 $verifyUser->is_email_verified = 1;
                 $verifyUser->update();
 
-                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2]);
+                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2, 'service_provider_id' => $verifyUser->id]);
                 $driver->fill([
                     'email' => $verifyUser->email,
                     'first_name' => $verifyUser->first_name,
@@ -117,9 +116,7 @@ class ServiceProviderController extends Controller
                     'is_master' => 1
                 ]);
                 $driver->save();
-                $serviceProviderDriver = new ServiceProviderDriver();
-                $serviceProviderDriver->fill(['service_provider_id' => $verifyUser->id, 'driver_id' => $driver->id]);
-                $serviceProviderDriver->save();
+
                 //customer
                 // $user = new User();
                 // $user->fill([
@@ -368,8 +365,7 @@ class ServiceProviderController extends Controller
         if ($request->token) {
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
-                $serviceProviderDriverIds = ServiceProviderDriver::where(['service_provider_id' => $user_exist->id])->pluck('driver_id')->toArray();
-                $drivers = User::where(['user_type' => 2])->whereIn('id', $serviceProviderDriverIds)->get();
+                $drivers = User::where(['user_type' => 2])->where('service_provider_id', $user_exist->id)->get();
                 return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers, 'user_exist' => $user_exist]);
             }
         }
@@ -471,16 +467,14 @@ class ServiceProviderController extends Controller
                             'phone' => $phone_number,
                             'country_code_iso' => $input['country_code_iso'][$key]??"",
                             'is_master' => 1,
-                            'user_type' => 2
+                            'user_type' => 2,
+                            'service_provider_id' => $user_exist->id
                         ];
                         if(!empty($input['password'][$key])){
                             $driverArray['password'] = Hash::make($input['password'][$key]);
                         }
                         $driver->fill($driverArray);
                         $driver->save();
-                        $serviceProviderDriver = ServiceProviderDriver::firstOrNew(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
-                        $serviceProviderDriver->fill(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
-                        $serviceProviderDriver->save();
                     }
                 }
                 return redirect()->route('service-provider.register_step2', ['token' => $request->service_provider_token]);

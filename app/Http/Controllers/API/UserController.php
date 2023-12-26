@@ -407,7 +407,7 @@ class UserController extends Controller
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
-		$where = ['password' => request('password'), 'country_code' => request('country_code')];
+		$where = ['password' => request('password'), 'country_code' => request('country_code'), 'service_provider_id' => $request->service_provider_id];
 
 		// if (!empty($request->email)) {
 		// 	$where['email'] = $request->email;
@@ -432,8 +432,6 @@ class UserController extends Controller
 			if (!empty($request->socket_id)) {
 				$user['socket_id'] = $request->socket_id;
 			}
-
-			$user['service_provider_id'] = $request->service_provider_id;
 			if (!empty($request->app_version)) {
 				$user['app_version'] = $request->app_version;
 			}
@@ -479,57 +477,61 @@ class UserController extends Controller
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
+		try {
+			$expiryMin = config('app.otp_expiry_minutes');
+			$now = Carbon::now();
+			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 
-		$expiryMin = config('app.otp_expiry_minutes');
-		$now = Carbon::now();
-		$haveOtp = OtpVerification::where(['phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+			if (empty($haveOtp)) {
+				return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
+			}
 
-		if (empty($haveOtp)) {
-			return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
-		}
+			if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
+				return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
+			}
 
-		if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
-			return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
-		}
+			$userData = User::where(['country_code' => ltrim($request->country_code, "+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2, 'service_provider_id' => $haveOtp->service_provider_id])->first();
 
-		$haveOtp->delete();
-		$userData = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
+			$haveOtp->delete();
 
-		//$userData = User::where('phone', $request->phone)->first();
-		Auth::login($userData);
-		Auth::user()->AauthAcessToken()->delete();
-		$driverchoosecar = DriverChooseCar::where(['user_id' => $userData->id, 'logout' => 0])->orderBy('id', 'desc')->first();
-		if (!empty($driverchoosecar)) {
-			$driverchoosecar->logout = 1;
-			$driverchoosecar->save();
-		}
-		if (!empty($request->fcm_token)) {
-			$userData->fcm_token = $request->fcm_token;
-		}
-		if (!empty($request->device_type)) {
-			$userData->device_type = $request->device_type;
-		}
-		if (!empty($request->device_token)) {
-			$userData->device_token = $request->device_token;
-		}
-		if (!empty($request->app_version)) {
-			$userData->app_version = $request->app_version;
-		}
-		if (!empty($request->phone_model)) {
-			$userData->phone_model = $request->phone_model;
-		}
-		
-		$userData->verify = 1;
-		$userData->availability= 0;
-		$userData->updated_at = Carbon::now();
-		$userData->save();
-		$token =  $userData->createToken('auth')->accessToken;
-		$user = $this->getRafrenceUser($userData->id);
-		DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0, 'service_provider_id' => $user->service_provider_id]);
-		return response()->json(['message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
+			Auth::login($userData);
+			Auth::user()->AauthAcessToken()->delete();
+			$driverchoosecar = DriverChooseCar::where(['user_id' => $userData->id, 'logout' => 0])->orderBy('id', 'desc')->first();
+			if (!empty($driverchoosecar)) {
+				$driverchoosecar->logout = 1;
+				$driverchoosecar->save();
+			}
+			if (!empty($request->fcm_token)) {
+				$userData->fcm_token = $request->fcm_token;
+			}
+			if (!empty($request->device_type)) {
+				$userData->device_type = $request->device_type;
+			}
+			if (!empty($request->device_token)) {
+				$userData->device_token = $request->device_token;
+			}
+			if (!empty($request->app_version)) {
+				$userData->app_version = $request->app_version;
+			}
+			if (!empty($request->phone_model)) {
+				$userData->phone_model = $request->phone_model;
+			}
 
-		//return response()->json(['message' => 'Verified'], $this->successCode);
+			$userData->verify = 1;
+			$userData->availability = 0;
+			$userData->updated_at = Carbon::now();
+			$userData->save();
+			$token =  $userData->createToken('auth')->accessToken;
+			$user = $this->getRafrenceUser($userData->id);
+			DriverStayActiveNotification::updateOrCreate(['driver_id' => $user->id], ['last_activity_time' => Carbon::now(), 'is_availability_alert_sent' => 1, 'is_availability_changed' => 1, 'is_logout_alert_sent' => 0, 'service_provider_id' => $user->service_provider_id]);
+			return response()->json(['message' => 'Success', 'user' => $user, 'token' => $token], $this->successCode);
+		} catch (\Illuminate\Database\QueryException $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->errorCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->errorCode);
+		}
 	}
+
 	public function verifyOtp(Request $request)
 	{
 
@@ -737,8 +739,7 @@ class UserController extends Controller
 			}
 
 			$user = User::with(['driver_service_providers:id,name'])->where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
-			//print_r($user)
-			//$user=\App\User::where('phone',$request->phone)->where('country_code',$request->country_code)->first();
+			
 			if (!empty($user) && $user != null) {
 				return response()->json(['message' => 'You are already registered with this phone number', 'data' => $user], $this->successCode);
 			} else {
@@ -906,6 +907,7 @@ class UserController extends Controller
 		$rules = [
 			'country_code' => 'required',
 			'phone' => 'required',
+			'service_provider_id' => 'required'
 		];
 
 		$validator = Validator::make($request->all(), $rules);
@@ -913,55 +915,28 @@ class UserController extends Controller
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		}
 
-		$isUser = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")])->first();
+		$isUser = User::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2, 'service_provider_id' => $request->service_provider_id])->first();
 		if (empty($isUser)) {
 			return response()->json(['message' => 'Your number is not registered with us.'], $this->warningCode);
 		}
 
 		$expiryMin = config('app.otp_expiry_minutes');
-		$now = Carbon::now();
-
-		$haveOtp = OtpVerification::where(['phone' => $isUser->phone])->first();
-
-		/* if(!empty($haveOtp)){
-			if($now->diffInMinutes($haveOtp->updated_at)<$expiryMin){
-				return response()->json(['message'=>'Please wait 10 minutes since the previous code sent before resending a new verification code'], $this->warningCode);
-			}
-		} */
-
-		$otp = rand(1000, 9999);
-		$data = array('name' => $otp);
-
-		$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
-
-		/* 	$m = Mail::send('mail', $data, function($message) use ($request, $isUser) {
-			$message->to($isUser->email, 'OTP')->subject('OTP Verification Code');
-
-			if(!empty($request->from)){
-				$message->from($request->from, 'Haylup');
-			}
-		}); */
 
 		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 
-		$otpverify = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0")])->first();
-
-
-		if (!empty($otpverify)) {
-			$otpverify->otp = $otp;
-			$otpverify->expiry = $endTime;
+		$recordExist = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'service_provider_id' => $request->service_provider_id, 'user_type' => 2])->first();
+		$otpverify = OtpVerification::firstOrNew(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'service_provider_id' => $request->service_provider_id, 'user_type' => 2]);
+		if ($recordExist && $recordExist->expiry >= Carbon::now()) {
+			$otp = $recordExist->otp;
 		} else {
-			$otpverify = new OtpVerification();
-			$otpverify->phone = ltrim($request->phone, "0");
-			$otpverify->country_code = ltrim($request->country_code,"+");
+			$otp = rand(1000, 9999);
 			$otpverify->otp = $otp;
 			$otpverify->expiry = $endTime;
 		}
 		$otpverify->device_type = $request->device_type??"";
 		$otpverify->save();
-
-		$dataArr = array('otp' => $otp);
-		return response()->json(['message' => 'The verification code has been sent', 'data' => $dataArr], $this->successCode);
+		$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
+		return response()->json(['message' => 'The verification code has been sent', 'data' => ['otp' => $otp]], $this->successCode);
 	}
 
 	#FORGET PASSWORD

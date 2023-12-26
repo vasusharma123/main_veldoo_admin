@@ -10,7 +10,6 @@ use App\Company;
 use App\PaymentMethod;
 use App\Price;
 use App\Ride;
-use App\ServiceProviderDriver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -329,7 +328,6 @@ class CompanyController extends Controller
             // $currentTime = Carbon::now();
             // User::where('id', $request->user_id)->delete();
             // Ride::where(['driver_id' => $request->user_id])->where('ride_time', '>', $currentTime)->update(['driver_id' => null]);
-            ServiceProviderDriver::where(['service_provider_id'=>Auth::user()->id,'driver_id'=>$request->user_id])->delete();
             DB::commit();
             return response()->json(['status' => 1, 'message' => __('The driver has been deleted.')]);
         } catch (\Exception $exception) {

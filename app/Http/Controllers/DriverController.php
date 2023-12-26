@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Ride;
-use App\ServiceProviderDriver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,17 +44,13 @@ class DriverController extends Controller
 			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0");
 		}
 
-		$records->whereHas('service_provider_driver',function($q){
-			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
-		});
-
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {
 			$records->orderBy('id', 'desc');
 		}
 
-		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => Auth::user()->id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -91,17 +86,13 @@ class DriverController extends Controller
 			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=0");
 		}
 
-		$records->whereHas('service_provider_driver',function($q){
-			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
-		});
-		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-		
-		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0, 'is_master' => 0])->paginate($this->limit);
+
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 0, 'service_provider_id' => Auth::user()->id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -143,11 +134,7 @@ class DriverController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 
-		$records->whereHas('service_provider_driver',function($q){
-			$q->where('service_provider_drivers.service_provider_id',Auth::user()->id);
-		});
-		
-		$data['records'] = $records->where(['user_type'=>2, 'deleted'=>0, 'is_master' => 1])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 1,  'service_provider_id' => Auth::user()->id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -196,10 +183,17 @@ class DriverController extends Controller
 		$input = $request->except(['_method', '_token', 'country_code', 'phone']);
 
 		try {
+			$userExists = User::where(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
+
+			if(!empty($userExists)){
+				return back()->withErrors(['message' => 'Phone number already exists']);
+			}
+
 			$input['user_type'] = 2;
 			$input['status'] = 1;
+			$input['service_provider_id'] = Auth::user()->id;
 
-			$isuser = User::updateOrCreate(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2], $input);
+			$isuser = User::create($input);
 
 			if (!empty($request->image_tmp)) {
 				$imgname = 'img-' . time() . '.' . $request->image_tmp->extension();
@@ -212,8 +206,6 @@ class DriverController extends Controller
 
 				$isuser->save();
 			}
-
-			ServiceProviderDriver::updateOrCreate(['service_provider_id' => Auth::user()->id, 'driver_id' => $isuser->id],[]);
 
 			return back()->with('success', __('Driver created successfully!'));
 		} catch (\Illuminate\Database\QueryException $exception) {
@@ -273,7 +265,7 @@ class DriverController extends Controller
 
 		$input = $request->all();
 
-		$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2])->first();
+		$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
 		if (!empty($isUser) && $isUser->id != $id) {
 			return back()->withErrors(['message' => 'Phone number already exists']);
 		}
@@ -302,13 +294,11 @@ class DriverController extends Controller
 	
     public function destroy(Request $request)
     {
-        // dd($request->all());
         DB::beginTransaction();
         try {
-            // $currentTime = Carbon::now();
-            // User::where('id', $request->user_id)->delete();
-            // Ride::where(['driver_id' => $request->user_id])->where('ride_time', '>', $currentTime)->update(['driver_id' => null]);
-            ServiceProviderDriver::where(['service_provider_id'=>Auth::user()->id,'driver_id'=>$request->user_id])->delete();
+            $currentTime = Carbon::now();
+            User::where('id', $request->user_id)->delete();
+            Ride::where(['driver_id' => $request->user_id])->where('ride_time', '>', $currentTime)->update(['driver_id' => null]);
             DB::commit();
             return response()->json(['status' => 1, 'message' => __('The driver has been deleted.')]);
         } catch (\Exception $exception) {
