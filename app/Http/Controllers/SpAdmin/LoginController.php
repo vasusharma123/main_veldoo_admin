@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Company;
+namespace App\Http\Controllers\SpAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -14,16 +13,10 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
-    {
-        Auth::logout();
-        return view('company.login');
-    }
 
     public function logout(Request $request)
     {
-        Session::flush();
         Auth::logout();
-        return redirect()->route("company_login");
+        return redirect()->route('adminLogin');
     }
 }

@@ -61,11 +61,7 @@ class SendNotificationJob implements ShouldQueue
 
 		if ($itemData->receiver==2 || $itemData->receiver==3) 
         {
-            $android_driver = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->whereHas('service_provider_driver',function($service_provider_driver)
-            {
-                $service_provider_driver->where('service_provider_id',Auth::user()->id);
-
-            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+            $android_driver = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','android')->where('service_provider_id',Auth::user()->id)->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
 
             foreach ($android_driver as $key => $android_drive) 
             {
@@ -95,11 +91,7 @@ class SendNotificationJob implements ShouldQueue
 
 		if ($itemData->receiver==2 || $itemData->receiver==3) 
         {
-            $ios_drivers = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->whereHas('service_provider_driver',function($service_provider_driver)
-            {
-                $service_provider_driver->where('service_provider_id',Auth::user()->id);
-
-            })->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
+            $ios_drivers = User::whereNotNull('device_token')->whereIn('user_type',$user_type)->where('device_type','ios')->where('service_provider_id',Auth::user()->id)->where('deleted',0)->whereNull('deleted_at')->paginate(50, ['*'], 'page', $current_page);
 
             foreach ($ios_drivers as $key => $ios_driver) 
             {
