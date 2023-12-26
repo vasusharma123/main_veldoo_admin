@@ -5405,6 +5405,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
+			$rideDetailNew = $rideDetail;
 			$all_ride_ids = [$request->ride_id];
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
@@ -5513,6 +5514,80 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 0;
 				}
 				$ride->save();
+
+				// update ride expenses table
+
+				
+				if (!empty($request->payment_type)) {
+					$expenseData = Expense::where('ride_id', $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
+					$columnsToUpdate = [];
+					if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
+					{
+						// payment type same check amount change
+						if (!empty($request->ride_cost)) {
+
+							if(strtolower($request->payment_type) == 'cash'){
+								$columnsToUpdate['revenue'] = $request->ride_cost;
+							}else{
+								$columnsToUpdate['revenue'] =  $request->ride_cost;
+								$columnsToUpdate['deductions']  = $request->ride_cost;
+							}
+							
+						}
+
+					}else{
+						// payment method different
+						if (!empty($request->ride_cost)) {
+							 // ride cost also differ
+							if(strtolower($request->payment_type) == 'cash'){
+								$columnsToUpdate['revenue'] = $request->ride_cost;
+								$columnsToUpdate['type']  = 'revenue';
+								$columnsToUpdate['type_detail'] = 'cash';
+								$columnsToUpdate['deductions'] = null;
+							}else{
+								$columnsToUpdate['revenue'] =  $request->ride_cost;
+								$columnsToUpdate['deductions'] = $request->ride_cost;
+								$columnsToUpdate['type'] = 'deduction';
+								$columnsToUpdate['type_detail'] = $request->payment_type;
+							}
+						}else{
+							// ride cost same
+							if(strtolower($request->payment_type) == 'cash'){
+								$columnsToUpdate['type'] = 'revenue';
+								$columnsToUpdate['type_detail'] = 'cash';
+							}else{
+								$columnsToUpdate['type'] = 'deduction';
+								$columnsToUpdate['type_detail'] = $request->payment_type;
+							}
+							
+						}
+						
+
+					}
+					//dd($columnsToUpdate);
+					$expenseData->update($columnsToUpdate);
+				}else{
+					
+					if (!empty($request->ride_cost)) {
+						$expenseData = Expense::where('ride_id', )->whereIn('type',['deduction','revenue'])->first();
+						$columnsToUpdate = [];
+						if(strtolower($rideDetailNew->payment_type == 'cash')){
+								$columnsToUpdate['revenue'] = $request->ride_cost;
+								$columnsToUpdate['type'] = 'revenue';
+								$columnsToUpdate['type_detail'] = 'cash';
+
+						}else{
+							$columnsToUpdate['deduction'] = $request->ride_cost;
+							$columnsToUpdate['revenue'] = $request->ride_cost;
+							$columnsToUpdate['type'] = 'deduction';
+						}
+						$expenseData->update($columnsToUpdate);
+					}
+
+				}
+
+				
+
 			}
 
 			// if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
@@ -7523,15 +7598,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$detailArray['salary'] =  $single['salary'];
 					}else if($single['type'] == 'revenue'){
 					
-						$this->createStatementData($single, $detailArray,'revenue');
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
 						
 					}else if($single['type'] == 'deduction'){
 						
-						$this->createStatementData($single, $detailArray,'deductions');
+						$this->createStatementData($single, $detailArray,'deductions','deductions');
+
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
 					}
 					else if($single['type'] == 'expense'){
 						
-						$this->createStatementData($single, $detailArray,'amount');
+						$this->createStatementData($single, $detailArray,'amount','expense');
 					}
 				}
 
@@ -7546,14 +7623,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	}
 
 
-public function createStatementData($single, &$detailArray,$type)
+public function createStatementData($single, &$detailArray,$type,$method)
 {
 	try{
-		if (array_key_exists(strtolower($single['type_detail']) , $detailArray)) {
-			$detailArray[strtolower($single['type_detail'])] = $detailArray[strtolower($single['type_detail'])] + $single[$type];
+		
+		if (array_key_exists(strtolower($method) , $detailArray)) {
+			if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+				$detailArray[$method][strtolower($single['type_detail'])] = $detailArray[$method][strtolower($single['type_detail'])] + $single[$type];
+			}else{
+				$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
+			}
 		}else{
-			$detailArray[strtolower($single['type_detail'])] =  $single[$type];
+			$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
 		}
+		
 	} catch (\Illuminate\Database\QueryException $exception) {
 		$errorCode = $exception->errorInfo[1];
 		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
