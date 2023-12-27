@@ -25,12 +25,36 @@ class PushNotificationController extends Controller
 		$this->limit = Config::get('limit');
    	}
 
-    public function index(Request $request)
-    {
-		$data['title'] = "Send Notification to driver or users";
-		$data['action'] = "Send Notification to driver or users";
-		$data['notifications'] = PushNotification::where('service_provider_id',Auth::user()->id)->orderBy('created_at','desc')->get();
-	    return view("admin.{$this->folder}.index")->with($data);
+    public function index(Request $request){
+		
+		$this->limit = 20;
+		
+		$data = array();
+		$data = array('title' => 'Drivers', 'action' => 'List Drivers');
+		
+		$records = DB::table('push_notifications');
+		
+		$user_id = Auth::user()->id;
+		if(!empty($request->input('text'))){
+			$text = $request->input('text');
+			$records->whereRaw("(title LIKE '%$text%' OR description LIKE '%$text%') AND service_provider_id=$user_id");
+		}
+		
+		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+			$records->orderBy($request->input('orderby'), $request->input('order'));
+		} else {
+			$records->orderBy('id', 'desc');
+		}
+		
+		$data['records'] = $records->where(['service_provider_id'=>$user_id])->paginate($this->limit);
+		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] = $request->input('orderby');
+		$data['order'] = $request->input('order');
+        if ($request->ajax()) {
+            return view("admin.{$this->folder}.index_element")->with($data);
+        }
+		
+		return view("admin.{$this->folder}.index")->with($data);
     }
 
     /**
@@ -80,7 +104,7 @@ class PushNotificationController extends Controller
 		}
 		$total_page = ceil($total_page/100);
 		// dd($total_page);
-		$data = collect($request->all())->forget(['image','_token'])->put('total_page',$total_page)->put('current_page',1)->put('service_provider_id',Auth::user()->id)->toArray();
+		$data = collect($request->all())->forget(['image','_token','submit'])->put('total_page',$total_page)->put('current_page',1)->put('service_provider_id',Auth::user()->id)->toArray();
 		$notification = new PushNotification;
 		$notification->fill($data);
 		$notification->save();

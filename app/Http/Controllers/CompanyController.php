@@ -42,7 +42,7 @@ class CompanyController extends Controller
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
 			
-			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
+			DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
 		}
 		
 		if(!empty($request->input('text'))){
