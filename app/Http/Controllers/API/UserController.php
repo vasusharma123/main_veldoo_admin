@@ -7717,7 +7717,8 @@ public function logHours(Request $request)  {
 		$rules = [
 			'driver_id' => 'required|integer',
 			'date' => 'required|date_format:Y-m-d',
-			'hours' => 'required|integer'
+			'hours' => 'required|integer',
+			'service_provider_id' => 'required|integer'
 
 		];
 		$validator = Validator::make($request->all(), $rules);
@@ -7729,7 +7730,7 @@ public function logHours(Request $request)  {
 		if(!$driverData){
 			return response()->json(['message' => "Driver not found"], $this->warningCode);
 		}
-		$service_provider_id  =$driverData->service_provider_id;
+		$service_provider_id  =$request->service_provider_id;
 		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->whereDate('date', $request->date)->first();
 		if($salaryData){
 		  $expenseId = $salaryData->id;
