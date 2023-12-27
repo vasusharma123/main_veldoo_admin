@@ -61,6 +61,7 @@ use Mail;
 use \stdClass;
 use App\SMSTemplate;
 use App\Expense;
+use App\Salary;
 
 class UserController extends Controller
 {
@@ -3159,9 +3160,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				
 			}
-			
-			
-			$expense = new Expense();
+
+			$expense = new Expense();	
 			$expense->driver_id = $rideDetail->driver_id;
 			$expense->type = $type;
 			$expense->type_detail = $type_detail;
@@ -3171,6 +3171,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$expense->date = Carbon::now()->format('Y-m-d');
 			$expense->service_provider_id = $rideDetail->service_provider_id;
 			$expense->save();
+
+			$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
+			
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'revenue'){
+					$percentage = $salaryDetail->rate;
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = ($percentage * $expense_ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
+				}
+			}
+
 			
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
@@ -7611,10 +7631,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	public function loopingForStatements($userData, &$detailArray)
 	{
 		try{
-			
 				foreach($userData as $single){
+
 					if($single['type'] == 'salary'){
-						$detailArray['salary'] =  $single['salary'];
+						$this->createStatementData($single, $detailArray,'salary','salary');
+
 					}else if($single['type'] == 'revenue'){
 					
 						$this->createStatementData($single, $detailArray,'revenue','revenue');
@@ -7646,15 +7667,57 @@ public function createStatementData($single, &$detailArray,$type,$method)
 {
 	try{
 		
-		if (array_key_exists(strtolower($method) , $detailArray)) {
-			if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
-				$detailArray[$method][strtolower($single['type_detail'])] = $detailArray[$method][strtolower($single['type_detail'])] + $single[$type];
+		if($type == 'salary'){
+			if (array_key_exists(strtolower($method) , $detailArray)) {
+
+				if($single['type_detail'] == 'revenue'){
+					if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+						$detailArray[$method]['revenue'] = $detailArray[$method]['revenue'] + $single[$type];
+					}else{
+						$detailArray[$method]['revenue'] =  $single[$type];
+					}
+					
+				}else{
+					$decoded = json_decode($single['type_detail']);
+					$decoded_type_detail = $decoded->type_detail;
+					$decoded_hours = $decoded->hours;
+					
+					if (array_key_exists('hourly' , $detailArray[$method])) {
+						$detailArray[$method]['hourly'] = $detailArray[$method]['hourly'] + $single[$type];
+						$detailArray[$method]['hours'] = $detailArray[$method]['hours'] + $decoded_hours;
+					}else{
+						$detailArray[$method]['hourly'] =  $single[$type];
+						$detailArray[$method]['hours'] =  $decoded_hours;
+					}
+
+				}
+
+			}else{
+				$type_detail = strtolower($single['type_detail']);
+				if($type_detail == 'revenue'){
+					$detailArray[$method]['revenue'] =  $single[$type];
+				}else{
+					$decoded = json_decode($type_detail);
+					$decoded_type_detail = $decoded->type_detail;
+					$decoded_hours = $decoded->hours;
+					$detailArray[$method]['hourly'] =  $single[$type];
+					$detailArray[$method]['hours'] = $decoded_hours;
+				}
+				
+			}
+		}else{
+			if (array_key_exists(strtolower($method) , $detailArray)) {
+				if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+					$detailArray[$method][strtolower($single['type_detail'])] = $detailArray[$method][strtolower($single['type_detail'])] + $single[$type];
+				}else{
+					$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
+				}
 			}else{
 				$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
 			}
-		}else{
-			$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
 		}
+		
+		
 		
 	} catch (\Illuminate\Database\QueryException $exception) {
 		$errorCode = $exception->errorInfo[1];
@@ -7662,6 +7725,89 @@ public function createStatementData($single, &$detailArray,$type,$method)
 	} catch (\Exception $exception) {
 		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 	}
+}
+
+public function logHours(Request $request)  {
+	try{
+			
+		
+		DB::beginTransaction();
+		$rules = [
+			'driver_id' => 'required|integer',
+			'date' => 'required|date_format:Y-m-d',
+			'hours' => 'required|integer'
+
+		];
+		$validator = Validator::make($request->all(), $rules);
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		} 
+		$userId = $request->driver_id;
+		$driverData =  User::where('id', $userId)->first();
+		if(!$driverData){
+			return response()->json(['message' => "Driver not found"], $this->warningCode);
+		}
+		$service_provider_id  =$driverData->service_provider_id;
+		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->whereDate('date', $request->date)->first();
+		if($salaryData){
+		  $expenseId = $salaryData->id;
+		  $salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'hourly'){
+					$hourRate = $salaryDetail->rate;
+					$amount = $hourRate * $request->hours;
+				}
+
+				$amount = $hourRate * $request->hours;
+				$jsonData = json_encode(['type_detail' => 'hourly', 'hours' => $request->hours]);
+				$updated = Expense::where('id',$expenseId)->update(['type_detail' =>  $jsonData, 'salary' => $amount ]);
+				if($updated){
+					DB::commit();
+					return response()->json(['success' => true, 'message' => 'Hours updated successfully.'], $this->successCode);
+
+				}
+			}
+
+
+		}else{
+			$expense = new Expense();	
+			$expense->driver_id = $userId;
+			$expense->type = 'salary';
+			$jsonData = json_encode(['type_detail' => 'hourly', 'hours' => $request->hours]);
+			$expense->type_detail = $jsonData;
+			$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'hourly'){
+					$hourRate = $salaryDetail->rate;
+					$amount = $hourRate * $request->hours;
+					$expense->salary =  $amount;
+				}
+
+			}
+			//dd($salaryDetail);
+			$expense->date = $request->date;
+			$expense->service_provider_id = $service_provider_id;
+			$saved = $expense->save();
+			DB::commit();
+			$lastInsertedId = $expense->id;
+			if($saved){
+				return response()->json(['success' => true, 'message' => 'Hours Logged successfully.'], $this->successCode);
+			}
+			
+		}
+
+	}catch (\Illuminate\Database\QueryException $exception) {
+		DB::rollBack();
+		$errorCode = $exception->errorInfo[1];
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	} catch (\Exception $exception) {
+		DB::rollBack();
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	}
+	
 }
 
 }
