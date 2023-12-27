@@ -1,91 +1,142 @@
-	@include('admin.layouts.head')
-	@include('admin.layouts.header1')
- <!-- Main wrapper - style you can find in pages.scss -->
-    <!-- ============================================================== -->
-    <section id="wrapper">
-		@if(!empty($setting['admin_background']) && file_exists('storage/'.$setting['admin_background']))
-			<div class="login-register" style="background-image:url({{ config('app.url_public').'/'.$setting['admin_background'] }});">
-		@else
-			<div class="login-register" style="background-image:url({{ asset('assets/images/background/login-register.jpg')}});">
-		@endif
-			<a href="javascript:void(0)" class="text-center db">
-				@if(!empty($setting['admin_logo']) && file_exists('storage/'.$setting['admin_logo']))
-					<img src="{{ config('app.url_public').'/'.$setting['admin_logo'] }}" alt="user" alt="homepage" class="dark-logo" style="max-width: 150px;" /> 
-				@else
-					<img src="{{ asset('/assets/images/logo-icon.png')}}" alt="homepage" />
-				@endif
-				@if(!empty($setting['admin_sidebar_logo']) && file_exists('storage/'.$setting['admin_sidebar_logo']))
-					<br><img src="{{ config('app.url_public').'/'.$setting['admin_sidebar_logo'] }}" width="128" height="19" class="hide" alt="Home">
-				@else
-					<br><img src="{{ asset('/assets/images/logo-text.png')}}" class="hide" alt="Home">
-				@endif
-			</a>
-            <div class="login-box card" style=" height:400px;overflow-y: scroll;">
-                <div class="card-body">
-					@include('admin.layouts.flash-message')
-					
-					{{ Form::open(array('url' => 'spLogin','class'=>'form-horizontal form-material','id'=>'loginform')) }}
-                        <h3 class="box-title m-b-20">Log In</h3>
-                        <div class="form-group ">
-                            <div class="col-xs-12">
-                                <input class="form-control" name="email" type="text" required="" placeholder="Email"> </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-xs-12">
-                                <input class="form-control" name="password" type="password" required="" placeholder="Password"> </div>
-                        </div>
-                         <div class="form-group">
-                            {{-- <div class="col-xs-12">
-                                <select name="user_type" class="form-control">
-                                    <option value="">Select Role</option>
-                                    <option value="3">Super Admin</option>
-                                     <option value="4">Company</option>
-                                </select>
-                            </div> --}}
-                        <div class="form-group row">
-                            <div class="col-md-12 font-14">
-                                <div class="checkbox checkbox-primary pull-left p-t-0">
-                                    <input id="checkbox-signup" type="checkbox">
-                                    <label for="checkbox-signup"> Remember me </label>
-                                </div> <a href="{{ route('password.request') }}" class="text-dark pull-right"><!-- <i class="fa fa-lock m-r-5"></i> --> Forgot Password?</a> </div>
-                        </div>
-                        <div class="form-group text-center m-t-20">
-                            <div class="col-xs-12">
-                                <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
+@extends('layouts.service_provider_registration')
+
+@section('css')
+@endsection
+
+@section('content')
+    <div class="main_wrapper">
+
+        <div class="main_content">
+
+            <section class="login_form_section">
+
+                <article class="login_form_container container-fluid">
+
+                    <div class="row">
+
+                        <div class="login_form_content col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+
+                            <div class="login_form_box_cover">
+
+                                <form class="login_form" action="{{ route('spLogin') }}" method="post" autocomplete="off">
+                                    @csrf
+                                    <div class="form-row">
+
+                                        <div class="col-12 p-0">
+
+                                            <img src="{{ asset('service_provider_assets/imgs/brand_logo.png') }}"
+                                                alt="Logo" class="img-fluid logo_img" />
+
+                                            <div class="form_title text-center">
+                                                <h4 class="sub_title">Log in</h4>
+                                                <p class="tagline">Please login to continue</p>
+                                                <hr class="divider_form" />
+                                            </div>
+                                            <!-- /Form Title -->
+
+                                        </div>
+                                        <!-- /Col -->
+
+                                        <div class="col-12">
+
+                                            <div class="form-group position-relative has_validation">
+                                                <label class="form-lable">Username / Email</label>
+                                                <div class="field position-relative">
+                                                    <!-- <input type="tel" id="phone" class="form-control loginField" placeholder="Enter Number" aria-label="Phone Number" required> -->
+                                                    <input type="email" name="email" class="form-control loginField"
+                                                        placeholder="Enter username or email"
+                                                        value="{{ old('email') }}"required />
+                                                    <img src="{{ asset('service_provider_assets/imgs/envelope.png') }}"
+                                                        class="img-fluid loginFieldIcon" alt="Email envelope" />
+                                                </div>
+                                                @error('email')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                                <!-- <p class="erro d-none mb-0">Please enter valid email address...</p> -->
+                                            </div>
+
+
+                                            <div class="form-group position-relative has_validation">
+                                                <label class="form-lable">Password</label>
+                                                <div class="field position-relative">
+                                                    <input type="password" name="password" class="form-control loginField"
+                                                        placeholder="Enter Password" id="passwordField" required />
+                                                    <img src="{{ asset('service_provider_assets/imgs/password_lock.png') }}"
+                                                        class="img-fluid loginFieldIcon" alt="Password Lock" />
+                                                    <img src="{{ asset('service_provider_assets/imgs/see_password.png') }}"
+                                                        class="img-fluid loginFieldIcon password_icon"
+                                                        alt="Password Lock" onclick="showHidePassword()"/>
+                                                </div>
+                                                @error('password')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                @enderror
+                                                <p class="erro d-none mb-0">Invalid email or password. Try again or click
+                                                    Forgot password to reset it.</p>
+                                            </div>
+
+                                            <div class="form-group position-relative">
+                                                <div class="option_fields">
+                                                    <div class="form-check d-flex w-100 align-items-center">
+                                                        <input class="form-check-input form_checkbox" type="checkbox" name="remember"
+                                                            value="1" id="remember_me">
+                                                        <label class="form-check-label form-lable w-100" for="remember_me">
+                                                            Remember Me
+                                                            <a href="#" class="link_hyper">Forgot Password?</a>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group position-relative">
+                                                <button type="submit" class="btn submit_btn submitBtnAction w-100 ">
+                                                    <span class="btn_text">Log in</span>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                        <!-- /Col -->
+
+                                    </div>
+                                    <!-- /Form Row -->
+
+                                </form>
+
                             </div>
+                            <!-- /Login Form Box Cover -->
+
                         </div>
-                        <div class="form-group text-center m-t-20">
-                            <div class="col-xs-12">
-                                <a href="{{url('register')}}" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Register</a>
-                            </div>
-                        </div>
-                    {{ Form::close() }}
-                </div>
-            </div>
+                        <!-- /Login Form Content -->
+
+                    </div>
+
+                </article>
+
+            </section>
+            <!-- /Login Form Section -->
+
         </div>
-    </section>
-    <!-- ============================================================== -->
-    <!-- End Wrapper -->
-	@include('admin.layouts.footer1')
-	 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>   
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/jquery.validate.min.js"></script>   
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>  
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.17.0/dist/additional-methods.min.js"></script>
-<link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
-    <script type="text/javascript">
-   $(document).ready(function () {
-	$('#loginform').validate({
-            rules: {
-                email:{
-					required: true,
-                    email: true
-					},
-                password: "required",
-                user_type: "required",
-               
+        <!-- /Main Content -->
+
+    </div>
+@endsection
+
+@section('script')
+    <script>
+        @if (Session::has('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: "{{ Session::get('error') }}"
+            })
+        @endif
+
+        function showHidePassword() {
+            var x = document.getElementById("passwordField");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
             }
-            
-        });
-	});
-</script>
+        }
+    </script>
+@endsection

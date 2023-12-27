@@ -33,7 +33,6 @@ use Exception;
 use App\Price;
 use App\Vehicle;
 use App\SMSTemplate;
-use App\ServiceProviderDriver;
 use App\Page;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\GuestRegisterRequest;
@@ -78,28 +77,30 @@ class UserController extends Controller
 	}
 
 	public function login(){
-		$breadcrumb = array('title'=>'Home','action'=>'Login');
-		$data = [];
-		$data = array_merge($breadcrumb,$data);
+		$data = array('page_title' => 'Login', 'action' => 'Login');
 		return view('admin.login')->with($data);
 	}
 
 
 	/* Service provider Login */
-	
-	public function spLogin(Request $request){
+
+	public function spLogin(Request $request)
+	{
 		$rules = [
 			'email' => 'required|email',
 			'password' => 'required|min:6'
 		];
 		$request->validate($rules);
 		$input = $request->all();
+		$remember_me = $request->has('remember') ? true : false;
 		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
-        if(auth()->attempt($whereData)){
-            return redirect()->route('users.dashboard');
-        } else{
+		if (auth()->attempt($whereData, $remember_me)) {
+			Auth::user()->syncRoles('Administrator');
+			return redirect()->route('users.dashboard');
+		} else {
 			Auth::logout();
-			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
+			return redirect()->back()->withInput($input)->with('error', 'Please check your credentials and try again.');
+			// return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
 		}
 	}
 
@@ -180,7 +181,7 @@ class UserController extends Controller
 		{
 			$data['booking_count'] = Ride::where('service_provider_id',Auth::user()->id)->count();
 			$data['rider_count'] = User::where('user_type',1)->where('service_provider_id',Auth::user()->id)->count();
-			$data['driver_count'] = ServiceProviderDriver::where('service_provider_id',Auth::user()->id)->count();
+			$data['driver_count'] = ser::where('user_type',2)->where('service_provider_id',Auth::user()->id)->count();
 			$data['past_booking_count']=Ride::whereDate('ride_time','<',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
 			$data['companies_registered']=User::where('user_type',4)->where('service_provider_id',Auth::user()->id)->count();
 			$data['current_booking_count']=Ride::whereDate('ride_time','=',Carbon::today())->where('service_provider_id',Auth::user()->id)->count();
@@ -451,11 +452,6 @@ class UserController extends Controller
 				});
 				//DB::commit();
 				return back()->with('success', 'User created!');
-			} else {
-				$serviceProviderDriver = new ServiceProviderDriver();
-				$serviceProviderDriver->fill(['driver_id'=>$user->id,'service_provider_id'=>Auth::user()->id]);
-				$serviceProviderDriver->save();
-				return back()->with('success', 'Driver created!');
 			}
 		} catch (\Illuminate\Database\QueryException $exception) {
 			//DB::rollBack();
@@ -891,12 +887,7 @@ class UserController extends Controller
         */
         // dd(Auth::user()->id);
 		if ($request->ajax()) {
-			$users = ServiceProviderDriver::where(['service_provider_id'=>Auth::user()->id])->with('user:id,first_name,is_master,last_name,email,phone,status,name,country_code')->get();
-			$data = $users->pluck('user')->flatten();
-            if(isset($data[0]) && empty($data[0]))
-            {
-                $data = [];
-            }
+			$data = User::select('id','first_name','is_master','last_name','email','phone','status','name','country_code')->where(['user_type' => 2, 'service_provider_id' => Auth::user()->id])->get();
 			// $data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 			// <a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 			return Datatables::of($data)
@@ -1273,18 +1264,6 @@ class UserController extends Controller
 		}
 	}
 
-	public function logout(Request $request){
-        Session::flush();
-        Auth::logout();
-		$route = "adminLogin";
-		if ($request->has('company')) {
-			$route = "company_login";
-		} else if ($request->has('customer')) {
-			$route = "booking_taxisteinemann";
-		}
-        return redirect()->route($route);
-	}
-
 	/**
      * Created By Anil Dogra
      * Created At 09-08-2022
@@ -1345,62 +1324,4 @@ class UserController extends Controller
 		}
 	}
 
-	public function checkDriverByPhone(Request $request)
-	{
-		DB::beginTransaction();
-		try {
-			$rules = [
-				'phone' => 'required',
-				'country_code' => 'required',
-			];
-			$validator = Validator::make($request->all(), $rules);
-			if ($validator->fails()) {
-				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
-			}
-			$driver = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
-			if ($driver)
-			{
-				$checkDriverAdded = ServiceProviderDriver::where(['driver_id'=>$driver->id,'service_provider_id'=>Auth::user()->id])->first();
-				if ($checkDriverAdded) {
-					DB::commit();
-					return response()->json(['status' => 2, 'message' => 'Driver already added'], $this->successCode);
-				}
-				else
-				{
-					DB::commit();
-					return response()->json(['status' => 1, 'message' => 'Driver Found','driver'=>$driver], $this->successCode);
-				}
-			}
-			else
-			{
-				DB::commit();
-				return response()->json(['status' => 0, 'message' => 'Driver not found'], $this->successCode);
-			}
-		} catch (\Exception $e) {
-			DB::rollback();
-			// something went wrong
-			return response()->json(['status'=>2,'message' => $e->getMessage()], $this->warningCode);
-		}
-	}
-
-	public function addDriverServiceProvider($id)
-	{
-		DB::beginTransaction();
-		try {
-			$checkDriverAdded = ServiceProviderDriver::where(['driver_id'=>$id,'service_provider_id'=>Auth::user()->id])->first();
-			if (!$checkDriverAdded) {
-				$driver =  new ServiceProviderDriver();
-				$driver->fill(['driver_id'=>$id,'service_provider_id'=>Auth::user()->id]);
-				$driver->save();
-			}
-
-			DB::commit();
-			return back()->with('success', 'Driver added!');
-
-		} catch (\Exception $e) {
-			DB::rollback();
-			// something went wrong
-			return back()->with('error', $exception->getMessage());
-		}
-	}
 }

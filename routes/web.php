@@ -76,31 +76,31 @@ Route::group(['middleware' => 'locale'], function(){
 	Route::post('/change-locale',  ['uses' => 'PageController@changeLocale'])->name('changeLocale');
 });
 
-// Route::get('note/{slug}', 'TopicController@note');
-########		PUBLIC URL END			#########
+/* Service provider registration start*/
+
+Route::get('/register',  ['as'=>'service-provider.register','uses'=>'ServiceProviderController@register']);
+Route::post('/service-provider/register_submit',  ['as'=>'service-provider.register_submit', 'uses'=>'ServiceProviderController@register_submit']);
+Route::get('/service-provider/verify/{token}',  ['as'=>'serviceProviderVerify','uses'=>'ServiceProviderController@serviceProviderVerify']);
+Route::get('service-provider/register_step1',  ['as'=>'service-provider.register_step1','uses'=>'ServiceProviderController@register_step1']);
+Route::post('service-provider/register_step1_submit',  ['as'=>'service-provider.register_step1_submit','uses'=>'ServiceProviderController@register_step1_submit']);
+Route::get('service-provider/register_step2',  ['as'=>'service-provider.register_step2','uses'=>'ServiceProviderController@register_step2']);
+Route::post('service-provider/register_step2_submit',  ['as'=>'service-provider.register_step2_submit','uses'=>'ServiceProviderController@register_step2_submit']);
+Route::get('service-provider/register_step3',  ['as'=>'service-provider.register_step3','uses'=>'ServiceProviderController@register_step3']);
+Route::post('service-provider/register_step3_submit',  ['as'=>'service-provider.register_step3_submit','uses'=>'ServiceProviderController@register_step3_submit']);
+Route::get('service-provider/registration_finish',  ['as'=>'service-provider.registration_finish','uses'=>'ServiceProviderController@registration_finish']);
+Route::get('/service-provider/extendTwoWeekTestPlan/{token}',  ['as'=>'service-provider.extendTwoWeekTestPlan', 'uses'=>'ServiceProviderController@extendTwoWeekTestPlan']);
+Route::get('/service-provider/select-plan/{token}',  ['as'=>'selectPlan','uses'=>'ServiceProviderController@selectPlan']);
+Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
+Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser');
+Route::get('/thankyou',  ['as'=>'thankyou','uses'=>'ServiceProviderController@thankyou']);
+
+/* Service provider registration end*/
 
 Route::group(['middleware' => 'guest'], function(){
 	// Route::get('/about',  ['as'=>'about','uses'=>'PageController@about_front']);
     Route::get('/admin',  ['as'=>'adminLogin','uses'=>'UserController@login']);
-	Route::post('/spLogin',  ['uses'=>'UserController@spLogin']);
+	Route::post('/spLogin',  ['as' => 'spLogin', 'uses'=>'UserController@spLogin']);
     Route::post('/doLogin',  ['uses'=>'UserController@doLogin']);
-    Route::get('/register',  ['as'=>'service-provider.register','uses'=>'ServiceProviderController@register']);
-    Route::post('/service-provider/register_submit',  ['as'=>'service-provider.register_submit', 'uses'=>'ServiceProviderController@register_submit']);
-	Route::get('/service-provider/verify/{token}',  ['as'=>'serviceProviderVerify','uses'=>'ServiceProviderController@serviceProviderVerify']);
-	Route::get('service-provider/register_step1',  ['as'=>'service-provider.register_step1','uses'=>'ServiceProviderController@register_step1']);
-	Route::post('service-provider/register_step1_submit',  ['as'=>'service-provider.register_step1_submit','uses'=>'ServiceProviderController@register_step1_submit']);
-	Route::get('service-provider/register_step2',  ['as'=>'service-provider.register_step2','uses'=>'ServiceProviderController@register_step2']);
-	Route::post('service-provider/register_step2_submit',  ['as'=>'service-provider.register_step2_submit','uses'=>'ServiceProviderController@register_step2_submit']);
-	Route::get('service-provider/register_step3',  ['as'=>'service-provider.register_step3','uses'=>'ServiceProviderController@register_step3']);
-	Route::post('service-provider/register_step3_submit',  ['as'=>'service-provider.register_step3_submit','uses'=>'ServiceProviderController@register_step3_submit']);
-	Route::get('service-provider/registration_finish',  ['as'=>'service-provider.registration_finish','uses'=>'ServiceProviderController@registration_finish']);
-	Route::get('/service-provider/select-plan/{token}',  ['as'=>'selectPlan','uses'=>'ServiceProviderController@selectPlan']);
-	Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
-	Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser');
-	Route::get('/thankyou',  ['as'=>'thankyou','uses'=>'ServiceProviderController@thankyou']);
-
-
-
 	
 	Route::get('/verify/{email}',  ['as'=>'verify','uses'=>'UserController@verify']);
 	Route::post('/verifyOtp',  ['uses'=>'UserController@verifyOtp']);
@@ -124,7 +124,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('dashboard',  ['as' => 'users.dashboard', 'uses' => 'UserController@dashboard']);
 	Route::get('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
 	Route::post('my-profile',  ['as' => 'my-profile', 'uses' => 'UserController@myProfile']);
-	Route::get('logout',  ['as' => 'logout','uses' => 'UserController@logout']);
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
@@ -153,7 +152,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
 });
 
-Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administrator'], function(){
+Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:Administrator']], function(){
 	Route::get('/booking/{id}/user','BookingController@userDetail');
 	//driver driver/edit
 	Route::get('/drivers',  ['as'=>'users.drivers','uses'=>'UserController@driver']);
@@ -188,6 +187,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::post('vehicle-type/delete','VehicleTypeController@destroy');
     Route::post('company/delete','CompanyController@destroy');
 	Route::post('company/change_status','CompanyController@change_status');
+	Route::patch('company/admin_profile_update/{id}','CompanyController@admin_profile_update')->name('company.admin_profile_update');
 	Route::post('driver/driver_master_status','UserController@driver_change_status');
 	Route::post('users/invoice_status','UserController@invoice_change_status');
 	Route::post('vehicle/delete','VehicleController@destroy');
@@ -216,6 +216,7 @@ Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Administ
 	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);
+	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
@@ -252,7 +253,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('/ride_booking_update','Company\RidesController@ride_booking_update')->name('company.ride_booking_update');
 	Route::post('/cancel_booking','Company\RidesController@cancel_booking')->name('company.cancel_booking');
 	Route::post('/delete_booking','Company\RidesController@delete_booking')->name('company.delete_booking');
-
+	Route::get('logout','Company\LoginController@logout')->name('company_logout');
 });
 
 Route::group(['prefix' => '{slug}','middleware' => 'guest_user'], function () {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\PaymentMethod;
 use App\Price;
-use App\ServiceProviderDriver;
 use App\Setting;
 use App\SMSTemplate;
 use App\User;
@@ -20,16 +19,17 @@ use Illuminate\Validation\Rule;
 use App\Plan;
 use Illuminate\Support\Carbon;
 use App\PlanPurchaseHistory;
-
+use App\Mail\AccountVerificationEmail;
+use App\Mail\SpLoginCredentials;
+use App\Mail\TestPeriodExtended;
+use App\Mail\UpdateSettingsOrGoLive;
 
 class ServiceProviderController extends Controller
 {
 
     public function register()
     {
-        $breadcrumb = array('title' => 'Home', 'action' => 'Register');
-        $data = [];
-        $data = array_merge($breadcrumb, $data);
+        $data = array('page_title' => 'Register', 'action' => 'Register');
         return view('service_provider.register')->with($data);
     }
 
@@ -48,14 +48,14 @@ class ServiceProviderController extends Controller
                 'required',
                 'email',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('user_type', 3);
+                    return $query->where(['user_type' => 3, 'is_email_verified' => 1]);
                 }),
             ],
             'country_code' => 'required',
             'phone' => [
                 'required',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('user_type', 3);
+                    return $query->where(['user_type' => 3, 'is_email_verified' => 1]);
                 }),
             ],
         ];
@@ -68,7 +68,7 @@ class ServiceProviderController extends Controller
             ]
         );
         try {
-            $serviceProvider = new User();
+            $serviceProvider = User::firstOrNew(['email' =>  request('email'), 'user_type' => 3]);
             $phone_number = str_replace(' ', '', ltrim($request->phone, "0"));
             if (str_contains($phone_number, "+" . $request->country_code)) {
                 $phone_number = str_replace("+" . $request->country_code, '', $phone_number);
@@ -91,10 +91,7 @@ class ServiceProviderController extends Controller
             $serviceProvider->is_email_verified_token = $token;
             $serviceProvider->save();
 
-            FacadesMail::send('email.emailVerificationEmail', ['token' => $token], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Email Verification Mail');
-            });
+            FacadesMail::to($request->email)->send(new AccountVerificationEmail($token));
             return redirect()->back()->with('success', __('Thank you for registering with Veldoo. Check your mail for a confirmation email.'));
         } catch (Exception $e) {
             Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
@@ -110,7 +107,7 @@ class ServiceProviderController extends Controller
                 $verifyUser->is_email_verified = 1;
                 $verifyUser->update();
 
-                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2]);
+                $driver = User::firstOrNew(['country_code' => $verifyUser->country_code, 'phone' => $verifyUser->phone, 'user_type' => 2, 'service_provider_id' => $verifyUser->id]);
                 $driver->fill([
                     'email' => $verifyUser->email,
                     'first_name' => $verifyUser->first_name,
@@ -119,9 +116,7 @@ class ServiceProviderController extends Controller
                     'is_master' => 1
                 ]);
                 $driver->save();
-                $serviceProviderDriver = new ServiceProviderDriver();
-                $serviceProviderDriver->fill(['service_provider_id' => $verifyUser->id, 'driver_id' => $driver->id]);
-                $serviceProviderDriver->save();
+
                 //customer
                 // $user = new User();
                 // $user->fill([
@@ -347,15 +342,7 @@ class ServiceProviderController extends Controller
                     ],
                 ]);
 
-                FacadesMail::send('email.updateDriverDetailLinkToServiceProvider', ['token' => $token], function ($message) use ($verifyUser) {
-                    $message->to($verifyUser->email);
-                    $message->subject('Update Credentials Link');
-                });
-
-                FacadesMail::send('email.choosePlanEmail', ['token' => $token], function ($message) use ($verifyUser) {
-                    $message->to($verifyUser->email);
-                    $message->subject('Select Plan');
-                });
+                FacadesMail::to($verifyUser->email)->send(new UpdateSettingsOrGoLive($token));
             }
             // $data['user'] = $user;
             // $data['driver'] = $driver;
@@ -378,8 +365,7 @@ class ServiceProviderController extends Controller
         if ($request->token) {
             $user_exist = User::where(['is_email_verified_token' => $request->token])->first();
             if ($user_exist) {
-                $serviceProviderDriverIds = ServiceProviderDriver::where(['service_provider_id' => $user_exist->id])->pluck('driver_id')->toArray();
-                $drivers = User::where(['user_type' => 2])->whereIn('id', $serviceProviderDriverIds)->get();
+                $drivers = User::where(['user_type' => 2])->where('service_provider_id', $user_exist->id)->get();
                 return view('service_provider.register_step1')->with(['token' => $input['token'], 'drivers' => $drivers, 'user_exist' => $user_exist]);
             }
         }
@@ -481,16 +467,14 @@ class ServiceProviderController extends Controller
                             'phone' => $phone_number,
                             'country_code_iso' => $input['country_code_iso'][$key]??"",
                             'is_master' => 1,
-                            'user_type' => 2
+                            'user_type' => 2,
+                            'service_provider_id' => $user_exist->id
                         ];
                         if(!empty($input['password'][$key])){
                             $driverArray['password'] = Hash::make($input['password'][$key]);
                         }
                         $driver->fill($driverArray);
                         $driver->save();
-                        $serviceProviderDriver = ServiceProviderDriver::firstOrNew(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
-                        $serviceProviderDriver->fill(['service_provider_id' => $user_exist->id, 'driver_id' => $driver->id]);
-                        $serviceProviderDriver->save();
                     }
                 }
                 return redirect()->route('service-provider.register_step2', ['token' => $request->service_provider_token]);
@@ -597,6 +581,35 @@ class ServiceProviderController extends Controller
         return abort(404);
     }
 
+    public function extendTwoWeekTestPlan($token)
+    {
+        try {
+            $verifyUser = User::where('is_email_verified_token', $token)->first();
+            if (!is_null($verifyUser) && $verifyUser->is_email_verified == 1) {
+                $setting = Setting::where(['service_provider_id' => $verifyUser->id])->first();
+                if ($setting->is_test_plan_updated == 0) {
+                    $setting->is_test_plan_updated = 1;
+                    if($setting->demo_expiry <= Carbon::today()){
+                        $setting->demo_expiry = Carbon::today()->addDays(14);
+                    } else {
+                        $demo_expiry = Carbon::createFromFormat('Y-m-d h:i:s', $setting->demo_expiry);
+                        $setting->demo_expiry = $demo_expiry->addDays(14);
+                    }
+                    $setting->save();
+
+                    FacadesMail::to($verifyUser->email)->send(new TestPeriodExtended($token));
+                }
+                return redirect()->route('service-provider.register_step1', ['token' => $token]);
+            } else {
+                $message = 'Sorry your email cannot be identified.';
+                return redirect()->route('service-provider.register')->with('error', $message);
+            }
+        } catch (Exception $e) {
+            Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
+            return redirect()->route('service-provider.register_step1', ['token' => $token])->with('error', $e->getMessage());
+        }
+    }
+
     public function selectPlan($token)
     {
         try {
@@ -655,10 +668,7 @@ class ServiceProviderController extends Controller
                 $newPassword = Hash::make($randomString);
                 $updated = User::where('id', $userDetail->id)->update(['password' => $newPassword]);
                 if ($updated) {
-                    FacadesMail::send('email.loginCredential', ['userDetail' => $userDetail, 'password' => $randomString], function ($message) use ($userDetail) {
-                        $message->to($userDetail->email);
-                        $message->subject('New Login Credential Veldoo');
-                    });
+                    FacadesMail::to($userDetail->email)->send(new SpLoginCredentials($userDetail, $randomString));
                     return redirect('/thankyou');
                 }
             } else {

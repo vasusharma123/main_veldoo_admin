@@ -9,7 +9,7 @@ use App\Expense;
 use App\ExpenseAttachment;
 use App\ExpenseType;
 use App\User;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class ExpensesController extends Controller
 {
@@ -76,9 +76,7 @@ class ExpensesController extends Controller
         $expenses = $expenses->orderBy('created_at','desc')->paginate(20);
         // dd(DB::getQueryLog());
 
-        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2])->whereHas('service_provider_driver',function($service_provider_driver){
-                        $service_provider_driver->where('service_provider_id',Auth::user()->id);
-                    })->orderBy('first_name')->get();
+        $drivers = User::select('id', 'first_name', 'last_name', 'phone')->where(['user_type' => 2, 'service_provider_id' => Auth::user()->id])->orderBy('first_name')->get();
         $expense_types = Expense::select('type')->where('service_provider_id',Auth::user()->id)->groupBy('type')->orderBy('type')->get();
         return view('admin.expenses.list')->with(['selected_from_date'=>$selected_from_date,'selected_to_date'=>$selected_to_date,'title' => 'Expenses', 'action' => '', 'expenses' => $expenses, 'drivers' => $drivers, 'expense_types' => $expense_types, 'selected_driver' => $selected_driver, 'selected_expense_type' => $selected_expense_type]);
     }

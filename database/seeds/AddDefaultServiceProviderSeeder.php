@@ -1,6 +1,6 @@
 <?php
 
-use App\ServiceProviderDriver;
+use App\Company;
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -25,13 +25,19 @@ class AddDefaultServiceProviderSeeder extends Seeder
             'service_provider_id' => 1
         ]);
 
-        $allDrivers = User::select('id')->where(['user_type' => 2])->get();
+        User::where(['user_type' => 2])->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
 
-        foreach($allDrivers as $driver_value){
-            ServiceProviderDriver::updateOrCreate(
-                ['driver_id' => $driver_value->id, 'service_provider_id' => 1]
-            );
-        }
+        Company::where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
 
         DB::table('settings')->where(function($query){
             $query->where(['service_provider_id' => ''])

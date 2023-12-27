@@ -4,16 +4,8 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Ride;
-use App\RideHistory;
-use DataTables;
-use App\User;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use App\Exports\RideExport;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Validator;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -28,4 +20,10 @@ class LoginController extends Controller
         return view('company.login');
     }
 
+    public function logout(Request $request)
+    {
+        Session::flush();
+        Auth::logout();
+        return redirect()->route("company_login");
+    }
 }

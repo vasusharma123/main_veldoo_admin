@@ -99,7 +99,7 @@ class PushNotificationController extends Controller
 		}
 		if ($request->receiver==2 || $request->receiver==3) 
 		{
-			$total_page_driver = DB::select("SELECT COUNT(users.id) as count FROM `users` JOIN service_provider_drivers on service_provider_drivers.driver_id = users.id WHERE service_provider_drivers.service_provider_id = ".Auth::user()->id." AND deleted = 0 AND deleted_at is null and user_type = 2");
+			$total_page_driver = DB::select("SELECT COUNT(users.id) as count FROM `users` WHERE service_provider_id = ".Auth::user()->id." AND deleted = 0 AND deleted_at is null and user_type = 2");
 			$total_page += $total_page_driver[0]->count;
 		}
 		$total_page = ceil($total_page/100);
