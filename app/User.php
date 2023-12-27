@@ -285,11 +285,6 @@ class User extends Authenticatable implements HasMedia
 		return $this->hasOne(Ride::class, 'user_id', 'id');
 	}
 
-	function service_provider_driver()
-	{
-		return $this->hasOne(ServiceProviderDriver::class, 'driver_id', 'id');
-	}
-
 	public function getImageWithUrlAttribute(){
 		if(!empty($this->image)){
 			return env('URL_PUBLIC').'/'.$this->image;
@@ -331,11 +326,7 @@ class User extends Authenticatable implements HasMedia
 	public function creator(){
 		return $this->belongsTo(User::class, 'created_by', 'id');
 	}
-
-	public function driver_service_providers(){
-		return $this->belongsToMany(User::class, 'service_provider_drivers', 'driver_id', 'service_provider_id');
-	}
-
+	
 	public function setting(){
 		return $this->hasOne(Setting::class, 'service_provider_id', 'id');
 	}

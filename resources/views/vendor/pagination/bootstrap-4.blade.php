@@ -1,12 +1,11 @@
 @if ($paginator->hasPages())
-<div class="col-sm-12">
-	<div class="row">
+	<div class="row mt-3">
 		<div class="col-sm-6">
-			<p id="" class="welal pull-left">Showing   {{ $paginator->currentPage() }} of {{ $paginator->total() }}  </p>
+			<p id="" class="welal float-start">Showing   {{ $paginator->count() }} of {{ $paginator->total() }}  </p>
 		</div>
 		<div class="col-sm-6">
 			<div class="footable">
-				<ul class="pagination pull-right">
+				<ul class="pagination float-end">
 					{{-- Previous Page Link --}}
 					@if ($paginator->onFirstPage())
 						<li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">
@@ -51,5 +50,4 @@
 			</div>
 		</div>
 	</div>
-</div>
 @endif

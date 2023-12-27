@@ -98,6 +98,13 @@
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>-->
+				<li class="nav-item w-100">
+					<a class="nav-link" href="{{ route('sp_logout') }}">
+						<img src="{{ asset('assets/images/veldoo/log-out.png') }}" class="img-fluid w-100 sidebarImgs" alt="Logout"/> 
+						<span class="sidebarText">Logout</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+					</a>
+				</li>
 			</ul>
 		</article>
 	</section>

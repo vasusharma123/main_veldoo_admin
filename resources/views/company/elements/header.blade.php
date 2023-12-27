@@ -42,7 +42,7 @@
                                             <a class="nav-link {{request()->segment(count(request()->segments())) == 'settings' ? 'active' : '' }}" href="{{ route('company.settings') }}">Settings</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ route('logout') }}?company=true">Logout</a>
+                                            <a class="nav-link" href="{{ route('company_logout') }}">Logout</a>
                                         </li>
                                     </ul>
                                 </nav>
