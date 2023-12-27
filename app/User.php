@@ -327,10 +327,6 @@ class User extends Authenticatable implements HasMedia
 		return $this->belongsTo(User::class, 'created_by', 'id');
 	}
 	
-	public function driver_service_providers(){
-		return $this->belongsTo(User::class, 'service_provider_id', 'id');
-	}
-
 	public function setting(){
 		return $this->hasOne(Setting::class, 'service_provider_id', 'id');
 	}

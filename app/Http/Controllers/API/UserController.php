@@ -738,9 +738,10 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::with(['driver_service_providers:id,name'])->where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
-			
+			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			if (!empty($user) && $user != null) {
+				$allUserIds = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->pluck('service_provider_id')->toArray();
+				$user->driver_service_providers = User::select(['id','name'])->whereIn('id',$allUserIds)->get();
 				return response()->json(['message' => 'You are already registered with this phone number', 'data' => $user], $this->successCode);
 			} else {
 				return response()->json(['message' => 'Not Registered'], $this->successCode);
