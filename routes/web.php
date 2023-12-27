@@ -187,6 +187,7 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::post('vehicle-type/delete','VehicleTypeController@destroy');
     Route::post('company/delete','CompanyController@destroy');
 	Route::post('company/change_status','CompanyController@change_status');
+	Route::patch('company/admin_profile_update/{id}','CompanyController@admin_profile_update')->name('company.admin_profile_update');
 	Route::post('driver/driver_master_status','UserController@driver_change_status');
 	Route::post('users/invoice_status','UserController@invoice_change_status');
 	Route::post('vehicle/delete','VehicleController@destroy');

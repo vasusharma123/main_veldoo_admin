@@ -18,29 +18,29 @@ use Illuminate\Support\Facades\URL;
 class CompanyController extends Controller
 {
 
+	protected $limit;
+
     public function __construct()
     {
     }
 	
 	public function index(Request $request)
 	{
-		$this->limit = 20;
+		$this->limit = 10;
 		
 		$data = array();
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
 		
-		$records = DB::table('users');
+		$records = Company::with(['user']);
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
 			DB::table('companies')->where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
 		}
-		
-		$records->selectRaw("id, name, email, company_id, IFNULL((SELECT name FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_name, IFNULL((SELECT email FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_email, IFNULL((SELECT country_code FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_country_code, IFNULL((SELECT phone FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_phone, IFNULL((SELECT state FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_state, IFNULL((SELECT city FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_city, IFNULL((SELECT country FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_country, IFNULL((SELECT status FROM companies WHERE id = users.company_id LIMIT 1), '') AS company_status");
-		
+	
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
+			Company::where(['id' => $request->id])->delete();
+			User::where(['company_id' => $request->id])->forceDelete();
 			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
 		}
 		
@@ -55,7 +55,7 @@ class CompanyController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 		
-		$data['records'] = $records->where(['deleted'=>0])->whereIn('user_type', [4,5])->paginate($this->limit);
+		$data['records'] = $records->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -193,8 +193,8 @@ class CompanyController extends Controller
     {
 	    $breadcrumb = array('title'=>'Company','action'=>'Edit Company');
 		$data = [];
-        $where = array('id' => $id);
-        $record = User::where($where)->with(['company'])->first();
+
+        $record = Company::with(['user'])->find($id);
 		
 		if(empty($record)){
 			return redirect()->route("company.index")->with('warning', 'Record not found!');
@@ -213,9 +213,9 @@ class CompanyController extends Controller
      * @param  \App\Posts  $posts
      * @return \Illuminate\Http\Response
      */
-    // public function update(Request $request, Posts $posts)
-    public function update(Request $request, $id){
-		
+	// public function update(Request $request, Posts $posts)
+	public function update(Request $request, $id)
+	{
 		$rules = [
 			'name' => 'required',
 			'country_code' => 'required',
@@ -225,7 +225,53 @@ class CompanyController extends Controller
 			'zip' => 'required',
 			'city' => 'required',
 			'state' => 'required',
-			'country' => 'required',
+			'country' => 'required'
+		];
+
+		$request->validate($rules);
+		$input = $request->except(['_method', '_token']);
+
+		$input = $request->all();
+
+		$cdata = Company::find($id);
+
+		$companyinput = $input;
+
+		if (!empty($request->company_image_tmp)) {
+
+			if (!empty($cdata->image)) {
+				Storage::disk('public')->delete($cdata->image);
+			}
+
+			$imgname = 'img-' . time() . '.' . $request->company_image_tmp->extension();
+
+			$companyinput['image'] = Storage::disk('public')->putFileAs(
+				'company/' . $cdata->id,
+				$request->company_image_tmp,
+				$imgname
+			);
+		}
+
+		// if(!empty($request->background_image)){
+
+		// 	if(!empty($cdata->background_image)){
+		// 		Storage::disk('public')->delete($cdata->background_image);
+		// 	}
+
+		// 	$imgname = 'back-img-'.time().'.'.$request->background_image->extension();
+
+		// 	$companyinput['background_image'] = Storage::disk('public')->putFileAs(
+		// 		'company/'.$cdata->id.'/', $request->background_image, $imgname
+		// 	);
+		// }
+
+		$cdata->update($companyinput);
+
+		return back()->with('success', trans('admin.Record updated!'));
+	}
+
+	public function admin_profile_update(Request $request, $id){
+		$rules = [
 			'admin_name' => 'required',
 			'admin_country_code' => 'required',
 			'admin_phone' => 'required',
@@ -242,13 +288,13 @@ class CompanyController extends Controller
 		
 		$input = $request->all();
 		
-		$isUserEmail = User::where(['email' => $input['admin_email'], 'user_type' => 4])->first();
+		$isUserEmail = User::where(['email' => $input['admin_email'], 'user_type' => 4])->where('company_id', '!=', $id)->first();
 		
-		if(!empty($isUserEmail) && $isUserEmail->id != $id){
+		if($isUserEmail){
 			return back()->withErrors(['message' => 'Email already exists']);
 		}
 		
-		$udata = User::where('id', $id)->first();
+		$udata = User::firstOrNew(['company_id' => $id, 'user_type' => 4]);
 		
 		$admininput['first_name'] = $input['admin_name'];
 		$admininput['name'] = $input['admin_name'];
@@ -269,53 +315,11 @@ class CompanyController extends Controller
 			$imgname = 'img-'.time().'.'.$request->image_tmp->extension();
 			
 			$admininput['image'] = Storage::disk('public')->putFileAs(
-				'user/'.$udata->id.'/', $request->image_tmp, $imgname
+				'user/'.$udata->id, $request->image_tmp, $imgname
 			);
 		}
 		
 		$udata->update($admininput);
-		
-		$cdata = Company::where('id', $udata->company_id)->first();
-		if(!empty($cdata->id)){
-			
-			$companyinput['name'] = $input['name'];
-			$companyinput['country_code'] = $input['country_code'];
-			$companyinput['phone'] = $input['phone'];
-			$companyinput['email'] = $input['email'];
-			$companyinput['street'] = $input['street'];
-			$companyinput['zip'] = $input['zip'];
-			$companyinput['city'] = $input['city'];
-			$companyinput['state'] = $input['state'];
-			$companyinput['country'] = $input['country'];
-			
-			if(!empty($request->company_image_tmp)){
-				
-				if(!empty($cdata->image)){
-					Storage::disk('public')->delete($cdata->image);
-				}
-				
-				$imgname = 'img-'.time().'.'.$request->company_image_tmp->extension();
-				
-				$companyinput['image'] = Storage::disk('public')->putFileAs(
-					'company/'.$cdata->id.'/', $request->company_image_tmp, $imgname
-				);
-			}
-			
-			if(!empty($request->background_image)){
-				
-				if(!empty($cdata->background_image)){
-					Storage::disk('public')->delete($cdata->background_image);
-				}
-				
-				$imgname = 'back-img-'.time().'.'.$request->background_image->extension();
-				
-				$companyinput['background_image'] = Storage::disk('public')->putFileAs(
-					'company/'.$cdata->id.'/', $request->background_image, $imgname
-				);
-			}
-			
-			$cdata->update($companyinput);
-		}
 		
 		return back()->with('success', trans('admin.Record updated!'));
     }

@@ -55,6 +55,19 @@
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
+														<div class="form-group p-3">
+															<div class="switch_btn">
+																<label class="switch mb-0">
+																	<input type="checkbox" name="is_active" class="form-control blocked_active" value="1" data-id="{{ $record->id }}" {{ $record->is_active == 1 ? "checked" : "" }}>
+																	<span class="slider round"></span>
+																</label>
+																<label class="form-check-label" for="flexSwitchCheckDefault">Active?</label>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="row w-100 m-0">
+													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 														<div class="form-group password-fieldd-lt">
 															<?php
 															echo Form::password('password',null,['class'=>'form-control inputText','required'=>false, 'placeholder' => 'Address']);
