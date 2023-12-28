@@ -39,6 +39,7 @@ class CompanyController extends Controller
 		}
 	
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+
 			Company::where(['id' => $request->id])->delete();
 			User::where(['company_id' => $request->id])->forceDelete();
 			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));

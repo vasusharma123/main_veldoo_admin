@@ -1,71 +1,41 @@
-<div class="table-responsive">
-	<table class="table table-bordered">
-		<thead class="thead-light">
-			<th>{{trans('admin.ID')}}</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="promotion" order="asc">
-				<i class="fa fa-fw @if($orderby == 'promotion' && $order=='asc') fa-sort-asc @elseif($orderby == 'promotion' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				Title
-			</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="promotion" order="asc">
-				<i class="fa fa-fw @if($orderby == 'promotion' && $order=='asc') fa-sort-asc @elseif($orderby == 'promotion' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				Description
-			</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="type" order="asc">
-				<i class="fa fa-fw @if($orderby == 'type' && $order=='asc') fa-sort-asc @elseif($orderby == 'type' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				Image
-			</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="type" order="asc">
-				<i class="fa fa-fw @if($orderby == 'type' && $order=='asc') fa-sort-asc @elseif($orderby == 'type' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				Type
-			</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="start_date" order="asc">
-				<i class="fa fa-fw @if($orderby == 'start_date' && $order=='asc') fa-sort-asc @elseif($orderby == 'start_date' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				Start Date
-			</th>
-			<th class="custom-userData-sort sort-th-sec" orderBy="end_date" order="asc">
-				<i class="fa fa-fw @if($orderby == 'end_date' && $order=='asc') fa-sort-asc @elseif($orderby == 'end_date' && $order=='desc') fa-sort-desc @else fa-sort @endif"></i>
-				End Date
-			</th>
-			<th>Action</th>
+<div class="table-responsive marginTbl">
+	<table class="table table-borderless table-fixed customTable">
+		<thead>
+			<tr>
+				<th>Start Date</th>
+				<th>End Date</th>
+				<th>Receiver</th>
+				<th>Title</th>
+				<th>Action</th>
+			</tr>
 		</thead>
 		<tbody>
-			@foreach ($promotion_offers as $promotion_offer)
+			@foreach ($records as $record)
 				<tr>
-					<td>{{ $promotion_offer->id }}</td>
-					<td>{{ $promotion_offer->title }}</td>
-					<td>{{ $promotion_offer->description }}</td>
+					<td>{{ $record->start_date }}</td>
+					<td>{{ $record->end_date }}</td>
 					<td>
-					{{ $promotion_offer->image }}					
+					@if($record->type == 1)
+						All Users
+					@else
+						Specific User
+					@endif
 					</td>
-					<td>
-					@if($promotion_offer->type == 1)
-					All Users
-				@else
-					Specific User
-				@endif
-					
-				</td>
-					<td>{{ $promotion_offer->start_date }}</td>
-					<td>{{ $promotion_offer->end_date }}</td>
-					<td class="">
-						<div class="btn-group dropright">
-							<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-								Action
-							</button>
-							<div class="dropdown-menu">
-								<!-- Dropdown menu links -->
-								<a class="dropdown-item delete_record" data-id="{{ $promotion_offer->id }}">{{ trans("admin.Delete") }}</a>
-							</div>
-						</div>
+					<td>{{ $record->title }}</td>
+					<td class="actionbtns">
+						<!--<a href="{{ route('drivers.edit',$record->id) }}" class="actionbtnsLinks"><img src="{{ asset('assets/images/veldoo/editpen.png') }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>-->
+						<a href="javascript:void(0);" class="actionbtnsLinks delete_record" data-id="{{ $record->id }}"><img src="{{ asset('assets/images/veldoo/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
 					</td>
 				</tr>
+				
 			@endforeach
-			@if(count($promotion_offers) == 0)
+			@if(count($records) == 0)
 				<tr>
-					<td class="text-center" colspan="6">No Record Found</td>
+					<td class="text-center" colspan="5">No Record Found</td>
 				</tr>
 			@endif
 		</tbody>
 	</table>
 </div>
-{{ $promotion_offers->appends(Request::all())->links('vendor.pagination.bootstrap-4') }}
+
+{{ $records->appends(Request::all())->links('vendor.pagination.bootstrap-4') }}
