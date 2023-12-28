@@ -336,7 +336,7 @@ class DriverController extends Controller
 			$salaryObj->type = $request->type;
 			$salaryObj->rate = $request->value;
 			$salaryObj->driver_id = $request->driver_id;
-			$salaryObj->service_provider_id = Auth::user()->service_provider_id;
+			$salaryObj->service_provider_id = Auth::user()->id;
 			$saved = $salaryObj->save();
 			if($saved){
 				DB::commit();
