@@ -318,7 +318,6 @@ class DriverController extends Controller
 	public function saveSalary(Request $request){
 
 		try{
-		Log:info('in saveSalary');
 		DB::beginTransaction();
 		$rules = [
 			'type' => 'required',
@@ -332,24 +331,19 @@ class DriverController extends Controller
 		} 
 
 		$driverSalary = 	Salary::where('driver_id',$request->driver_id)->first();
-		Log::info($driverSalary);
 		if(!$driverSalary){
-			Log::info('in driver sal');
 			$salaryObj = new Salary();
 			$salaryObj->type = $request->type;
 			$salaryObj->rate = $request->value;
 			$salaryObj->driver_id = $request->driver_id;
 			$salaryObj->service_provider_id = Auth::user()->service_provider_id;
-			Log::info($salaryObj);
 			$saved = $salaryObj->save();
 			if($saved){
-				Log::info('salaryObj');
 				DB::commit();
 				return response()->json(['success' => true, 'message' => 'Salary saved successfully']);
 
 			}
 		}else{
-			Log::info('in else driver');
 			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id',Auth::user()->service_provider_id)->update(['type' => $request->type, 'rate' => $request->value]);
 			if($updated){
 				DB::commit();
