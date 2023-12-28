@@ -9,5 +9,5 @@ class Salary extends Model
 {
     
     protected $table = 'salaries';	
-    
+    protected $fillable = ['type','rate','driver_id','service_provider_id'];
 }
