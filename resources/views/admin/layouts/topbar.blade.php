@@ -43,8 +43,7 @@
 							<a class="nav-link" href="{{ route('push-notifications.index') }}">Notification</a>
 						</li>
 						<li class="nav-item">
-							<!--<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>-->
-							<a class="nav-link" href="">Promotion</a>
+							<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="">My Design</a>
