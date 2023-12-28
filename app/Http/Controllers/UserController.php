@@ -953,6 +953,7 @@ class UserController extends Controller
 		}
 
 		$data['record'] = $record;
+
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
     }

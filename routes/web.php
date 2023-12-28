@@ -150,6 +150,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'auth'], function () {
 
 	Route::get('temporary_user/only_phone', 'TemporaryUserController@only_phone')->name('temporary_users.only_phone');
 	Route::get('temporary_user/only_last_name', 'TemporaryUserController@only_last_name')->name('temporary_users.only_last_name');
+	Route::post('saveSalary', 'DriverController@saveSalary')->name('saveSalary');
+	
 });
 
 Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:Administrator']], function(){

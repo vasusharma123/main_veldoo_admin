@@ -3171,6 +3171,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
 					$expenseForSalary->save();
 				}
+			}else{
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = (50 * $expense_ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
 			}
 
 			
@@ -7514,17 +7525,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			
 			if($request->type == 'daily'){
 				
-				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','driver_id','service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
 				
 			}else if($request->type == 'weekly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'driver_id','service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
 				->paginate(10);
 				
 			}else if($request->type == 'monthly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'driver_id','service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'))
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->orderBy('date','desc')
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
 				->groupBy(DB::raw('MONTH(date)'))
 				->paginate(10);
 				
@@ -7717,7 +7731,7 @@ public function logHours(Request $request)  {
 		$rules = [
 			'driver_id' => 'required|integer',
 			'date' => 'required|date_format:Y-m-d',
-			'hours' => 'required|integer',
+			'hours' => 'required',
 			'service_provider_id' => 'required|integer'
 
 		];

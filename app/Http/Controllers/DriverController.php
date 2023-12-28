@@ -9,10 +9,17 @@ use App\User;
 use App\Ride;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use App\Salary;
 
 class DriverController extends Controller
 {
 	protected $limit;
+	protected $successCode = 200;
+    protected $errorCode = 401;
+    protected $warningCode = 500;
+
 
     public function __construct()
     {
@@ -231,7 +238,8 @@ class DriverController extends Controller
 		}
 		
 		$data['record'] = $record;
-		
+		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->service_provider_id)->first();
+		$data['salary'] = $salary;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
     }
@@ -306,5 +314,54 @@ class DriverController extends Controller
             return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
         }
     }
+
+	public function saveSalary(Request $request){
+
+		try{
+		
+		DB::beginTransaction();
+		$rules = [
+			'type' => 'required',
+			'value' => 'required|integer',
+			'driver_id' => 'required|integer'
+
+		];
+		$validator = Validator::make($request->all(), $rules);
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		} 
+
+		$driverSalary = 	Salary::where('driver_id',$request->driver_id)->first();
+		if(!$driverSalary){
+			$salaryObj = new Salary();
+			$salaryObj->type = $request->type;
+			$salaryObj->rate = $request->value;
+			$salaryObj->driver_id = $request->driver_id;
+			$salaryObj->service_provider_id = Auth::user()->service_provider_id;
+			$saved = $salaryObj->save();
+			if($saved){
+				Log::info('salaryObj');
+				DB::commit();
+				return response()->json(['success' => true, 'message' => 'Salary saved successfully']);
+
+			}
+		}else{
+			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id',Auth::user()->service_provider_id)->update(['type' => $request->type, 'rate' => $request->value]);
+			if($updated){
+				DB::commit();
+				return response()->json(['success' => true, 'message' => 'Salary updated successfully']);
+
+			}
+		}
+		
+		} catch (\Exception $exception) {
+            DB::rollBack();
+            return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+        }
+		
+
+		
+	}
+
 
 }
