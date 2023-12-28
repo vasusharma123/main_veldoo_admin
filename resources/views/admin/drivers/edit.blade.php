@@ -146,12 +146,7 @@
 														<input type="hidden" value="{{$record->id}}" id="driver_id" name="driver_id">
 
 														<input type="hidden" value="{{Auth::user()->service_provider_id}}" name="service_provider_id">
-														<div class="form-group percentage_rate_input" style="display:none">
-															<?php
-															echo Form::text('percentage',null,['id' => 'percentage_rate_input','class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter percentage of revenue']);
-															echo Form::label('percentage', 'Enter percentage of revenue',['class'=>'']);
-															?>
-														</div>
+												
 													</div>
 								
 				
