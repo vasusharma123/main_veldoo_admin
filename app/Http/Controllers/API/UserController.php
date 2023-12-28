@@ -5601,19 +5601,22 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}else{
 					
 					if (!empty($request->ride_cost)) {
-						$expenseData = Expense::where('ride_id', )->whereIn('type',['deduction','revenue'])->first();
-						$columnsToUpdate = [];
-						if(strtolower($rideDetailNew->payment_type == 'cash')){
-								$columnsToUpdate['revenue'] = $request->ride_cost;
-								$columnsToUpdate['type'] = 'revenue';
-								$columnsToUpdate['type_detail'] = 'cash';
+						$expenseData = Expense::where('ride_id',  $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
+						if($expenseData){
+							$columnsToUpdate = [];
+								if(strtolower($rideDetailNew->payment_type == 'cash')){
+										$columnsToUpdate['revenue'] = $request->ride_cost;
+										$columnsToUpdate['type'] = 'revenue';
+										$columnsToUpdate['type_detail'] = 'cash';
 
-						}else{
-							$columnsToUpdate['deduction'] = $request->ride_cost;
-							$columnsToUpdate['revenue'] = $request->ride_cost;
-							$columnsToUpdate['type'] = 'deduction';
+								}else{
+									$columnsToUpdate['deduction'] = $request->ride_cost;
+									$columnsToUpdate['revenue'] = $request->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+								}
+								$expenseData->update($columnsToUpdate);
 						}
-						$expenseData->update($columnsToUpdate);
+						
 					}
 
 				}
