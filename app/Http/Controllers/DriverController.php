@@ -340,6 +340,7 @@ class DriverController extends Controller
 			$salaryObj->rate = $request->value;
 			$salaryObj->driver_id = $request->driver_id;
 			$salaryObj->service_provider_id = Auth::user()->service_provider_id;
+			Log::info($salaryObj);
 			$saved = $salaryObj->save();
 			if($saved){
 				Log::info('salaryObj');
