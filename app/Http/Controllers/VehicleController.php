@@ -14,12 +14,12 @@ use App\DriverChooseCar;
 use App\User;
 use App\Exports\VehicleExport;
 use Maatwebsite\Excel\Facades\Excel;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleController extends Controller
 {
   
-
+    protected $limit;
 
    public function __construct() {
         $this->table = 'vehicles';

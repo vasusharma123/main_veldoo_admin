@@ -36,6 +36,13 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
+					<a class="nav-link {{ (($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.create' || $uri=='vehicle.index' || $uri=='vehicle.edit') ? 'active' : '') }}" href="{{ route('vehicle-type.index') }}">
+						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
+						<span class="sidebarText">Car</span>
+						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+					</a>
+				</li>
+				<li class="nav-item w-100">
 					<a class="nav-link {{ (($uri=='rides.index' || $uri=='rides.show') ? 'active' : '') }}" href="{{ route('rides.index') }}">
 						<img src="{{ asset('assets/images/veldoo/riders.png') }}" class="img-fluid w-100 sidebarImgs" alt="Riders"/> 
 						<span class="sidebarText">Rides</span>
@@ -43,7 +50,7 @@
 					</a>
 				</li>
 				<li class="nav-item w-100">
-					<a class="nav-link {{ ($uri=='users.settings' ? 'active' : '') }}" href="{{ route('users.settings') }}">
+					<a class="nav-link {{ (($uri=='users.settings' || $uri=='settings.my_design')? 'active' : '') }}" href="{{ route('users.settings') }}">
 						<img src="{{ asset('assets/images/veldoo/setting.png') }}" class="img-fluid w-100 sidebarImgs" alt="Settings"/> 
 						<span class="sidebarText">Settings</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
@@ -53,13 +60,6 @@
 					<a class="nav-link {{ (($uri=='users.voucher' || $uri=='voucher.create') ? 'active' : '') }}" href="{{ route('voucher.create') }}">
 						<img src="{{ asset('assets/images/veldoo/voucher.png') }}" class="img-fluid w-100 sidebarImgs" alt="Voucher"/> 
 						<span class="sidebarText">Vouchers</span>
-						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
-					</a>
-				</li>
-				<li class="nav-item w-100">
-					<a class="nav-link {{ (($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.create' || $uri=='vehicle.index' || $uri=='vehicle.edit') ? 'active' : '') }}" href="{{ route('vehicle-type.index') }}">
-						<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
-						<span class="sidebarText">Car</span>
 						<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 					</a>
 				</li>
