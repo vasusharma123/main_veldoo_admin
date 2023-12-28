@@ -318,7 +318,7 @@ class DriverController extends Controller
 	public function saveSalary(Request $request){
 
 		try{
-		
+		Log:info('in saveSalary');
 		DB::beginTransaction();
 		$rules = [
 			'type' => 'required',
