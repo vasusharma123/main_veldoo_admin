@@ -5446,6 +5446,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			}
 			foreach ($all_ride_ids as $ride_key => $ride_id) {
+				Log::info('->'.$ride_id);
 				$ride = Ride::find($ride_id);
 
 				if (!empty($request->start_location)) {
