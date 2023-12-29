@@ -5550,7 +5550,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				// update ride expenses table
 				Log::info($request->ride_id);
-				$expenseData = Expense::where('ride_id', $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
+				$expenseData = Expense::where('ride_id', $ride_id)->whereIn('type',['deduction','revenue'])->first();
 				
 				if($expenseData){
 				
