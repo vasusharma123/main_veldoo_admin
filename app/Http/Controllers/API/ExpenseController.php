@@ -33,7 +33,8 @@ class ExpenseController extends Controller
     public function add(Request $request)
     {
         $rules = [
-            'type' => 'required|max:100',
+            'type' => 'required',
+            'type_detail' => 'required|max:100',
             'amount' => 'required'
         ];
 
