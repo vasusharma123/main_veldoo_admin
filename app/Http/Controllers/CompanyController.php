@@ -122,6 +122,7 @@ class CompanyController extends Controller
 			$admininput['service_provider_id'] = Auth::user()->id;
 			$admininput['first_name'] = $input['admin_name'];
 			$admininput['name'] = $input['admin_name'];
+			$admininput['country_code_iso'] = $input['admin_country_code_iso'];
 			$admininput['country_code'] = $input['admin_country_code'];
 			$admininput['phone'] = $input['admin_phone'];
 			$admininput['email'] = $input['admin_email'];
@@ -143,6 +144,7 @@ class CompanyController extends Controller
 			
 			$companyinput['name'] = $input['name'];
 			$companyinput['country_code'] = $input['country_code'];
+			$companyinput['country_code_iso'] = $input['country_code_iso'];
 			$companyinput['phone'] = $input['phone'];
 			$companyinput['email'] = $input['email'];
 			$companyinput['street'] = $input['street'];
@@ -233,7 +235,7 @@ class CompanyController extends Controller
 		$input = $request->except(['_method', '_token']);
 
 		$input = $request->all();
-
+		
 		$cdata = Company::find($id);
 
 		$companyinput = $input;
@@ -299,6 +301,7 @@ class CompanyController extends Controller
 		
 		$admininput['first_name'] = $input['admin_name'];
 		$admininput['name'] = $input['admin_name'];
+		$admininput['country_code_iso'] = $input['admin_country_code_iso'];
 		$admininput['country_code'] = $input['admin_country_code'];
 		$admininput['phone'] = $input['admin_phone'];
 		$admininput['email'] = $input['admin_email'];

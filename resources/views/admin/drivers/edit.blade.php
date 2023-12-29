@@ -123,13 +123,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
 <script>
 var input = document.querySelector("#phone");
-        var instance = window.intlTelInput(input, ({
-            initialCountry: "{{ $record->country_code_iso ?? 'ch' }}",
-            separateDialCode: true,
-        }));
-        input.addEventListener("countrychange", function() {
-            $("#iso2").val(instance.getSelectedCountryData().iso2);
-            $("#country_code").val(instance.getSelectedCountryData().dialCode);
-        });
+var instance = window.intlTelInput(input, ({
+	initialCountry: "{{ $record->country_code_iso ?? 'ch' }}",
+	separateDialCode: true,
+}));
+input.addEventListener("countrychange", function() {
+	$("#iso2").val(instance.getSelectedCountryData().iso2);
+	$("#country_code").val(instance.getSelectedCountryData().dialCode);
+});
 </script>
 @stop
