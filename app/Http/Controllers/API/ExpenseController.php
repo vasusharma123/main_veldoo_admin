@@ -77,7 +77,7 @@ class ExpenseController extends Controller
         if (!empty($request->user_id)) {
             $user_id = $request->user_id;
         }
-        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status', 'driver:id,first_name,last_name,image']);
+        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status', 'driver:id,first_name,last_name,image'])->where('type','expense');
         $total_expense = new Expense;
         if ($request->type == 1) {
             $month = $request->month;
