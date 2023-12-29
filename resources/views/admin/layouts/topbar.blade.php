@@ -4,17 +4,17 @@
 			<div class="row">
 				<div class="col-lg-2 col-md-3 col-sm-5 col-5 align-self-center">
 					<div class="logo_box">
-						<img src="{{ asset('assets/images/veldoo/brand_logo.png') }}" class="img-fluid w-100 brnd_img" alt="Brnad Name Veldoo" />
+						{{-- @if(Auth::user()->setting && !empty(Auth::user()->setting->logo) && file_exists('storage/'.Auth::user()->setting->logo))
+						<img src="{{ env('URL_PUBLIC').'/'.Auth::user()->setting->logo }}" class="img-fluid w-100 brnd_img" alt="Brand Name Veldoo" />
+						@else --}}
+						<img src="{{ asset('assets/images/veldoo/brand_logo.png') }}" class="img-fluid w-100 brnd_img" alt="Brand Name Veldoo" />
+						{{-- @endif --}}
 					</div>
 				</div>
 				<?php
 				$uri = Route::currentRouteName();
 				?>
-				@if($uri=='users.settings')
-					<div class="col-lg-6 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
-				@else
-					<div class="col-lg-5 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
-				@endif
+				<div class="col-lg-6 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
 				@if($uri=='users.voucher' || $uri=='voucher.create')
 					<!--<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
@@ -26,8 +26,7 @@
 						</li>
 					</ul>-->
 				@endif
-				
-				@if($uri=='users.settings')
+				@if($uri=='users.settings' || $uri=='settings.my_design')
 					<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
 					<ul class="nav top_tab_menu target">
 						<li class="nav-item">
@@ -43,11 +42,10 @@
 							<a class="nav-link" href="{{ route('push-notifications.index') }}">Notification</a>
 						</li>
 						<li class="nav-item">
-							<!--<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>-->
-							<a class="nav-link" href="">Promotion</a>
+							<a class="nav-link" href="{{ route('promotion.index') }}">Promotion</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="">My Design</a>
+							<a class="nav-link {{ ($uri=='settings.my_design' ? 'active' : '') }}" href="{{ route('settings.my_design') }}">My Design</a>
 						</li>
 					</ul>
 				@endif
@@ -142,11 +140,7 @@
 					</ul>
 				@endif
 				</div>
-				@if($uri=='users.settings')
-					<div class="col-lg-4 col-md-7 col-sm-5 col-5 align-self-center">
-				@else
-					<div class="col-lg-5 col-md-7 col-sm-5 col-5 align-self-center">
-				@endif
+				<div class="col-lg-4 col-md-7 col-sm-5 col-5 align-self-center">
 					<div class="right_content_menu">
 						<div class="search">
 							<form class="search_form">

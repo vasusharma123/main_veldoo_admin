@@ -35,10 +35,13 @@ class PromotionController extends Controller
 		}
 		$vouchers =\App\Promotion::query();
 		if(!empty($request->input('text'))){
-			$vouchers->where('promotion', 'like', '%'.$request->input('text').'%')
-			->orWhere('type', 'like', '%'.$request->input('text').'%')
+			/* $vouchers->where('promotion', 'like', '%'.$request->input('text').'%')
+			->orWhere('title', 'like', '%'.$request->input('text').'%')
 			->orWhere('start_date', 'like', '%'.$request->input('text').'%')
-			->orWhere('end_date', 'like', '%'.$request->input('text').'%');
+			->orWhere('end_date', 'like', '%'.$request->input('text').'%'); */
+			$user_id = Auth::user()->id;
+			$text = $request->input('text');
+			$vouchers->whereRaw("(promotion LIKE '%$text%' OR title LIKE '%$text%' OR start_date LIKE '%$text%' OR end_date LIKE '%$text%') AND service_provider_id = $user_id");
 		}
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
 			$vouchers->orderBy($request->input('orderby'), $request->input('order'));
@@ -46,9 +49,9 @@ class PromotionController extends Controller
 			$vouchers->orderBy('id', 'desc');
 		}
 		
-		$data['promotion_offers'] = $vouchers->where('service_provider_id',Auth::user()->id)->paginate($this->limit);
+		$data['records'] = $vouchers->where(['service_provider_id' => Auth::user()->id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
-		$data['orderby'] =$request->input('orderby');
+		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
 		$data = array_merge($breadcrumb,$data);
         if ($request->ajax()) {

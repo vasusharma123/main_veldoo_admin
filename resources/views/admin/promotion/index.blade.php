@@ -1,57 +1,40 @@
 @extends('admin.layouts.master')
 
 @section('content')
-	<!-- Container fluid  -->
-	<!-- ============================================================== -->
-	<div class="container-fluid">
-		<!-- ============================================================== -->
-		<!-- Start Page Content -->
-		<!-- ============================================================== -->
-		<div class="row">
-			<div class="col-lg-12">
-				<div class="card" >
-					<div class="card-body">
-						@include('admin.layouts.flash-message')
-						<div class="input-append col-md-3" style="float: right;">
-							<input type="text" name="data[q]" class="search-query myInput form-control" id="demo-input-search2" placeholder="Type to search">
-							<input name="orderBy" type="hidden">
-							<input name="order" type="hidden">
-							<input name="page" type="hidden">
-						</div> 
-						
-						<div class="table-responsive box" id="allDataUpdate">
-							@include('admin.promotion.index_element')
+<main class="body_content">
+	<div class="inside_body">
+		<div class="container-fluid p-0">
+			<div class="row m-0 w-100">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
+					<div class="body_flow">
+						@include('admin.layouts.sidebar')
+						<div class="formTableContent">
+							<section class="addonTable sectionsform">
+								@include('admin.layouts.flash-message')
+								<article class="container-fluid">
+									<input name="page" type="hidden">
+									<div id="allDataUpdate">
+										@include("admin.promotion.index_element")
+									</div>
+								</article>
+							</section>
 						</div>
 					</div>
+					
 				</div>
 			</div>
 		</div>
-		<!-- ============================================================== -->
-		<!-- End PAge Content -->
-		<!-- ============================================================== -->
 	</div>
+</main>
 @endsection	
-	<!-- ============================================================== -->
-	<!-- End Container fluid  -->
+	
 @section('footer_scripts')
-<style>
-.table-responsive{
-	overflow-x: scroll;
-}
-thead tr{
-	white-space: nowrap;
-}
-</style>
 <script type="text/javascript">
 $(function () {
-	$(function(){
-	   $(".dropdown-menu").on('click', 'a', function(){
-		   $(this).parents('.dropdown').find('button').text($(this).text());
-	   });
-	});
+	
 	//setup before functions
 	var typingTimer;                //timer identifier
-	var doneTypingInterval = 1000;  //time in ms, 5 second for example
+	var doneTypingInterval = 500;  //time in ms, 5 second for example
 	var $input = $('.myInput');
 
 	//on keyup, start the countdown
@@ -64,51 +47,28 @@ $(function () {
 	$input.on('keydown', function () {
 		clearTimeout(typingTimer);
 	});
-
+	
 	function doneTyping() {
 		var text = $('.myInput').val();
-		var orderby = $('input[name="orderBy"]').val().toString();
-		var order = $('input[name="order"]').val().toString();
-		$("#loading").fadeIn("slow");
-		$('.input-append input[name="page"]').val(1);
+		//var orderby = $('input[name="orderBy"]').val().toString();
+		var orderby = '';
+		//var order = $('input[name="order"]').val().toString();
+		var order = '';
+		//$("#loading").fadeIn("slow");
+		$('input[name="page"]').val(1);
 		ajaxCall('', text, orderby, order, '');
 	};
 	
-	$('body').on('click', '.custom-userData-sort', function(){
-		
-		var attrorderby = $(this).attr('orderby');
-		var attrorder = $(this).attr('order');
-		$('input[name="orderBy"]').val(attrorderby);
-		$('input[name="order"]').val(attrorder);
-		
-		var text = $('.myInput').val();
-		var orderby = $('input[name="orderBy"]').val().toString();
-		var order = $('input[name="order"]').val().toString();
-		var page = $('input[name="page"]').val();
-		$("#loading").fadeIn("slow");
-		ajaxCall('', text, orderby, order, page , '');
-	});
-
-	$('body').on('click', '.change_status', function(){
-		var orderby = $('input[name="orderBy"]').val();
-		var order = $('input[name="order"]').val();
-		var page = $('input[name="page"]').val();
-		var status = $(this).val();
-		var id = $(this).attr('data-id');
-		
-		var text = $('.myInput').val();
-		var orderby = $('input[name="orderBy"]').val();
-		var order = $('input[name="order"]').val();
-		$("#loading").fadeIn("slow");
-		ajaxCall(id, text, orderby, order, page, status);
-	});
-	
 	$('body').on('click', '.delete_record', function(){
         var id = $(this).attr('data-id');
-		var text = $('.myInput').val();
-		var orderby = $('input[name="orderBy"]').val();
-		var order = $('input[name="order"]').val();
+		//var text = $('.myInput').val();
+		var text = '';
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
 		var page = $('input[name="page"]').val();
+		var status = 0;
         swal({
             title: "Are you sure?",
             text: "You want to delete this Record !",
@@ -124,13 +84,29 @@ $(function () {
             showLoaderOnConfirm: true,
         }, function (isConfirm) {
             if (isConfirm) {
-                $("#loading").fadeIn("slow");
-				ajaxCall(id, text, orderby, order, page, '','delete');
+                //$("#loading").fadeIn("slow");
+				ajaxCall(id, text, orderby, order, page, status,'delete');
             } else {
                 swal();
             }
         });
     });
+	
+	$('body').on('click', '.change_status', function(){
+		//var orderby = $('input[name="orderBy"]').val();
+		var orderby = '';
+		//var order = $('input[name="order"]').val();
+		var order = '';
+		var page = $('input[name="page"]').val();
+		var status = $(this).val();
+		var id = $(this).attr('data-id');
+		
+		//var text = $('.myInput').val();
+		var text = '';
+		
+		$("#loading").fadeIn("slow");
+		ajaxCall(id, text, orderby, order, page, status, 'status');
+	});
 });
 function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 	var page = (!page ? 1 : page);
@@ -139,11 +115,11 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 		url: "{{url()->current()}}",
 		data : {id:id,text:text,orderby:orderby,order:order,status:status,page:page,type:type},
 		success: function (data) {
-			$("#loading").fadeOut("slow");
+			//$("#loading").fadeOut("slow");
 			$('#allDataUpdate').html(data);
 			
-			$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
-			$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
+			//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
+			//$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
 		}
 	});
 }

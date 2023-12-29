@@ -31,7 +31,7 @@ class CompanyController extends Controller
 		$data = array();
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
 		
-		$records = Company::with(['user']);
+		$records = Company::with(['user'])->where(['service_provider_id' => Auth::user()->id]);
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -39,6 +39,7 @@ class CompanyController extends Controller
 		}
 	
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
+
 			Company::where(['id' => $request->id])->delete();
 			User::where(['company_id' => $request->id])->forceDelete();
 			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
@@ -149,6 +150,7 @@ class CompanyController extends Controller
 			$companyinput['city'] = $input['city'];
 			$companyinput['state'] = $input['state'];
 			$companyinput['country'] = $input['country'];
+			$companyinput['service_provider_id'] = Auth::user()->id;
 			
 			$iscompany = Company::create($companyinput);
 			
