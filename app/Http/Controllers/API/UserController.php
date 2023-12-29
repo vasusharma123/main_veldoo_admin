@@ -5617,7 +5617,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 											$columnsToUpdate['type_detail'] = 'cash';
 
 									}else{
-										$columnsToUpdate['deduction'] = $request->ride_cost;
+										$columnsToUpdate['deductions'] = $request->ride_cost;
 										$columnsToUpdate['revenue'] = $request->ride_cost;
 										$columnsToUpdate['type'] = 'deduction';
 									}
