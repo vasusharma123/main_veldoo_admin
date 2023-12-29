@@ -2882,7 +2882,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideStatusChange(Request $request)
 	{
-		Log::info('In rideStatusChange method');
+		//Log::info('In rideStatusChange method');
 		$logged_in_user = Auth::user();
 		$rules = [
 			'status' => 'required',
@@ -3107,7 +3107,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$expense_ride_cost = null;
 			if($request->payment_type){
 					if(strtolower($request->payment_type) == 'cash'){
-						Log::info('In request rideStatusChange cash->'.$cost);
+						//Log::info('In request rideStatusChange cash->'.$cost);
 					if (!empty($request->ride_cost)) {
 						$expense_ride_cost = $request->ride_cost;
 					}else{
@@ -3117,7 +3117,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 'revenue';
 					$type_detail = 'cash';
 				}else{
-					Log::info('In rideStatusChange else->'.$cost);
+					//Log::info('In rideStatusChange else->'.$cost);
 					if (!empty($request->ride_cost)) {
 						$deduction = $request->ride_cost;
 					}else{
@@ -3129,7 +3129,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				
 			}else{
-				Log::info('In request payment  not ->');
+				//Log::info('In request payment  not ->');
 				if(strtolower($rideDetail->payment_type) == 'cash'){
 					$type = 'revenue';
 					$expense_ride_cost = $cost;
@@ -5402,7 +5402,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideEdit(Request $request)
 	{
-		Log::info('ride edit');
+		//Log::info('ride edit');
 		// $rules = [
 		// 	'ride_id' => 'required',
 		// ];
@@ -5446,7 +5446,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			}
 			foreach ($all_ride_ids as $ride_key => $ride_id) {
-				Log::info('->'.$ride_id);
+				//Log::info('->'.$ride_id);
 				$ride = Ride::find($ride_id);
 
 				if (!empty($request->start_location)) {
@@ -5550,7 +5550,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$ride->save();
 
 				// update ride expenses table
-				Log::info($request->ride_id);
+				//Log::info($request->ride_id);
 				$expenseData = Expense::where('ride_id', $ride_id)->whereIn('type',['deduction','revenue'])->first();
 				
 				if($expenseData){
