@@ -5552,6 +5552,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				
 				if (!empty($request->payment_type)) {
+					Log::info($request->ride_id);
 					$expenseData = Expense::where('ride_id', $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
 					Log::info($expenseData);
 					$columnsToUpdate = [];
