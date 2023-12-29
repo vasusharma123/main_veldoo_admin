@@ -202,7 +202,7 @@ code {
                                                     <select class="form-control main_field fontStyle headerFontFamily text-center p-0" name="header_font_family" >
                                                   
                                                     <option value="">Select Font</option>
-                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->input_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
+                                                    <option style="font-family:Oswald" value="Oswald" {{ $company->header_font_family == 'Oswald' ? "selected" : ''}} > Oswald</option>
                                                     <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $company->header_font_family == 'Times-new-roman' ? "selected" : ''}} > Times New Roman</option>
                                                     <option style="font-family:Arial" value="Arial" {{ $company->header_font_family == 'Arial' ? "selected" : ''}}>Arial</option>
                                                     <option style="font-family:Algerian" value="Algerian" {{ $company->header_font_family == 'Algerian' ? "selected" : ''}}>Algerian</option>

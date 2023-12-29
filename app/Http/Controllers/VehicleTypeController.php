@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Price;
 use DataTables;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class VehicleTypeController extends Controller
 {
@@ -32,9 +32,7 @@ class VehicleTypeController extends Controller
         $data = array();
         $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
-		$records = DB::table('prices');
-		
-        $records->selectRaw('id, car_type, car_image, price_per_km, basic_fee, seating_capacity, alert_time, status')->where('service_provider_id',Auth::user()->id);
+        $records = Price::select('id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status')->where(['service_provider_id' => Auth::user()->id]);
 		
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			

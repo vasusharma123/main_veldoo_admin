@@ -14,7 +14,7 @@ class Company extends Model
      * @var array
      */
     protected $fillable = [
-        'ride_color','header_color','header_font_family','header_font_color','header_font_size','input_color','input_font_family','input_font_color','input_font_size','username','name','address','email','image','status','zip','addresses','password','fcm_token','state','country_code','country_code_iso','phone','city','country','created_by','street','logo','background_image','theme_color'
+        'ride_color','header_color','header_font_family','header_font_color','header_font_size','input_color','input_font_family','input_font_color','input_font_size','username','name','address','email','image','status','zip','addresses','password','fcm_token','state','country_code','country_code_iso','phone','city','country','created_by','street','logo','background_image','theme_color', 'service_provider_id'
     ];
 
     /**

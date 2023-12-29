@@ -31,7 +31,7 @@ class CompanyController extends Controller
 		$data = array();
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
 		
-		$records = Company::with(['user']);
+		$records = Company::with(['user'])->where(['service_provider_id' => Auth::user()->id]);
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -152,6 +152,7 @@ class CompanyController extends Controller
 			$companyinput['city'] = $input['city'];
 			$companyinput['state'] = $input['state'];
 			$companyinput['country'] = $input['country'];
+			$companyinput['service_provider_id'] = Auth::user()->id;
 			
 			$iscompany = Company::create($companyinput);
 			
