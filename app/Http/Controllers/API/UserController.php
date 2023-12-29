@@ -5550,85 +5550,86 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				// update ride expenses table
 
+				$expenseData = Expense::where('ride_id', $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
 				
-				if (!empty($request->payment_type)) {
-					Log::info($request->ride_id);
-					$expenseData = Expense::where('ride_id', $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
-					Log::info($expenseData);
-					$columnsToUpdate = [];
-					if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
-					{
-						Log::info('in if');
-						// payment type same check amount change
-						if (!empty($request->ride_cost)) {
+				if($expenseData){
+				
+					if (!empty($request->payment_type)) {
+						Log::info($request->ride_id);
+						Log::info($expenseData);
+						$columnsToUpdate = [];
+						if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
+						{
+							Log::info('in if');
+							// payment type same check amount change
+							if (!empty($request->ride_cost)) {
 
-							if(strtolower($request->payment_type) == 'cash'){
-								$columnsToUpdate['revenue'] = $request->ride_cost;
-							}else{
-								$columnsToUpdate['revenue'] =  $request->ride_cost;
-								$columnsToUpdate['deductions']  = $request->ride_cost;
-							}
-							
-						}
-
-					}else{
-
-						Log::info('in else');
-						// payment method different
-						if (!empty($request->ride_cost)) {
-							 // ride cost also differ
-							if(strtolower($request->payment_type) == 'cash'){
-								$columnsToUpdate['revenue'] = $request->ride_cost;
-								$columnsToUpdate['type']  = 'revenue';
-								$columnsToUpdate['type_detail'] = 'cash';
-								$columnsToUpdate['deductions'] = null;
-							}else{
-								$columnsToUpdate['revenue'] =  $request->ride_cost;
-								$columnsToUpdate['deductions'] = $request->ride_cost;
-								$columnsToUpdate['type'] = 'deduction';
-								$columnsToUpdate['type_detail'] = $request->payment_type;
-							}
-						}else{
-							// ride cost same
-							if(strtolower($request->payment_type) == 'cash'){
-								$columnsToUpdate['type'] = 'revenue';
-								$columnsToUpdate['type_detail'] = 'cash';
-							}else{
-								$columnsToUpdate['type'] = 'deduction';
-								$columnsToUpdate['type_detail'] = $request->payment_type;
-							}
-							
-						}
-						
-
-					}
-					//dd($columnsToUpdate);
-					$expenseData->update($columnsToUpdate);
-				}else{
-					
-					if (!empty($request->ride_cost)) {
-						$expenseData = Expense::where('ride_id',  $request->ride_id)->whereIn('type',['deduction','revenue'])->first();
-						if($expenseData){
-							$columnsToUpdate = [];
-								if(strtolower($rideDetailNew->payment_type == 'cash')){
-										$columnsToUpdate['revenue'] = $request->ride_cost;
-										$columnsToUpdate['type'] = 'revenue';
-										$columnsToUpdate['type_detail'] = 'cash';
-
-								}else{
-									$columnsToUpdate['deduction'] = $request->ride_cost;
+								if(strtolower($request->payment_type) == 'cash'){
 									$columnsToUpdate['revenue'] = $request->ride_cost;
-									$columnsToUpdate['type'] = 'deduction';
+								}else{
+									$columnsToUpdate['revenue'] =  $request->ride_cost;
+									$columnsToUpdate['deductions']  = $request->ride_cost;
 								}
-								$expenseData->update($columnsToUpdate);
+								
+							}
+
+						}else{
+
+							Log::info('in else');
+							// payment method different
+							if (!empty($request->ride_cost)) {
+								// ride cost also differ
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $request->ride_cost;
+									$columnsToUpdate['type']  = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+									$columnsToUpdate['deductions'] = null;
+								}else{
+									$columnsToUpdate['revenue'] =  $request->ride_cost;
+									$columnsToUpdate['deductions'] = $request->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}
+							}else{
+								// ride cost same
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['type'] = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+								}else{
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}
+								
+							}
+							
+
 						}
+						//dd($columnsToUpdate);
+						$expenseData->update($columnsToUpdate);
+					}else{
 						
+						if (!empty($request->ride_cost)) {
+							if($expenseData){
+								$columnsToUpdate = [];
+									if(strtolower($rideDetailNew->payment_type == 'cash')){
+											$columnsToUpdate['revenue'] = $request->ride_cost;
+											$columnsToUpdate['type'] = 'revenue';
+											$columnsToUpdate['type_detail'] = 'cash';
+
+									}else{
+										$columnsToUpdate['deduction'] = $request->ride_cost;
+										$columnsToUpdate['revenue'] = $request->ride_cost;
+										$columnsToUpdate['type'] = 'deduction';
+									}
+									$expenseData->update($columnsToUpdate);
+							}
+							
+						}
+
 					}
 
-				}
-
 				
-
+				}
 			}
 
 			// if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
