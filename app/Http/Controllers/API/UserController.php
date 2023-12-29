@@ -5402,6 +5402,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideEdit(Request $request)
 	{
+		Log::info('ride edit');
 		// $rules = [
 		// 	'ride_id' => 'required',
 		// ];
