@@ -5555,6 +5555,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$columnsToUpdate = [];
 					if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
 					{
+						Log::info('in if');
 						// payment type same check amount change
 						if (!empty($request->ride_cost)) {
 
@@ -5568,6 +5569,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						}
 
 					}else{
+
+						Log::info('in else');
 						// payment method different
 						if (!empty($request->ride_cost)) {
 							 // ride cost also differ
