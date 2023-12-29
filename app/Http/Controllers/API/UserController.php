@@ -5611,6 +5611,32 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						
 						if (!empty($request->ride_cost)) {
 							if($expenseData){
+								// open update salary for revenue base
+								$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
+								if($expenseSalaryData){
+									$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
+									if($salaryDetail){
+										$pay_type = $salaryDetail->type;
+										if($pay_type == 'revenue'){
+											$percentage = $salaryDetail->rate;
+											$percentageAmount = ($percentage * $request->ride_cost) / 100;
+											$salaryColumnsToUpdate['salary'] = $percentageAmount;
+											$expenseSalaryData->update($salaryColumnsToUpdate);
+										}
+
+									}else{
+											$percentage = 50;
+											$percentageAmount = ($percentage * $request->ride_cost) / 100;
+											$salaryColumnsToUpdate['salary'] = $percentageAmount;
+											$expenseSalaryData->update($salaryColumnsToUpdate);
+									}
+
+								}
+								
+								
+								//end update salary for revenue base
+
+								// open update payment type revenue and deduction data
 								$columnsToUpdate = [];
 									if(strtolower($rideDetailNew->payment_type == 'cash')){
 											$columnsToUpdate['revenue'] = $request->ride_cost;
@@ -5623,6 +5649,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 										$columnsToUpdate['type'] = 'deduction';
 									}
 									$expenseData->update($columnsToUpdate);
+
+									// end update payment type revenue and deduction data
 							}
 							
 						}
