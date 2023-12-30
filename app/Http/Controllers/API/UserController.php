@@ -7784,7 +7784,7 @@ public function logHours(Request $request)  {
 			return response()->json(['message' => "Driver not found"], $this->warningCode);
 		}
 		$service_provider_id  =$request->service_provider_id;
-		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->whereDate('date', $request->date)->first();
+		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->where('type_detail','!=', 'revenue')->whereDate('date', $request->date)->first();
 		if($salaryData){
 		  $expenseId = $salaryData->id;
 		  $salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
