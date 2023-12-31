@@ -41,8 +41,11 @@
                     <div class="form-row">
 
                         <div class="col-12 p-0">
-
-                            <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                            @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                            <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_img" alt="brand logo" />
+                            @else
+                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_img" />
+                            @endif
                             <a class="close_modal" href="{{route('guest.rides',[\Request::get('slugRecord')->slug, 'month'])}}">×</a>
 
                             <div class="form_title text-center">
@@ -177,8 +180,11 @@
                             <div class="form-row">
 
                                 <div class="col-12 p-0">
-
-                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                    @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                                    <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_img" alt="brand logo" />
+                                    @else
+                                    <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_img" />
+                                    @endif
 
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Not Logged in</h4>
@@ -288,8 +294,12 @@
 
                                 <div class="col-12 p-0">
 
-                                <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="Logo" class="img-fluid logo_img"/>
-
+                                    @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                                    <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_img" alt="brand logo" />
+                                    @else
+                                    <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_img" />
+                                    @endif
+                                    
                                     <div class="form_title text-center">
                                         <h4 class="sub_title">Forgot Password</h4>
                                         <p class="tagline">To continue enter mobile number</p>

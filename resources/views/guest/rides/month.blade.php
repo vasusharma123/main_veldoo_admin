@@ -1,10 +1,12 @@
 @extends('guest.layouts.app')
+@section('css')
 <style>
     .fc-h-event {
         background-color: #fc4c02 !important;
         border: 1px solid #fc4c02 !important;
     }
 </style>
+@endsection
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />

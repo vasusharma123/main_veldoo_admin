@@ -23,121 +23,102 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
         <!-- <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"> -->
 
-        
-
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
-
-
         
-    </head>
-    <body>
         @php
         if (Auth::check() && !empty($companyInfo->background_image)){
-            $logoImage = config('app.url_public').'/'.$companyInfo->background_image;
-        } elseif (!empty($setting['admin_background']) && file_exists('storage/'.$setting['admin_background'])) {
-            $logoImage = env('URL_PUBLIC').'/'.$setting['admin_background'];
+            $backgroundImage = config('app.url_public').'/'.$companyInfo->background_image;
+        } elseif (!empty($configuration['background_image']) && file_exists('storage/'.$configuration['background_image'])) {
+            $backgroundImage = env('URL_PUBLIC').'/'.$configuration['background_image'];
         } else {
-            $logoImage = asset('new-design-company/assets/images/bg_body.png');
+            $backgroundImage = asset('new-design-company/assets/images/bg_body.png');
         }
-        @endphp
-       
+
+        if (Auth::check() && !empty($companyInfo->header_color)){
+            $primaryColor = $companyInfo->header_color;
+        } elseif (!empty($configuration) && !empty($configuration->header_color)) {
+            $primaryColor = $configuration->header_color;
+        } else {
+            $primaryColor = "#FC4C02";
+        }
+
+        if (Auth::check() && !empty($companyInfo->header_font_family)){
+            $header_font_family = $companyInfo->header_font_family;
+        } elseif (!empty($configuration) && !empty($configuration->header_font_family)) {
+            $header_font_family = $configuration->header_font_family;
+        } else {
+            $header_font_family = "'Oswald', sans-serif";
+        }
+
+        if (Auth::check() && !empty($companyInfo->header_font_color)){
+            $header_font_color = $companyInfo->header_font_color;
+        } elseif (!empty($configuration) && !empty($configuration->header_font_color)) {
+            $header_font_color = $configuration->header_font_color;
+        } else {
+            $header_font_color = "#ffffff";
+        }
+
+        if (Auth::check() && !empty($companyInfo->header_font_size)){
+            $header_font_size = $companyInfo->header_font_size;
+        } elseif (!empty($configuration) && !empty($configuration->header_font_size)) {
+            $header_font_size = $configuration->header_font_size;
+        } else {
+            $header_font_size = "20px";
+        }
+
+        if (Auth::check() && !empty($companyInfo->input_color)){
+            $input_color = $companyInfo->input_color;
+        } elseif (!empty($configuration) && !empty($configuration->input_color)) {
+            $input_color = $configuration->input_color;
+        } else {
+            $input_color = "rgba(255, 255, 255, 0.75)";
+        }
+
+        if (Auth::check() && !empty($companyInfo->input_font_family)){
+            $input_font_family = $companyInfo->input_font_family;
+        } elseif (!empty($configuration) && !empty($configuration->input_font_family)) {
+            $input_font_family = $configuration->input_font_family;
+        } else {
+            $input_font_family = "var(--bs-body-font-family)";
+        }
+
+        if (Auth::check() && !empty($companyInfo->input_font_color)){
+            $input_font_color = $companyInfo->input_font_color;
+        } elseif (!empty($configuration) && !empty($configuration->input_font_color)) {
+            $input_font_color = $configuration->input_font_color;
+        } else {
+            $input_font_color = "#666666";
+        }
+
+        if (Auth::check() && !empty($companyInfo->input_font_size)){
+            $input_font_size = $companyInfo->input_font_size;
+        } elseif (!empty($configuration) && !empty($configuration->input_font_size)) {
+            $input_font_size = $configuration->input_font_size;
+        } else {
+            $input_font_size = "16px";
+        }
+
+        if (Auth::check() && !empty($companyInfo->ride_color)){
+            $ride_color = $companyInfo->ride_color;
+        } elseif (!empty($configuration) && !empty($configuration->ride_color)) {
+            $ride_color = $configuration->ride_color;
+        } else {
+            $ride_color = "#356681";
+        }
+
+       @endphp
        <style>
-
-        
-            @if(!empty($companyInfo['header_color']))
-                :root {
-                    --primary-color: {{ $companyInfo['header_color'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-color: #FC4C02 !important;
-                }
-            @endif
-            
-            @if(!empty($companyInfo['header_font_family']))
-                :root {
-                    --primary-font-family: {{ $companyInfo['header_font_family'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-font-family: 'Oswald', sans-serif !important;
-
-                }
-            @endif
-            
-            @if(!empty($companyInfo['header_font_color']))
-                :root {
-                    --primary-font-color: {{ $companyInfo['header_font_color'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-font-color: #ffffff !important;
-                }
-            @endif
-
-            @if(!empty($companyInfo['header_font_size']))
-                :root {
-                    --primary-font-size: {{ $companyInfo['header_font_size'] }}px !important;
-                }
-            @else
-                :root {
-                    --primary-font-size: 20px !important;
-                }
-            @endif
-
-            @if(!empty($companyInfo['input_color']))
-                :root {
-                    --primary-input-color: {{ $companyInfo['input_color'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-input-color: rgba(255, 255, 255, 0.75) !important;
-                }
-            @endif
-            
-            @if(!empty($companyInfo['input_font_family']))
-                :root {
-                    --primary-input-font-family: {{ $companyInfo['input_font_family'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-input-font-family: var(--bs-body-font-family) !important;
-                }
-            @endif
-            
-            @if(!empty($companyInfo['input_font_color']))
-                :root {
-                    --primary-input-font-color: {{ $companyInfo['input_font_color'] }} !important;
-                }
-            @else
-                :root {
-                    --primary-input-font-color: #666666 !important;
-                }
-            @endif
-
-            @if(!empty($companyInfo['input_font_size']))
-                :root {
-                    --primary-input-font-size: {{ $companyInfo['input_font_size'] }}px !important;
-                }
-            @else
-                :root {
-                    --primary-input-font-size: 16px !important;
-                }
-            @endif
-            @if(!empty($companyInfo['ride_color']))
-                :root {
-                    --primary-ride-color: {{ $companyInfo['ride_color'] }}px !important;
-                }
-            @else
-                :root {
-                    --primary-ride-color: 16px !important;
-                }
-            @endif
-
-
-
-
-
+            :root {
+            --primary-color: {{ $primaryColor }};
+            --primary-font-family: {{ $header_font_family }};
+            --primary-font-color: {{ $header_font_color }};
+            --primary-font-size: {{ $header_font_size }};
+            --primary-input-color: {{ $input_color }};
+            --primary-input-font-family: {{ $input_font_family }};
+            --primary-input-font-color: {{ $input_font_color }};
+            --primary-input-font-size: {{ $input_font_size }};
+            --primary-ride-color: {{ $ride_color }}
+            }
 
             .pending-ride-class-row{
                 background-color: var(--primary-color) !important;
@@ -210,19 +191,19 @@
             }
 
             body{
-                background-image: url(<?php echo $logoImage ?>);
+                background-image: url(<?php echo $backgroundImage ?>);
             }
 
             @media (max-width: 768px) {
-            .clockpicker-popover {
-                background-color: #fff; /* Change background color for mobile */
-                margin: 25px !important; /* Reduce padding for mobile */
-                align: right;
+                .clockpicker-popover {
+                    background-color: #fff; /* Change background color for mobile */
+                    margin: 25px !important; /* Reduce padding for mobile */
+                    align: right;
+                }
             }
-            }
-            
-
-        </style>
+            </style>
+    </head>
+    <body>
         @include('company.elements.header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">

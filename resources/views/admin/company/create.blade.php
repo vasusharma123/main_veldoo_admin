@@ -31,19 +31,25 @@
 															?>
 														</div>
 													</div>
-													<div class="col-lg-2 col-md-4 col-sm-4 col-4">
+													<!--<div class="col-lg-2 col-md-4 col-sm-4 col-4">
 														<div class="form-group">
 															<?php
-															echo Form::text('country_code',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '91']);
-															echo Form::label('country_code', 'Example: 41',['class'=>'']);
+															#echo Form::text('country_code',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '91']);
+															#echo Form::label('country_code', 'Example: 41',['class'=>'']);
 															?>
 														</div>
-													</div>
-													<div class="col-lg-4 col-md-8 col-sm-8 col-8">
+													</div>-->
+													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 														<div class="form-group">
+															<input class="form-control" name="country_code_iso" type="hidden" id="iso1" value="ch">
+															
+															<input class="form-control" name="country_code" type="hidden" id="country_code" value="41">
+													        
+															<input type="tel" class="form-control inputText" id="phone" name="phone" placeholder="1234" value="" required/>
+															<label for="phone">Example: +41 123 456 7899</label>
 															<?php
-															echo Form::text('phone',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '1234']);
-															echo Form::label('phone', 'Example: 123 456 7899',['class'=>'']);
+															#echo Form::text('phone',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '1234', 'id'=>'Regphones']);
+															#echo Form::label('phone', 'Example: 123 456 7899',['class'=>'']);
 															?>
 														</div>
 													</div>
@@ -135,20 +141,14 @@
 															?>
 														</div>
 													</div>
-													<div class="col-lg-2 col-md-4 col-sm-4 col-4">
+													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 														<div class="form-group">
-															<?php
-															echo Form::text('admin_country_code',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '91']);
-															echo Form::label('admin_country_code', 'Example: 41',['class'=>'']);
-															?>
-														</div>
-													</div>
-													<div class="col-lg-4 col-md-8 col-sm-8 col-8">
-														<div class="form-group">
-															<?php
-															echo Form::text('admin_phone',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => '1234']);
-															echo Form::label('admin_phone', 'Example: 123 456 7899',['class'=>'']);
-															?>
+															<input class="form-control" name="admin_country_code_iso" type="hidden" id="iso2" value="">
+													        
+															<input class="form-control" name="admin_country_code" type="hidden" id="admin_country_code" value="41">
+													        
+															<input type="tel" class="form-control inputText" id="admin_phone" name="admin_phone" placeholder="1234" value="" required/>
+															<label for="phone">Example: +41 123 456 7899</label>
 														</div>
 													</div>
 													<div class="col-lg-6 col-md-12 col-sm-12 col-12">
@@ -207,5 +207,27 @@
 @endsection	
 	
 @section('footer_scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
+<script>
+var input = document.querySelector("#admin_phone");
+var instance = window.intlTelInput(input, ({
+	initialCountry: "ch",
+	separateDialCode: true,
+}));
+input.addEventListener("countrychange", function() {
+	$("#iso2").val(instance.getSelectedCountryData().iso2);
+	$("#admin_country_code").val(instance.getSelectedCountryData().dialCode);
+});
 
+var input2 = document.querySelector("#phone");
+var instance2 = window.intlTelInput(input2, ({
+	initialCountry: "ch",
+	separateDialCode: true,
+}));
+input2.addEventListener("countrychange", function() {
+	$("#country_code").val(instance2.getSelectedCountryData().dialCode);
+	$("#iso1").val(instance2.getSelectedCountryData().iso2);
+});
+</script>
 @stop
