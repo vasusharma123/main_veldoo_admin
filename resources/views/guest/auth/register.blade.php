@@ -35,8 +35,11 @@
                                         <div class="col-12 p-0">
 
 
-                                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
-
+                                            @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                                            <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_img" alt="brand logo" />
+                                            @else
+                                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_img" />
+                                            @endif
 
                                             <div class="form_title text-center">
                                                 <h4 class="sub_title">Register</h4>

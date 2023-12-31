@@ -41,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
                 $companyInfo = Company::find($companyId);
             }
             $record = Auth::user();
+            $configuration = array();
             $setting = array();
             $service_provider_id = "";
             if (Auth::user() && Auth::user()->user_type == 3) {
@@ -49,8 +50,8 @@ class AppServiceProvider extends ServiceProvider
                 $service_provider_id = Auth::user()->service_provider_id;
             }
             if (!empty($service_provider_id)) {
-                $configuration = Setting::where(['service_provider_id' => $service_provider_id])->first()->value;
-                $setting = json_decode($configuration, true);
+                $configuration = Setting::where(['service_provider_id' => $service_provider_id])->first();
+                $setting = json_decode($configuration->value, true);
             }
             if (app('request')->route()) {
                 $action = app('request')->route()->getAction();
@@ -61,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
                 $data['currentUser'] = $record;
                 $data['body_class'] = Helper::clean($controller) . ' ' . Helper::clean($action);
             }
+            $data['configuration'] = $configuration;
             $data['setting'] = $setting;
             $data['companyInfo'] = $companyInfo;
             $view->with($data);
