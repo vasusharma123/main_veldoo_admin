@@ -53,7 +53,7 @@
                     <tr>
                         <td>
                             <div class="btnaction" style="text-align: center; display: block;">
-                                <a href="{{ route('selectPlan', $token) }}" class="btn" style="background: #FC4C02; color: white; padding: 13px; text-decoration: none; font-weight: 500; font-size: 20px; border-radius: 46px; box-shadow: 0px 3px 8px #00000040; display: inline-block; min-width: 108px;">Go live</a>
+                                <a href="{{ route('service-provider.selectPlan', $token) }}" class="btn" style="background: #FC4C02; color: white; padding: 13px; text-decoration: none; font-weight: 500; font-size: 20px; border-radius: 46px; box-shadow: 0px 3px 8px #00000040; display: inline-block; min-width: 108px;">Go live</a>
                             </div>
                         </td>
                         <td style="width: 28%;">

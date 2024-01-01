@@ -89,9 +89,9 @@ Route::get('service-provider/register_step3',  ['as'=>'service-provider.register
 Route::post('service-provider/register_step3_submit',  ['as'=>'service-provider.register_step3_submit','uses'=>'ServiceProviderController@register_step3_submit']);
 Route::get('service-provider/registration_finish',  ['as'=>'service-provider.registration_finish','uses'=>'ServiceProviderController@registration_finish']);
 Route::get('/service-provider/extendTwoWeekTestPlan/{token}',  ['as'=>'service-provider.extendTwoWeekTestPlan', 'uses'=>'ServiceProviderController@extendTwoWeekTestPlan']);
-Route::get('/service-provider/select-plan/{token}',  ['as'=>'selectPlan','uses'=>'ServiceProviderController@selectPlan']);
-Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
-Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser');
+Route::get('/service-provider/select-plan/{token}',  ['as'=>'service-provider.selectPlan','uses'=>'ServiceProviderController@selectPlan']);
+Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'service-provider.subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
+Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser')->name('service_provider.subscribed_plan');
 Route::get('/thankyou',  ['as'=>'thankyou','uses'=>'ServiceProviderController@thankyou']);
 
 /* Service provider registration end*/
