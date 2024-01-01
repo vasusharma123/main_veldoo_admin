@@ -5,7 +5,7 @@
         <div class="row">
             <div class="login_form_content col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="login_form_box_cover">
-                    <form class="login_form" action="{{ url('doLogin')}}" method="post" autocomplete="off">
+                    <form class="login_form" action="{{ route('company.doLogin')}}" method="post" autocomplete="off">
                         @csrf
                         @include('company.company_flash_message')
                         <div class="form-row">

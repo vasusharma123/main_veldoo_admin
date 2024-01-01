@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DriverChooseCar;
+use App\DriverStayActiveNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -246,14 +248,13 @@ class DriverController extends Controller
 	// public function update(Request $request, Posts $posts)
 	public function update(Request $request, $id)
 	{
-
 		$rules = [
-			'first_name' => 'required',
-			'last_name' => 'required',
-			'country_code' => 'required',
-			'phone' => 'required',
-			'email' => 'required|email',
-		];
+				'first_name' => 'required',
+				'last_name' => 'required',
+				'country_code' => 'required',
+				'phone' => 'required',
+				'email' => 'required|email',
+			];
 
 		if (!empty($request->password)) {
 			$rules['password'] = 'required|min:6';
@@ -261,35 +262,64 @@ class DriverController extends Controller
 		}
 
 		$request->validate($rules);
-		$input = $request->except(['_method', '_token']);
 
-		$input = $request->all();
+		DB::beginTransaction();
+		try {
+			$input = $request->except(['_method', '_token']);
 
-		$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
-		if (!empty($isUser) && $isUser->id != $id) {
-			return back()->withErrors(['message' => 'Phone number already exists']);
-		}
+			$input = $request->all();
 
-		$udata = User::find($id);
-		$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
-		if (!empty($request->image_tmp)) {
-
-			if (!empty($udata->image)) {
-				Storage::disk('public')->delete($udata->image);
+			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
+			if (!empty($isUser) && $isUser->id != $id) {
+				return back()->withErrors(['message' => 'Phone number already exists']);
 			}
 
-			$imgname = 'img-' . time() . '.' . $request->image_tmp->extension();
-
-			$input['image'] = Storage::disk('public')->putFileAs(
-				'drivers/' . $udata->id,
-				$request->image_tmp,
-				$imgname
+			$udata = User::find($id);
+			$input['phone'] = $this->phone_number_trim(
+				$request->phone,
+				$request->country_code
 			);
-		}
-		$input['is_active'] = $request->is_active??0;
-		$udata->update($input);
+			if (!empty($request->image_tmp)) {
 
-		return back()->with('success', trans('admin.Record updated!'));
+				if (!empty($udata->image)) {
+					Storage::disk('public')->delete($udata->image);
+				}
+
+				$imgname = 'img-' . time() . '.' . $request->image_tmp->extension();
+
+				$input['image'] = Storage::disk('public')->putFileAs(
+					'drivers/' . $udata->id,
+					$request->image_tmp,
+					$imgname
+				);
+			}
+			if ($request->is_active) {
+				$input['is_active'] = $request->is_active;
+				DriverStayActiveNotification::where(['driver_id' => $id])->delete();
+				$driverhoosecar = DriverChooseCar::where([
+					'user_id' => $id, 'service_provider_id' => Auth::user()->id, 'logout' => 0
+				])->orderBy('id', 'desc')->first();
+				if ($driverhoosecar) {
+					$driverhoosecar->logout_mileage = $driverhoosecar->mileage;
+					$driverhoosecar->logout = 1;
+					$driverhoosecar->save();
+				}
+				$input['device_token'] = "";
+				$input['availability'] = 0;
+			} else {
+				$input['is_active'] = 0;
+			}
+
+			$udata->update($input);
+			foreach (User::find($id)->tokens as $token) {
+				$token->revoke();
+			}
+			DB::commit();
+			return back()->with('success', 'Record updated!');
+		} catch (\Exception $exception) {
+			DB::rollBack();
+			return back()->with('error', $exception->getMessage());
+		}
 	}
 	
     public function destroy(Request $request)
