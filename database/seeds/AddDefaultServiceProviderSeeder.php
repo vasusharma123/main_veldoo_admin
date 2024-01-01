@@ -1,6 +1,7 @@
 <?php
 
 use App\Company;
+use App\DriverChooseCar;
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +149,13 @@ class AddDefaultServiceProviderSeeder extends Seeder
         ]);
 
         DB::table('user_vouchers')->where(function($query){
+            $query->where(['service_provider_id' => ''])
+            ->orWhereNull('service_provider_id');
+        })->update([
+            'service_provider_id' => 1
+        ]);
+
+        DriverChooseCar::where(function($query){
             $query->where(['service_provider_id' => ''])
             ->orWhereNull('service_provider_id');
         })->update([

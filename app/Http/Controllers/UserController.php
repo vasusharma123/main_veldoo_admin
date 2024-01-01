@@ -104,29 +104,6 @@ class UserController extends Controller
 		}
 	}
 
-	public function doLogin(Request $request){
-		$rules = [
-			'email' => 'required|email',
-			'password' => 'required|min:6',
-			// 'user_type'=>'required'
-		];
-		$request->validate($rules);
-		$input = $request->all();
-		$whereData = array('email' => $input['email'], 'password' => $input['password']);
-        if(auth()->attempt($whereData)){
-			if (in_array(Auth::user()->user_type,[4,5])) {
-				Auth::user()->syncRoles('Company');
-				return redirect()->route('company.rides','month');
-
-			}
-            return redirect()->route('users.dashboard');
-        } else{
-			Auth::logout();
-			return redirect()->back()->withErrors(['message' => 'Please check your credentials and try again.']);
-		}
-
-	}
-
 	public function doLoginGuest(Request $request){
 
 

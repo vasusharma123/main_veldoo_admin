@@ -166,11 +166,7 @@
                                                 <h4 class="permonthprice ">
                                                     {{ ($month_value->charges == 0)?'Free' : ($month_value->currency_type.' '.$month_value->charges . '/ month')}}
                                                 </h4>
-                                                @if($month_value->charges == 0)
                                                 <a href="/service-provider/subscribe-plan/{{ $token }}/{{$month_value->id}}"> <button class="btn submit_btn planBtnSelect mt-4">Select</button></a>
-                                                @else
-                                                <button class="btn submit_btn planBtnSelect mt-4" style="background:#FC4C02;color: #fff;" disabled>Select</button>
-                                                @endif
                                             </div>
                                         </section>
                                     </div>
@@ -249,7 +245,7 @@
                                                 <h4 class="permonthprice">
                                                     {{ $year_value->currency_type }} {{ $year_value->charges }} / year
                                                 </h4>
-                                                <button class="btn submit_btn planBtnSelect mt-4" style="background:#FC4C02;color: #fff;" disabled>Select</button>
+                                                <a href="/service-provider/subscribe-plan/{{ $token }}/{{$year_value->id}}"> <button class="btn submit_btn planBtnSelect mt-4">Select</button></a>
                                             </div>
                                         </section>
                                     </div>

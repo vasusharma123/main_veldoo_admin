@@ -102,7 +102,7 @@ class ServiceProviderController extends Controller
     public function serviceProviderVerify($token)
     {
         $verifyUser = User::where('is_email_verified_token', $token)->first();
-        if (!is_null($verifyUser)) {
+        if ($verifyUser) {
             if ($verifyUser->is_email_verified == 0) {
                 $verifyUser->is_email_verified = 1;
                 $verifyUser->update();
@@ -116,21 +116,6 @@ class ServiceProviderController extends Controller
                     'is_master' => 1
                 ]);
                 $driver->save();
-
-                //customer
-                // $user = new User();
-                // $user->fill([
-                //     'email' => 'user_' . $verifyUser->email,
-                //     'first_name' => $verifyUser->first_name,
-                //     'last_name' => $verifyUser->last_name,
-                //     'country_code' => $verifyUser->country_code,
-                //     'phone' => $verifyUser->phone,
-                //     'user_type' => 1,
-                //     'verify' => 1,
-                //     'password' => Hash::make($password),
-                //     'service_provider_id' => $verifyUser->id,
-                // ]);
-                // $user->save();
 
                 $settingValue = [
                     "admin_logo" => "",
@@ -343,16 +328,14 @@ class ServiceProviderController extends Controller
                 ]);
 
                 FacadesMail::to($verifyUser->email)->send(new UpdateSettingsOrGoLive($token));
+                return redirect()->route('service-provider.register_step1', ['token' => $token]);
+            } else {
+                if ($verifyUser->setting && $verifyUser->setting->is_subscribed == 0) {
+                    return redirect()->route('service-provider.register_step1', ['token' => $token]);
+                } else {
+                    return view('service_provider.already_subscribe_plan_error');
+                }
             }
-            // $data['user'] = $user;
-            // $data['driver'] = $driver;
-            // $data['serviceProvider'] = $verifyUser;
-            // $data['password'] = $password;
-            // // dd($data);
-            // $message = "Your e-mail is verified. We sent a mail with your login details.";
-            return redirect()->route('service-provider.register_step1', ['token' => $token]);
-
-            // return redirect()->route('adminLogin')->with('success', $message);
         } else {
             $message = 'Sorry your email cannot be identified.';
             return redirect()->route('service-provider.register')->with('error', $message);
@@ -586,27 +569,33 @@ class ServiceProviderController extends Controller
         try {
             $verifyUser = User::where('is_email_verified_token', $token)->first();
             if (!is_null($verifyUser) && $verifyUser->is_email_verified == 1) {
-                $setting = Setting::where(['service_provider_id' => $verifyUser->id])->first();
-                if ($setting->is_test_plan_updated == 0) {
-                    $setting->is_test_plan_updated = 1;
-                    if($setting->demo_expiry <= Carbon::today()){
-                        $setting->demo_expiry = Carbon::today()->addDays(14);
-                    } else {
-                        $demo_expiry = Carbon::createFromFormat('Y-m-d h:i:s', $setting->demo_expiry);
-                        $setting->demo_expiry = $demo_expiry->addDays(14);
-                    }
-                    $setting->save();
+                if ($verifyUser->setting && $verifyUser->setting->is_subscribed == 0 ) {
+                    $setting = Setting::where(['service_provider_id' => $verifyUser->id])->first();
+                    if ($setting->is_test_plan_updated == 0) {
+                        $setting->is_test_plan_updated = 1;
+                        if ($setting->demo_expiry <= Carbon::today()) {
+                            $setting->demo_expiry = Carbon::today()->addDays(14);
+                        } else {
+                            $demo_expiry = Carbon::createFromFormat('Y-m-d h:i:s', $setting->demo_expiry);
+                            $setting->demo_expiry = $demo_expiry->addDays(14);
+                        }
+                        $setting->save();
 
-                    FacadesMail::to($verifyUser->email)->send(new TestPeriodExtended($token));
+                        FacadesMail::to($verifyUser->email)->send(new TestPeriodExtended($token));
+                        return redirect()->route('service-provider.register_step1', ['token' => $token]);
+                    } else {
+                        return redirect()->route('service-provider.selectPlan', ['token' => $token]);
+                    }
+                } else {
+                    return view('service_provider.already_subscribe_plan_error');
                 }
-                return redirect()->route('service-provider.register_step1', ['token' => $token]);
             } else {
                 $message = 'Sorry your email cannot be identified.';
                 return redirect()->route('service-provider.register')->with('error', $message);
             }
         } catch (Exception $e) {
             Log::info('Exception in ' . __FUNCTION__ . ' in ' . __CLASS__ . ' in ' . $e->getLine() . ' --- ' . $e->getMessage());
-            return redirect()->route('service-provider.register_step1', ['token' => $token])->with('error', $e->getMessage());
+            return abort(404, $e->getMessage());
         }
     }
 
@@ -614,11 +603,19 @@ class ServiceProviderController extends Controller
     {
         try {
             $user_exist = User::where(['is_email_verified_token' => $token])->first();
-            $monthyPlan = Plan::where(['plan_type' => 'Monthly'])->get();
-            $yearlyPlan = Plan::where(['plan_type' => 'Yearly'])->get();
-            return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token, 'user_exist' => $user_exist]);
+            if ($user_exist && $user_exist->is_email_verified == 1) {
+                if($user_exist->setting && $user_exist->setting->is_subscribed == 0){
+                    $monthyPlan = Plan::where(['plan_type' => 'Monthly'])->get();
+                    $yearlyPlan = Plan::where(['plan_type' => 'Yearly'])->get();
+                    return view('service_provider.select_plan')->with(['monthyPlan' => $monthyPlan, 'yearlyPlan' => $yearlyPlan, 'token' => $token, 'user_exist' => $user_exist]);
+                } else {
+                    return view('service_provider.already_subscribe_plan_error');
+                }
+            } else {
+                return abort(404, "Link is expired");
+            }
         } catch (Exception $e) {
-            Log::info('Error in method selectPlan' . $e);
+            return abort(404, $e->getMessage());
         }
     }
 
