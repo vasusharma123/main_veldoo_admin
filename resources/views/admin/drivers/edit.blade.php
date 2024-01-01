@@ -178,19 +178,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
 <script>
-var input = document.querySelector("#phone");
-        var instance = window.intlTelInput(input, ({
-            initialCountry: "{{ $record->country_code_iso ?? 'ch' }}",
-            separateDialCode: true,
-        }));
-        input.addEventListener("countrychange", function() {
-            $("#iso2").val(instance.getSelectedCountryData().iso2);
-            $("#country_code").val(instance.getSelectedCountryData().dialCode);
-        });
+	var input = document.querySelector("#phone");
+	var instance = window.intlTelInput(input, ({
+		initialCountry: "{{ $record->country_code_iso ?? 'ch' }}",
+		separateDialCode: true,
+	}));
+	input.addEventListener("countrychange", function() {
+		$("#iso2").val(instance.getSelectedCountryData().iso2);
+		$("#country_code").val(instance.getSelectedCountryData().dialCode);
+	});
 
-$(document).ready(function() {
-		
-
+	$(document).ready(function() {
 		$(".salary-type-radio").change(function() {
             // Check if any radio button with the class 'salary-type-radio' is checked
             if ($(".salary-type-radio:checked").length > 0) {
@@ -203,13 +201,8 @@ $(document).ready(function() {
 				}else{
 					labelElement.text('Enter Percentage');
 				}
-				
             } 
         });
-
-		// $('.btn-close-salary').click(function(){
-		// 	$('.msg-for-salary').hide();
-		// });
 
 		$('.submit_salary').click(function(){
 			var selectedValue = $("input[name='salary_type']:checked").val();
@@ -241,12 +234,8 @@ $(document).ready(function() {
 			});
 			}
 			return false;
-			
-		
-
+		});
 	});
-
-});
 	function checkInput() {
         // Get the input and submit button elements
         var hourlyRateInput = document.getElementById('hourly_rate_input');
@@ -255,6 +244,5 @@ $(document).ready(function() {
         // Enable or disable the submit button based on the input value
         submitButton.disabled = hourlyRateInput.value.trim() === '';
     }
-		
 </script>
 @stop

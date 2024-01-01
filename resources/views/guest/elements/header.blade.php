@@ -5,7 +5,11 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="notify_menus">
-                        <img src="{{ asset('guest_assets/logos/TAXI2000.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5"/>
+                            @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                            <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_mobile_top me-5" alt="brand logo" />
+                            @else
+                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_mobile_top me-5" />
+                            @endif
                         
                             <div class="menus cs_menus ms-auto me-2">
                                 <nav class="navbar navbar-expand-lg newTop_menu">

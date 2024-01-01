@@ -22,6 +22,7 @@ class GuestUser
         $slugRecord = Setting::where(['slug' => $slug])->first();
         if ($slugRecord) {
             $request->attributes->add(['slugRecord' => $slugRecord]);
+            view()->share('themeSettings', $slugRecord);
             return $next($request);
         } else {
             abort(404, 'Unknown Host');

@@ -1,14 +1,28 @@
 @extends('guest.layouts.app')
+@section('css')
 <style>
+    .table_box {
+        overflow: auto;
+        height: 600px;
+    }
 
-.table_box { overflow: auto; height: 600px; }
-.table_box thead th { position: sticky; top: 0; z-index: 1; }
+    .table_box thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
 
-table  { border-collapse: collapse; width: 100%; }
-/* th, td { padding: 8px 16px; } */
-th     { background:#eee; }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
 
+    /* th, td { padding: 8px 16px; } */
+    th {
+        background: #eee;
+    }
 </style>
+@endsection
 @section('header_button')
     <button type="button" class="btn addNewBtn_cs me-4">
         <img src="{{ asset('new-design-company/assets/images/add_booking.svg') }}" alt="add icon " class="img-fluid add_booking_icon svg add_icon_svg" />

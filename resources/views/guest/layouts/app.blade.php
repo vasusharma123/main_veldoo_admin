@@ -30,21 +30,93 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet"/>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
         
-       
+        @php
+        if (!empty($themeSettings['background_image']) && file_exists('storage/' . $themeSettings['background_image'])) {
+            $backgroundImage = env('URL_PUBLIC') . '/' . $themeSettings['background_image'];
+        } else {
+            $backgroundImage = asset('assets/imgs/bg_body.png');
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_color)) {
+            $primaryColor = $themeSettings->header_color;
+        } else {
+            $primaryColor = '#FC4C02';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_family)) {
+            $header_font_family = $themeSettings->header_font_family;
+        } else {
+            $header_font_family = "'Oswald', sans-serif";
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_color)) {
+            $header_font_color = $themeSettings->header_font_color;
+        } else {
+            $header_font_color = '#ffffff';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_size)) {
+            $header_font_size = $themeSettings->header_font_size;
+        } else {
+            $header_font_size = '16px';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_color)) {
+            $input_color = $themeSettings->input_color;
+        } else {
+            $input_color = 'rgba(255, 255, 255, 0.5)';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_family)) {
+            $input_font_family = $themeSettings->input_font_family;
+        } else {
+            $input_font_family = 'var(--bs-body-font-family)';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_color)) {
+            $input_font_color = $themeSettings->input_font_color;
+        } else {
+            $input_font_color = '#212529';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_size)) {
+            $input_font_size = $themeSettings->input_font_size;
+        } else {
+            $input_font_size = '1rem';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->ride_color)) {
+            $ride_color = $themeSettings->ride_color;
+        } else {
+            $ride_color = '#356681';
+        }
+        @endphp
         <style>
             :root {
-                --primary-color: #d4ded4;
+                --primary-color: {{ $primaryColor }};
+                --primary-font-family: {{ $header_font_family }};
+                --primary-font-color: {{ $header_font_color }};
+                --primary-font-size: {{ $header_font_size }};
+                --primary-input-color: {{ $input_color }};
+                --primary-input-font-family: {{ $input_font_family }};
+                --primary-input-font-color: {{ $input_font_color }};
+                --primary-input-font-size: {{ $input_font_size }};
+                --primary-ride-color: {{ $ride_color }}
             }
-        </style>
-    </head>
-    <body>
-        
-    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
 
-        <style>
-            .pending-ride-class-row{
-                background-color: var(--primary-color) !important;
+            body {
+                background-image: url({{ $backgroundImage }});
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
             }
+
+            .pending-ride-class-row {
+                background-color: var(--primary-ride-color) !important;
+            }
+
             .alert-success {
                 --bs-alert-color: #0f5132 !important;
                 --bs-alert-bg: #fc4c02 !important;
@@ -54,12 +126,15 @@
                 margin-top: 30px !important;
                 margin-bottom: 0px !important;
             }
-            .active>.page-link, .page-link.active {
+
+            .active>.page-link,
+            .page-link.active {
                 z-index: 3;
                 color: white !important;
                 background-color: #fc4c02 !important;
                 border-color: #fc4c02 !important;
             }
+
             #googleMap {
                 background: #dfdfdf;
                 max-height: 250px;
@@ -67,6 +142,7 @@
                 height: 100%;
                 min-height: 250px;
             }
+
             #googleMapNewBooking {
                 background: #dfdfdf;
                 max-height: 250px;
@@ -74,54 +150,43 @@
                 height: 100%;
                 min-height: 250px;
             }
-            .selected
-            {
+
+            .selected {
                 background: white !important;
             }
-            .infomation_update
-            {
-                width:80px;
+
+            .infomation_update {
+                width: 80px;
                 margin-left: 10px;
                 border-radius: 10px;
                 padding: 5px;
                 font-size: 14px;
                 color: white;
             }
-            .fc-event
-            {
+
+            .fc-event {
                 cursor: pointer;
             }
-            .parsley-errors-list
-            {
+
+            .parsley-errors-list {
                 color: red;
                 padding: 0px;
                 list-style: none;
             }
-            .clockpicker-popover
-            {
+
+            .clockpicker-popover {
                 position: absolute !important;
                 top: 60% !important;
                 /* left: 50% !important; */
                 transform: translate(-50%, -50%) !important;
             }
-            .clockpicker-popover > .arrow
-            {
+
+            .clockpicker-popover>.arrow {
                 display: none !important;
             }
-
-            body{
-                background-image: url(<?php echo $logoImage ?>);
-                background-size: cover;
-                background-position: center;
-                width: 100%;
-                min-height: 100vh;
-                height: auto;
-            }
-
-
-            
-
         </style>
+        @yield('css')
+    </head>
         @include('guest.elements.header')
         <div class="main_content">
             <div class="dashbaord_bodycontent">
@@ -599,7 +664,11 @@
                                             
                                         <div class="form-row">
                                             <div class="col-12 p-0">
-                                            <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="Logo" class="img-fluid logo_img"/>
+                                                @if(!empty($themeSettings->logo) && file_exists('storage/'.$themeSettings->logo))
+                                                <img src="{{ env('URL_PUBLIC').'/'.$themeSettings->logo }}" class="img-fluid logo_img" alt="brand logo" />
+                                                @else
+                                                <img src="{{ asset('new-design-company/assets/images/brand_logo.png') }}" alt="brand logo" class="img-fluid logo_img" />
+                                                @endif
                                                 <div class="form_title text-center">
                                                 <h4 class="otp_main_title mb-4">{{ __('Enter your verification code')}}</h4>
                                                 <p class="sub_desc_otp">{{ __('Fill in the 4-digits verification code which we have shared on your registered phone number.')}}</p>
