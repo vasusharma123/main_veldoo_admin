@@ -22,15 +22,93 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/clockpicker/dist/jquery-clockpicker.min.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+        
+        @php
+        if (!empty($themeSettings['background_image']) && file_exists('storage/' . $themeSettings['background_image'])) {
+            $backgroundImage = env('URL_PUBLIC') . '/' . $themeSettings['background_image'];
+        } else {
+            $backgroundImage = asset('assets/imgs/bg_body.png');
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_color)) {
+            $primaryColor = $themeSettings->header_color;
+        } else {
+            $primaryColor = '#FC4C02';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_family)) {
+            $header_font_family = $themeSettings->header_font_family;
+        } else {
+            $header_font_family = "'Oswald', sans-serif";
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_color)) {
+            $header_font_color = $themeSettings->header_font_color;
+        } else {
+            $header_font_color = '#ffffff';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->header_font_size)) {
+            $header_font_size = $themeSettings->header_font_size;
+        } else {
+            $header_font_size = '16px';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_color)) {
+            $input_color = $themeSettings->input_color;
+        } else {
+            $input_color = 'rgba(255, 255, 255, 0.5)';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_family)) {
+            $input_font_family = $themeSettings->input_font_family;
+        } else {
+            $input_font_family = 'var(--bs-body-font-family)';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_color)) {
+            $input_font_color = $themeSettings->input_font_color;
+        } else {
+            $input_font_color = '#212529';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->input_font_size)) {
+            $input_font_size = $themeSettings->input_font_size;
+        } else {
+            $input_font_size = '1rem';
+        }
+
+        if (!empty($themeSettings) && !empty($themeSettings->ride_color)) {
+            $ride_color = $themeSettings->ride_color;
+        } else {
+            $ride_color = '#356681';
+        }
+        @endphp
         <style>
             :root {
-                --primary-color: #d4ded4;
+                --primary-color: {{ $primaryColor }};
+                --primary-font-family: {{ $header_font_family }};
+                --primary-font-color: {{ $header_font_color }};
+                --primary-font-size: {{ $header_font_size }};
+                --primary-input-color: {{ $input_color }};
+                --primary-input-font-family: {{ $input_font_family }};
+                --primary-input-font-color: {{ $input_font_color }};
+                --primary-input-font-size: {{ $input_font_size }};
+                --primary-ride-color: {{ $ride_color }}
+            }
+
+            body {
+                background-image: url({{ $backgroundImage }});
+                background-size: cover;
+                background-position: center;
+                width: 100%;
+                min-height: 100vh;
+                height: auto;
+                background-attachment: fixed;
             }
         </style>        
     </head>
     <body>
-    <?php $logoImage =  Auth::check() && !empty($companyInfo->background_image) ? config('app.url_public').'/'.$companyInfo->background_image :  '/images/bg_body.png' ?>
-
        
     <div class="main_content">
             @yield('content')
@@ -87,17 +165,4 @@
             });
         </script>
     </body>
-
-    <style>
-            body{
-                background-image: url(<?php echo $logoImage ?>);
-                background-size: cover;
-                background-position: center;
-                width: 100%;
-                min-height: 100vh;
-                height: auto;
-                background-attachment: fixed;
-            }
-
-        </style>
 </html>

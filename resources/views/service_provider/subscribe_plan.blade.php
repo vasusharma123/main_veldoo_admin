@@ -103,7 +103,7 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                             <div class="tab-content" id="planTabsButtonsContent">
                                 <div class="tab-pane fade show active" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
                                     <!--- Monthly Plan --->
-                                    <form class="input_form m-0" method="post" action="/subscribedPlan">
+                                    <form class="input_form m-0" method="post" action="{{ route('service_provider.subscribed_plan') }}">
                                         @csrf
                                         <input type="hidden" name="token" value="{{ $token }}">
                                         <input type="hidden" name="plan_id" value="{{ $plan_detail->id }}">
@@ -174,12 +174,15 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                                             </li>
                                                         </ul>
 
-                                                        <h4 class="permonthprice ">
-                                                            {{ ($plan_detail->charges == 0)?'Free' : ($plan_detail->currency_type.' '.$plan_detail->charges . '/ month')}}
+                                                        <h4 class="permonthprice">
+                                                            {{ ($plan_detail->charges == 0)?'Free' : ($plan_detail->currency_type.' '.$plan_detail->charges . (($plan_detail->plan_type == "Yearly")?" / year":" / month" ))}}
                                                         </h4>
                                                         {{-- <button class="btn submit_btn planBtnSelect mt-4">Select</button> --}}
                                                     </div>
                                                 </section>
+                                                @if($plan_detail->charges != 0)
+                                                <p class="notpara"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
+                                                @endif
                                             </div>
 
                                             @if($plan_detail->charges != 0)
@@ -191,21 +194,21 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                                                 <label class="required_field label_form">Card number</label>
                                                                 <div class="imgField position-relative">
 
-                                                                    <input type="text" pattern="[0-9]" class="form-control input_text textcardfield" placeholder="0000 0000 0000 0000" required />
+                                                                    <input type="text" pattern="[0-9]" class="form-control input_text textcardfield" placeholder="0000 0000 0000 0000" />
                                                                     <img src="{{ asset('service_provider_assets/imgs/cards.png')}}" class="cardsimgs img-fluid" alt="cards">
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 col_form_settings mb-2  ps-lg-0 ps-md-0 ">
                                                                 <label class="required_field label_form">Expiration date </label>
-                                                                <input type="month" class="form-control input_text" required />
+                                                                <input type="month" class="form-control input_text" />
                                                             </div>
                                                             <div class="col-lg-8 col-md-8 col-sm-12 col-12 col_form_settings mb-2 ps-lg-0 ps-md-0 ">
                                                                 <label class="required_field label_form">Country</label>
-                                                                <input type="text" class="form-control input_text" placeholder="Country" required />
+                                                                <input type="text" class="form-control input_text" placeholder="Country" />
                                                             </div>
                                                             <div class="col-lg-4 col-md-4 col-sm-12 col-12 col_form_settings mb-2  pe-lg-0 pe-md-0 p-sm-0">
                                                                 <label class="required_field label_form">Security Code</label>
-                                                                <input type="text" class="form-control input_text" placeholder="CVV" required />
+                                                                <input type="text" class="form-control input_text" placeholder="CVV" />
                                                             </div>
                                                         </div>
                                                         <div class="row m-0 w-100 subtotal_text">
@@ -216,7 +219,7 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                                             </div>
                                                             <div class="col-lg-6 col-md-6 col-sm-6 col-12 p-0">
                                                                 <h4 class="permonthprice text-end mb-0">
-                                                                    CHF 90 / month
+                                                                    {{ ($plan_detail->charges == 0)?'Free' : ($plan_detail->currency_type.' '.$plan_detail->charges . (($plan_detail->plan_type == "Yearly")?" / year":" / month" ))}}
                                                                 </h4>
                                                             </div>
                                                         </div>
@@ -232,7 +235,7 @@ $unCheckmarksImage = asset('service_provider_assets/imgs/uncheckmarks.png');
                                                 <button class="btn submit_btn planBtnSelect subsCribeBtn mt-0 mb-2 mx-2 me-0" type="submit" style="float: unset;">Subscribe now</button>
 
                                             </div>
-                                            <p class="notpara d-block my-2 text-end"><strong>NOTE:</strong><a href="#"> Need help? Contact our Help Center.</a></p>
+                                            
                                             @endif
                                             @if($plan_detail->charges == 0)
                                             <div class="action_plan_btn text-end d-flex flex-wrap justify-content-end">
