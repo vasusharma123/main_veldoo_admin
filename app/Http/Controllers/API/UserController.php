@@ -3049,22 +3049,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (!empty($request->distance)) {
 						$ride->distance = $request->distance;
 						$voucher = Voucher::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
-						$voucherValue = json_decode($voucher['value']);
-						$mile_per_ride = $voucherValue->mile_per_ride;
-						$distance = $request->distance;
-						$miles_got = round(($distance * $mile_per_ride) / 100);
-						$ride->miles_received = $miles_got;
+							if($voucher){
+								$voucherValue = json_decode($voucher['value']);
+								$mile_per_ride = $voucherValue->mile_per_ride;
+								$distance = $request->distance;
+								$miles_got = round(($distance * $mile_per_ride) / 100);
+								$ride->miles_received = $miles_got;
 
-						if (!empty($user_id)) {
-							if (strtolower($request->payment_type) != 'voucher') {
-								$uservoucher = new UserVoucher();
-								$uservoucher->miles = $miles_got;
-								$uservoucher->user_id = $user_id;
-								$uservoucher->ride_id = $request->ride_id;
-								$uservoucher->type = 1;
-								$uservoucher->save();
-							}
+								if (!empty($user_id)) {
+									if (strtolower($request->payment_type) != 'voucher') {
+										$uservoucher = new UserVoucher();
+										$uservoucher->miles = $miles_got;
+										$uservoucher->user_id = $user_id;
+										$uservoucher->ride_id = $request->ride_id;
+										$uservoucher->service_provider_id = Auth::user()->service_provider_id;
+										$uservoucher->type = 1;
+										$uservoucher->save();
+									}
+								}
 						}
+						
 					}
 				}
 				if ($request->status == -2) {
@@ -3129,7 +3133,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$uservoucher->user_id = $ride['user_id'];
 						$uservoucher->ride_id = $request->ride_id;
 						$uservoucher->type = 3;
-						$uservoucher->service_provider_id = $rideDetail->service_provider_id;
+						$uservoucher->service_provider_id = Auth::user()->service_provider_id;
 						$uservoucher->save();
 					}
 				}
