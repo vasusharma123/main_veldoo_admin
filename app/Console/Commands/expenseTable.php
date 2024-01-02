@@ -40,19 +40,19 @@ class expenseTable extends Command
      */
     public function handle()
     {
-    //    $expenseData =  Expense::get();
-    //    if($expenseData){
-    //     foreach ($expenseData as $single) {
-    //         // pending service provider iddb
-    //         $expenseUpdate = Expense::find($single->id);
-    //         // $expenseUpdate->type = 'expense';
-    //         // $expenseUpdate->type_detail = $single->type;
-    //            $expenseUpdate->service_provider_id = 1;
-    //         // $expenseUpdate->date = Carbon::parse($single->created_at)->format('Y-m-d');
-    //         $expenseUpdate->update();
+       $expenseData =  Expense::get();
+       if($expenseData){
+        foreach ($expenseData as $single) {
+            // pending service provider iddb
+            $expenseUpdate = Expense::find($single->id);
+            $expenseUpdate->type = 'expense';
+            $expenseUpdate->type_detail = $single->type;
+            $expenseUpdate->service_provider_id = 1;
+            $expenseUpdate->date = Carbon::parse($single->created_at)->format('Y-m-d');
+            $expenseUpdate->update();
         
-    //     } 
-    //    }
+        } 
+       }
     //    dd('expense table ');
        $thirtyDaysAgo = Carbon::now()->subDays(30);
         
