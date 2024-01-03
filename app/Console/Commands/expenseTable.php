@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\expense;
+use App\Expense;
 use Carbon\Carbon;
 use App\Ride;
 
