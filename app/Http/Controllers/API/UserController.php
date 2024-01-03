@@ -62,6 +62,7 @@ use \stdClass;
 use App\SMSTemplate;
 use App\Expense;
 use App\Salary;
+use App\Refer;
 
 class UserController extends Controller
 {
@@ -624,7 +625,7 @@ class UserController extends Controller
 			$input = $request->all();
 			// print_r($input ); die;
 			$input['password'] = Hash::make($request->password);
-			$input['refer_code'] = $this->generateRandomString(7);
+			//$input['refer_code'] = $this->generateRandomString(7);
 			$userData = \App\User::create($input);
 			// print_r($userData); die;
 			$userData->AauthAcessToken()->delete();
@@ -649,57 +650,42 @@ class UserController extends Controller
 					}
 				}
 			}
-
+			if (!empty($request->refer_code)) {
+				$refered_userdata = Refer::select('user_id', 'service_provider_id')->where('refer_code', $request->refer_code)->first();
+				if($refered_userdata){
+					$input['service_provider_id'] = $refered_userdata->service_provider_id;
+				}
+			}
+			
 			\App\User::where('id', $userData->id)->update($input);
 			$newUserData = User::where([['id', '=', $userData->id]])->first();
 			$newUserData->full_name = $newUserData->first_name . ' ' . $newUserData->last_name;
 
 			DB::commit();
 
-			if (!empty($request->refer_code)) {
-				$refered_userdata = User::select('id', 'refer_code')->where('refer_code', $request->refer_code)->first();
-
+			
+			
 				if (!empty($refered_userdata)) {
-					$voucher = \App\Voucher::first();
-					$voucherValue = json_decode($voucher['value']);
-					$mile_on_invitation = $voucherValue->mile_on_invitation;
+					$voucher = \App\Voucher::where('service_provider_id',$refered_userdata->service_provider_id)->first();
+					if($voucher){
+						$voucherValue = json_decode($voucher['value']);
+						$mile_on_invitation = $voucherValue->mile_on_invitation;
+						$uservoucher = new UserVoucher();
+						$uservoucher->miles = $mile_on_invitation;
+						$uservoucher->refer_code = $request->refer_code;
+						$uservoucher->user_id = $refered_userdata->user_id;
+						$uservoucher->service_provider_id = $refered_userdata->service_provider_id;
+						$uservoucher->refer_use_by = $newUserData->id;
+						$uservoucher->type = 2;
+						unset($uservoucher->created_at);
+						unset($uservoucher->updated_at);
 
+						$uservoucher->save();
+					}
+					
 
-					$uservoucher = new UserVoucher();
-					$uservoucher->miles = $mile_on_invitation;
-					$uservoucher->refer_code = $request->refer_code;
-					$uservoucher->user_id = $refered_userdata['id'];
-					$uservoucher->refer_use_by = $newUserData->id;
-					//$uservoucher->ride_id = 0;
-					$uservoucher->type = 2;
-
-
-					unset($uservoucher->created_at);
-					unset($uservoucher->updated_at);
-
-					$uservoucher->save();
-
-
-					/* $InvitationMile = new InvitationMile();
-				$InvitationMile->refer_code = $request->refer_code;
-				$InvitationMile->user_id = $refered_userdata['id'];
-
-
-
-
-				$InvitationMile->miles_received = $mile_on_invitation;
-            unset($InvitationMile->created_at);
-            unset($InvitationMile->updated_at);
-
-				$InvitationMile->save(); */
-
-					// $where = array('id' => $userData->id);
-					// $userd = DB::table('user')->select('*')->where($where)->first();
-
-					// $userd->refer_user_id = $refered_userdata['id'];
-					// $userd->save();
 				}
-			}
+			
 
 			return response()->json(['success' => true, 'message' => 'Register successfully.', 'user' => $newUserData, 'token' => $token], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
@@ -2880,7 +2866,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$ride->miles_received = $miles_got;
 
 								if (!empty($user_id)) {
-									if (strtolower($request->payment_type) != 'voucher') {
+								//	if (strtolower($request->payment_type) != 'voucher') {
 										$uservoucher = new UserVoucher();
 										$uservoucher->miles = $miles_got;
 										$uservoucher->user_id = $user_id;
@@ -2888,7 +2874,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 										$uservoucher->service_provider_id = Auth::user()->service_provider_id;
 										$uservoucher->type = 1;
 										$uservoucher->save();
-									}
+								//	}
 								}
 						}
 						
@@ -6142,9 +6128,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	{
 		$user = Auth::user();
 		$user_id = $user['id'];
+		
 
 		try {
-			$vouchers = UserVoucher::query()->where([['user_id', '=', $user_id]])->orderBy('id', 'desc')->get()->toArray();
+			$vouchers = UserVoucher::with('service_provider')->where([['user_id', '=', $user_id]])->orderBy('id', 'desc')->get()->toArray();
 			$plus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '!=', 3]])->sum('miles');
 			$minus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '=', 3]])->sum('miles');
 
@@ -7663,5 +7650,49 @@ public function logHours(Request $request)  {
 	}
 	
 }
+
+public function referCode(Request $request)  {
+	try{
+			
+		
+		DB::beginTransaction();
+		$rules = [
+			'user_id' => 'required',
+			'service_provider_id' => 'required|integer'
+		];
+
+		$referData = 	Refer::where('user_id',$request->user_id)->where('service_provider_id',$request->service_provider_id)->first();
+		if($referData){
+			return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $referData], $this->successCode);
+		}else{
+			$refer = new Refer();
+			$refer->refer_code = $this->generateRandomString(7);
+			$refer->user_id = $request->user_id;
+			$refer->service_provider_id = $request->service_provider_id;
+			$saved = $refer->save();
+			if($saved){
+				DB::commit();
+				$lastInsertedId = $refer->id;
+				$data = Refer::where('id',$lastInsertedId)->first();
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
+
+
+			}
+
+		}
+		
+
+	}catch (\Illuminate\Database\QueryException $exception) {
+		DB::rollBack();
+		$errorCode = $exception->errorInfo[1];
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	} catch (\Exception $exception) {
+		DB::rollBack();
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	}
+
+}
+
+
 
 }
