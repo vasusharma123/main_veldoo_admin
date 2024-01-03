@@ -33,7 +33,8 @@ class ExpenseController extends Controller
     public function add(Request $request)
     {
         $rules = [
-            'type' => 'required|max:100',
+            'type' => 'required',
+            'type_detail' => 'required|max:100',
             'amount' => 'required'
         ];
 
@@ -44,7 +45,7 @@ class ExpenseController extends Controller
         $userDetail = Auth::user();
         DB::beginTransaction();
         try {
-            $createExpense = Expense::create(['driver_id' => $userDetail->id, 'type' => $request->type, 'ride_id' => $request->ride_id ?? '', 'amount' => $request->amount, 'note' => $request->note ?? '']);
+            $createExpense = Expense::create(['driver_id' => $userDetail->id, 'type' => $request->type, 'ride_id' => $request->ride_id ?? '', 'amount' => $request->amount, 'note' => $request->note ?? '','service_provider_id' => $userDetail->service_provider_id, 'date' => Carbon::now()->format('Y-m-d'),'type_detail' => $request->type_detail]);
             if (!empty($request->attachments)) {
                 foreach ($request->attachments as $file_key => $file) {
                     $fileName = Storage::disk('public')->putFileAs(
@@ -77,7 +78,7 @@ class ExpenseController extends Controller
         if (!empty($request->user_id)) {
             $user_id = $request->user_id;
         }
-        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status', 'driver:id,first_name,last_name,image']);
+        $expense_list = Expense::with(['attachments', 'ride:id,ride_time,status', 'driver:id,first_name,last_name,image'])->where('type','expense');
         $total_expense = new Expense;
         if ($request->type == 1) {
             $month = $request->month;

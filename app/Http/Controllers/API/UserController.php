@@ -60,6 +60,8 @@ use Illuminate\Support\Facades\Validator;
 use Mail;
 use \stdClass;
 use App\SMSTemplate;
+use App\Expense;
+use App\Salary;
 
 class UserController extends Controller
 {
@@ -2694,6 +2696,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideStatusChange(Request $request)
 	{
+		//Log::info('In rideStatusChange method');
 		$logged_in_user = Auth::user();
 		$rules = [
 			'status' => 'required',
@@ -2704,10 +2707,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		if ($validator->fails()) {
 			return response()->json(['message' => trans('api.required_data'), 'error' => $validator->errors()], $this->warningCode);
 		}
+		//dd(Auth::user());
 		$settings = Setting::where('service_provider_id',Auth::user()->service_provider_id)->first();
-        $settingValue = json_decode($settings['value']);
+       
+		$settingValue = json_decode($settings['value']);
+		
 		try {
+			
 			$rideDetail = Ride::find($request->ride_id);
+			
 			$ride = Ride::find($request->ride_id);
 
 			if (!empty($request->note)) {
@@ -2718,6 +2726,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			if (!empty($ride)) {
+				$cost = $rideDetail->ride_cost;
 				if(!empty($request->user_id)){
 					$userdata = User::find($request->user_id);
 					$user_id = $request->user_id;
@@ -2912,6 +2921,88 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			$ride->save();
+			$deduction = null;
+			$expense_ride_cost = null;
+			if($request->payment_type){
+					if(strtolower($request->payment_type) == 'cash'){
+						//Log::info('In request rideStatusChange cash->'.$cost);
+					if (!empty($request->ride_cost)) {
+						$expense_ride_cost = $request->ride_cost;
+					}else{
+						$expense_ride_cost = $cost;
+					}
+					
+					$type = 'revenue';
+					$type_detail = 'cash';
+				}else{
+					//Log::info('In rideStatusChange else->'.$cost);
+					if (!empty($request->ride_cost)) {
+						$deduction = $request->ride_cost;
+					}else{
+					$deduction =  $cost;
+					}
+					$expense_ride_cost = $deduction;
+					$type = 'deduction';
+					$type_detail = $request->payment_type;
+				}
+				
+			}else{
+				//Log::info('In request payment  not ->');
+				if(strtolower($rideDetail->payment_type) == 'cash'){
+					$type = 'revenue';
+					$expense_ride_cost = $cost;
+					$type_detail = 'cash';
+				}else{
+					$deduction =  $cost;
+					$expense_ride_cost = $deduction;
+					$type = 'deduction';
+					$type_detail = $rideDetail->payment_type;
+				}
+				
+			}
+
+			$expense = new Expense();	
+			$expense->driver_id = $rideDetail->driver_id;
+			$expense->type = $type;
+			$expense->type_detail = $type_detail;
+			$expense->ride_id = $rideDetail->id;
+			$expense->revenue =  $expense_ride_cost;
+			$expense->deductions =  $deduction;
+			$expense->date = Carbon::now()->format('Y-m-d');
+			$expense->service_provider_id = $rideDetail->service_provider_id;
+			$expense->save();
+
+			$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
+			
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'revenue'){
+					$percentage = $salaryDetail->rate;
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = ($percentage * $expense_ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
+				}
+			}else{
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = (50 * $expense_ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
+			}
+
+			
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
@@ -5129,6 +5220,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 	public function rideEdit(Request $request)
 	{
+		//Log::info('ride edit');
 		// $rules = [
 		// 	'ride_id' => 'required',
 		// ];
@@ -5164,6 +5256,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		try {
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
+			$rideDetailNew = $rideDetail;
 			$all_ride_ids = [$request->ride_id];
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
@@ -5171,6 +5264,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			}
 			foreach ($all_ride_ids as $ride_key => $ride_id) {
+				//Log::info('->'.$ride_id);
 				$ride = Ride::find($ride_id);
 
 				if (!empty($request->start_location)) {
@@ -5272,6 +5366,117 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 0;
 				}
 				$ride->save();
+
+				// update ride expenses table
+				//Log::info($request->ride_id);
+				$expenseData = Expense::where('ride_id', $ride_id)->whereIn('type',['deduction','revenue'])->first();
+				
+				if($expenseData){
+				
+					if (!empty($request->payment_type)) {
+						Log::info($request->ride_id);
+						Log::info($expenseData);
+						$columnsToUpdate = [];
+						if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
+						{
+							Log::info('in if');
+							// payment type same check amount change
+							if (!empty($request->ride_cost)) {
+
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $request->ride_cost;
+								}else{
+									$columnsToUpdate['revenue'] =  $request->ride_cost;
+									$columnsToUpdate['deductions']  = $request->ride_cost;
+								}
+								
+							}
+
+						}else{
+
+							Log::info('in else');
+							// payment method different
+							if (!empty($request->ride_cost)) {
+								// ride cost also differ
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $request->ride_cost;
+									$columnsToUpdate['type']  = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+									$columnsToUpdate['deductions'] = null;
+								}else{
+									$columnsToUpdate['revenue'] =  $request->ride_cost;
+									$columnsToUpdate['deductions'] = $request->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}
+							}else{
+								// ride cost same
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['type'] = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+								}else{
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}
+								
+							}
+							
+
+						}
+						//dd($columnsToUpdate);
+						$expenseData->update($columnsToUpdate);
+					}else{
+						
+						if (!empty($request->ride_cost)) {
+							if($expenseData){
+								// open update salary for revenue base
+								$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
+								if($expenseSalaryData){
+									$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
+									if($salaryDetail){
+										$pay_type = $salaryDetail->type;
+										if($pay_type == 'revenue'){
+											$percentage = $salaryDetail->rate;
+											$percentageAmount = ($percentage * $request->ride_cost) / 100;
+											$salaryColumnsToUpdate['salary'] = $percentageAmount;
+											$expenseSalaryData->update($salaryColumnsToUpdate);
+										}
+
+									}else{
+											$percentage = 50;
+											$percentageAmount = ($percentage * $request->ride_cost) / 100;
+											$salaryColumnsToUpdate['salary'] = $percentageAmount;
+											$expenseSalaryData->update($salaryColumnsToUpdate);
+									}
+
+								}
+								
+								
+								//end update salary for revenue base
+
+								// open update payment type revenue and deduction data
+								$columnsToUpdate = [];
+									if(strtolower($rideDetailNew->payment_type == 'cash')){
+											$columnsToUpdate['revenue'] = $request->ride_cost;
+											$columnsToUpdate['type'] = 'revenue';
+											$columnsToUpdate['type_detail'] = 'cash';
+
+									}else{
+										$columnsToUpdate['deductions'] = $request->ride_cost;
+										$columnsToUpdate['revenue'] = $request->ride_cost;
+										$columnsToUpdate['type'] = 'deduction';
+									}
+									$expenseData->update($columnsToUpdate);
+
+									// end update payment type revenue and deduction data
+							}
+							
+						}
+
+					}
+
+				
+				}
 			}
 
 			// if (empty($rideDetail->user_id) && !empty($request->user_id) && !empty($ride->user) && empty($ride->user->password) && !empty($ride->user->phone)) {
@@ -7153,4 +7358,310 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['status' => 0, 'message' => $e->getMessage()], $this->warningCode);
 		}
 	}
+
+
+	public function getStatements(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			$rules = [
+				'driver_id' => 'required|integer',
+				'type' => 'required|string',
+
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			} 
+			$userId = $request->driver_id;
+			$driverData =  User::where('id', $userId)->first();
+			if(!$driverData){
+				return response()->json(['message' => "Driver not found"], $this->warningCode);
+			}
+		    $service_provider_id  =$driverData->service_provider_id;
+			
+			if($request->type == 'daily'){
+				
+				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				
+			}else if($request->type == 'weekly'){
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+				->paginate(10);
+				
+			}else if($request->type == 'monthly'){
+				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
+				->groupBy(DB::raw('MONTH(date)'))
+				->paginate(10);
+				
+			}
+			
+			if (!empty($data)) {
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
+			} else {
+				return response()->json(['message' => 'Record Not found'], $this->successCode);
+			}
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+	public function getStatementDetail(Request $request)
+	{
+		try {
+			DB::beginTransaction();
+			$rules = [
+				'driver_id' => 'required|integer',
+				'type' => 'required|string',
+				'date' => 'required',
+				'month' => 'required_if:type,monthly',
+				'week_number' => 'required_if:type,weekly',
+
+			];
+			$validator = Validator::make($request->all(), $rules);
+			if ($validator->fails()) {
+				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+			} 
+			$userId = $request->driver_id;
+			$driverData =  User::where('id', $userId)->first();
+			if(!$driverData){
+				return response()->json(['message' => "Driver not found"], $this->warningCode);
+			}
+		    $service_provider_id  =$driverData->service_provider_id;
+			$detailArray = [];
+			if($request->type == 'weekly'){
+				$carbonDate = Carbon::parse($request->date);
+				$year = $carbonDate->year;
+				$weekNumber = $request->week_number;
+				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
+				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
+				
+				$this->loopingForStatements($weeklyData,$detailArray);
+
+			}
+
+			if($request->type == 'monthly'){
+				$carbonDate = Carbon::parse($request->date);
+				$selectedYear = $carbonDate->year;
+				$month = $request->month;
+				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
+				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
+				->get()->toArray();
+
+				$this->loopingForStatements($monthlyData,$detailArray);
+
+			}
+			if($request->type == 'daily'){
+				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
+				->where('date', $request->date)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
+				->get()->toArray();
+				$this->loopingForStatements($dailyData,$detailArray);
+			}
+
+			if (!empty($detailArray)) {
+				$detailArray['driver_id'] = $userId;
+				$detailArray['type'] = $request->type;
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $detailArray], $this->successCode);
+			} else {
+				return response()->json(['message' => 'Record Not found'], $this->successCode);
+			}
+
+		} catch (\Illuminate\Database\QueryException $exception) {
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	}
+
+	public function loopingForStatements($userData, &$detailArray)
+	{
+		try{
+				foreach($userData as $single){
+
+					if($single['type'] == 'salary'){
+						$this->createStatementData($single, $detailArray,'salary','salary');
+
+					}else if($single['type'] == 'revenue'){
+					
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
+						
+					}else if($single['type'] == 'deduction'){
+						
+						$this->createStatementData($single, $detailArray,'deductions','deductions');
+
+						$this->createStatementData($single, $detailArray,'revenue','revenue');
+					}
+					else if($single['type'] == 'expense'){
+						
+						$this->createStatementData($single, $detailArray,'amount','expense');
+					}
+				}
+
+			} catch (\Illuminate\Database\QueryException $exception) {
+				$errorCode = $exception->errorInfo[1];
+				return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			} catch (\Exception $exception) {
+				return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+			}
+					
+					
+	}
+
+
+public function createStatementData($single, &$detailArray,$type,$method)
+{
+	try{
+		
+		if($type == 'salary'){
+			if (array_key_exists(strtolower($method) , $detailArray)) {
+
+				if($single['type_detail'] == 'revenue'){
+					if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+						$detailArray[$method]['revenue'] = $detailArray[$method]['revenue'] + $single[$type];
+					}else{
+						$detailArray[$method]['revenue'] =  $single[$type];
+					}
+					
+				}else{
+					$decoded = json_decode($single['type_detail']);
+					$decoded_type_detail = $decoded->type_detail;
+					$decoded_hours = $decoded->hours;
+					
+					if (array_key_exists('hourly' , $detailArray[$method])) {
+						$detailArray[$method]['hourly'] = $detailArray[$method]['hourly'] + $single[$type];
+						$detailArray[$method]['hours'] = $detailArray[$method]['hours'] + $decoded_hours;
+					}else{
+						$detailArray[$method]['hourly'] =  $single[$type];
+						$detailArray[$method]['hours'] =  $decoded_hours;
+					}
+
+				}
+
+			}else{
+				$type_detail = strtolower($single['type_detail']);
+				if($type_detail == 'revenue'){
+					$detailArray[$method]['revenue'] =  $single[$type];
+				}else{
+					$decoded = json_decode($type_detail);
+					$decoded_type_detail = $decoded->type_detail;
+					$decoded_hours = $decoded->hours;
+					$detailArray[$method]['hourly'] =  $single[$type];
+					$detailArray[$method]['hours'] = $decoded_hours;
+				}
+				
+			}
+		}else{
+			if (array_key_exists(strtolower($method) , $detailArray)) {
+				if (array_key_exists(strtolower($single['type_detail']) , $detailArray[$method])) {
+					$detailArray[$method][strtolower($single['type_detail'])] = $detailArray[$method][strtolower($single['type_detail'])] + $single[$type];
+				}else{
+					$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
+				}
+			}else{
+				$detailArray[$method][strtolower($single['type_detail'])] =  $single[$type];
+			}
+		}
+		
+		
+		
+	} catch (\Illuminate\Database\QueryException $exception) {
+		$errorCode = $exception->errorInfo[1];
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	} catch (\Exception $exception) {
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	}
+}
+
+public function logHours(Request $request)  {
+	try{
+			
+		
+		DB::beginTransaction();
+		$rules = [
+			'driver_id' => 'required|integer',
+			'date' => 'required|date_format:Y-m-d',
+			'hours' => 'required',
+			'service_provider_id' => 'required|integer'
+
+		];
+		$validator = Validator::make($request->all(), $rules);
+		if ($validator->fails()) {
+			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
+		} 
+		$userId = $request->driver_id;
+		$driverData =  User::where('id', $userId)->first();
+		if(!$driverData){
+			return response()->json(['message' => "Driver not found"], $this->warningCode);
+		}
+		$service_provider_id  =$request->service_provider_id;
+		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->where('type_detail','!=', 'revenue')->whereDate('date', $request->date)->first();
+		if($salaryData){
+		  $expenseId = $salaryData->id;
+		  $salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'hourly'){
+					$hourRate = $salaryDetail->rate;
+					$amount = $hourRate * $request->hours;
+				}
+
+				$amount = $hourRate * $request->hours;
+				$jsonData = json_encode(['type_detail' => 'hourly', 'hours' => $request->hours]);
+				$updated = Expense::where('id',$expenseId)->update(['type_detail' =>  $jsonData, 'salary' => $amount ]);
+				if($updated){
+					DB::commit();
+					return response()->json(['success' => true, 'message' => 'Hours updated successfully.'], $this->successCode);
+
+				}
+			}
+
+
+		}else{
+			$expense = new Expense();	
+			$expense->driver_id = $userId;
+			$expense->type = 'salary';
+			$jsonData = json_encode(['type_detail' => 'hourly', 'hours' => $request->hours]);
+			$expense->type_detail = $jsonData;
+			$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'hourly'){
+					$hourRate = $salaryDetail->rate;
+					$amount = $hourRate * $request->hours;
+					$expense->salary =  $amount;
+				}
+
+			}
+			//dd($salaryDetail);
+			$expense->date = $request->date;
+			$expense->service_provider_id = $service_provider_id;
+			$saved = $expense->save();
+			DB::commit();
+			$lastInsertedId = $expense->id;
+			if($saved){
+				return response()->json(['success' => true, 'message' => 'Hours Logged successfully.'], $this->successCode);
+			}
+			
+		}
+
+	}catch (\Illuminate\Database\QueryException $exception) {
+		DB::rollBack();
+		$errorCode = $exception->errorInfo[1];
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	} catch (\Exception $exception) {
+		DB::rollBack();
+		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+	}
+	
+}
+
 }
