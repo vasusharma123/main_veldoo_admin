@@ -68,7 +68,7 @@ class expenseTable extends Command
         $created_at  = $singleRide->created_at;
         if(strtolower($payment_type) == 'cash'){
             // type revenue 
-            $saveRevenue = new expense();
+            $saveRevenue = new Expense();
             $saveRevenue->driver_id = $driver_id;
             $saveRevenue->type = 'revenue';
             $saveRevenue->type_detail = 'cash';
@@ -80,7 +80,7 @@ class expenseTable extends Command
         }else{
             // type deduction
 
-            $saveDeduction = new expense();
+            $saveDeduction = new Expense();
             $saveDeduction->driver_id = $driver_id;
             $saveDeduction->type = 'deduction';
             $saveDeduction->type_detail = $payment_type;
@@ -95,7 +95,7 @@ class expenseTable extends Command
         
         // for salary
 
-            $saveSalary = new expense();
+            $saveSalary = new Expense();
             $saveSalary->driver_id = $driver_id;
             $saveSalary->type = 'salary';
             $saveSalary->type_detail = 'revenue';
