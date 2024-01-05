@@ -6131,9 +6131,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		
 
 		try {
-			$vouchers = UserVoucher::with('service_provider')->where([['user_id', '=', $user_id]])->orderBy('id', 'desc')->get()->toArray();
-			$plus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '!=', 3]])->sum('miles');
-			$minus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '=', 3]])->sum('miles');
+			$vouchers = UserVoucher::with('service_provider')->where([['user_id', '=', $user_id]])->where('service_provider_id',$user['service_provider_id'])->orderBy('id', 'desc')->get()->toArray();
+			$plus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '!=', 3]])->where('service_provider_id',$user['service_provider_id'])->sum('miles');
+			$minus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '=', 3]])->where('service_provider_id',$user['service_provider_id'])->sum('miles');
 
 			$total_miles = $plus_vouchers - $minus_vouchers;
 
