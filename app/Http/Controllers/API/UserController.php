@@ -2969,38 +2969,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$expense->save();
 			}
 			
-
-			$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
-			
-			if($salaryDetail){
-				$pay_type = $salaryDetail->type;
-				if($pay_type == 'revenue'){
-					$percentage = $salaryDetail->rate;
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = ($percentage * $expense_ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
-				}
-			}else{
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = (50 * $expense_ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
-			}
-
-			
+			$this->saveSalaryOmCompleteRide($rideDetail, $request);
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
@@ -5255,6 +5224,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
 			$rideDetailNew = $rideDetail;
+			//dd($rideDetailNew);
 			$all_ride_ids = [$request->ride_id];
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
@@ -5364,7 +5334,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 0;
 				}
 				$ride->save();
-
+				DB::Commit();
 				// update ride expenses table
 				//Log::info($request->ride_id);
 				$expenseData = Expense::where('ride_id', $ride_id)->whereIn('type',['deduction','revenue'])->first();
@@ -5376,8 +5346,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						if(strtolower($request->payment_type) == 'voucher'){
 							// delete existing expense entry and save miles
 							$expenseData->delete();
+							$this->deleteUserVoucher($ride_id,1);
 							$this->saveUserVoucher($ride_id,$request->miles_used);
+							Ride::where('id', $ride_id)->update(['miles_received' => null]);
 						}else{
+							
+							
 							$columnsToUpdate = [];
 							if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
 							{
@@ -5396,7 +5370,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 							}else{
 
-								Log::info('in else');
 								// payment method different
 								if (!empty($request->ride_cost)) {
 									// ride cost also differ
@@ -5425,37 +5398,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								
 
 							}
-							//dd($columnsToUpdate);
+
 							$expenseData->update($columnsToUpdate);
+							
 						}
+					//	
 					}else{
 						
 						if (!empty($request->ride_cost)) {
 							if($expenseData){
-								// open update salary for revenue base
-								$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
-								if($expenseSalaryData){
-									$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
-									if($salaryDetail){
-										$pay_type = $salaryDetail->type;
-										if($pay_type == 'revenue'){
-											$percentage = $salaryDetail->rate;
-											$percentageAmount = ($percentage * $request->ride_cost) / 100;
-											$salaryColumnsToUpdate['salary'] = $percentageAmount;
-											$expenseSalaryData->update($salaryColumnsToUpdate);
-										}
-
-									}else{
-											$percentage = 50;
-											$percentageAmount = ($percentage * $request->ride_cost) / 100;
-											$salaryColumnsToUpdate['salary'] = $percentageAmount;
-											$expenseSalaryData->update($salaryColumnsToUpdate);
-									}
-
-								}
 								
-								
-								//end update salary for revenue base
 
 								// open update payment type revenue and deduction data
 								$columnsToUpdate = [];
@@ -5483,31 +5435,16 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					// if payment type is voucher or no payment at all
 					if (!empty($request->payment_type)) {
 						$columnsToUpdate = [];
-						if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
-						{
-							// Log::info('in if');
-							// // payment type same check amount change
-							// if (!empty($request->ride_cost)) {
-
-							// 	if(strtolower($request->payment_type) == 'cash'){
-							// 		$columnsToUpdate['revenue'] = $request->ride_cost;
-							// 	}else{
-							// 		$columnsToUpdate['revenue'] =  $request->ride_cost;
-							// 		$columnsToUpdate['deductions']  = $request->ride_cost;
-							// 	}
-								
-							// }
-
-						}else{
-							
-							Log::info('in else');
-							// payment method different
+							// miles given
+							$this->giveMilesToUser($ride_id,$request->distance);
+							$this->deleteUserVoucher($ride_id,3);
 							$columnsToUpdate['driver_id'] = $rideDetailNew->driver_id;
 							$columnsToUpdate['service_provider_id'] = $rideDetailNew->service_provider_id;
 							$columnsToUpdate['date'] = Carbon::now()->format('Y-m-d');
+							$columnsToUpdate['ride_id'] = $ride_id;
 							if (!empty($request->ride_cost)) {
+
 								// ride cost also differ
-								$columnsToUpdate['revenue'] = $request->ride_cost;
 								if(strtolower($request->payment_type) == 'cash'){
 									$columnsToUpdate['revenue'] = $request->ride_cost;
 									$columnsToUpdate['type']  = 'revenue';
@@ -5520,25 +5457,31 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 									$columnsToUpdate['type_detail'] = $request->payment_type;
 								}
 							}else{
-								// // ride cost same
-								// if(strtolower($request->payment_type) == 'cash'){
-								// 	$columnsToUpdate['type'] = 'revenue';
-								// 	$columnsToUpdate['type_detail'] = 'cash';
-								// }else{
-								// 	$columnsToUpdate['type'] = 'deduction';
-								// 	$columnsToUpdate['type_detail'] = $request->payment_type;
-								// }
-								
-							}
+								// ride cost not changed
+
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $rideDetailNew->ride_cost;
+									$columnsToUpdate['type']  = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+									$columnsToUpdate['deductions'] = null;
+								}else{
+									$columnsToUpdate['revenue'] =  $rideDetailNew->ride_cost;
+									$columnsToUpdate['deductions'] = $rideDetailNew->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}							}
 
 							Expense::create($columnsToUpdate);			
 
-						}
-						//dd($columnsToUpdate);
+						
 								
 					}
 
 
+				}
+				if (!empty($request->ride_cost)) {
+
+					$this->updateSalaryOfRide($request,$ride_id);
 				}
 			}
 
@@ -5571,6 +5514,34 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 	}
 
+	public function updateSalaryOfRide($request, $ride_id){
+		// open update salary for revenue base
+		$ride =	Ride::where('id',$ride_id)->first();
+		$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
+		if($expenseSalaryData){
+			$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'revenue'){
+					$percentage = $salaryDetail->rate;
+					$percentageAmount = ($percentage * $request->ride_cost) / 100;
+					$salaryColumnsToUpdate['salary'] = $percentageAmount;
+					$expenseSalaryData->update($salaryColumnsToUpdate);
+				}
+
+			}else{
+					$percentage = 50;
+					$percentageAmount = ($percentage * $request->ride_cost) / 100;
+					$salaryColumnsToUpdate['salary'] = $percentageAmount;
+					$expenseSalaryData->update($salaryColumnsToUpdate);
+			}
+
+		}
+		
+		
+		//end update salary for revenue base
+	}
+
 	public function saveUserVoucher($ride_id,$miles_used){
 		$rideDetail = Ride::where('id',$ride_id)->first();
 		if ($rideDetail) {
@@ -5583,15 +5554,45 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$uservoucher->type = 3;
 					$uservoucher->service_provider_id = $rideDetail->service_provider_id;
 					$uservoucher->save();
+					DB::Commit();
 				}
 			}
 			
-		}
-
-
-				
+		}		
 			
 	}
+	
+	public function giveMilesToUser($ride_id,$distance){
+		
+		$rideDetail = Ride::where('id', $ride_id)->first();
+		if (!($distance)) {
+			$distance = $rideDetail->distance;
+		}	
+			$voucher = Voucher::where(['service_provider_id' => Auth::user()->service_provider_id])->first();
+			if($voucher){
+				$voucherValue = json_decode($voucher['value']);
+				$mile_per_ride = $voucherValue->mile_per_ride;
+				$miles_got = round(($distance * $mile_per_ride) / 100);
+				Ride::where('id', $ride_id)->update(['miles_received' => $miles_got]);
+				if (!empty($rideDetail->user_id)) {
+						$uservoucher = new UserVoucher();
+						$uservoucher->miles = $miles_got;
+						$uservoucher->user_id = $rideDetail->user_id;
+						$uservoucher->ride_id = $ride_id;
+						$uservoucher->type = 1;
+						$uservoucher->service_provider_id = Auth::user()->service_provider_id;
+						$uservoucher->save();
+				}
+			}
+
+	}
+
+	public function deleteUserVoucher($ride_id,$type){
+		$userVoucher = UserVoucher::where('ride_id',$ride_id)->where('type',$type)
+		->delete();
+	}
+	
+
 
 	public function waitingstatuschange(Request $request)
 	{
@@ -7747,6 +7748,38 @@ public function logHours(Request $request)  {
 		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 	}
 	
+}
+
+public function saveSalaryOmCompleteRide($rideDetail,$request)  {
+	$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
+			
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'revenue'){
+					$percentage = $salaryDetail->rate;
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = ($percentage * $request->ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
+				}
+			}else{
+					$expenseForSalary = new Expense();	
+					$expenseForSalary->driver_id = $rideDetail->driver_id;
+					$expenseForSalary->type = 'salary';
+					$expenseForSalary->type_detail = 'revenue';
+					$expenseForSalary->ride_id = $rideDetail->id;
+					$percentageAmount = (50 * $request->ride_cost) / 100;
+					$expenseForSalary->salary =  $percentageAmount;
+					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+					$expenseForSalary->save();
+			}
 }
 
 }
