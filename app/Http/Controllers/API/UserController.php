@@ -2866,7 +2866,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								$ride->miles_received = $miles_got;
 
 								if (!empty($user_id)) {
-								//	if (strtolower($request->payment_type) != 'voucher') {
+									if (strtolower($request->payment_type) != 'voucher') {
 										$uservoucher = new UserVoucher();
 										$uservoucher->miles = $miles_got;
 										$uservoucher->user_id = $user_id;
@@ -2874,7 +2874,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 										$uservoucher->service_provider_id = Auth::user()->service_provider_id;
 										$uservoucher->type = 1;
 										$uservoucher->save();
-								//	}
+									}
 								}
 						}
 						
