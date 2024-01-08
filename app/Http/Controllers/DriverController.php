@@ -240,7 +240,7 @@ class DriverController extends Controller
 		}
 		
 		$data['record'] = $record;
-		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->service_provider_id)->first();
+		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->id)->first();
 		$data['salary'] = $salary;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
