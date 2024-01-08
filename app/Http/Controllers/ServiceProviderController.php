@@ -23,6 +23,7 @@ use App\Mail\AccountVerificationEmail;
 use App\Mail\SpLoginCredentials;
 use App\Mail\TestPeriodExtended;
 use App\Mail\UpdateSettingsOrGoLive;
+use App\Salary;
 
 class ServiceProviderController extends Controller
 {
@@ -458,6 +459,17 @@ class ServiceProviderController extends Controller
                         }
                         $driver->fill($driverArray);
                         $driver->save();
+
+                        $driverId = $driver->id;
+                        $salary = new Salary();
+                        $salary->type = 'revenue';  
+                        $salary->rate = 50;
+                        $salary->driver_id = $driverId;
+                        $salary->service_provider_id = $user_exist->id;
+                        $salary->save();
+                        
+
+
                     }
                 }
                 return redirect()->route('service-provider.register_step2', ['token' => $request->service_provider_token]);
