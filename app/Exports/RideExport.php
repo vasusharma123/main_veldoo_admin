@@ -14,6 +14,7 @@ class RideExport implements FromCollection, WithHeadings
     {
         $this->from_date = $req_params['exp_start_date'];
         $this->to_date = $req_params['exp_end_date'];
+        $this->req_params = $req_params;
     }
 	
     /**
@@ -24,7 +25,12 @@ class RideExport implements FromCollection, WithHeadings
 		$from_date = $this->from_date;
 		$to_date = $this->to_date;
 		
-		$records = Ride::where('created_at', '>=', $from_date)->where('created_at', '<=', $to_date)->with(['driver', 'user', 'vehicle'])->orderBy('id', 'desc')->get();
+		$records = Ride::with(['driver', 'user', 'vehicle']);
+        $records = $records->whereDate('ride_time', '>=', $from_date)->whereDate('ride_time', '<=', $to_date);
+        if(!empty($this->req_params['selected_ride'])){
+            $records = $records->whereIn('id',$this->req_params['selected_ride']);
+        }
+        $records = $records->orderBy('id', 'desc')->get();
 		
 		/* echo '<pre>';
 		print_r($records->toArray());
