@@ -7435,7 +7435,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
-				$weekNumber = $request->week_number;
+				$weekNumber =  $this->convertNumber($request->week_number);
 				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
 				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
 				//Log::info(print_r($weeklyData,1));
@@ -7446,7 +7446,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->type == 'monthly'){
 				$carbonDate = Carbon::parse($request->date);
 				$selectedYear = $carbonDate->year;
-				$month = $request->month;
+				//$month = $request->month;
+				$month =  $this->convertNumber($request->month);
 				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
 				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
 				->get()->toArray();
@@ -7659,5 +7660,11 @@ public function logHours(Request $request)  {
 	}
 	
 }
+	public function convertNumber($number){
 
+		$numberWithLeadingZero = str_pad($number, 2, '0', STR_PAD_LEFT);
+
+		return $numberWithLeadingZero; 
+
+	}
 }
