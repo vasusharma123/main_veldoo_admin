@@ -22,7 +22,7 @@
 		<tbody>
 			@foreach ($rides as $record)
 			<tr>
-				<td class="text-center"><input type="checkbox" class="form-check-input child_checkbox"></td>
+				<td class="text-center"><input type="checkbox" name="selected_ride[]" class="form-check-input child_checkbox" value="{{$record->id}}"></td>
 				<td>{{ $record->id }}</td>
 				<td>{{ date('d/m/Y', strtotime($record->ride_time)) }}</td>
 				<td>{{ $record->first_name.' '.$record->last_name }}</td>
@@ -31,7 +31,7 @@
 				<td>{{ $record->pickup_address }}</td>
 				<td>{{ $record->dest_address }}</td>
 				<td class="text-center">{{ $record->distance }}km</td>
-				<td class="text-center">${{ $record->ride_cost }}</td>
+				<td class="text-center">{{ (!empty($record->ride_cost))?($setting['currency_symbol']." ".$record->ride_cost):"" }}</td>
 				<td>
 					@if ($record->status == 0)
 						<span class="statusbord process">Process</span>

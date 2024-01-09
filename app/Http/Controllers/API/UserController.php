@@ -7516,10 +7516,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
-				$weekNumber = $request->week_number;
+				$weekNumber =  $this->convertNumber($request->week_number);
 				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
 				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
-				
+				//Log::info(print_r($weeklyData,1));
 				$this->loopingForStatements($weeklyData,$detailArray);
 
 			}
@@ -7527,7 +7527,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->type == 'monthly'){
 				$carbonDate = Carbon::parse($request->date);
 				$selectedYear = $carbonDate->year;
-				$month = $request->month;
+				//$month = $request->month;
+				$month =  $this->convertNumber($request->month);
 				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
 				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
 				->get()->toArray();
@@ -7740,81 +7741,86 @@ public function logHours(Request $request)  {
 	}
 	
 }
+	public function convertNumber($number){
 
-public function saveSalaryOmCompleteRide($rideDetail,$request)  {
-	$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
-			
-			if($salaryDetail){
-				$pay_type = $salaryDetail->type;
-				if($pay_type == 'revenue'){
-					$percentage = $salaryDetail->rate;
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = ($percentage * $request->ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
-				}
-			}else{
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = (50 * $request->ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
-			}
-}
+		$numberWithLeadingZero = str_pad($number, 2, '0', STR_PAD_LEFT);
 
-public function referCode(Request $request)  {
-	try{
-			
-		
-		DB::beginTransaction();
-		$rules = [
-			'user_id' => 'required',
-			'service_provider_id' => 'required|integer'
-		];
+		return $numberWithLeadingZero; 
 
-		$referData = 	Refer::where('user_id',$request->user_id)->where('service_provider_id',$request->service_provider_id)->first();
-		if($referData){
-			return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $referData], $this->successCode);
-		}else{
-			$refer = new Refer();
-			$refer->refer_code = $this->generateRandomString(7);
-			$refer->user_id = $request->user_id;
-			$refer->service_provider_id = $request->service_provider_id;
-			$saved = $refer->save();
-			if($saved){
-				DB::commit();
-				$lastInsertedId = $refer->id;
-				$data = Refer::where('id',$lastInsertedId)->first();
-				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
-
-
-			}
-
-		}
-		
-
-	}catch (\Illuminate\Database\QueryException $exception) {
-		DB::rollBack();
-		$errorCode = $exception->errorInfo[1];
-		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
-	} catch (\Exception $exception) {
-		DB::rollBack();
-		return response()->json(['message' => $exception->getMessage()], $this->warningCode);
 	}
 
-}
-
-
-
+	public function saveSalaryOmCompleteRide($rideDetail,$request)  {
+		$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
+				
+				if($salaryDetail){
+					$pay_type = $salaryDetail->type;
+					if($pay_type == 'revenue'){
+						$percentage = $salaryDetail->rate;
+						$expenseForSalary = new Expense();	
+						$expenseForSalary->driver_id = $rideDetail->driver_id;
+						$expenseForSalary->type = 'salary';
+						$expenseForSalary->type_detail = 'revenue';
+						$expenseForSalary->ride_id = $rideDetail->id;
+						$percentageAmount = ($percentage * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+						$expenseForSalary->save();
+					}
+				}else{
+						$expenseForSalary = new Expense();	
+						$expenseForSalary->driver_id = $rideDetail->driver_id;
+						$expenseForSalary->type = 'salary';
+						$expenseForSalary->type_detail = 'revenue';
+						$expenseForSalary->ride_id = $rideDetail->id;
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+						$expenseForSalary->save();
+				}
+	}
+	
+	public function referCode(Request $request)  {
+		try{
+				
+			
+			DB::beginTransaction();
+			$rules = [
+				'user_id' => 'required',
+				'service_provider_id' => 'required|integer'
+			];
+	
+			$referData = 	Refer::where('user_id',$request->user_id)->where('service_provider_id',$request->service_provider_id)->first();
+			if($referData){
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $referData], $this->successCode);
+			}else{
+				$refer = new Refer();
+				$refer->refer_code = $this->generateRandomString(7);
+				$refer->user_id = $request->user_id;
+				$refer->service_provider_id = $request->service_provider_id;
+				$saved = $refer->save();
+				if($saved){
+					DB::commit();
+					$lastInsertedId = $refer->id;
+					$data = Refer::where('id',$lastInsertedId)->first();
+					return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
+	
+	
+				}
+	
+			}
+			
+	
+		}catch (\Illuminate\Database\QueryException $exception) {
+			DB::rollBack();
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			DB::rollBack();
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	
+	}
+	
 }

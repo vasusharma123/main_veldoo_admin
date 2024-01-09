@@ -54,6 +54,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('delete_temp_users:only_last_name')->daily();
         $schedule->command('delete_temp_users:only_phone_number')->daily();
         $schedule->command('database:backup')->daily();
+        $schedule->command('TestPlan:ExpireSoon')->at('01:00');
+        $schedule->command('TestPlan:ExpireTonight')->at('01:15');
     }
 
     /**
