@@ -2501,9 +2501,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$resnewarray = $resnewarray->where(['driver_id' => $user_id]);
 				$rideWithPayment = $rideWithPayment->where(['driver_id' => $user_id]);
 			}
-			$resnewarray = $resnewarray->where(['status' => 3]);
+			$resnewarray = $resnewarray->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher');
 			$paginated_rides = $resnewarray->orderBy('ride_time', 'desc')->paginate(20);
-			$rideWithPayment = $rideWithPayment->where(['status' => 3])->groupBy('payment_type')->get();
+			$rideWithPayment = $rideWithPayment->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher')->groupBy('payment_type')->get();
 
 			$total_earning = (float)$resnewarray->sum('ride_cost');
 			$cash_earning = (float)$resnewarray->where(['payment_type' => 'Cash'])->sum('ride_cost');
