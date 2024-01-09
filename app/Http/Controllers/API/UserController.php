@@ -7438,7 +7438,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$weekNumber = $request->week_number;
 				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
 				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
-				Log::info(print_r($weeklyData,1));
+				//Log::info(print_r($weeklyData,1));
 				$this->loopingForStatements($weeklyData,$detailArray);
 
 			}
