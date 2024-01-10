@@ -7363,7 +7363,11 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		$all_drivers = $all_drivers_qry->orderBy('first_name')->get();
 
 		foreach ($all_drivers as $driver_key => $driver_value) {
-			$driver_car = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0])->first();
+			$driver_car_qry = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0]);
+			if($request->service_provider_id){
+				$driver_car_qry->where('service_provider_id',$request->service_provider_id);
+			}
+			$driver_car = $driver_car_qry->first();
 			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
 			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
 		}
