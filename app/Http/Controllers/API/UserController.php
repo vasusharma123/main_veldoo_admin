@@ -7353,7 +7353,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 	}
 
-	public function all_drivers()
+	public function all_drivers(Request $request)
 	{
 		$user = Auth::user();
 		$all_drivers_qry = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2, 'is_active' => 1]);
