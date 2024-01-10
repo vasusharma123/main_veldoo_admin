@@ -5461,7 +5461,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 									$columnsToUpdate['type_detail'] = $request->payment_type;
 								}							}
 
-							Expense::create($columnsToUpdate);			
+							if(strtolower($request->payment_type) != 'voucher'){
+								Expense::create($columnsToUpdate);	
+							}
+									
 
 						
 								
