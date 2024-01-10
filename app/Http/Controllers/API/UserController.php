@@ -7375,6 +7375,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
 
+	public function allDrivers(Request $request)
+	{
+		$user = Auth::user();
+		$all_drivers_qry = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2, 'is_active' => 1]);
+		if($request->service_provider_id){
+			$all_drivers_qry->where('service_provider_id',$request->service_provider_id);
+		}
+		$all_drivers = $all_drivers_qry->orderBy('first_name')->get();
+
+		foreach ($all_drivers as $driver_key => $driver_value) {
+			$driver_car_qry = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0]);
+			if($request->service_provider_id){
+				$driver_car_qry->where('service_provider_id',$request->service_provider_id);
+			}
+			$driver_car = $driver_car_qry->first();
+			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
+			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
+		}
+		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
+	}
 	public function getUserInfoById(Request $request)
 	{
 		try {
