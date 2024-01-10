@@ -7555,6 +7555,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			if (!empty($detailArray)) {
+				$salaryData = Salary::where('service_provider_id',$service_provider_id)->where('driver_id',$userId)->first();
+				if($salaryData){
+					$detailArray['driver_paid_type'] = $salaryData->type;
+				}
 				$detailArray['driver_id'] = $userId;
 				$detailArray['type'] = $request->type;
 				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $detailArray], $this->successCode);
