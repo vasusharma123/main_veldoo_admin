@@ -85,6 +85,15 @@
                                                 </li>
 
                                                 <li class="nav-item w-100">
+                                                    <a class="nav-link <?php if($page == 'manager') { echo "active";  }  ?>" href="/manager">
+                                                        <img src="{{ asset('assets/imgs/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users" />
+                                                        <span class="sidebarText">Managers</span>
+                                                        <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+                                                    </a>
+                                                </li>
+
+
+                                                <li class="nav-item w-100">
                                                     <a class="nav-link <?php if($page == 'master-setting') { echo "active";  }  ?> " href="{{ route('master_admin.setting') }}">
                                                         <img src="{{ asset('assets/imgs/setting.png')}}" class="img-fluid w-100 sidebarImgs" alt="Settings" />
                                                         <span class="sidebarText">Settings</span>

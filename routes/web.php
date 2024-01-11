@@ -323,6 +323,6 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-setting',  'MasterAdmin\UsersController@getSettings')->name('master_admin.setting');
 	Route::get('master-logout',  ['as' => 'master_admin.logout','uses' => 'MasterAdmin\UsersController@logout']);
 	Route::get('/fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
-
+	Route::get('manager',  'MasterAdmin\ServiceProviderController@addManager');
 });
 
