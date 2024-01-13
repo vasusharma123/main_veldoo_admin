@@ -7564,23 +7564,29 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		    $service_provider_id  =$driverData->service_provider_id;
 			$detailArray = [];
 			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
-			if($salaryDetail){
-				if($salaryDetail->type == 'hourly'){
-					$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','!=', 'revenue');
-				}else{
-					$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','=', 'revenue');
-				}
-				
-			}else{
-				$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','=', 'revenue');
-			}
+			$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('driver_id',$userId)->where('service_provider_id',$service_provider_id);
+			
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
 				$weekNumber =  $this->convertNumber($request->week_number);
-				$weeklyData = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
-				//Log::info(print_r($weeklyData,1));
+				$weeklyDataWithoutSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','!=','salary');
+				
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','!=','revenue');
+
+					}else{
+						$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+					}
+				
+				} else{
+					$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+				}
+				
+
+				$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
+	
 				$this->loopingForStatements($weeklyData,$detailArray);
 
 			}
@@ -7590,24 +7596,48 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$selectedYear = $carbonDate->year;
 				//$month = $request->month;
 				$month =  $this->convertNumber($request->month);
-				$monthlyData = $query->whereYear('date', $selectedYear)
-				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
-
+				$monthlyDataWithoutSalary = $query->whereYear('date', $selectedYear)
+				->whereMonth('date', $month)->where('type','!=','salary');
+				
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
+					->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
+				}
+				
+				$monthlyData = 	$monthlyDataWithoutSalary->union($monthlyDataWithSalary)->get()->toArray();
 				$this->loopingForStatements($monthlyData,$detailArray);
 
 			}
 			if($request->type == 'daily'){
-				$dailyData = $query
-				->where('date', $request->date)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
+				$dailyDataWithoutSalary = $query
+				->where('date', $request->date)->where('type','!=','salary');
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$dailyDataWithSalary = $query
+						->where('date', $request->date)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$dailyDataWithSalary = $query
+						->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$dailyDataWithSalary = $query
+					->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+				}	
+				$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
 				$this->loopingForStatements($dailyData,$detailArray);
 			}
 
 			if (!empty($detailArray)) {
-				$salaryData = Salary::where('service_provider_id',$service_provider_id)->where('driver_id',$userId)->first();
-				if($salaryData){
-					$detailArray['driver_paid_type'] = $salaryData->type;
+				if($salaryDetail){
+					$detailArray['driver_paid_type'] = $salaryDetail->type;
 				}
 				$detailArray['driver_id'] = $userId;
 				$detailArray['type'] = $request->type;
