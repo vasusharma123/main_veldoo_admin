@@ -7569,19 +7569,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
+				$newQuery = clone  $query;
 				$weekNumber =  $this->convertNumber($request->week_number);
 				$weeklyDataWithoutSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','!=','salary');
 				
 				if($salaryDetail){
 					if($salaryDetail->type == 'hourly'){
-						$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','!=','revenue');
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','!=','revenue');
 
 					}else{
-						$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
 					}
 				
 				} else{
-					$weeklyDataSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+					$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
 				}
 				
 
@@ -7592,43 +7593,47 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 
 			if($request->type == 'monthly'){
+				
 				$carbonDate = Carbon::parse($request->date);
 				$selectedYear = $carbonDate->year;
 				//$month = $request->month;
 				$month =  $this->convertNumber($request->month);
+				$newQuery = clone  $query;
 				$monthlyDataWithoutSalary = $query->whereYear('date', $selectedYear)
 				->whereMonth('date', $month)->where('type','!=','salary');
 				
 				if($salaryDetail){
 					if($salaryDetail->type == 'hourly'){
-						$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
 						->whereMonth('date', $month)->where('type','salary')->where('type_detail','!=','revenue');
 					}else{
-						$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
-						->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','=','salary')->where('type_detail','=','revenue');
 					}
 				}else{
-					$monthlyDataWithSalary = $query->whereYear('date', $selectedYear)
+					$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
 					->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
 				}
-				
+				//dd($monthlyDataWithSalary->toSql());
 				$monthlyData = 	$monthlyDataWithoutSalary->union($monthlyDataWithSalary)->get()->toArray();
+				//dd($monthlyData);
 				$this->loopingForStatements($monthlyData,$detailArray);
 
 			}
 			if($request->type == 'daily'){
+				$newQuery = clone  $query;
 				$dailyDataWithoutSalary = $query
 				->where('date', $request->date)->where('type','!=','salary');
 				if($salaryDetail){
 					if($salaryDetail->type == 'hourly'){
-						$dailyDataWithSalary = $query
+						$dailyDataWithSalary = $newQuery
 						->where('date', $request->date)->where('type','salary')->where('type_detail','!=','revenue');
 					}else{
-						$dailyDataWithSalary = $query
+						$dailyDataWithSalary = $newQuery
 						->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
 					}
 				}else{
-					$dailyDataWithSalary = $query
+					$dailyDataWithSalary = $newQuery
 					->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
 				}	
 				$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
