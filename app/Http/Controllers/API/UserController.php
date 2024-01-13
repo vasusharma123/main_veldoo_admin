@@ -7589,7 +7589,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 				$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
 	
-				dd($weeklyDataSalary->get()->toArray());
+				dd($weeklyData);
 				$this->loopingForStatements($weeklyData,$detailArray);
 
 			}
