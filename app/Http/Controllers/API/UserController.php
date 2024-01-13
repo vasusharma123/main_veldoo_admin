@@ -7586,7 +7586,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 			
 				//$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
-				$this->loopingForStatements($weeklyData->get()->toArray(),$detailArray);
+				$this->loopingForStatements($weeklyDataSalary->get()->toArray(),$detailArray);
 				$this->loopingForStatements($weeklyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
