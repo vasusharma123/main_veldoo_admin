@@ -7613,10 +7613,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
 					->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
 				}
-				//dd($monthlyDataWithSalary->toSql());
-				$monthlyData = 	$monthlyDataWithoutSalary->union($monthlyDataWithSalary)->get()->toArray();
-				//dd($monthlyData);
-				$this->loopingForStatements($monthlyData,$detailArray);
+				
+				$this->loopingForStatements($monthlyDataWithSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($monthlyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
 			if($request->type == 'daily'){
@@ -7635,8 +7634,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$dailyDataWithSalary = $newQuery
 					->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
 				}	
-				$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
-				$this->loopingForStatements($dailyData,$detailArray);
+				//$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
+				$this->loopingForStatements($dailyDataWithoutSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($dailyDataWithSalary->get()->toArray(),$detailArray);
 			}
 
 			if (!empty($detailArray)) {
