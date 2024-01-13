@@ -7563,11 +7563,22 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
 			$detailArray = [];
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				if($salaryDetail->type == 'hourly'){
+					$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','!=', 'revenue');
+				}else{
+					$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','=', 'revenue');
+				}
+				
+			}else{
+				$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('type_detail','=', 'revenue');
+			}
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
 				$weekNumber =  $this->convertNumber($request->week_number);
-				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
+				$weeklyData = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
 				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
 				//Log::info(print_r($weeklyData,1));
 				$this->loopingForStatements($weeklyData,$detailArray);
@@ -7579,7 +7590,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$selectedYear = $carbonDate->year;
 				//$month = $request->month;
 				$month =  $this->convertNumber($request->month);
-				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
+				$monthlyData = $query->whereYear('date', $selectedYear)
 				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
 				->get()->toArray();
 
@@ -7587,7 +7598,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 			}
 			if($request->type == 'daily'){
-				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
+				$dailyData = $query
 				->where('date', $request->date)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
 				->get()->toArray();
 				$this->loopingForStatements($dailyData,$detailArray);
@@ -7805,34 +7816,28 @@ public function logHours(Request $request)  {
 
 	public function saveSalaryOmCompleteRide($rideDetail,$request)  {
 		$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
-				
+		$expenseForSalary = new Expense();
 				if($salaryDetail){
 					$pay_type = $salaryDetail->type;
 					if($pay_type == 'revenue'){
 						$percentage = $salaryDetail->rate;
-						$expenseForSalary = new Expense();	
-						$expenseForSalary->driver_id = $rideDetail->driver_id;
-						$expenseForSalary->type = 'salary';
-						$expenseForSalary->type_detail = 'revenue';
-						$expenseForSalary->ride_id = $rideDetail->id;
 						$percentageAmount = ($percentage * $request->ride_cost) / 100;
 						$expenseForSalary->salary =  $percentageAmount;
-						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-						$expenseForSalary->save();
+					}else{
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
 					}
 				}else{
-						$expenseForSalary = new Expense();	
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+				}
 						$expenseForSalary->driver_id = $rideDetail->driver_id;
 						$expenseForSalary->type = 'salary';
 						$expenseForSalary->type_detail = 'revenue';
 						$expenseForSalary->ride_id = $rideDetail->id;
-						$percentageAmount = (50 * $request->ride_cost) / 100;
-						$expenseForSalary->salary =  $percentageAmount;
 						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
 						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
 						$expenseForSalary->save();
-				}
 	}
 	
 	public function referCode(Request $request)  {
