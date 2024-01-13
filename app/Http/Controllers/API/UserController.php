@@ -7584,11 +7584,12 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				} else{
 					$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
 				}
-				dd($weeklyDataSalary->get()->toArray());
+				
 				
 
 				$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
 	
+				dd($weeklyDataSalary->get()->toArray());
 				$this->loopingForStatements($weeklyData,$detailArray);
 
 			}
