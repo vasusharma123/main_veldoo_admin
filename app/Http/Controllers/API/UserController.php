@@ -7506,25 +7506,79 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => "Driver not found"], $this->warningCode);
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
-			
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				$salaryType = $salaryDetail->type;
+			}else{
+				$salaryType = 'revenue';
+			}	
 			if($request->type == 'daily'){
 				
-				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				if($salaryType == 'hourly'){
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				}else{
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'),'expenses.id', 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+						->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+						->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+						->where(function ($query) {
+							$query->where('expenses.type','revenue')
+							->orWhere('expenses.type','deduction')
+							->orWhere('expenses.type','expense')
+							->orWhere('expenses.type_detail','revenue');
+						})
+						->groupBy('date')->orderBy('date','desc')
+						->paginate(10);
+
+				}
+
 				
 			}else if($request->type == 'weekly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}
 				
 			}else if($request->type == 'monthly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
-				->groupBy(DB::raw('MONTH(date)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+
+				}
 				
 			}
 			
