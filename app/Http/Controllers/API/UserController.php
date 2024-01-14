@@ -7773,6 +7773,15 @@ public function logHours(Request $request)  {
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		} 
+
+		$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+		if($salaryDetail){
+			$pay_type = $salaryDetail->type;
+			if($pay_type != 'hourly'){
+				return response()->json(['message' => "Hourly type not accepted by this driver."], $this->warningCode);
+
+			}
+		}
 		$userId = $request->driver_id;
 		$driverData =  User::where('id', $userId)->first();
 		if(!$driverData){
