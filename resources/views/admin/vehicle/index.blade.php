@@ -1,31 +1,19 @@
 @extends('admin.layouts.master')
 
 @section('content')
-<main class="body_content">
-	<div class="inside_body">
-		<div class="container-fluid p-0">
-			<div class="row m-0 w-100">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
-					<div class="body_flow">
-						@include('admin.layouts.sidebar')
-						<div class="formTableContent">
-							<section class="addonTable sectionsform">
-								@include('admin.layouts.flash-message')
-								<article class="container-fluid">
-									<input name="page" type="hidden">
-									<div id="allDataUpdate">
-										@include("admin.vehicle.index_element")
-									</div>
-								</article>
-							</section>
-						</div>
-					</div>
-					
+
+	<div class="formTableContent">
+		<section class="addonTable sectionsform">
+			@include('admin.layouts.flash-message')
+			<article class="container-fluid">
+				<input name="page" type="hidden">
+				<div id="allDataUpdate">
+					@include("admin.vehicle.index_element")
 				</div>
-			</div>
-		</div>
+			</article>
+		</section>
 	</div>
-</main>
+					
 @endsection	
 	
 @section('footer_scripts')
@@ -123,5 +111,58 @@ function ajaxCall(id=0, text='', orderby, order, page=1 , status='',type='') {
 		}
 	});
 }
+</script>
+<script type="text/javascript">
+	$('body').on('keypress', '.custFloatVal', function(event) {
+		if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+			event.preventDefault();
+		}
+	});
+
+	$('body').on('keydown', '.custNumFieldCls', function(e) {
+		if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8)) {
+			return false;
+		}
+	});
+
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, '\\$&');
+		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	}
+
+	$(function() {
+
+		$('body').on('click', '.pagination a', function(e) {
+			e.preventDefault();
+			$("#loading").fadeIn("slow");
+			var url = $(this).attr('href');
+			paginate(url);
+			// window.history.pushState("", "", url);
+		});
+
+		function paginate(url) {
+			//var orderby = $('input[name="orderBy"]').val();
+			//var order = $('input[name="order"]').val();
+			$.ajax({
+				url: url
+			}).done(function(data) {
+				$("#loading").fadeOut("slow");
+				$('#allDataUpdate').html(data);
+				var page = getParameterByName('page', url);
+				$('input[name="page"]').val(page);
+				//console.log(page);
+				//$('.custom-userData-sort[orderBy="'+orderby+'"] > i').removeClass('fa-sort fa-sort-desc fa-sort-asc').addClass('fa-sort-'+order);
+				//$('.custom-userData-sort[orderby="'+orderby+'"]').attr('order', (order=='asc' ? 'desc' : 'asc'));
+			}).fail(function() {
+				$("#loading").fadeOut("slow");
+				swal("Server Timeout!", "Please try again", "warning");
+			});
+		}
+	});
 </script>
 @stop

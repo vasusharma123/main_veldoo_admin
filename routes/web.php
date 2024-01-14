@@ -173,10 +173,11 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('/drivers/master',  ['as'=>'drivers.master','uses'=>'DriverController@masterDriver']);
 	
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController',
-	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
+	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);
-	
-	Route::post('rides/export','RideController@exportRides')->name('rides.export');
+	// ,'rides'=>'RideController'
+	Route::get('/rides/{type?}','RideController@index')->name('rides.index');
+	Route::get('service_provider/rides/export','RideController@exportRides')->name('rides.export');
 
 	Route::get('daily-report','DailyReportController@index')->name('daily-report.index');
 	Route::get('report/vehicles','DailyReportController@vehicles')->name('daily-report.vehicles');
@@ -215,7 +216,6 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('driver/{id}/bookings/','UserController@driverBooking');
 	Route::get('/exportExcel/{type}','UserController@exportExcel');
 	Route::get('/export-booking/{id?}','BookingController@exportExcel');
-	Route::get('ride/export','RideController@rideExport')->name('ride/export');
 	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);

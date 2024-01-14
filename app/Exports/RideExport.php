@@ -9,11 +9,14 @@ use Illuminate\Support\Facades\DB;
 
 class RideExport implements FromCollection, WithHeadings
 {
+    protected $from_date;
+    protected $to_date;
+    protected $req_params;
 	
 	public function __construct($req_params=array()) 
     {
-        $this->from_date = $req_params['exp_start_date'];
-        $this->to_date = $req_params['exp_end_date'];
+        $this->from_date = $req_params['start_date'];
+        $this->to_date = $req_params['end_date'];
         $this->req_params = $req_params;
     }
 	
@@ -24,17 +27,17 @@ class RideExport implements FromCollection, WithHeadings
     {
 		$from_date = $this->from_date;
 		$to_date = $this->to_date;
+        $req_params = $this->req_params;
 		
 		$records = Ride::with(['driver', 'user', 'vehicle']);
         $records = $records->whereDate('ride_time', '>=', $from_date)->whereDate('ride_time', '<=', $to_date);
         if(!empty($this->req_params['selected_ride'])){
             $records = $records->whereIn('id',$this->req_params['selected_ride']);
         }
+        if(!empty($req_params['search'])){
+            $records = $records->where('pickup_address', 'like', '%' . $req_params['search'] . '%');
+        }
         $records = $records->orderBy('id', 'desc')->get();
-		
-		/* echo '<pre>';
-		print_r($records->toArray());
-		exit; */
 		
 		$rideStatus = ['0' => "Process", '1' => "Accepted By Driver", '2' => "Ride Start", '3' => "Completed", '4' => "Driver Reached To Customer", '-2' => "Cancelled", '-4' => "Pending"];
 		
