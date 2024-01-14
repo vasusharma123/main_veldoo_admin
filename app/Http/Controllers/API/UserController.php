@@ -7773,7 +7773,8 @@ public function logHours(Request $request)  {
 		if ($validator->fails()) {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		} 
-
+		$userId = $request->driver_id;
+		$service_provider_id  =$request->service_provider_id;
 		$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
 		if($salaryDetail){
 			$pay_type = $salaryDetail->type;
@@ -7782,12 +7783,12 @@ public function logHours(Request $request)  {
 
 			}
 		}
-		$userId = $request->driver_id;
+		
 		$driverData =  User::where('id', $userId)->first();
 		if(!$driverData){
 			return response()->json(['message' => "Driver not found"], $this->warningCode);
 		}
-		$service_provider_id  =$request->service_provider_id;
+		
 		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->where('type_detail','!=', 'revenue')->whereDate('date', $request->date)->first();
 		if($salaryData){
 		  $expenseId = $salaryData->id;
