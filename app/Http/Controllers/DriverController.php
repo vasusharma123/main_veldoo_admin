@@ -376,7 +376,7 @@ class DriverController extends Controller
 
 			}
 		}else{
-			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id',Auth::user()->service_provider_id)->update(['type' => $request->type, 'rate' => $request->value]);
+			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id', Auth::user()->id)->update(['type' => $request->type, 'rate' => $request->value]);
 			if($updated){
 				DB::commit();
 				$this->updateRideForDriver($request->driver_id, Auth::user()->id);
