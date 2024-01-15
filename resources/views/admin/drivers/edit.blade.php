@@ -229,7 +229,7 @@
 					
 				},
 				error: function (error) {
-					console.log('Error:', error.responseJSON.message);
+				//	console.log('Error:', error.responseJSON.message);
 				}
 			});
 			}
