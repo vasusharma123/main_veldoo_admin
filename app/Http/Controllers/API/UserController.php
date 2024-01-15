@@ -62,6 +62,7 @@ use \stdClass;
 use App\SMSTemplate;
 use App\Expense;
 use App\Salary;
+use App\Refer;
 
 class UserController extends Controller
 {
@@ -624,7 +625,7 @@ class UserController extends Controller
 			$input = $request->all();
 			// print_r($input ); die;
 			$input['password'] = Hash::make($request->password);
-			$input['refer_code'] = $this->generateRandomString(7);
+			//$input['refer_code'] = $this->generateRandomString(7);
 			$userData = \App\User::create($input);
 			// print_r($userData); die;
 			$userData->AauthAcessToken()->delete();
@@ -649,57 +650,42 @@ class UserController extends Controller
 					}
 				}
 			}
-
+			if (!empty($request->refer_code)) {
+				$refered_userdata = Refer::select('user_id', 'service_provider_id')->where('refer_code', $request->refer_code)->first();
+				if($refered_userdata){
+					$input['service_provider_id'] = $refered_userdata->service_provider_id;
+				}
+			}
+			
 			\App\User::where('id', $userData->id)->update($input);
 			$newUserData = User::where([['id', '=', $userData->id]])->first();
 			$newUserData->full_name = $newUserData->first_name . ' ' . $newUserData->last_name;
 
 			DB::commit();
 
-			if (!empty($request->refer_code)) {
-				$refered_userdata = User::select('id', 'refer_code')->where('refer_code', $request->refer_code)->first();
-
+			
+			
 				if (!empty($refered_userdata)) {
-					$voucher = \App\Voucher::first();
-					$voucherValue = json_decode($voucher['value']);
-					$mile_on_invitation = $voucherValue->mile_on_invitation;
+					$voucher = \App\Voucher::where('service_provider_id',$refered_userdata->service_provider_id)->first();
+					if($voucher){
+						$voucherValue = json_decode($voucher['value']);
+						$mile_on_invitation = $voucherValue->mile_on_invitation;
+						$uservoucher = new UserVoucher();
+						$uservoucher->miles = $mile_on_invitation;
+						$uservoucher->refer_code = $request->refer_code;
+						$uservoucher->user_id = $refered_userdata->user_id;
+						$uservoucher->service_provider_id = $refered_userdata->service_provider_id;
+						$uservoucher->refer_use_by = $newUserData->id;
+						$uservoucher->type = 2;
+						unset($uservoucher->created_at);
+						unset($uservoucher->updated_at);
 
+						$uservoucher->save();
+					}
+					
 
-					$uservoucher = new UserVoucher();
-					$uservoucher->miles = $mile_on_invitation;
-					$uservoucher->refer_code = $request->refer_code;
-					$uservoucher->user_id = $refered_userdata['id'];
-					$uservoucher->refer_use_by = $newUserData->id;
-					//$uservoucher->ride_id = 0;
-					$uservoucher->type = 2;
-
-
-					unset($uservoucher->created_at);
-					unset($uservoucher->updated_at);
-
-					$uservoucher->save();
-
-
-					/* $InvitationMile = new InvitationMile();
-				$InvitationMile->refer_code = $request->refer_code;
-				$InvitationMile->user_id = $refered_userdata['id'];
-
-
-
-
-				$InvitationMile->miles_received = $mile_on_invitation;
-            unset($InvitationMile->created_at);
-            unset($InvitationMile->updated_at);
-
-				$InvitationMile->save(); */
-
-					// $where = array('id' => $userData->id);
-					// $userd = DB::table('user')->select('*')->where($where)->first();
-
-					// $userd->refer_user_id = $refered_userdata['id'];
-					// $userd->save();
 				}
-			}
+			
 
 			return response()->json(['success' => true, 'message' => 'Register successfully.', 'user' => $newUserData, 'token' => $token], $this->successCode);
 		} catch (\Illuminate\Database\QueryException $exception) {
@@ -2515,9 +2501,9 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$resnewarray = $resnewarray->where(['driver_id' => $user_id]);
 				$rideWithPayment = $rideWithPayment->where(['driver_id' => $user_id]);
 			}
-			$resnewarray = $resnewarray->where(['status' => 3]);
+			$resnewarray = $resnewarray->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher');
 			$paginated_rides = $resnewarray->orderBy('ride_time', 'desc')->paginate(20);
-			$rideWithPayment = $rideWithPayment->where(['status' => 3])->groupBy('payment_type')->get();
+			$rideWithPayment = $rideWithPayment->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher')->groupBy('payment_type')->get();
 
 			$total_earning = (float)$resnewarray->sum('ride_cost');
 			$cash_earning = (float)$resnewarray->where(['payment_type' => 'Cash'])->sum('ride_cost');
@@ -2872,22 +2858,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					if (!empty($request->distance)) {
 						$ride->distance = $request->distance;
 						$voucher = Voucher::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
-						$voucherValue = json_decode($voucher['value']);
-						$mile_per_ride = $voucherValue->mile_per_ride;
-						$distance = $request->distance;
-						$miles_got = round(($distance * $mile_per_ride) / 100);
-						$ride->miles_received = $miles_got;
+							if($voucher){
+								$voucherValue = json_decode($voucher['value']);
+								$mile_per_ride = $voucherValue->mile_per_ride;
+								$distance = $request->distance;
+								$miles_got = round(($distance * $mile_per_ride) / 100);
+								$ride->miles_received = $miles_got;
 
-						if (!empty($user_id)) {
-							if (strtolower($request->payment_type) != 'voucher') {
-								$uservoucher = new UserVoucher();
-								$uservoucher->miles = $miles_got;
-								$uservoucher->user_id = $user_id;
-								$uservoucher->ride_id = $request->ride_id;
-								$uservoucher->type = 1;
-								$uservoucher->save();
-							}
+								if (!empty($user_id)) {
+									if (strtolower($request->payment_type) != 'voucher') {
+										$uservoucher = new UserVoucher();
+										$uservoucher->miles = $miles_got;
+										$uservoucher->user_id = $user_id;
+										$uservoucher->ride_id = $request->ride_id;
+										$uservoucher->service_provider_id = Auth::user()->service_provider_id;
+										$uservoucher->type = 1;
+										$uservoucher->save();
+									}
+								}
 						}
+						
 					}
 				}
 				if ($request->status == -2) {
@@ -2922,15 +2912,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			if($request->payment_type){
 					if(strtolower($request->payment_type) == 'cash'){
 						//Log::info('In request rideStatusChange cash->'.$cost);
-					if (!empty($request->ride_cost)) {
-						$expense_ride_cost = $request->ride_cost;
-					}else{
-						$expense_ride_cost = $cost;
-					}
+						if (!empty($request->ride_cost)) {
+							$expense_ride_cost = $request->ride_cost;
+						}else{
+							$expense_ride_cost = $cost;
+						}
 					
 					$type = 'revenue';
 					$type_detail = 'cash';
-				}else{
+				}else if(strtolower($request->payment_type) != 'voucher' && strtolower($request->payment_type) != 'cash'){
 					//Log::info('In rideStatusChange else->'.$cost);
 					if (!empty($request->ride_cost)) {
 						$deduction = $request->ride_cost;
@@ -2948,7 +2938,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$type = 'revenue';
 					$expense_ride_cost = $cost;
 					$type_detail = 'cash';
-				}else{
+				}elseif(strtolower($rideDetail->payment_type) != 'voucher' && strtolower($rideDetail->payment_type) != 'cash'){
 					$deduction =  $cost;
 					$expense_ride_cost = $deduction;
 					$type = 'deduction';
@@ -2956,49 +2946,20 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				}
 				
 			}
-
-			$expense = new Expense();	
-			$expense->driver_id = $rideDetail->driver_id;
-			$expense->type = $type;
-			$expense->type_detail = $type_detail;
-			$expense->ride_id = $rideDetail->id;
-			$expense->revenue =  $expense_ride_cost;
-			$expense->deductions =  $deduction;
-			$expense->date = Carbon::now()->format('Y-m-d');
-			$expense->service_provider_id = $rideDetail->service_provider_id;
-			$expense->save();
-
-			$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
-			
-			if($salaryDetail){
-				$pay_type = $salaryDetail->type;
-				if($pay_type == 'revenue'){
-					$percentage = $salaryDetail->rate;
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = ($percentage * $expense_ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
-				}
-			}else{
-					$expenseForSalary = new Expense();	
-					$expenseForSalary->driver_id = $rideDetail->driver_id;
-					$expenseForSalary->type = 'salary';
-					$expenseForSalary->type_detail = 'revenue';
-					$expenseForSalary->ride_id = $rideDetail->id;
-					$percentageAmount = (50 * $expense_ride_cost) / 100;
-					$expenseForSalary->salary =  $percentageAmount;
-					$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-					$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-					$expenseForSalary->save();
+			if(strtolower($request->payment_type) != 'voucher'){
+				$expense = new Expense();	
+				$expense->driver_id = $rideDetail->driver_id;
+				$expense->type = $type;
+				$expense->type_detail = $type_detail;
+				$expense->ride_id = $rideDetail->id;
+				$expense->revenue =  $expense_ride_cost;
+				$expense->deductions =  $deduction;
+				$expense->date = Carbon::now()->format('Y-m-d');
+				$expense->service_provider_id = $rideDetail->service_provider_id;
+				$expense->save();
 			}
-
 			
+			$this->saveSalaryOmCompleteRide($rideDetail, $request);
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
@@ -3034,7 +2995,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$uservoucher->user_id = $ride['user_id'];
 						$uservoucher->ride_id = $request->ride_id;
 						$uservoucher->type = 3;
-						$uservoucher->service_provider_id = $rideDetail->service_provider_id;
+						$uservoucher->service_provider_id = Auth::user()->service_provider_id;
 						$uservoucher->save();
 					}
 				}
@@ -5253,6 +5214,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			DB::beginTransaction();
 			$rideDetail = Ride::find($request->ride_id);
 			$rideDetailNew = $rideDetail;
+			//dd($rideDetailNew);
 			$all_ride_ids = [$request->ride_id];
 			if($request->change_for_all == 1){
 				if(!empty($rideDetail->parent_ride_id)){
@@ -5362,7 +5324,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->status = 0;
 				}
 				$ride->save();
-
+				DB::Commit();
 				// update ride expenses table
 				//Log::info($request->ride_id);
 				$expenseData = Expense::where('ride_id', $ride_id)->whereIn('type',['deduction','revenue'])->first();
@@ -5370,85 +5332,72 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				if($expenseData){
 				
 					if (!empty($request->payment_type)) {
-						Log::info($request->ride_id);
-						Log::info($expenseData);
-						$columnsToUpdate = [];
-						if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
-						{
-							Log::info('in if');
-							// payment type same check amount change
-							if (!empty($request->ride_cost)) {
 
-								if(strtolower($request->payment_type) == 'cash'){
-									$columnsToUpdate['revenue'] = $request->ride_cost;
-								}else{
-									$columnsToUpdate['revenue'] =  $request->ride_cost;
-									$columnsToUpdate['deductions']  = $request->ride_cost;
-								}
-								
-							}
-
+						if(strtolower($request->payment_type) == 'voucher'){
+							// delete existing expense entry and save miles
+							$expenseData->delete();
+							$this->deleteUserVoucher($ride_id,1);
+							$this->saveUserVoucher($ride_id,$request->miles_used);
+							Ride::where('id', $ride_id)->update(['miles_received' => null]);
 						}else{
+							
+							
+							$columnsToUpdate = [];
+							if(strtolower($rideDetailNew->payment_type) == strtolower($request->payment_type))
+							{
+								Log::info('in if');
+								// payment type same check amount change
+								if (!empty($request->ride_cost)) {
 
-							Log::info('in else');
-							// payment method different
-							if (!empty($request->ride_cost)) {
-								// ride cost also differ
-								if(strtolower($request->payment_type) == 'cash'){
-									$columnsToUpdate['revenue'] = $request->ride_cost;
-									$columnsToUpdate['type']  = 'revenue';
-									$columnsToUpdate['type_detail'] = 'cash';
-									$columnsToUpdate['deductions'] = null;
-								}else{
-									$columnsToUpdate['revenue'] =  $request->ride_cost;
-									$columnsToUpdate['deductions'] = $request->ride_cost;
-									$columnsToUpdate['type'] = 'deduction';
-									$columnsToUpdate['type_detail'] = $request->payment_type;
+									if(strtolower($request->payment_type) == 'cash'){
+										$columnsToUpdate['revenue'] = $request->ride_cost;
+									}else{
+										$columnsToUpdate['revenue'] =  $request->ride_cost;
+										$columnsToUpdate['deductions']  = $request->ride_cost;
+									}
+									
 								}
+
 							}else{
-								// ride cost same
-								if(strtolower($request->payment_type) == 'cash'){
-									$columnsToUpdate['type'] = 'revenue';
-									$columnsToUpdate['type_detail'] = 'cash';
+
+								// payment method different
+								if (!empty($request->ride_cost)) {
+									// ride cost also differ
+									if(strtolower($request->payment_type) == 'cash'){
+										$columnsToUpdate['revenue'] = $request->ride_cost;
+										$columnsToUpdate['type']  = 'revenue';
+										$columnsToUpdate['type_detail'] = 'cash';
+										$columnsToUpdate['deductions'] = null;
+									}else{
+										$columnsToUpdate['revenue'] =  $request->ride_cost;
+										$columnsToUpdate['deductions'] = $request->ride_cost;
+										$columnsToUpdate['type'] = 'deduction';
+										$columnsToUpdate['type_detail'] = $request->payment_type;
+									}
 								}else{
-									$columnsToUpdate['type'] = 'deduction';
-									$columnsToUpdate['type_detail'] = $request->payment_type;
+									// ride cost same
+									if(strtolower($request->payment_type) == 'cash'){
+										$columnsToUpdate['type'] = 'revenue';
+										$columnsToUpdate['type_detail'] = 'cash';
+									}else{
+										$columnsToUpdate['type'] = 'deduction';
+										$columnsToUpdate['type_detail'] = $request->payment_type;
+									}
+									
 								}
 								
-							}
-							
 
+							}
+
+							$expenseData->update($columnsToUpdate);
+							
 						}
-						//dd($columnsToUpdate);
-						$expenseData->update($columnsToUpdate);
+					//	
 					}else{
 						
 						if (!empty($request->ride_cost)) {
 							if($expenseData){
-								// open update salary for revenue base
-								$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
-								if($expenseSalaryData){
-									$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
-									if($salaryDetail){
-										$pay_type = $salaryDetail->type;
-										if($pay_type == 'revenue'){
-											$percentage = $salaryDetail->rate;
-											$percentageAmount = ($percentage * $request->ride_cost) / 100;
-											$salaryColumnsToUpdate['salary'] = $percentageAmount;
-											$expenseSalaryData->update($salaryColumnsToUpdate);
-										}
-
-									}else{
-											$percentage = 50;
-											$percentageAmount = ($percentage * $request->ride_cost) / 100;
-											$salaryColumnsToUpdate['salary'] = $percentageAmount;
-											$expenseSalaryData->update($salaryColumnsToUpdate);
-									}
-
-								}
 								
-								
-								//end update salary for revenue base
 
 								// open update payment type revenue and deduction data
 								$columnsToUpdate = [];
@@ -5472,6 +5421,60 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					}
 
 				
+				}else{
+					// if payment type is voucher or no payment at all
+					if (!empty($request->payment_type)) {
+						$columnsToUpdate = [];
+							// miles given
+							$this->giveMilesToUser($ride_id,$request->distance);
+							$this->deleteUserVoucher($ride_id,3);
+							$columnsToUpdate['driver_id'] = $rideDetailNew->driver_id;
+							$columnsToUpdate['service_provider_id'] = $rideDetailNew->service_provider_id;
+							$columnsToUpdate['date'] = Carbon::now()->format('Y-m-d');
+							$columnsToUpdate['ride_id'] = $ride_id;
+							if (!empty($request->ride_cost)) {
+
+								// ride cost also differ
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $request->ride_cost;
+									$columnsToUpdate['type']  = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+									$columnsToUpdate['deductions'] = null;
+								}else{
+									$columnsToUpdate['revenue'] =  $request->ride_cost;
+									$columnsToUpdate['deductions'] = $request->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}
+							}else{
+								// ride cost not changed
+
+								if(strtolower($request->payment_type) == 'cash'){
+									$columnsToUpdate['revenue'] = $rideDetailNew->ride_cost;
+									$columnsToUpdate['type']  = 'revenue';
+									$columnsToUpdate['type_detail'] = 'cash';
+									$columnsToUpdate['deductions'] = null;
+								}else{
+									$columnsToUpdate['revenue'] =  $rideDetailNew->ride_cost;
+									$columnsToUpdate['deductions'] = $rideDetailNew->ride_cost;
+									$columnsToUpdate['type'] = 'deduction';
+									$columnsToUpdate['type_detail'] = $request->payment_type;
+								}							}
+
+							if(strtolower($request->payment_type) != 'voucher'){
+								Expense::create($columnsToUpdate);	
+							}
+									
+
+						
+								
+					}
+
+
+				}
+				if (!empty($request->ride_cost)) {
+
+					$this->updateSalaryOfRide($request,$ride_id);
 				}
 			}
 
@@ -5503,6 +5506,86 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			return response()->json(['message' => $exception->getMessage()], 401);
 		}
 	}
+
+	public function updateSalaryOfRide($request, $ride_id){
+		// open update salary for revenue base
+		$ride =	Ride::where('id',$ride_id)->first();
+		$expenseSalaryData = Expense::where('ride_id', $ride_id)->whereIn('type',['salary'])->first();
+		if($expenseSalaryData){
+			$salaryDetail = Salary::where('driver_id',$ride->driver_id)->where('service_provider_id',$ride->service_provider_id)->first();
+			if($salaryDetail){
+				$pay_type = $salaryDetail->type;
+				if($pay_type == 'revenue'){
+					$percentage = $salaryDetail->rate;
+					$percentageAmount = ($percentage * $request->ride_cost) / 100;
+					$salaryColumnsToUpdate['salary'] = $percentageAmount;
+					$expenseSalaryData->update($salaryColumnsToUpdate);
+				}
+
+			}else{
+					$percentage = 50;
+					$percentageAmount = ($percentage * $request->ride_cost) / 100;
+					$salaryColumnsToUpdate['salary'] = $percentageAmount;
+					$expenseSalaryData->update($salaryColumnsToUpdate);
+			}
+
+		}
+		
+		
+		//end update salary for revenue base
+	}
+
+	public function saveUserVoucher($ride_id,$miles_used){
+		$rideDetail = Ride::where('id',$ride_id)->first();
+		if ($rideDetail) {
+			if (!empty($miles_used)) {
+				if (!empty($rideDetail->user_id)) {
+					$uservoucher = new UserVoucher();
+					$uservoucher->miles = $miles_used;
+					$uservoucher->user_id = $rideDetail->user_id;
+					$uservoucher->ride_id = $ride_id;
+					$uservoucher->type = 3;
+					$uservoucher->service_provider_id = $rideDetail->service_provider_id;
+					$uservoucher->save();
+					DB::Commit();
+				}
+			}
+			
+		}		
+			
+	}
+	
+	public function giveMilesToUser($ride_id,$distance){
+		
+		$rideDetail = Ride::where('id', $ride_id)->first();
+		if (!($distance)) {
+			$distance = $rideDetail->distance;
+		}	
+			$voucher = Voucher::where(['service_provider_id' => Auth::user()->service_provider_id])->first();
+			if($voucher){
+				$voucherValue = json_decode($voucher['value']);
+				$mile_per_ride = $voucherValue->mile_per_ride;
+				$miles_got = round(($distance * $mile_per_ride) / 100);
+				Ride::where('id', $ride_id)->update(['miles_received' => $miles_got]);
+				if (!empty($rideDetail->user_id)) {
+						$uservoucher = new UserVoucher();
+						$uservoucher->miles = $miles_got;
+						$uservoucher->user_id = $rideDetail->user_id;
+						$uservoucher->ride_id = $ride_id;
+						$uservoucher->type = 1;
+						$uservoucher->service_provider_id = Auth::user()->service_provider_id;
+						$uservoucher->save();
+				}
+			}
+
+	}
+
+	public function deleteUserVoucher($ride_id,$type){
+		$userVoucher = UserVoucher::where('ride_id',$ride_id)->where('type',$type)
+		->delete();
+	}
+	
+
 
 	public function waitingstatuschange(Request $request)
 	{
@@ -6136,13 +6219,26 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 	}
 	public function getVouchers(Request $request)
 	{
+
+
 		$user = Auth::user();
 		$user_id = $user['id'];
 
+		
+		
+
 		try {
-			$vouchers = UserVoucher::query()->where([['user_id', '=', $user_id]])->orderBy('id', 'desc')->get()->toArray();
-			$plus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '!=', 3]])->sum('miles');
-			$minus_vouchers = UserVoucher::where([['user_id', '=', $user_id], ['type', '=', 3]])->sum('miles');
+			$vouchers_qry = UserVoucher::with('service_provider')->where([['user_id', '=', $user_id]]);
+			$plus_vouchers_qry = UserVoucher::where([['user_id', '=', $user_id], ['type', '!=', 3]]);
+			$minus_vouchers_qry = UserVoucher::where([['user_id', '=', $user_id], ['type', '=', 3]]);
+			if($request->service_provider_id){
+				$vouchers_qry->where('service_provider_id',$request->service_provider_id);
+				$plus_vouchers_qry->where('service_provider_id',$request->service_provider_id);
+				$minus_vouchers_qry->where('service_provider_id',$request->service_provider_id);
+			}
+			$vouchers = $vouchers_qry->orderBy('id', 'desc')->get()->toArray();
+			$plus_vouchers = $plus_vouchers_qry->sum('miles');
+			$minus_vouchers = $minus_vouchers_qry->sum('miles');
 
 			$total_miles = $plus_vouchers - $minus_vouchers;
 
@@ -6192,8 +6288,15 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 
 		try {
 
-			$plus_vouchers = UserVoucher::where([['user_id', '=', $request->user_id], ['type', '!=', 3]])->sum('miles');
-			$minus_vouchers = UserVoucher::where([['user_id', '=', $request->user_id], ['type', '=', 3]])->sum('miles');
+			$plus_vouchers_qry =  UserVoucher::where([['user_id', '=', $request->user_id], ['type', '!=', 3]]);
+			$minus_vouchers_qry = UserVoucher::where([['user_id', '=', $request->user_id], ['type', '=', 3]]);
+
+			if($request->service_provider_id){
+				$plus_vouchers_qry->where('service_provider_id', $request->service_provider_id);
+				$minus_vouchers_qry->where('service_provider_id', $request->service_provider_id);
+			}
+			$plus_vouchers = $plus_vouchers_qry->sum('miles');
+			$minus_vouchers = $minus_vouchers_qry->sum('miles');
 
 			$total_miles = $plus_vouchers - $minus_vouchers;
 
@@ -7254,19 +7357,47 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 		}
 	}
 
-	public function all_drivers()
+	public function all_drivers(Request $request)
 	{
 		$user = Auth::user();
-		$all_drivers = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2, 'is_active' => 1])->orderBy('first_name')->get();
+		$all_drivers_qry = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2, 'is_active' => 1])->where('deleted',0);
+		if($request->service_provider_id){
+			$all_drivers_qry->where('service_provider_id',$request->service_provider_id);
+		}
+		$all_drivers = $all_drivers_qry->orderBy('first_name')->get();
 
 		foreach ($all_drivers as $driver_key => $driver_value) {
-			$driver_car = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0])->first();
+			$driver_car_qry = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0]);
+			if($request->service_provider_id){
+				$driver_car_qry->where('service_provider_id',$request->service_provider_id);
+			}
+			$driver_car = $driver_car_qry->first();
 			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
 			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
 		}
 		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
 	}
 
+	public function allDrivers(Request $request)
+	{
+		$user = Auth::user();
+		$all_drivers_qry = User::select("id", "first_name", "last_name", "country_code", "phone", "current_lat", "current_lng", "image", "availability")->where(['user_type' => 2, 'is_active' => 1])->where('deleted',0);
+		if($request->service_provider_id){
+			$all_drivers_qry->where('service_provider_id',$request->service_provider_id);
+		}
+		$all_drivers = $all_drivers_qry->orderBy('first_name')->get();
+
+		foreach ($all_drivers as $driver_key => $driver_value) {
+			$driver_car_qry = DriverChooseCar::with(['vehicle:id,model,vehicle_image,vehicle_number_plate'])->where(['user_id' => $driver_value->id, 'logout' => 0]);
+			if($request->service_provider_id){
+				$driver_car_qry->where('service_provider_id',$request->service_provider_id);
+			}
+			$driver_car = $driver_car_qry->first();
+			$all_drivers[$driver_key]->car_detail = $driver_car->vehicle??null;
+			$all_drivers[$driver_key]['already_have_ride'] = $driver_value->driver_already_on_ride();
+		}
+		return response()->json(['success' => true, 'message' => 'List of all drivers', 'data' => $all_drivers], $this->successCode);
+	}
 	public function getUserInfoById(Request $request)
 	{
 		try {
@@ -7375,25 +7506,79 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => "Driver not found"], $this->warningCode);
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
-			
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				$salaryType = $salaryDetail->type;
+			}else{
+				$salaryType = 'revenue';
+			}	
 			if($request->type == 'daily'){
 				
-				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				if($salaryType == 'hourly'){
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				}else{
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'),'expenses.id', 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+						->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+						->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+						->where(function ($query) {
+							$query->where('expenses.type','revenue')
+							->orWhere('expenses.type','deduction')
+							->orWhere('expenses.type','expense')
+							->orWhere('expenses.type_detail','revenue');
+						})
+						->groupBy('date')->orderBy('date','desc')
+						->paginate(10);
+
+				}
+
 				
 			}else if($request->type == 'weekly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}
 				
 			}else if($request->type == 'monthly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
-				->groupBy(DB::raw('MONTH(date)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+
+				}
 				
 			}
 			
@@ -7432,36 +7617,86 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
 			$detailArray = [];
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('driver_id',$userId)->where('service_provider_id',$service_provider_id);
+			
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
-				$weekNumber = $request->week_number;
-				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
+				$newQuery = clone  $query;
+				$weekNumber =  $this->convertNumber($request->week_number);
+				$weeklyDataWithoutSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','!=','salary');
 				
-				$this->loopingForStatements($weeklyData,$detailArray);
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','!=','revenue');
+
+					}else{
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+					}
+				
+				} else{
+					$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+				}
+			
+				//$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
+				$this->loopingForStatements($weeklyDataSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($weeklyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
 
 			if($request->type == 'monthly'){
+				
 				$carbonDate = Carbon::parse($request->date);
 				$selectedYear = $carbonDate->year;
-				$month = $request->month;
-				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
-				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
-
-				$this->loopingForStatements($monthlyData,$detailArray);
+				//$month = $request->month;
+				$month =  $this->convertNumber($request->month);
+				$newQuery = clone  $query;
+				$monthlyDataWithoutSalary = $query->whereYear('date', $selectedYear)
+				->whereMonth('date', $month)->where('type','!=','salary');
+				
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','=','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+					->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
+				}
+				
+				$this->loopingForStatements($monthlyDataWithSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($monthlyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
 			if($request->type == 'daily'){
-				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
-				->where('date', $request->date)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
-				$this->loopingForStatements($dailyData,$detailArray);
+				$newQuery = clone  $query;
+				$dailyDataWithoutSalary = $query
+				->where('date', $request->date)->where('type','!=','salary');
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$dailyDataWithSalary = $newQuery
+						->where('date', $request->date)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$dailyDataWithSalary = $newQuery
+						->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$dailyDataWithSalary = $newQuery
+					->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+				}	
+				//$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
+				$this->loopingForStatements($dailyDataWithoutSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($dailyDataWithSalary->get()->toArray(),$detailArray);
 			}
 
 			if (!empty($detailArray)) {
+				if($salaryDetail){
+					$detailArray['driver_paid_type'] = $salaryDetail->type;
+				}
 				$detailArray['driver_id'] = $userId;
 				$detailArray['type'] = $request->type;
 				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $detailArray], $this->successCode);
@@ -7593,11 +7828,21 @@ public function logHours(Request $request)  {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		} 
 		$userId = $request->driver_id;
+		$service_provider_id  =$request->service_provider_id;
+		$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+		if($salaryDetail){
+			$pay_type = $salaryDetail->type;
+			if($pay_type != 'hourly'){
+				return response()->json(['message' => "Hourly type not accepted by this driver."], $this->warningCode);
+
+			}
+		}
+		
 		$driverData =  User::where('id', $userId)->first();
 		if(!$driverData){
 			return response()->json(['message' => "Driver not found"], $this->warningCode);
 		}
-		$service_provider_id  =$request->service_provider_id;
+		
 		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->where('type_detail','!=', 'revenue')->whereDate('date', $request->date)->first();
 		if($salaryData){
 		  $expenseId = $salaryData->id;
@@ -7659,5 +7904,80 @@ public function logHours(Request $request)  {
 	}
 	
 }
+	public function convertNumber($number){
 
+		$numberWithLeadingZero = str_pad($number, 2, '0', STR_PAD_LEFT);
+
+		return $numberWithLeadingZero; 
+
+	}
+
+	public function saveSalaryOmCompleteRide($rideDetail,$request)  {
+		$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
+		$expenseForSalary = new Expense();
+				if($salaryDetail){
+					$pay_type = $salaryDetail->type;
+					if($pay_type == 'revenue'){
+						$percentage = $salaryDetail->rate;
+						$percentageAmount = ($percentage * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+					}else{
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+					}
+				}else{
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+				}
+						$expenseForSalary->driver_id = $rideDetail->driver_id;
+						$expenseForSalary->type = 'salary';
+						$expenseForSalary->type_detail = 'revenue';
+						$expenseForSalary->ride_id = $rideDetail->id;
+						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
+						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
+						$expenseForSalary->save();
+	}
+	
+	public function referCode(Request $request)  {
+		try{
+				
+			
+			DB::beginTransaction();
+			$rules = [
+				'user_id' => 'required',
+				'service_provider_id' => 'required|integer'
+			];
+	
+			$referData = 	Refer::where('user_id',$request->user_id)->where('service_provider_id',$request->service_provider_id)->first();
+			if($referData){
+				return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $referData], $this->successCode);
+			}else{
+				$refer = new Refer();
+				$refer->refer_code = $this->generateRandomString(7);
+				$refer->user_id = $request->user_id;
+				$refer->service_provider_id = $request->service_provider_id;
+				$saved = $refer->save();
+				if($saved){
+					DB::commit();
+					$lastInsertedId = $refer->id;
+					$data = Refer::where('id',$lastInsertedId)->first();
+					return response()->json(['success' => true, 'message' => 'get successfully',  'data' => $data], $this->successCode);
+	
+	
+				}
+	
+			}
+			
+	
+		}catch (\Illuminate\Database\QueryException $exception) {
+			DB::rollBack();
+			$errorCode = $exception->errorInfo[1];
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		} catch (\Exception $exception) {
+			DB::rollBack();
+			return response()->json(['message' => $exception->getMessage()], $this->warningCode);
+		}
+	
+	}
+	
 }

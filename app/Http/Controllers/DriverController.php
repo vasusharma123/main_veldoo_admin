@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Salary;
+use App\Expense;
 
 class DriverController extends Controller
 {
@@ -240,7 +241,7 @@ class DriverController extends Controller
 		}
 		
 		$data['record'] = $record;
-		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->service_provider_id)->first();
+		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->id)->first();
 		$data['salary'] = $salary;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);
@@ -370,6 +371,7 @@ class DriverController extends Controller
 			$saved = $salaryObj->save();
 			if($saved){
 				DB::commit();
+				$this->updateRideForDriver($request->driver_id, Auth::user()->id);
 				return response()->json(['success' => true, 'message' => 'Salary saved successfully']);
 
 			}
@@ -377,6 +379,7 @@ class DriverController extends Controller
 			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id',Auth::user()->service_provider_id)->update(['type' => $request->type, 'rate' => $request->value]);
 			if($updated){
 				DB::commit();
+				$this->updateRideForDriver($request->driver_id, Auth::user()->id);
 				return response()->json(['success' => true, 'message' => 'Salary updated successfully']);
 
 			}
@@ -389,6 +392,39 @@ class DriverController extends Controller
 		
 
 		
+	}
+	public function updateRideForDriver($driver_id,$sp_id){
+
+		try{
+			DB::beginTransaction();
+			$salary = Salary::where('driver_id',$driver_id)->where('service_provider_id',$sp_id)->first();
+			if($salary){
+				$type = $salary->type;
+				$percentage = $salary->rate;
+				if($type == 'revenue'){
+					$now = Carbon::now();
+					$carbonDate = Carbon::parse($now)->format('Y-m-d');
+					$data = Expense::where('driver_id',$driver_id)->where('service_provider_id',$sp_id)->where('type','salary')->where('type_detail','revenue')->where('date',$carbonDate)->get();
+					foreach($data as $single){
+						$ride_id = $single->ride_id;
+						$rideDetail = Ride::where('id',$ride_id)->select('id','ride_cost')->first();
+						if($rideDetail){
+							$ride_cost  = $rideDetail->ride_cost;
+							$percentageAmount = ($percentage * $ride_cost) / 100;
+							$update = Expense::where('id',$single->id)->update(['salary' => $percentageAmount]);
+							if($update){
+								DB::Commit();
+							}
+						}
+					
+					}
+				}
+			}
+
+		} catch (\Exception $exception) {
+			DB::rollBack();
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
 	}
 
 
