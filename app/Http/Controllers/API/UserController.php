@@ -7506,25 +7506,79 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				return response()->json(['message' => "Driver not found"], $this->warningCode);
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
-			
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			if($salaryDetail){
+				$salaryType = $salaryDetail->type;
+			}else{
+				$salaryType = 'revenue';
+			}	
 			if($request->type == 'daily'){
 				
-				$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				if($salaryType == 'hourly'){
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'), 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->groupBy('date')->orderBy('date','desc')->paginate(10);	
+				}else{
+					$data  = Expense::select(DB::raw('SUM(revenue) as total_revenue'),'expenses.id', 'date','expenses.driver_id','expenses.service_provider_id',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+						->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+						->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+						->where(function ($query) {
+							$query->where('expenses.type','revenue')
+							->orWhere('expenses.type','deduction')
+							->orWhere('expenses.type','expense')
+							->orWhere('expenses.type_detail','revenue');
+						})
+						->groupBy('date')->orderBy('date','desc')
+						->paginate(10);
+
+				}
+
 				
 			}else if($request->type == 'weekly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->paginate(10);
+				}
 				
 			}else if($request->type == 'monthly'){
-				$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-				->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-				->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
-				->groupBy(DB::raw('MONTH(date)'))
-				->paginate(10);
+
+				if($salaryType == 'hourly'){
+
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+				}else{
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
+					->where(function ($query) {
+						$query->where('expenses.type','revenue')
+						->orWhere('expenses.type','deduction')
+						->orWhere('expenses.type','expense')
+						->orWhere('expenses.type_detail','revenue');
+					})
+					->orderBy('date','desc')
+					->groupBy(DB::raw('MONTH(date)'))
+					->paginate(10);
+
+				}
 				
 			}
 			
@@ -7563,40 +7617,85 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}
 		    $service_provider_id  =$driverData->service_provider_id;
 			$detailArray = [];
+			$salaryDetail = Salary::where('driver_id', $userId)->where('service_provider_id',$service_provider_id)->first();
+			$query = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where('driver_id',$userId)->where('service_provider_id',$service_provider_id);
+			
 			if($request->type == 'weekly'){
 				$carbonDate = Carbon::parse($request->date);
 				$year = $carbonDate->year;
+				$newQuery = clone  $query;
 				$weekNumber =  $this->convertNumber($request->week_number);
-				$weeklyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")
-				->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->get()->toArray();
-				//Log::info(print_r($weeklyData,1));
-				$this->loopingForStatements($weeklyData,$detailArray);
+				$weeklyDataWithoutSalary = $query->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','!=','salary');
+				
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','!=','revenue');
+
+					}else{
+						$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+					}
+				
+				} else{
+					$weeklyDataSalary = $newQuery->where(DB::raw("YEARWEEK(date, 1)"), '=', "{$year}{$weekNumber}")->where('type','salary')->where('type_detail','=','revenue');
+				}
+			
+				//$weeklyData = 	$weeklyDataWithoutSalary->union($weeklyDataSalary)->get()->toArray();
+				$this->loopingForStatements($weeklyDataSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($weeklyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
 
 			if($request->type == 'monthly'){
+				
 				$carbonDate = Carbon::parse($request->date);
 				$selectedYear = $carbonDate->year;
 				//$month = $request->month;
 				$month =  $this->convertNumber($request->month);
-				$monthlyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')->whereYear('date', $selectedYear)
-				->whereMonth('date', $month)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
-
-				$this->loopingForStatements($monthlyData,$detailArray);
+				$newQuery = clone  $query;
+				$monthlyDataWithoutSalary = $query->whereYear('date', $selectedYear)
+				->whereMonth('date', $month)->where('type','!=','salary');
+				
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+						->whereMonth('date', $month)->where('type','=','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$monthlyDataWithSalary = $newQuery->whereYear('date', $selectedYear)
+					->whereMonth('date', $month)->where('type','salary')->where('type_detail','=','revenue');
+				}
+				
+				$this->loopingForStatements($monthlyDataWithSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($monthlyDataWithoutSalary->get()->toArray(),$detailArray);
 
 			}
 			if($request->type == 'daily'){
-				$dailyData = Expense::select('type','type_detail','amount','salary','deductions','revenue')
-				->where('date', $request->date)->where('driver_id',$userId)->where('service_provider_id',$service_provider_id)
-				->get()->toArray();
-				$this->loopingForStatements($dailyData,$detailArray);
+				$newQuery = clone  $query;
+				$dailyDataWithoutSalary = $query
+				->where('date', $request->date)->where('type','!=','salary');
+				if($salaryDetail){
+					if($salaryDetail->type == 'hourly'){
+						$dailyDataWithSalary = $newQuery
+						->where('date', $request->date)->where('type','salary')->where('type_detail','!=','revenue');
+					}else{
+						$dailyDataWithSalary = $newQuery
+						->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+					}
+				}else{
+					$dailyDataWithSalary = $newQuery
+					->where('date', $request->date)->where('type','salary')->where('type_detail','=','revenue');
+				}	
+				//$dailyData = 	$dailyDataWithoutSalary->union($dailyDataWithSalary)->get()->toArray();
+				$this->loopingForStatements($dailyDataWithoutSalary->get()->toArray(),$detailArray);
+				$this->loopingForStatements($dailyDataWithSalary->get()->toArray(),$detailArray);
 			}
 
 			if (!empty($detailArray)) {
-				$salaryData = Salary::where('service_provider_id',$service_provider_id)->where('driver_id',$userId)->first();
-				if($salaryData){
-					$detailArray['driver_paid_type'] = $salaryData->type;
+				if($salaryDetail){
+					$detailArray['driver_paid_type'] = $salaryDetail->type;
 				}
 				$detailArray['driver_id'] = $userId;
 				$detailArray['type'] = $request->type;
@@ -7729,11 +7828,21 @@ public function logHours(Request $request)  {
 			return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 		} 
 		$userId = $request->driver_id;
+		$service_provider_id  =$request->service_provider_id;
+		$salaryDetail = Salary::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->first();
+		if($salaryDetail){
+			$pay_type = $salaryDetail->type;
+			if($pay_type != 'hourly'){
+				return response()->json(['message' => "Hourly type not accepted by this driver."], $this->warningCode);
+
+			}
+		}
+		
 		$driverData =  User::where('id', $userId)->first();
 		if(!$driverData){
 			return response()->json(['message' => "Driver not found"], $this->warningCode);
 		}
-		$service_provider_id  =$request->service_provider_id;
+		
 		$salaryData = Expense::where('driver_id',$userId)->where('service_provider_id',$service_provider_id)->where('type','salary')->where('type_detail','!=', 'revenue')->whereDate('date', $request->date)->first();
 		if($salaryData){
 		  $expenseId = $salaryData->id;
@@ -7805,34 +7914,28 @@ public function logHours(Request $request)  {
 
 	public function saveSalaryOmCompleteRide($rideDetail,$request)  {
 		$salaryDetail = Salary::where('driver_id',$rideDetail->driver_id)->where('service_provider_id',$rideDetail->service_provider_id)->first();
-				
+		$expenseForSalary = new Expense();
 				if($salaryDetail){
 					$pay_type = $salaryDetail->type;
 					if($pay_type == 'revenue'){
 						$percentage = $salaryDetail->rate;
-						$expenseForSalary = new Expense();	
-						$expenseForSalary->driver_id = $rideDetail->driver_id;
-						$expenseForSalary->type = 'salary';
-						$expenseForSalary->type_detail = 'revenue';
-						$expenseForSalary->ride_id = $rideDetail->id;
 						$percentageAmount = ($percentage * $request->ride_cost) / 100;
 						$expenseForSalary->salary =  $percentageAmount;
-						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
-						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
-						$expenseForSalary->save();
+					}else{
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
 					}
 				}else{
-						$expenseForSalary = new Expense();	
+						$percentageAmount = (50 * $request->ride_cost) / 100;
+						$expenseForSalary->salary =  $percentageAmount;
+				}
 						$expenseForSalary->driver_id = $rideDetail->driver_id;
 						$expenseForSalary->type = 'salary';
 						$expenseForSalary->type_detail = 'revenue';
 						$expenseForSalary->ride_id = $rideDetail->id;
-						$percentageAmount = (50 * $request->ride_cost) / 100;
-						$expenseForSalary->salary =  $percentageAmount;
 						$expenseForSalary->date = Carbon::now()->format('Y-m-d');
 						$expenseForSalary->service_provider_id = $rideDetail->service_provider_id;
 						$expenseForSalary->save();
-				}
 	}
 	
 	public function referCode(Request $request)  {
