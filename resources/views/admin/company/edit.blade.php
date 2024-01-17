@@ -12,8 +12,8 @@
 				@include('admin.layouts.flash-message')
 			
 				<div class="action_tabs">
-					<a href="javascript:void(0);" class="action_tabs_btn company_profile active">Company Profile</a>
-					<a href="javascript:void(0);" class="action_tabs_btn admin_profile">Admin Profile</a>
+					<a href="#company_profile" class="action_tabs_btn company_profile active">Company Profile</a>
+					<a href="#admin_profile" class="action_tabs_btn admin_profile">Admin Profile</a>
 				</div>
 				{{ Form::model($record, array('url' => route( 'company.update', $record->id ),'class'=>'custom_form editForm company_edit','id'=>'Editcompany','enctype' => 'multipart/form-data')) }}
 				@method('PATCH')
@@ -97,12 +97,12 @@
 							<div class="img_user_settled h-100">
 								<div class="view_image_user">
 									@if (!empty($record->image) && file_exists('storage/'.$record->image))
-									<img src="{{ env('URL_PUBLIC').'/'.$record->image }}" class="img-fluid w-100 img_user_face" />
+									<img src="{{ env('URL_PUBLIC').'/'.$record->image }}" class="img-fluid w-100 img_user_face" id="preview_logo" />
 									@else	
-									<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" />
+									<img src="{{ asset('assets/images/veldoo/uploaded.png') }}" class="img-fluid w-100 img_user_face" id="preview_logo" />
 									@endif
 									<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-									<input type="file" name="company_image_tmp" class="form-control hiddenForm" />
+									<input type="file" name="company_image_tmp" class="form-control hiddenForm" id="input_logo" />
 								</div>
 								
 								<div class="form-group">
@@ -136,11 +136,11 @@
 								</div>
 								<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
-										<input class="form-control" name="admin_country_code_iso" type="hidden" id="iso2" value="{{ $record->user->country_code_iso ?? 'ch' }}">
+										<input class="form-control" name="admin_country_code_iso" type="hidden" id="iso2" value="{{ (!empty($record->user)) ? $record->user->country_code_iso : 'ch' }}">
 										
-										<input class="form-control" name="admin_country_code" type="hidden" id="admin_country_code" value="{{ $record->user->country_code ?? 41 }}">
+										<input class="form-control" name="admin_country_code" type="hidden" id="admin_country_code" value="{{ (!empty($record->user)) ? $record->user->country_code : 41 }}">
 										
-										<input type="tel" class="form-control inputText" id="admin_phone" name="admin_phone" placeholder="1234" value="{{ $record->user->phone }}" required/>
+										<input type="tel" class="form-control inputText" id="admin_phone" name="admin_phone" placeholder="1234" value="{{ (!empty($record->user)) ? $record->user->phone : '' }}" required/>
 										<label for="phone">Example: +41 123 456 7899</label>
 									</div>
 								</div>
@@ -174,12 +174,12 @@
 							<div class="img_user_settled h-100">
 								<div class="view_image_user">
 									@if (!empty($record->user) && !empty($record->user->image) && file_exists('storage/'.$record->image))
-									<img src="{{ env('URL_PUBLIC').'/'.$record->user->image }}" class="img-fluid w-100 img_user_face diverSide" />
+									<img src="{{ env('URL_PUBLIC').'/'.$record->user->image }}" class="img-fluid w-100 img_user_face diverSide" id="preview_image" />
 									@else
-									<img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" />
+									<img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" id="preview_image" />
 									@endif
 									<img src="{{ asset('assets/images/veldoo/uploaded_icon.png') }}" class="img-fluid w-100 img_user_icon" />
-									<input type="file" name="image_tmp" class="form-control hiddenForm" />
+									<input type="file" name="image_tmp" class="form-control hiddenForm" id="input_image" />
 								</div>
 								
 								<div class="form-group">
@@ -218,5 +218,40 @@ input2.addEventListener("countrychange", function() {
 	$("#country_code").val(instance2.getSelectedCountryData().dialCode);
 	$("#iso1").val(instance2.getSelectedCountryData().iso2);
 });
+
+	var activeState = document.location.hash;
+	if(activeState == "#company_profile"){
+		$('.action_tabs_btn').removeClass('active');
+		$(".action_tabs_btn[href='"+activeState+"']").addClass('active');
+		$('#Editcompany').removeClass('hiddenblock');
+		$('#EditAdmin').addClass('hiddenblock');
+    } else if(activeState == "#admin_profile"){
+		$('.action_tabs_btn').removeClass('active');
+		$(".action_tabs_btn[href='"+activeState+"']").addClass('active');
+		$('#Editcompany').addClass('hiddenblock');
+		$('#EditAdmin').removeClass('hiddenblock');
+	}
+
+	$(document).on('change', '#input_logo', function(e) {
+        var file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview_logo').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+	$(document).on('change', '#input_image', function(e) {
+        var file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview_image').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
 </script>
 @stop

@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
 {
@@ -98,13 +99,7 @@ class CompanyController extends Controller
 			'zip' => 'required',
 			'city' => 'required',
 			'state' => 'required',
-			'country' => 'required',
-			'admin_name' => 'required',
-			'admin_country_code' => 'required',
-			'admin_phone' => 'required',
-			'admin_email' => 'required|email',
-			'password' => 'required|min:6',
-			'confirm_password' => 'required|min:6|same:password',
+			'country' => 'required'
 		];
 		
 		$request->validate($rules);
@@ -112,36 +107,6 @@ class CompanyController extends Controller
 		$input = $request->except(['_method', '_token']);
 		
 		try{
-			
-			$isUser = User::where(['email' => $request->email, 'user_type' => 4])->first();
-			
-			if(!empty($isUser)){
-				return back()->withErrors(['message' => 'Email already exists']);
-			}
-			
-			$admininput['service_provider_id'] = Auth::user()->id;
-			$admininput['first_name'] = $input['admin_name'];
-			$admininput['name'] = $input['admin_name'];
-			$admininput['country_code_iso'] = $input['admin_country_code_iso'];
-			$admininput['country_code'] = $input['admin_country_code'];
-			$admininput['phone'] = $input['admin_phone'];
-			$admininput['email'] = $input['admin_email'];
-			$admininput['user_type'] = 4;
-			$admininput['status'] = 1;
-			$admininput['password'] = Hash::make($input['password']);
-			
-			$isuser = User::create($admininput);
-			
-			if(!empty($request->image_tmp)){
-				$imgname = 'img-'.time().'.'.$request->image_tmp->extension();
-				
-				$isuser->image = Storage::disk('public')->putFileAs(
-					'user/'.$isuser->id.'/', $request->image_tmp, $imgname
-				);
-				
-				$isuser->save();
-			}
-			
 			$companyinput['name'] = $input['name'];
 			$companyinput['country_code'] = $input['country_code'];
 			$companyinput['country_code_iso'] = $input['country_code_iso'];
@@ -156,9 +121,6 @@ class CompanyController extends Controller
 			
 			$iscompany = Company::create($companyinput);
 			
-			$isuser->company_id = $iscompany->id;
-			$isuser->save();
-			
 			if(!empty($request->company_image_tmp)){
 				$imgname = 'img-'.time().'.'.$request->company_image_tmp->extension();
 				
@@ -169,17 +131,16 @@ class CompanyController extends Controller
 				$iscompany->save();
 			}
 			
-			if(!empty($request->background_image)){
-				$imgname = 'back-img-'.time().'.'.$request->background_image->extension();
+			// if(!empty($request->background_image)){
+			// 	$imgname = 'back-img-'.time().'.'.$request->background_image->extension();
 				
-				$iscompany->background_image = Storage::disk('public')->putFileAs(
-					'company/'.$iscompany->id.'/', $request->background_image, $imgname
-				);
+			// 	$iscompany->background_image = Storage::disk('public')->putFileAs(
+			// 		'company/'.$iscompany->id.'/', $request->background_image, $imgname
+			// 	);
 				
-				$iscompany->save();
-			}
-			
-			return back()->with('success', __('Created successfully!'));
+			// 	$iscompany->save();
+			// }
+			return redirect(route('company.edit', $iscompany->id). '#admin_profile')->with('success', "Company created successfully!! You can now proceed to add admin details.");
 		}catch (\Illuminate\Database\QueryException $exception){
 			return back()->with('success', $exception->getMessage());
 		} catch(\Exception $exception){
@@ -286,8 +247,14 @@ class CompanyController extends Controller
 			$rules['password'] = 'required|min:6';
 			$rules['confirm_password'] = 'required|min:6|same:password';
 		}
-		
-		$request->validate($rules);
+		$validator = Validator::make($request->all(), $rules);
+	
+		if ($validator->fails()) {
+			return redirect(route('company.edit', $id). '#admin_profile')
+						->withErrors($validator)
+						->withInput();
+		}
+		// $request->validate($rules);
 		$input = $request->except(['_method', '_token']);
 		
 		$input = $request->all();
@@ -295,7 +262,7 @@ class CompanyController extends Controller
 		$isUserEmail = User::where(['email' => $input['admin_email'], 'user_type' => 4])->where('company_id', '!=', $id)->first();
 		
 		if($isUserEmail){
-			return back()->withErrors(['message' => 'Email already exists']);
+			return redirect(route('company.edit', $id). '#admin_profile')->withErrors(['message' => 'Email already exists']);
 		}
 		
 		$udata = User::firstOrNew(['company_id' => $id, 'user_type' => 4]);
@@ -326,7 +293,7 @@ class CompanyController extends Controller
 		
 		$udata->update($admininput);
 		
-		return back()->with('success', trans('admin.Record updated!'));
+		return redirect(route('company.edit', $id). '#admin_profile')->with('success', "Admin profile updated successfully");
     }
 	
     public function destroy(Request $request)
