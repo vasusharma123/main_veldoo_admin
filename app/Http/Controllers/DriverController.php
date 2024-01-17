@@ -376,7 +376,7 @@ class DriverController extends Controller
 
 			}
 		}else{
-			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id',Auth::user()->service_provider_id)->update(['type' => $request->type, 'rate' => $request->value]);
+			$updated= 	Salary::where('driver_id', $request->driver_id)->where('service_provider_id', Auth::user()->id)->update(['type' => $request->type, 'rate' => $request->value]);
 			if($updated){
 				DB::commit();
 				$this->updateRideForDriver($request->driver_id, Auth::user()->id);
@@ -401,9 +401,10 @@ class DriverController extends Controller
 			if($salary){
 				$type = $salary->type;
 				$percentage = $salary->rate;
+				$now = Carbon::now();
+				$carbonDate = Carbon::parse($now)->format('Y-m-d');
 				if($type == 'revenue'){
-					$now = Carbon::now();
-					$carbonDate = Carbon::parse($now)->format('Y-m-d');
+					
 					$data = Expense::where('driver_id',$driver_id)->where('service_provider_id',$sp_id)->where('type','salary')->where('type_detail','revenue')->where('date',$carbonDate)->get();
 					foreach($data as $single){
 						$ride_id = $single->ride_id;
@@ -418,6 +419,20 @@ class DriverController extends Controller
 						}
 					
 					}
+				}else{
+					$data = Expense::where('driver_id',$driver_id)->where('service_provider_id',$sp_id)->where('type','salary')->where('type_detail','!=','revenue')->where('date',$carbonDate)->get();
+					if($data){
+						
+						foreach($data as $single){
+							$hoursData = 	json_decode($single->type_detail);
+							$hoursAmount = $hoursData->hours * $percentage;
+							$update = Expense::where('id',$single->id)->update(['salary' => $hoursAmount]);
+							if($update){
+								DB::Commit();
+							}
+						}
+					}
+					
 				}
 			}
 
