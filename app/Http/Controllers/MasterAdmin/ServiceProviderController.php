@@ -155,4 +155,17 @@ class ServiceProviderController extends Controller
         }
     }
 
+    public function addManager()
+    {
+        try {
+            $data = array('page_title' => 'Manager', 'action' => 'Manager','page' => 'manager');
+            // $userData =  User::where('user_type', 3)->with(['plans', 'plans.plan'])->orderBy('created_at','DESC')->get();
+            // $data['user'] = $userData->toArray();
+           // dd($data);
+            return view('master_admin.managers.index', compact('data'))->with($data);
+        } catch (Exception $e) {
+            Log::info('Error in method getAllServiceProvider' . $e);
+        }
+    }
+
 }

@@ -247,7 +247,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation');
 
 	Route::get('settings','CompanyController@settings')->name('company.settings');
-	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
+	Route::resource('managers','Company\ManagersController');
 	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');
 	Route::get('/rides-history','Company\RidesController@history')->name('company.rides.history');
 	Route::get('rides-edit','Company\RidesController@edit')->name('company.rides.edit');
@@ -324,5 +324,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-logout',  ['as' => 'master_admin.logout','uses' => 'MasterAdmin\UsersController@logout']);
 	Route::get('/fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
 
+});
+
+Route::group(['prefix' => 'master','middleware' => 'auth'], function () {
+	Route::resource('master-manager','ManagersController');
+	Route::get('fetchManager',  'UserController@fetchManager')->name('fetch-manager');
+	Route::post('updateStatus',  'ManagersController@updateStatus')->name('updateStatus');
 });
 

@@ -36,6 +36,7 @@ use App\SMSTemplate;
 use App\Page;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\GuestRegisterRequest;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -1301,5 +1302,40 @@ class UserController extends Controller
 			return response()->json(['status' => 0, 'message' => $e->getMessage()]);
 		}
 	}
+
+	public function fetchManager(Request $request){
+        
+        try{
+            $id = $request->id;
+            if($request->type){
+                if($request->type == 'master'){
+                    $user_type = 7;
+                } 
+               $data =  User::where('id',Crypt::decrypt($id))->where('user_type', $user_type)->first();
+				if($data){
+					$arr = [];
+					$arr['id'] = $data->id;
+					$arr['email' ]= $data->email;
+					$arr['phone'] = $data->phone;
+					$arr['name'] = $data->name;
+					$arr['status'] = $data->status;
+					$arr['country_code'] = $data->country_code;
+					if($data->image){
+						$arr['image'] = url('/storage/'.$data->image);
+					}else{
+						$arr['image'] = url('/new-design-company/assets/images/avatar-2.png');
+					}
+					
+				}
+               return response()->json($arr);
+            }
+
+        } catch (Exception $e) {
+           
+            return response()->json(['error' => $e->getMessage()], 500);
+
+        
+        }
+    }
 
 }

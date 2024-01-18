@@ -5,6 +5,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png')}}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap V5 CSS-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap icons-->
@@ -83,14 +84,24 @@
                                                         <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
                                                     </a>
                                                 </li>
-
+                                                <?php if(Auth::user()->user_type == 6){ ?>
                                                 <li class="nav-item w-100">
-                                                    <a class="nav-link <?php if($page == 'master-setting') { echo "active";  }  ?> " href="{{ route('master_admin.setting') }}">
+                                                    <a class="nav-link <?php if($page == 'manager') { echo "active";  }  ?>" href="{{ route('master-manager.index') }}">
+                                                        <img src="{{ asset('assets/imgs/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="users" />
+                                                        <span class="sidebarText">Managers</span>
+                                                        <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+                                                    </a>
+                                                </li>
+                                                <?php } ?>
+                                           
+                                                <li class="nav-item w-100">
+                                                    <a class="nav-link <?php if($page == 'settings') { echo "active";  }  ?> " href="/master-setting">
                                                         <img src="{{ asset('assets/imgs/setting.png')}}" class="img-fluid w-100 sidebarImgs" alt="Settings" />
                                                         <span class="sidebarText">Settings</span>
                                                         <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
                                                     </a>
                                                 </li>
+                                            
                                                 <li class="nav-item w-100">
                                                     <a class="nav-link" href="{{ route('master_admin.logout') }}">
                                                         <img src="{{ asset('assets/imgs/logout.png')}}" class="img-fluid w-100 sidebarImgs" alt="logout" />
@@ -120,6 +131,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JS -->
     <script src="{{ asset('assets/js/main.js')}}"></script>
+    <script src="{{ asset('assets/js/master-admin.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {{-- Section Added for footer script --}}
     @yield('footer_scripts')
