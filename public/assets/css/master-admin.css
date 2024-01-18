@@ -1182,6 +1182,666 @@ a.action_tabs_btn.active{
     }
 }
 
+
+
+
+.msgs:after {
+    content: '...';
+    position: absolute;
+    right: 18px;
+    bottom: 3px;
+}
+.customTable thead tr th:last-child {
+    text-align: center;
+}
+.customTable thead tr.notcenter th:last-child{
+    text-align: inherit;
+}
+.customTable  .tbl_img {
+    max-width: 70px;
+    max-height: 70px;
+    min-width: 70px;
+    min-height: 70px;
+    border-radius: 100px;
+    margin: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+.table_header {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: var(--roboto-font);
+}
+.switch_btn .slider.whitegrey_btn{
+    background-color: #DADADC;
+}
+.switch_btn .slider.whitegrey_btn:before {
+  
+    outline: 1px solid #D0D1D5;
+    border: 4px solid #fff;
+    background-color: #DADADC;
+    -webkit-transition: .4s;
+}
+
+.customTable tr td.hinttext {
+    padding: 0px !important;
+    color: rgba(6, 15, 33, 0.50) !important;
+    font-family: var(--roboto-font);
+    font-size: 11px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    background: transparent !important;
+}
+.form-control.submit_btn.greyBtns {
+    background: rgba(48, 92, 117, 1);
+    border-color: rgba(48, 92, 117, 1);
+}
+
+
+.form-control.submit_btn.greyBtns:focus{
+    background: white;
+    border-color: white;
+
+}
+
+.shadeblackbtn:hover{
+    background: var(--secondary-color);
+    color: white;
+}
+.img-preview.position-relative {
+    height: 100%;
+}
+.form-control.uploadfile {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+.previewImage {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.submit_btn.darkBtn {
+    background: rgba(53, 102, 129, 1);
+    border-color: rgba(53, 102, 129, 1);
+}
+
+.clrpickers {
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 40px;
+    border-radius: 128px;
+    overflow: hidden;
+    background-color: black;
+    padding: 0px;
+    box-shadow: 0px 0px 0px 1px;
+}
+.sideHeader{
+    color: var(--secondary-color);
+    font-family: var(--roboto-font);
+    font-size: 16px;
+    font-weight: 500;
+}
+.otpoptions {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 80px;
+}
+.otpoptions label {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #060F21;
+    font-family: var(--roboto-font);
+}
+.fontselection {
+    padding: 7px 0px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    font-family: var(--roboto-font);
+    color: black;
+}
+.fontselection:focus{
+    box-shadow: none;
+    border: none;
+}
+
+.all_updateform {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 580px;
+}
+.previewImg.img-fluid {
+    max-width: 65px;
+    min-width: 65px;
+    object-fit: cover;
+    object-position: center;
+    min-height: 65px;
+    max-height: 65px;
+}
+.filepicker {
+    position: absolute;
+    white-space: 100%;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.previewImgFull{
+    max-width: 230px;
+    min-width: 230px;
+    object-fit: cover;
+    object-position: center;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hintrow:hover, tr.hintrow:hover td {
+    background: transparent !important;
+}
+
+ /* ------------------ NEW STYLE --------------------  */
+
+
+ .sectionsformM0 {
+    border-radius: 10px;
+    background: rgba(234, 235, 239, 0.50);
+    padding: 40px 0px;
+}
+.distance_side{
+    margin: 40px;
+}
+#listTabsView button.nav-link {
+    color: rgba(6, 15, 33, .5);
+    font-family: var(--oswald-font);
+    font-size: 20px;
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 0px 8px;
+}
+#listTabsView button.nav-link:after{
+    content: '/';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+}
+
+#listTabsView button.nav-link.active{
+    color: rgba(6, 15, 33, 1);
+}
+#listTabsView {
+    border: none;
+    margin-bottom: 25px;
+}
+#listTabsView li:last-child button:after {
+    display: none;
+}
+.modePayment{
+    background: transparent;
+    border: none;
+    color: inherit;
+}
+.modePayment.cancelledPayment{
+    color: red;
+}
+.modePayment.plannedPayment{
+    color: rgba(53, 102, 129, 1);
+}
+.openviewscreen{
+    color: inherit;
+    text-decoration: none;
+}
+
+/* VIEW MODL NEW STYLE */
+.main_modal.viewPoint {
+    max-width: 418px;
+    position: fixed;
+    top: 65.6px;
+    right: -140%;
+    background: white;
+    padding: 20px 24px 140px 24px;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    max-height: 100%;
+    overflow: auto;
+    transition: all 300ms linear;
+}
+
+.main_modal.EditPoint {
+    max-width: 418px;
+    position: fixed;
+    top: 65.6px;
+    right: -140%;
+    background: white;
+    padding: 20px 24px 140px 24px;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    max-height: 100%;
+    overflow: auto;
+    transition: all 300ms linear;
+}
+
+.modalName{
+    font-size: 20px;
+    font-family: var(--roboto-font);
+    font-weight: 700;
+}
+
+.closedModalBtn {
+    padding: 6px 5px;
+    line-height: 0;
+    background: transparent;
+    border: none;
+    margin-left: auto;
+}
+.main_modal .modal_header {
+    border-bottom: 1px solid rgba(228, 226, 228, 1);
+    padding-bottom: 20px;
+}
+.modal_map_option {
+    margin: 20px 0px;
+}
+.modal_map_option iframe {
+    width: 100%;
+    max-width: 370px;
+    height: 211px;
+}
+.loctionInformationUL{
+    padding: 0px;
+}
+.loctionInformationUL li{
+    list-style: none;
+}
+.loctionInformationUL li .sameIconImg{
+    max-width: 37.8px;
+    min-width: 37.8px;
+}
+.loctionInformationUL li .box_loc_content {
+    display: flex;
+    align-items: center;
+}
+.loctionInformationUL li .pickupLoc {
+    font-size: 16px;
+    color: rgba(6, 15, 33, 1);
+    font-family: var(--roboto-font);
+    font-weight: 500;
+}
+.loctionInformationUL li .pickLable {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 11px;
+    color: rgba(175, 175, 175, 1);
+    font-family: var(--roboto-font);
+}
+.loctionInformationUL li .pickName {
+    margin-left: 16px;
+}
+.divider_line_btwn,.dropOfflist {
+    margin-top: -10px;
+}
+.dashedVrtLne {
+    width: 0px;
+    border: .5px dashed rgba(252, 76, 2, 1);
+    height: 75px;
+    margin-left: 19px;
+}
+.pickup_dropoff_box {
+    padding: 20px 0px;
+}
+.dateWithTimes {
+    padding-top: 10px;
+}
+.iconmaincontents .labeltops {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 11px;
+    color: rgba(175, 175, 175, 1);
+    font-family: var(--roboto-font);
+}
+.iconmaincontents .valuecontents {
+    font-size: 16px;
+    color: rgba(6, 15, 33, 1);
+    font-family: var(--roboto-font);
+    font-weight: 500;
+}
+.img_ICM .smallIconBlack {
+    max-width: 24px;
+}
+.iconmaincontents {
+    margin-left: 16px;
+}
+.iconViewItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.allcolumns {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+   
+}
+.imgBox_info {
+    display: flex;
+    align-items: center;
+}
+.imgBox_info .imgBox_img img {
+    max-width: 50px;
+    min-width: 50px;
+}
+.imgBox_text .subvalueText a {
+    font-size: 12px;
+    text-decoration: none;
+    color: #5A5D6C;
+    font-weight: 400;
+    font-family: var(--roboto-font);
+    margin-bottom: 0px;
+}
+.imgBox_text {
+    margin-left: 16px;
+}
+.dirverwithRider,.personDetails, .payAmountDetails, .NotesSite {
+    padding-top: 32px;
+}
+.imgBox_info .imgBox_img img.compLogo{
+    max-width: 50px;
+    min-width: 50px;
+    max-height: 25px;
+    min-height: 21px;
+    object-fit: contain;
+}
+.companyName{
+    margin-left: 7px;
+}
+.smallIconBlack.perosn {
+    max-width: 22px;
+}
+.imgBox_info .imgBox_img img.cardlogo {
+    max-width: 24px;
+    min-width: 24px;
+}
+.iconViewItem.AmountBlock{
+    min-width: 37%;
+}
+
+.viewPoint.openwindow , .EditPoint.openwindow {
+    right: 0;
+    transition: all 300ms linear;
+}
+.bookBtn {
+    background: var(--primary-color);
+    width: 100%;
+    max-width: 188px;
+    padding: 12px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 20px;
+    font-family: var(--roboto-font);
+}
+.bookBtn:hover{
+    background: var(--mobile-number);
+}
+.revers_line {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    left: 0;
+    display: flex;
+    align-items: center;
+}
+.reverseLine {
+    margin-left: auto;
+    max-width: 24px;
+    cursor: pointer;
+}
+.separationline {
+    position: absolute;
+    top: 50%;
+    height: 1.5px;
+    width: 85%;
+    background: #f3f3f3;
+    z-index: -1;
+    right: 0;
+}
+.inputField:focus{
+    box-shadow: none;
+    border: none;
+}
+input.form-control.smfields.valuecontents.mb-0.p-0.border-0.inputField {
+    max-width: 111px;
+}
+input.form-control.mdFields.valuecontents.mb-0.p-0.border-0.inputField {
+    max-width: 79px;
+}
+.hiddenFields {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}
+.carimgBoxes{
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+.CarSelectionDone{
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.carimage {
+    max-width: 110px;
+}
+.smFieldsnumber {
+    max-width: 35px;
+}
+.chfFiled{
+    position: relative;
+}
+.chfFiled:after{
+    content: 'CHF';
+    font-family: var(--roboto-font);
+    color: rgba(175, 175, 175, 1);
+    font-size: 14px;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.chftext {
+    text-indent: 30px;
+}
+.main_modal input:focus, .main_modal select:focus, .main_modal textarea:focus{
+    box-shadow: none;
+    border-color: #031819;
+}
+.openbook.bookBtn{
+    min-width: 150px;
+    background: white;
+    height: 43px;
+    font-size: 16px;
+    color: var(--primary-color);
+    margin: 0px 4px;
+    border-radius: 5px;
+}
+a.openbook.bookBtn{
+    min-width: 150px;
+    background: white;
+    height: 43px;
+    font-size: 16px;
+    color: var(--primary-color);
+    margin: 0px 4px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+#calendar {
+    margin: 40px auto;
+    background: rgba(234, 235, 239, 0.50);
+    padding: 20px 20px;
+    border-radius: 10px;
+}
+#calendar table.fc-col-header, #calendar tbody {
+    background: white;
+}
+
+#calendar a {
+    font-size: 14px;
+    color: #2c3e50;
+    text-decoration: none;
+    text-align: center;
+    padding: 9px;
+}
+
+#calendar1 {
+    margin: 40px auto;
+    background: rgba(234, 235, 239, 0.50);
+    padding: 20px 20px;
+    border-radius: 10px;
+}
+#calendar1 table.fc-col-header, #calendar tbody {
+    background: white;
+}
+
+#calendar1 a {
+    font-size: 14px;
+    color: #2c3e50;
+    text-decoration: none;
+    text-align: center;
+    padding: 9px;
+}
+.editBtnDate .form-control.dateinput {
+    margin: 3px;
+    padding: 8px;
+    text-align: center;
+    background: rgba(253, 122, 53, 1.0);
+    border: 1px solid transparent;
+    color: #FFF;
+    font-family: var(--roboto-font);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: normal;
+    border-radius: 50px;
+}
+.editBtnDate .form-control.dateinput::placeholder{
+    color: white;
+}
+.editBtnDate .form-control.dateinput:focus{
+    box-shadow: none;
+}
+
+
+@media (min-width:992px){
+    .calendarIo {
+       display: none;
+    }
+}
+@media (max-width:992px){
+    .calendarIo {
+        display: block;
+     }
+     .inputbxs{
+        display: none !important;
+     }
+    .inputbxs {
+        position: absolute;
+        top: 100%;
+        left: 0;
+    }
+    .inputbxs.onSlide {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        display: flex !important;
+        width: 100%;
+        z-index: 13;
+        background: white;
+        padding: 10px;
+        box-shadow: 0px 6px 4px 1px rgba(0,0,0,.1);
+    }
+}
+@media (max-width:768px){
+    .main_modal.viewPoint, .main_modal.EditPoint {
+        top: 63.6px;
+    }
+}
+@media (max-width:600px){
+    .openbook.bookBtn {
+        min-width: unset;
+        position: fixed;
+        width: 100% !important;
+        left: 0;
+        height: 40px;
+        bottom: 0;
+        z-index: 12;
+        background: var(--secondary-color);
+        color: white;
+        max-width: unset;
+        margin: 0;
+        border-radius: 0;
+    }
+}
+/* VIEW MODL NEW STYLE END */
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (min-width:1600px){
+    .sidebar {
+        min-height: 100vh;
+        max-height: 100vh;
+    }
+}
+
+
+
+/* Repsonsive Code */
+
+@media (min-width:992px) and (max-width:1024px) {
+    .top_tab_menu li a.nav-link {
+        font-size: 16px;
+        color: white;
+        font-weight: 400;
+        font-family: var(--oswald-font);
+        background: transparent;
+        margin: 0px 3px;
+        padding: 6px 25px;
+        border-radius: 20px;
+        cursor: pointer;
+        z-index: 1;
+    }
+}
+
 @media (max-width:390px){
     .iconExportLink {
         position: fixed;

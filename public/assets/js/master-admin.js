@@ -86,6 +86,102 @@ $(function(){
             $('.child_checkbox').prop('checked',false);
         }
     })
+
+
     
 
+    $('#phone, #phone_edit').keyup(function () { 
+        this.value = this.value.replace(/[^0-9+\.]/g,'');
+    });
+    
+    $("#phone, #phone_edit").on("blur", function(e){
+
+        var conuntrycode = $('#country_code').val();
+        var mobNum = $(this).val();
+        var filter = /^\d*(?:\.\d{1,2})?$/;
+        if (filter.test(mobNum)) {
+            return true;
+            // if(mobNum.length==10){
+            //     return true;  
+            // } else {
+            //     $(this).val('')
+            //     return false;
+            // }
+        }
+        else if(mobNum.startsWith("+")){
+            var temp = mobNum.substring(conuntrycode.length + 1 , mobNum.length);
+            mobile = temp;
+            $(this).val(mobile)
+            return true; 
+        } else {
+            $(this).val('')
+            return false;
+        }
+
+    });
+
+
+    var input = document.querySelector("#phone");
+    var iti = window.intlTelInput(input, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
+                success(countryCode);
+            });
+        },
+        initialCountry:"ch",
+        separateDialCode: true,
+        utilsScript: "{{url('assets/js/utils.js')}}",
+        autoFormat: false,
+        nationalMode: true,
+        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+            return "";
+        },
+    });
+
+    iti.promise.then(function() {
+        input.addEventListener("countrychange", function() {
+            var selectedCountryData = iti.getSelectedCountryData();
+            $('#country_code').val(selectedCountryData.dialCode);
+        });
+    });
+
+    var inputEdit = document.querySelector("#phone_edit");
+    var itiEdit = window.intlTelInput(inputEdit, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "us";
+                success(countryCode);
+            });
+        },
+        initialCountry:"us",
+        nationalMode: true,
+        separateDialCode: true,
+        utilsScript: "{{url('assets/js/utils.js')}}",
+        autoFormat: false,
+        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+            return "";
+        },
+    });
+    itiEdit.promise.then(function() {
+        inputEdit.addEventListener("countrychange", function() {
+            var selectedCountryData = itiEdit.getSelectedCountryData();
+            $('#country_code_edit').val(selectedCountryData.dialCode);
+        });
+    });
+
+        $(document).ready(function(){
+            var code = $('#country_code').val();  
+            var phone = $('#phone').val();
+            setTimeout(() => {
+                iti.setNumber("+"+code + phone);
+                $("#phone").val(phone);
+
+            }, 500);
+            
+        });
+    
+        
 });

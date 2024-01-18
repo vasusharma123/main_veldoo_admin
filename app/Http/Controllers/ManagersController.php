@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,7 +19,8 @@ use Hash;
 use Storage;
 use App\Price;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
 
 class ManagersController extends Controller
 {
@@ -30,15 +31,15 @@ class ManagersController extends Controller
      */
     public function index(Request $request)
     {
+        if(Auth::user()->user_type == 6){
+            $user_type = 7;
+        }
+        
         //dd(\Request::route()->getName());
-        $data = array('page_title' => 'Managers', 'action' => 'Managers');
+        $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-
-        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
-        return view('company.managers.index')->with($data);
+        $data['managers'] = User::where(['user_type'=> $user_type ,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
+        return view('managers.index')->with($data);
     }
 
     public function create(Request $request)
@@ -51,18 +52,20 @@ class ManagersController extends Controller
 
     public function store(Request $request)
     {
-
+        Log::info('In manager store');
         $request->validate([
-            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($request) {
-                return $query->where('user_type', 5)->whereNull('deleted_at');
-            })],
+            'email' => ['required', 'string', 'email', 'max:191'],
             'name' => 'required',
             'password' => 'required',
         ]);
         DB::beginTransaction();
         try
         {
-            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => 5, 'company_id' => Auth::user()->company_id];
+           if(User::where('email',$request->email)->where('user_type',$request->type)->exists()){
+                return redirect()->route('master-manager.index')->with('error','Email already exist');
+            }
+
+            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => $request->type, 'company_id' => Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
             if ($request->phone)
             {
@@ -74,29 +77,35 @@ class ManagersController extends Controller
             $manager->save();
 
             if ($request->image) {
+                if($request->type == 7){
+                    $user_type = 'master-manager';
+                }else{
+                    $user_type = 'sp-manager';
+                }
+                //dd($request->image);
 				$imageName = 'profile-image'.time().'.' . $request->image->extension();
 				$image = Storage::disk('public')->putFileAs(
-					'manager/' . $manager->id,
+					$user_type.'/' . $manager->id,
 					$request->image,
 					$imageName
 				);
 				User::where('id', $manager->id)->update(['image' => $image]);
 			}
             DB::commit();
-            return redirect()->route('managers.index')->with('success','Manager successfully created');
+            return redirect()->route('master-manager.index')->with('success','Manager successfully created');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
         DB::beginTransaction();
         try {
-            User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id,'id'=>$id])->delete();
+            User::where(['user_type'=>$request->type,'id'=>$id])->delete();
             DB::commit();
-            return redirect()->route('managers.index')->with('success','Manager has been deleted');
+            return redirect()->route('master-manager.index')->with('success','Manager has been deleted');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
@@ -110,15 +119,22 @@ class ManagersController extends Controller
 		return view("company.managers.edit")->with($data);
 	}
 
+
+    public function updateStatus(Request $request)
+	{
+        User::where('id',Crypt::decrypt($request->id))->where('user_type',$request->type)->update(["status" => $request->status]);
+		
+        return redirect()->route('master-manager.index')->with('success','Manager has been updated');
+	}
+
+
+
     public function update(Request $request,$id)
     {
-        // dd($id);
         //dd($request->all());
         $request->validate([
            // 'email' => 'email|required|unique:users,email,'.$id,
-            'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($id) {
-                return $query->where('user_type', 5)->whereNotNull('deleted_at')->where('id', $id);
-            })],
+            'email' => ['required', 'string', 'email', 'max:191'],
             'name' => 'required',
             // 'password' => 'required',
         ]);
@@ -130,7 +146,7 @@ class ManagersController extends Controller
         try
         {
 
-            $existEmail = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->whereNull('deleted_at')
+            $existEmail = User::where(['user_type'=>$request->type,'company_id'=>Auth::user()->company_id])->whereNull('deleted_at')
             ->where('id', '!=', $id)->where('email', $request->email)->first();
 
             if($existEmail){
@@ -157,14 +173,16 @@ class ManagersController extends Controller
 				User::where('id', $id)->update(['image' => $image]);
 			}
             // dd($data);
-            $manager = User::where(['user_type'=>5,'company_id'=>Auth::user()->company_id])->find($id);
+            $manager = User::where(['user_type'=>$request->type,'company_id'=>Auth::user()->company_id])->find($id);
             $manager->fill($data);
             $manager->update();
             DB::commit();
-            return redirect()->route('managers.index')->with('success','Manager information successfully updated.');
+            return redirect()->route('master-manager.index')->with('success','Manager information successfully updated.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
         }
     }
+
+    
 }
