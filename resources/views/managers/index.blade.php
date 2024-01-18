@@ -1,5 +1,11 @@
 @extends('master_admin.layouts.after_login')
 
+@section('header_menu_list')
+    <li class="nav-item">
+        <a class="nav-link active" href="">Manager</a>
+    </li>
+@endsection
+
 @section('header_search_export')
     <div class="search">
         <form class="search_form">
@@ -8,6 +14,9 @@
                 <i class="bi bi-search search_icons"></i>
             </div>
         </form>
+    </div>
+    <div class="bookBtnBox">
+        <a class="openbook bookBtn p-0" href=""><i class="bi bi-plus-circle-fill topplusicon me-2"></i> <span>Add</span></a>
     </div>
     <div class="export_box">
         <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
