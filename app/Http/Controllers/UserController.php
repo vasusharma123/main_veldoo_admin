@@ -1331,7 +1331,7 @@ class UserController extends Controller
 					$arr['email' ]= $data->email;
 					$arr['phone'] = $data->phone;
 					$arr['name'] = $data->name;
-					$arr['status'] = $data->status;
+					$arr['status'] = $data->is_active;
 					$arr['country_code'] = $data->country_code;
 					if($data->image){
 						$arr['image'] = url('/storage/'.$data->image);
