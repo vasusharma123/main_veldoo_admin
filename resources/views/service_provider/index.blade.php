@@ -14,6 +14,9 @@
     </div>
   </form>
 </div>
+<div class="bookBtnBox">
+        <a class="openbook bookBtn p-0" href=""><i class="bi bi-plus-circle-fill topplusicon me-2"></i> <span>Add</span></a>
+</div>
 <div class="export_box">
   <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
 </div>
