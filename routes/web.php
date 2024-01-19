@@ -220,6 +220,8 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);
 	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
+	Route::resource('service-provider-manager','ManagersController');
+
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');

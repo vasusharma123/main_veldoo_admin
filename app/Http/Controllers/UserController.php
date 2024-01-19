@@ -93,9 +93,14 @@ class UserController extends Controller
 		];
 		$request->validate($rules);
 		$input = $request->all();
+		$allowedUserTypes = [3, 8];
+		$user = User::where('email', $request->email)
+		->where('is_active', 1)
+		->whereIn('user_type', $allowedUserTypes)
+		->first();
 		$remember_me = $request->has('remember') ? true : false;
 		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
-		if (auth()->attempt($whereData, $remember_me)) {
+		if ($user && Auth::attempt(['email' => $request->email, 'password' => $request->password],  $request->has('remember'))) {
 			Auth::user()->syncRoles('Administrator');
 			return redirect()->route('users.dashboard');
 		} else {
@@ -682,7 +687,13 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$record = (object)[];
-		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first()->value;
+		// if(Auth::user()->user_type == 3){
+		 	$sp_id = Auth::user()->id;
+		// }else if (Auth::user()->user_type == 8){
+		// 	$sp_id = Auth::user()->service_provider_id;
+			
+		// }
+		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>$sp_id])->first()->value;
 		$data['record'] = json_decode($configuration);
 		
 		/* echo '<pre>';
@@ -1310,9 +1321,11 @@ class UserController extends Controller
             if($request->type){
                 if($request->type == 'master'){
                     $user_type = 7;
-                } 
+                }else{
+					$user_type = 8;
+				}
                $data =  User::where('id',Crypt::decrypt($id))->where('user_type', $user_type)->first();
-				if($data){
+			   if($data){
 					$arr = [];
 					$arr['id'] = $data->id;
 					$arr['email' ]= $data->email;

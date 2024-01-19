@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<?php ///dd($uri); ?>
 <head>
     <title>Veldoo - Service Provider</title>
     <meta charset="utf-8">
@@ -10,6 +10,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap icons-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/intlTelInput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/js/utils.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.3/css/intlTelInput.min.css" />
+
 
     <!-- Timer css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/timepicker@1.14.1/jquery.timepicker.min.css">
@@ -318,6 +323,19 @@
 														<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 													</a>
 												</li>
+
+                                                <?php 
+				
+                                                    if(Auth::user()->user_type == 3){ ?>
+                                                    <li class="nav-item w-100">
+                                                        <a class="nav-link {{ ($uri =='service-provider-manager.index' ? 'active' : '') }}"  href="{{ route('service-provider-manager.index') }}">
+                                                            <img src="{{ asset('assets/imgs/users.png') }}" class="img-fluid w-100 sidebarImgs" alt="Manager"/> 
+                                                            <span class="sidebarText">Manager</span>
+                                                            <i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+                                                        </a>
+                                                    </li>
+                                                    <?php } ?>
+
 												<li class="nav-item w-100">
 													<a class="nav-link {{ (($uri=='vehicle-type.index' || $uri=='vehicle-type.create' || $uri=='vehicle-type.edit' || $uri=='vehicle.create' || $uri=='vehicle.index' || $uri=='vehicle.edit') ? 'active' : '') }}" href="{{ route('vehicle-type.index') }}">
 														<img src="{{ asset('assets/images/veldoo/car.png') }}" class="img-fluid w-100 sidebarImgs" alt="Car"/> 
@@ -332,6 +350,7 @@
 														<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 													</a>
 												</li>
+                                                <?php if(Auth::user()->user_type == 3){ ?>
 												<li class="nav-item w-100">
 													<a class="nav-link {{ (($uri=='users.settings' || $uri=='settings.my_design')? 'active' : '') }}" href="{{ route('users.settings') }}">
 														<img src="{{ asset('assets/images/veldoo/setting.png') }}" class="img-fluid w-100 sidebarImgs" alt="Settings"/> 
@@ -346,6 +365,7 @@
 														<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
 													</a>
 												</li>
+                                                <?php } ?>
 												<!--<li class="nav-item w-100">
 													<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create' || $uri=='payment-method.edit') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
 														<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>
@@ -416,7 +436,9 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    <!-- <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @yield('footer_scripts')
 </body>
 

@@ -48,7 +48,7 @@ class LoginController extends Controller
         
         
         $user = User::where('email', $request->email)
-            ->where('status', 1)
+            ->where('is_active', 1)
             ->whereIn('user_type', $allowedUserTypes)
             ->first();
           //  dd($user);

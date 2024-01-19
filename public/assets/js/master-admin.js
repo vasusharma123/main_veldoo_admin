@@ -90,7 +90,7 @@ $(function(){
 
     
 
-    $('#phone, #phone_edit').keyup(function () { 
+    $('#phone, #phone_edit,#phone_edit_number').keyup(function () { 
         this.value = this.value.replace(/[^0-9+\.]/g,'');
     });
     

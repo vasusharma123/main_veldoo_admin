@@ -1,31 +1,32 @@
-@extends('master_admin.layouts.after_login')
-
-@section('header_menu_list')
-    <li class="nav-item">
-        <a class="nav-link active" href="">Manager</a>
-    </li>
-@endsection
+@extends('admin.layouts.master')
 
 @section('header_search_export')
-    <div class="search">
-        <form class="search_form">
-            <div class="form-group searchinput position-relative trigger_parent">
-                <input type="text" class="form-control input_search target" placeholder="Search" id="searchInput" />
-                <i class="bi bi-search search_icons"></i>
-            </div>
-        </form>
+<div class="search">
+  <form class="search_form">
+    <div class="form-group searchinput position-relative trigger_parent">
+      <input
+        type="text"
+        name="data[q]"
+        class="form-control input_search target myInput"
+        placeholder="Search"
+      />
+      <i class="bi bi-search search_icons"></i>
     </div>
-    <div class="bookBtnBox">
-        <a class="openbook bookBtn p-0" href=""><i class="bi bi-plus-circle-fill topplusicon me-2"></i> <span>Add</span></a>
-    </div>
-    <div class="export_box">
-        <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
-    </div>
+  </form>
+</div>
+<div class="export_box">
+  <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
+</div>
 @endsection
+
+
 
 @section('content')
 
-<section class="name_section_box"  style="
+
+	<div class="formTableContent">
+
+    <section class="name_section_box"  style="
     padding: 10px 20px 0px 20px;
 ">
     <article class="container_box pt-0">
@@ -33,10 +34,10 @@
     </article>
 </section>
 
-<section class="addEditForm sectionsform">
+    <section class="addEditForm sectionsform">
                                         <article class="container-fluid com_tabs">
                                             <div class="form_add_managers">
-                                            <form class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                                            <form class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('service-provider-manager.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
                                                 @csrf
                                                 <div class="row w-100 m-0 form_inside_row">
                                                     <div class="col-lg-8 col-md-8 col-sm-12 col-12">
@@ -52,7 +53,7 @@
                                                             </div>
                                                             <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                                                 <div class="form-group">
-                                                                    <input type="email" class="form-control inputText" id="email" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required />
+                                                                    <input type="email" class="form-control inputText" id="email" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required/>
                                                                    
                                                                     <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
                                                                     <label for="email">Example: admin@email-address.com</label>
@@ -111,7 +112,7 @@
                                                                 <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
                                                                 <input type="file" id="photo2" name="image" class="form-control hiddenForm" />
                                                             </div>
-                                                            <input type="hidden" value="7"  id="type" name="type" />
+                                                            <input type="hidden" value="8"  id="type" name="type" />
                                                             <div class="form-group">
                                                                 <input type="submit" value="Save" name="submit" class="form-control submit_btn driver_side"/>
                                                             </div>
@@ -121,7 +122,7 @@
                                             </form>
                                             </div>
 
-                                            <form id="updateForm" class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.update','~') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                                            <form id="updateForm" class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('service-provider-manager.update','~') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
                                                 @method('put')   
                                                 @csrf
                                                 <div class="row w-100 m-0 form_inside_row edit_box" style="display: none">
@@ -138,7 +139,7 @@
                                                             </div>
                                                             <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                                                 <div class="form-group">
-                                                                    <input type="email" class="form-control inputText" id="email" form="updateForm" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required/>
+                                                                    <input type="email" class="form-control inputText" id="email" form="updateForm" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email " required/>
                                                                    
                                                                     <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
                                                                     <label for="email">Example: admin@email-address.com</label>
@@ -197,7 +198,7 @@
                                                                 <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
                                                                 <input type="file"  id="photo3" name="image" class="form-control hiddenForm" />
                                                             </div>
-                                                            <input type="hidden" value="7"  id="type" name="type" />
+                                                            <input type="hidden" value="8"  id="type" name="type" />
                                                             <div class="form-group">
                                                                 <input type="submit" form="updateForm" type="submit" value="Update" class="form-control submit_btn driver_side"/>
                                                             </div>
@@ -252,18 +253,45 @@
                                         </article>
                                     </section>
 
-        <form  action="{{ route('master-manager.destroy','~') }}" id="deleteForm" method="POST">
+        <form  action="{{ route('service-provider-manager.destroy','~') }}" id="deleteForm" method="POST">
             @method('delete')
-            <input type="hidden" name="type" value="7">
+            <input type="hidden" name="type" value="8">
         @csrf
     </form>
 
-@endsection
+	</div>
+					
+@endsection	
 @section('footer_scripts')
 <script>
     //$(document).on('click','.editButton',function(){
        
+        
+    var input = document.querySelector("#phone");
+    var iti = window.intlTelInput(input, {
+        initialCountry: "auto",
+        geoIpLookup: function (success, failure) {
+            $.get("https://ipinfo.io", function () { }, "jsonp").always(function (resp) {
+                var countryCode = (resp && resp.country) ? resp.country : "ch";
+                success(countryCode);
+            });
+        },
+        initialCountry:"ch",
+        separateDialCode: true,
+        utilsScript: "{{url('assets/js/utils.js')}}",
+        autoFormat: false,
+        nationalMode: true,
+        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+            return "";
+        },
+    });
 
+    iti.promise.then(function() {
+        input.addEventListener("countrychange", function() {
+            var selectedCountryData = iti.getSelectedCountryData();
+            $('#country_code').val(selectedCountryData.dialCode);
+        });
+    });
     
         $('.editButton').click(function(){ 
                  user = $(this).data('user');
@@ -278,7 +306,7 @@
                     },
                     data: {
                         id: user,
-                        type: "master"
+                        type: "sp"
                         // Add other data as needed
                     },
                     success: function (data) {
@@ -451,7 +479,7 @@
                         },
                         data: {
                             id: id,
-                            type: 7,
+                            type: 8,
                             status: status
                             // Add other data as needed
                         },
@@ -481,6 +509,10 @@
                 });
             });
             });
+
+    $('#phone, #phone_edit_number').keyup(function () { 
+        this.value = this.value.replace(/[^0-9+\.]/g,'');
+    });
 
              </script>
 @endsection

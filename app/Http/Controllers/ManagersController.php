@@ -33,13 +33,21 @@ class ManagersController extends Controller
     {
         if(Auth::user()->user_type == 6){
             $user_type = 7;
+        }else if(Auth::user()->user_type == 3){
+            $user_type = 8;
         }
         
         //dd(\Request::route()->getName());
-        $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager');
+        $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager','uri' => 'manager');
         $company = Auth::user();
         $data['managers'] = User::where(['user_type'=> $user_type ,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
-        return view('managers.index')->with($data);
+       
+        if(Auth::user()->user_type == 6){
+            return view('managers.index')->with($data);
+        }else if(Auth::user()->user_type == 3){
+            return view('service_provider.index')->with($data);
+        }
+      
     }
 
     public function create(Request $request)
@@ -57,6 +65,7 @@ class ManagersController extends Controller
             'email' => ['required', 'string', 'email', 'max:191'],
             'name' => 'required',
             'password' => 'required',
+            'phone' => 'nullable|numeric',
         ]);
         DB::beginTransaction();
         try
@@ -75,13 +84,13 @@ class ManagersController extends Controller
             $manager = new User();
             $manager->fill($data);
             $manager->save();
-
+            if($request->type == 7){
+                $user_type = 'master-manager';
+            }else{
+                $user_type = 'service-provider-manager';
+            }
             if ($request->image) {
-                if($request->type == 7){
-                    $user_type = 'master-manager';
-                }else{
-                    $user_type = 'sp-manager';
-                }
+                
                 //dd($request->image);
 				$imageName = 'profile-image'.time().'.' . $request->image->extension();
 				$image = Storage::disk('public')->putFileAs(
@@ -92,7 +101,8 @@ class ManagersController extends Controller
 				User::where('id', $manager->id)->update(['image' => $image]);
 			}
             DB::commit();
-            return redirect()->route('master-manager.index')->with('success','Manager successfully created');
+
+            return redirect()->route($user_type.'.index')->with('success','Manager successfully created');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
@@ -105,7 +115,12 @@ class ManagersController extends Controller
         try {
             User::where(['user_type'=>$request->type,'id'=>$id])->delete();
             DB::commit();
-            return redirect()->route('master-manager.index')->with('success','Manager has been deleted');
+            if($request->type == 7){
+                $user_type = 'master-manager';
+            }else{
+                $user_type = 'service-provider-manager';
+            }
+            return redirect()->route($user_type.'.index')->with('success','Manager has been deleted');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
@@ -122,7 +137,7 @@ class ManagersController extends Controller
 
     public function updateStatus(Request $request)
 	{
-        User::where('id',Crypt::decrypt($request->id))->where('user_type',$request->type)->update(["status" => $request->status]);
+        User::where('id',Crypt::decrypt($request->id))->where('user_type',$request->type)->update(["status" => $request->status,'is_active' => $request->status]);
 		
         return redirect()->route('master-manager.index')->with('success','Manager has been updated');
 	}
@@ -163,10 +178,16 @@ class ManagersController extends Controller
             {
                 $data['password'] = Hash::make($request->password);
             }
+            if($request->type == 7){
+                $user_type = 'master-manager';
+            }else{
+                $user_type = 'service-provider-manager';
+            }
+
             if ($request->image) {
 				$imageName = 'profile-image'.time().'.' . $request->image->extension();
 				$image = Storage::disk('public')->putFileAs(
-					'manager/' . $id,
+					$user_type.'/' . $id,
 					$request->image,
 					$imageName
 				);
@@ -177,7 +198,9 @@ class ManagersController extends Controller
             $manager->fill($data);
             $manager->update();
             DB::commit();
-            return redirect()->route('master-manager.index')->with('success','Manager information successfully updated.');
+            
+
+            return redirect()->route($user_type.'.index')->with('success','Manager information successfully updated.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error',$e->getMessage());
