@@ -201,6 +201,16 @@
                                 </li>
                             </ul>
                         @endif
+
+                        @if($uri=='service-provider-manager.index' )
+                            <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+                            <ul class="nav top_tab_menu target">
+                                <li class="nav-item">
+                                    <a class="nav-link {{ ($uri=='service-provider-manager.index' ? 'active' : '') }}" href="{{ route('service-provider-manager.index') }}">Manager</a>
+                                </li>
+                            </ul>
+                        @endif
+
                         @if($uri=='company.index' || $uri=='company.create' || $uri=='company.edit')
                             <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
                             <ul class="nav top_tab_menu target">
@@ -273,7 +283,7 @@
                                 <div class="avatar_info_box">
                                     <img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 avatar_img" alt="user image" />
                                     <div class="user_info">
-                                        <h4 class="nameOfUser">Jameson</h4>
+                                        <h4 class="nameOfUser">Jameson </h4>
                                         <p class="userInfo">Admin</p>
                                     </div>
                                 </div>
