@@ -7537,12 +7537,17 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			}else if($request->type == 'weekly'){
 
 				if($salaryType == 'hourly'){
-					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
-					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
-					->paginate(10);
+						$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type',
+								DB::raw('DATE_SUB(MIN(date), INTERVAL (DAYOFWEEK(MIN(date)) - 2) DAY) AS start_date'), // Adjusted for Monday
+								DB::raw('DATE_ADD(MIN(date), INTERVAL (7 - DAYOFWEEK(MIN(date))) + 1 DAY) AS end_date'))
+						->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
+						->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+						->paginate(10);
 				}else{
-					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
+					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type',
+								DB::raw('DATE_SUB(MIN(date), INTERVAL (DAYOFWEEK(MIN(date)) - 2) DAY) AS start_date'), // Adjusted for Monday
+								DB::raw('DATE_ADD(MIN(date), INTERVAL (7 - DAYOFWEEK(MIN(date))) + 1 DAY) AS end_date')
+					)
 					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
 					->where('expenses.driver_id',$userId)->where('expenses.service_provider_id',$service_provider_id)
 					->where(function ($query) {
