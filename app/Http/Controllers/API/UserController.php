@@ -7541,7 +7541,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 								DB::raw('DATE_SUB(MIN(date), INTERVAL (DAYOFWEEK(MIN(date)) - 2) DAY) AS start_date'), // Adjusted for Monday
 								DB::raw('DATE_ADD(MIN(date), INTERVAL (7 - DAYOFWEEK(MIN(date))) + 1 DAY) AS end_date'))
 					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
-					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')->groupBy( DB::raw('YEAR(date)'), DB::raw('WEEK(date,1)'))
 					->paginate(10);
 				}else{
 					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('WEEK(date,1) as week_number'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type',
@@ -7555,9 +7555,10 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						->orWhere('expenses.type','expense')
 						->orWhere('expenses.type_detail','revenue');
 					})
-					->orderBy('date','desc')->groupBy( DB::raw('WEEK(date,1)'))
+					->orderBy('date','desc')->groupBy(DB::raw('YEAR(date)'), DB::raw('WEEK(date,1)'))
 					->paginate(10);
 				}
+				
 				
 			}else if($request->type == 'monthly'){
 
