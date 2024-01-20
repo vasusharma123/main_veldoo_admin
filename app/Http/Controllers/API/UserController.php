@@ -7569,7 +7569,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
 					->leftJoin('salaries', 'salaries.driver_id', '=', 'expenses.driver_id')
 					->where('expenses.driver_id',$userId)->where('expenses.type_detail','!=','revenue')->where('expenses.service_provider_id',$service_provider_id)->orderBy('date','desc')
-					->groupBy(DB::raw('MONTH(date)'))
+					->groupBy(DB::raw('YEAR(date)'),DB::raw('MONTH(date)'))
 					->paginate(10);
 				}else{
 					$data = Expense::select(DB::raw('SUM(revenue) as total_revenue'), DB::raw('MONTH(date) as month'),'expenses.driver_id','expenses.service_provider_id','date',DB::raw('SUM(salary) as salary'),DB::raw('SUM(deductions) as deductions'),DB::raw('SUM(amount) as expense'),'salaries.type')
@@ -7582,7 +7582,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						->orWhere('expenses.type_detail','revenue');
 					})
 					->orderBy('date','desc')
-					->groupBy(DB::raw('MONTH(date)'))
+					->groupBy(DB::raw('YEAR(date)'),DB::raw('MONTH(date)'))
 					->paginate(10);
 
 				}
