@@ -726,8 +726,8 @@ class UserController extends Controller
 
 		$endTime = Carbon::now()->addMinutes($expiryMin)->format('Y-m-d H:i:s');
 
-		$recordExist = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'service_provider_id' => $request->service_provider_id, 'user_type' => 2])->first();
-		$otpverify = OtpVerification::firstOrNew(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'service_provider_id' => $request->service_provider_id, 'user_type' => 2]);
+		$recordExist = OtpVerification::where(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2])->first();
+		$otpverify = OtpVerification::firstOrNew(['country_code' => ltrim($request->country_code,"+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => 2]);
 		if ($recordExist && $recordExist->expiry >= Carbon::now()) {
 			$otp = $recordExist->otp;
 		} else {
@@ -735,6 +735,7 @@ class UserController extends Controller
 			$otpverify->otp = $otp;
 			$otpverify->expiry = $endTime;
 		}
+		$otpverify->service_provider_id = $request->service_provider_id;
 		$otpverify->device_type = $request->device_type??"";
 		$otpverify->save();
 		$this->sendSMS("+".ltrim($request->country_code,"+"), ltrim($request->phone, "0"), "Dear User, your Veldoo verification code is $otp. Use this to reset your password");
