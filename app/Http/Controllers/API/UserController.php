@@ -292,7 +292,7 @@ class UserController extends Controller
 		try {
 			$expiryMin = config('app.otp_expiry_minutes');
 			$now = Carbon::now();
-			$haveOtp = OtpVerification::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
+			$haveOtp = OtpVerification::where(['country_code' => ltrim($request->country_code, "+"), 'phone' => ltrim($request->phone, "0"), 'otp' => $request->otp])->first();
 
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
@@ -552,9 +552,9 @@ class UserController extends Controller
 				return response()->json(['message' => $validator->errors()->first(), 'error' => $validator->errors()], $this->warningCode);
 			}
 
-			$user = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
+			$user = User::where(['country_code' => ltrim($request->country_code, "+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->first();
 			if (!empty($user) && $user != null) {
-				$allUserIds = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->pluck('service_provider_id')->toArray();
+				$allUserIds = User::where(['country_code' => ltrim($request->country_code, "+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $request->user_type])->pluck('service_provider_id')->toArray();
 				$user->driver_service_providers = User::select(['id','name'])->whereIn('id',$allUserIds)->get();
 				return response()->json(['message' => 'You are already registered with this phone number', 'data' => $user], $this->successCode);
 			} else {
@@ -1025,7 +1025,7 @@ class UserController extends Controller
 
 		try {
 			if (!empty($request->country_code) && !empty($request->phone)) {
-				$already_exist_phone = User::where(['country_code' => $request->country_code, 'phone' => ltrim($request->phone, "0"), 'user_type' => $user->user_type])->where('id','!=',$user->id)->first();
+				$already_exist_phone = User::where(['country_code' => ltrim($request->country_code, "+"), 'phone' => ltrim($request->phone, "0"), 'user_type' => $user->user_type])->where('id','!=',$user->id)->first();
 				if($already_exist_phone){
 					return response()->json(['message' => "This phone number already exists for another user."], $this->warningCode);
 				}
