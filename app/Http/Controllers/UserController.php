@@ -875,8 +875,17 @@ class UserController extends Controller
         }
         */
         // dd(Auth::user()->id);
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
 		if ($request->ajax()) {
-			$data = User::select('id','first_name','is_master','last_name','email','phone','status','name','country_code')->where(['user_type' => 2, 'service_provider_id' => Auth::user()->id])->get();
+			$data = User::select('id','first_name','is_master','last_name','email','phone','status','name','country_code')->where(['user_type' => 2, 'service_provider_id' => $sp_id])->get();
 			// $data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 			// <a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 			return Datatables::of($data)
