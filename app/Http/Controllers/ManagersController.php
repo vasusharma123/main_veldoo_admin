@@ -40,7 +40,7 @@ class ManagersController extends Controller
         //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager','uri' => 'manager');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=> $user_type ,'service_provider_id '=>Auth::user()->service_provider_id])->orderBy('first_name', 'ASC')->paginate(20);
+        $data['managers'] = User::where(['user_type'=> $user_type ,'service_provider_id'=>Auth::user()->service_provider_id])->orderBy('first_name', 'ASC')->paginate(20);
        
         if(Auth::user()->user_type == 6){
             return view('managers.index')->with($data);
