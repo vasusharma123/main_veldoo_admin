@@ -147,7 +147,7 @@
 						<div class="col-lg-4 col-md-4 col-sm-12 col-12">
 							<div class="img_user_settled h-100">													
 								<div class="form-group">
-									<button id="submit_salary"  class="submit_salary form-control submit_btn" disabled> Submit</button>
+									<button id="submit_salary"  class="submit_salary form-control submit_btn" style="background: #FC4C02;" disabled> Submit</button>
 								</div>
 							</div>
 						</div>
