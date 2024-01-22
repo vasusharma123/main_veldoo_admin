@@ -59,8 +59,16 @@ class DriverController extends Controller
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => Auth::user()->id])->paginate($this->limit);
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
