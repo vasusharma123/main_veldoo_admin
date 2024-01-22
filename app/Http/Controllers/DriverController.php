@@ -319,6 +319,16 @@ class DriverController extends Controller
 				$input['is_active'] = 0;
 			}
 
+			if($request->status){
+
+				if($request->status == 1){
+					$input['is_active'] = 0;
+				}else{
+					$input['is_active'] = 1;
+				}
+
+			}
+
 			$udata->update($input);
 			foreach (User::find($id)->tokens as $token) {
 				$token->revoke();
