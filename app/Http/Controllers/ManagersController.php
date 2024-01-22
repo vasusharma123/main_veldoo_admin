@@ -40,7 +40,7 @@ class ManagersController extends Controller
         //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager','uri' => 'manager');
         $company = Auth::user();
-        $data['managers'] = User::where(['user_type'=> $user_type ,'company_id'=>Auth::user()->company_id])->orderBy('first_name', 'ASC')->paginate(20);
+        $data['managers'] = User::where(['user_type'=> $user_type ,'service_provider_id '=>Auth::user()->service_provider_id])->orderBy('first_name', 'ASC')->paginate(20);
        
         if(Auth::user()->user_type == 6){
             return view('managers.index')->with($data);
@@ -74,7 +74,7 @@ class ManagersController extends Controller
                 return redirect()->route('master-manager.index')->with('error','Email already exist');
             }
 
-            $data = ['service_provider_id' => Auth::user()->service_provider_id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => $request->type, 'company_id' => Auth::user()->company_id];
+            $data = ['service_provider_id' => Auth::user()->id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => $request->type, 'company_id' => Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
             if ($request->phone)
             {
