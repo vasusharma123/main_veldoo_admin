@@ -31,8 +31,19 @@ class CompanyController extends Controller
 		
 		$data = array();
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
+
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+
 		
-		$records = Company::with(['user'])->where(['service_provider_id' => Auth::user()->id]);
+		$records = Company::with(['user'])->where(['service_provider_id' => $sp_id]);
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
