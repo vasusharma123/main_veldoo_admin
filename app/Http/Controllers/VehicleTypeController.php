@@ -32,7 +32,18 @@ class VehicleTypeController extends Controller
         $data = array();
         $data = array('title' => 'Vehicle', 'action' => 'List Vehicles');
 
-        $records = Price::select('id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status')->where(['service_provider_id' => Auth::user()->id]);
+        if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+
+
+        $records = Price::select('id', 'car_type', 'car_image', 'price_per_km', 'basic_fee', 'seating_capacity', 'alert_time', 'status')->where(['service_provider_id' => $sp_id]);
 		
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 			
@@ -43,7 +54,7 @@ class VehicleTypeController extends Controller
 		
 		if(!empty($request->input('text'))){
 			$text = $request->input('text');
-			$service_provider_id = Auth::user()->id;
+			$service_provider_id = $sp_id;
 			$records->whereRaw("(car_type LIKE '%$text%' OR basic_fee LIKE '%$text%' OR price_per_km LIKE '%$text%' OR seating_capacity LIKE '%$text%' OR alert_time LIKE '%$text%') AND service_provider_id=$service_provider_id");
 		}
 		
@@ -55,7 +66,7 @@ class VehicleTypeController extends Controller
 		
 		#$this->limit = 1;
 		
-		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id, 'deleted_at' => null])->paginate($this->limit);
+		$data['records'] = $records->where(['service_provider_id'=>$sp_id, 'deleted_at' => null])->paginate($this->limit);
 		
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
