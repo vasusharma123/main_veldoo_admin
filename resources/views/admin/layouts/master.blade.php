@@ -281,9 +281,9 @@
 								@yield('header_search_export')
 
                                 <div class="avatar_info_box">
-                                    <img src="{{ asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 avatar_img" alt="user image" />
+                                    <img src="{{ Auth::user()->image?env('URL_PUBLIC').'/'.Auth::user()->image:asset('assets/images/veldoo/avatar-2.png') }}" class="img-fluid w-100 avatar_img" alt="user image" />
                                     <div class="user_info">
-                                        <h4 class="nameOfUser">Jameson </h4>
+                                        <h4 class="nameOfUser">{{ Auth::user()->name}} </h4>
                                         <p class="userInfo">Admin</p>
                                     </div>
                                 </div>
