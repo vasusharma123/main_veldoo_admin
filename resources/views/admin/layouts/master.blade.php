@@ -446,9 +446,13 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    <!-- <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
+    @if($uri =='service-provider-manager.index')
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     
+     @else
+     <script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+    @endif
     @yield('footer_scripts')
 </body>
 
