@@ -8006,6 +8006,8 @@ public function logHours(Request $request)  {
 				$type =  'voucher';
 			}elseif( $name == 'invoice' || $name == 'rechnung'){
 				$type =  'invoice';
+			}elseif( $name == 'mobilplus'){
+				$type =  'mobilplus';
 			}
 			return $type;
 
