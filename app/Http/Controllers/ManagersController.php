@@ -73,9 +73,10 @@ class ManagersController extends Controller
            if(User::where('email',$request->email)->where('user_type',$request->type)->exists()){
                 return redirect()->route('master-manager.index')->with('error','Email already exist');
             }
-
+            
             $data = ['service_provider_id' => Auth::user()->id, 'name'=>$request->name, 'first_name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'user_type' => $request->type, 'company_id' => Auth::user()->company_id];
             $data['created_by'] = Auth::user()->id;
+            $data['company_id'] = Auth::user()->company_id;
             if ($request->phone)
             {
                 $data['phone'] = str_replace(' ', '', $request->phone);

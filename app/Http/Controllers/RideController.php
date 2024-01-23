@@ -46,19 +46,40 @@ class RideController extends Controller
 
     public function index(Request $request,$type=null)
     {
+        if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
         $type = ($type?$type:'list').'View';
         $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
         $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::where(['service_provider_id' => Auth::user()->service_provider_id])->orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => Auth::user()->service_provider_id])->get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
+       
         return $this->$type($data,$request->all());
     }
 
     public function listView($data, $request)
     {
+
+        if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+
         $data['page_title'] = 'Rides';
         $data['action'] = 'Rides';
-        $records = Ride::where(['service_provider_id' => Auth::user()->id]);
+        $records = Ride::where(['service_provider_id' => $sp_id]);
         if(!empty($request['start_date'])){
             $records = $records->whereDate('ride_time', '>=', $request['start_date']);
         }
