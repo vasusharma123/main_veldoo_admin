@@ -5303,7 +5303,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->company_id = $request->company_id;
 				}
 				if (!empty($request->payment_type)) {
-					$ride->payment_type = $request->payment_type;
+					$payTypeForRide= $this->checkPaymentTypeName($request);
+					$ride->payment_type = $payTypeForRide;
 				}
 				if (!empty($request->car_type)) {
 					$ride->car_type = $request->car_type;
