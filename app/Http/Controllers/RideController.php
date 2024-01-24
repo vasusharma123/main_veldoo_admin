@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use App\Ride;
 use App\RideHistory;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use App\Exports\RideExport;
 use App\PaymentMethod;
 use App\Price;
+use Illuminate\Support\Facades\Route;
 
 class RideController extends Controller
 {
@@ -44,27 +46,27 @@ class RideController extends Controller
 		return Excel::download(new RideExport($req_params), $file_name);
     }
 
-    public function index(Request $request,$type=null)
-    {
-        if(Auth::user()->user_type){
-			if(Auth::user()->user_type == 8){
-				$sp_id = Auth::user()->service_provider_id;
-			}elseif(Auth::user()->user_type == 3){
-				$sp_id = Auth::user()->id;
-			}else{
-				$sp_id = Auth::user()->id;
-			}
-		}
-        $type = ($type?$type:'list').'View';
-        $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
-        $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
-        $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
-        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
+    // public function index(Request $request,$type=null)
+    // {
+    //     if(Auth::user()->user_type){
+	// 		if(Auth::user()->user_type == 8){
+	// 			$sp_id = Auth::user()->service_provider_id;
+	// 		}elseif(Auth::user()->user_type == 3){
+	// 			$sp_id = Auth::user()->id;
+	// 		}else{
+	// 			$sp_id = Auth::user()->id;
+	// 		}
+	// 	}
+    //     $type = ($type?$type:'list').'View';
+    //     $type = !in_array($type,['listView','monthView','weekView'])?'listView':$type;
+    //     $data['users'] = User::where(['user_type' => 1, 'company_id' => Auth::user()->company_id])->orderBy('first_name', 'ASC')->get();
+    //     $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
+    //     $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
        
-        return $this->$type($data,$request->all());
-    }
+    //     return $this->$type($data,$request->all());
+    // }
 
-    public function listView($data, $request)
+    public function listView(Request $request)
     {
 
         if(Auth::user()->user_type){
@@ -78,7 +80,7 @@ class RideController extends Controller
 		}
 
         $data['page_title'] = 'Rides';
-        $data['action'] = 'Rides';
+        $data['action'] = 'list';
         $records = Ride::where(['service_provider_id' => $sp_id]);
         if(!empty($request['start_date'])){
             $records = $records->whereDate('ride_time', '>=', $request['start_date']);
@@ -87,13 +89,94 @@ class RideController extends Controller
             $records = $records->whereDate('ride_time', '<=', $request['end_date']);
         }
         if(!empty($request['search'])){
-            $records = $records->where('pickup_address', 'like', '%' . $request['search'] . '%');
+            $records = $records->where(function ($query) use ($request) {
+                $query->where('pickup_address', 'like', '%' . $request['search'] . '%');
+                $query->orWhereHas('driver', function($query1) use ($request) {
+                    $query1->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request['search'] . '%');
+                });
+                $query->orWhereHas('user', function($query1) use ($request) {
+                    $query1->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request['search'] . '%');
+                });
+                $query->orWhereHas('company', function($query1) use ($request) {
+                    $query1->where('name', 'like', '%' . $request['search'] . '%');
+                });
+            });
         }
         $data['rides'] = $records->orderBy('rides.ride_time', 'DESC')->paginate(20);
         $data['start_date'] = $request['start_date']??"";
         $data['end_date'] = $request['end_date']??"";
         $data['search'] = $request['search']??"";
+        $data['users'] = User::where(['user_type' => 1])->orderBy('first_name', 'ASC')->get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
+        $data['companies'] = Company::select('id','name')->where(['status' => 1, 'service_provider_id' => $sp_id])->orderBy('id','desc')->get();
         return view('admin.rides.list')->with($data);
+    }
+
+    public function monthView(Request $request)
+    {
+        if(Auth::user()->user_type == 8){
+            $sp_id = Auth::user()->service_provider_id;
+        }elseif(Auth::user()->user_type == 3){
+            $sp_id = Auth::user()->id;
+        }else{
+            $sp_id = Auth::user()->id;
+        }
+        $date = date('Y-m-d');
+        if(isset($request['m']) && !empty($request['m']))
+        {
+            $date = $request['m'];
+        }
+        $month = date('m',strtotime($date));
+        $year = date('Y',strtotime($date));
+
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'month';
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['service_provider_id' => $sp_id])
+                            ->orderBy('rides.id')->whereMonth('ride_time',$month)->whereYear('ride_time', $year)->with(['vehicle','user:id,first_name,last_name'])->get();
+        $data['date'] = $date;
+        $data['users'] = User::where(['user_type' => 1])->orderBy('first_name', 'ASC')->get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
+        $data['companies'] = Company::select('id','name')->where(['status' => 1, 'service_provider_id' => $sp_id])->orderBy('id','desc')->get();
+        return view('admin.rides.month')->with($data);
+    }
+
+    public function weekView(Request $request)
+    {
+        if(Auth::user()->user_type == 8){
+            $sp_id = Auth::user()->service_provider_id;
+        }elseif(Auth::user()->user_type == 3){
+            $sp_id = Auth::user()->id;
+        }else{
+            $sp_id = Auth::user()->id;
+        }
+        $data['page_title'] = 'Rides';
+        $data['action'] = 'week';
+        $data['year'] = Carbon::now()->startOfWeek()->format('Y');
+        $data['month'] = Carbon::now()->startOfWeek()->format('m')-1;
+        $data['day'] = Carbon::now()->startOfWeek()->format('d');
+        if(isset($request['w']) && !empty($request['w']))
+        {
+            $data['year'] = date('Y',strtotime($request['w']));
+            $data['month'] = date('m',strtotime($request['w']))-1;
+            $data['day'] = date('d',strtotime($request['w']));
+        }
+
+        $startOfWeek = $data['year'].'-'.($data['month']+1).'-'.$data['day']; // Example start date of the week
+        // Convert the start date to a Carbon instance
+        $startOfWeekDate = Carbon::parse($startOfWeek)->startOfDay();
+
+        // Calculate the end date of the week by adding 6 days to the start date
+        $endOfWeekDate = $startOfWeekDate->copy()->addDays(6)->endOfDay();
+        // dd($endOfWeekDate);
+
+        $data['rides'] = Ride::select('rides.id', 'rides.ride_time', 'rides.status','rides.pickup_address','rides.vehicle_id','rides.user_id')->where(['service_provider_id' => $sp_id])->orderBy('rides.id')->whereDate('ride_time', '>=', $startOfWeekDate->toDateString())->whereDate('ride_time', '<=', $endOfWeekDate->toDateString())->with(['vehicle','user:id,first_name,last_name'])->get();
+        $data['users'] = User::where(['user_type' => 1])->orderBy('first_name', 'ASC')->get();
+        $data['vehicle_types'] = Price::where(['service_provider_id' => $sp_id])->orderBy('sort')->get();
+        $data['payment_types'] = PaymentMethod::where(['service_provider_id' => $sp_id])->get();
+        $data['companies'] = Company::select('id','name')->where(['status' => 1, 'service_provider_id' => $sp_id])->orderBy('id','desc')->get();
+        return view('admin.rides.week')->with($data);
     }
 	
     // public function index(Request $request) {

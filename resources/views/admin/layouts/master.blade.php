@@ -127,7 +127,7 @@
                         <?php
                         $uri = Route::currentRouteName();
                         ?>
-						@if($uri == 'rides.index')
+						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
 						<div class="col-lg-3 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
 							@else
 							<div class="col-lg-6 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
@@ -270,7 +270,7 @@
 						@yield('header_menu_list')
                         
 						</div>
-						@if($uri == 'rides.index')
+						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
 						<div class="col-lg-7 col-md-7 col-sm-5 col-5 align-self-center">
 						    @else
 						    <div class="col-lg-4 col-md-7 col-sm-5 col-5 align-self-center">
@@ -354,7 +354,7 @@
 													</a>
 												</li>
 												<li class="nav-item w-100">
-													<a class="nav-link {{ (($uri=='rides.index' || $uri=='rides.show') ? 'active' : '') }}" href="{{ route('rides.index') }}">
+													<a class="nav-link {{ (($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week') ? 'active' : '') }}" href="{{ route('rides.list') }}">
 														<img src="{{ asset('assets/images/veldoo/riders.png') }}" class="img-fluid w-100 sidebarImgs" alt="Riders"/> 
 														<span class="sidebarText">Rides</span>
 														<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
@@ -441,9 +441,7 @@
 
     <!-- Timer JS -->
     <script src="https://cdn.jsdelivr.net/npm/timepicker@1.14.1/jquery.timepicker.min.js"></script>
-
-    <!-- Calendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
     
