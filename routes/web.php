@@ -176,7 +176,10 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);
 	// ,'rides'=>'RideController'
-	Route::get('/rides/{type?}','RideController@index')->name('rides.index');
+	// Route::get('/rides/{type?}','RideController@index')->name('rides.index');
+	Route::get('/rides/list','RideController@listView')->name('rides.list');
+	Route::get('/rides/month','RideController@monthView')->name('rides.month');
+	Route::get('/rides/week','RideController@weekView')->name('rides.week');
 	Route::get('service_provider/rides/export','RideController@exportRides')->name('rides.export');
 
 	Route::get('daily-report','DailyReportController@index')->name('daily-report.index');

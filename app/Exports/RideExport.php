@@ -35,7 +35,18 @@ class RideExport implements FromCollection, WithHeadings
             $records = $records->whereIn('id',$this->req_params['selected_ride']);
         }
         if(!empty($req_params['search'])){
-            $records = $records->where('pickup_address', 'like', '%' . $req_params['search'] . '%');
+            $records = $records->where(function ($query) use ($req_params) {
+                $query->where('pickup_address', 'like', '%' . $req_params['search'] . '%');
+                $query->orWhereHas('driver', function($query1) use ($req_params) {
+                    $query1->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $req_params['search'] . '%');
+                });
+                $query->orWhereHas('user', function($query1) use ($req_params) {
+                    $query1->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $req_params['search'] . '%');
+                });
+                $query->orWhereHas('company', function($query1) use ($req_params) {
+                    $query1->where('name', 'like', '%' . $req_params['search'] . '%');
+                });
+            });
         }
         $records = $records->orderBy('id', 'desc')->get();
 		

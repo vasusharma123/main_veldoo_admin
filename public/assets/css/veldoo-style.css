@@ -857,6 +857,29 @@ a.action_tabs_btn.active{
 #listTabsView button.nav-link.active{
     color: rgba(6, 15, 33, 1);
 }
+
+#listTabsView a.nav-link {
+    color: rgba(6, 15, 33, .5);
+    font-family: var(--oswald-font);
+    font-size: 20px;
+    position: relative;
+    border: none;
+    background: transparent;
+    padding: 0px 8px;
+}
+#listTabsView a.nav-link:after{
+    content: '/';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+}
+
+#listTabsView a.nav-link.active{
+    color: rgba(6, 15, 33, 1);
+}
+
 #listTabsView {
     border: none;
     margin-bottom: 25px;
