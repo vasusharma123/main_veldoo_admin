@@ -198,7 +198,7 @@ class DriverController extends Controller
 
 		$request->validate($rules);
 
-		$input = $request->except(['_method', '_token', 'country_code', 'phone']);
+		$input = $request->except(['_method', '_token']);
 
 		try {
 			$userExists = User::where(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
@@ -207,6 +207,7 @@ class DriverController extends Controller
 				return back()->withErrors(['message' => 'Phone number already exists']);
 			}
 
+			$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 			$input['user_type'] = 2;
 			$input['status'] = 1;
 			$input['service_provider_id'] = Auth::user()->id;

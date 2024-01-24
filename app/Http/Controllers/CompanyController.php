@@ -121,7 +121,7 @@ class CompanyController extends Controller
 			$companyinput['name'] = $input['name'];
 			$companyinput['country_code'] = $input['country_code'];
 			$companyinput['country_code_iso'] = $input['country_code_iso'];
-			$companyinput['phone'] = $input['phone'];
+			$companyinput['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 			$companyinput['email'] = $input['email'];
 			$companyinput['street'] = $input['street'];
 			$companyinput['zip'] = $input['zip'];
@@ -210,7 +210,7 @@ class CompanyController extends Controller
 		$input = $request->all();
 		
 		$cdata = Company::find($id);
-
+		$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 		$companyinput = $input;
 
 		if (!empty($request->company_image_tmp)) {
@@ -275,18 +275,18 @@ class CompanyController extends Controller
 		if($isUserEmail){
 			return redirect(route('company.edit', $id). '#admin_profile')->withErrors(['message' => 'Email already exists']);
 		}
-		
+
 		$udata = User::firstOrNew(['company_id' => $id, 'user_type' => 4]);
 		
-		$admininput['first_name'] = $input['admin_name'];
-		$admininput['name'] = $input['admin_name'];
-		$admininput['country_code_iso'] = $input['admin_country_code_iso'];
-		$admininput['country_code'] = $input['admin_country_code'];
-		$admininput['phone'] = $input['admin_phone'];
-		$admininput['email'] = $input['admin_email'];
+		$udata->first_name = $input['admin_name'];
+		$udata->name = $input['admin_name'];
+		$udata->country_code_iso = $input['admin_country_code_iso'];
+		$udata->country_code = $input['admin_country_code'];
+		$udata->phone = $this->phone_number_trim($input['admin_phone'], $input['admin_country_code']);
+		$udata->email = $input['admin_email'];
 		
 		if(!empty($input['password'])){
-			$admininput['password'] = Hash::make($input['password']);
+			$udata->password = Hash::make($input['password']);
 		}
 		
 		if(!empty($request->image_tmp)){
@@ -297,13 +297,12 @@ class CompanyController extends Controller
 			
 			$imgname = 'img-'.time().'.'.$request->image_tmp->extension();
 			
-			$admininput['image'] = Storage::disk('public')->putFileAs(
+			$udata->image = Storage::disk('public')->putFileAs(
 				'user/'.$udata->id, $request->image_tmp, $imgname
 			);
 		}
 		
-		$udata->update($admininput);
-		
+		$udata->save();
 		return redirect(route('company.edit', $id). '#admin_profile')->with('success', "Admin profile updated successfully");
     }
 	
