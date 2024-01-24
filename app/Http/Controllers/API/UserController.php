@@ -8006,6 +8006,8 @@ public function logHours(Request $request)  {
 				$type =  'invoice';
 			}elseif( $name == 'mobilplus'){
 				$type =  'mobilplus';
+			}elseif( $name == 'twint'){
+				$type =  'twint';
 			}
 			return $type;
 
