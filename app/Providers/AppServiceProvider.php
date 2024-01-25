@@ -48,10 +48,14 @@ class AppServiceProvider extends ServiceProvider
                 $service_provider_id = Auth::user()->id;
             } elseif (Auth::user() && !empty(Auth::user()->service_provider_id)) {
                 $service_provider_id = Auth::user()->service_provider_id;
+                
             }
             if (!empty($service_provider_id)) {
                 $configuration = Setting::where(['service_provider_id' => $service_provider_id])->first();
-                $setting = json_decode($configuration->value, true);
+                if($configuration){
+                    $setting = json_decode($configuration->value, true);
+                }
+               
             }
             if (app('request')->route()) {
                 $action = app('request')->route()->getAction();
