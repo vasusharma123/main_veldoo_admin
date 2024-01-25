@@ -58,8 +58,6 @@ class VehicleController extends Controller
 		$service_provider_id =  $sp_id;
 		if(!empty($request->input('text'))){
 			$text = $request->input('text');
-           
-            
 			$records->whereRaw("(year LIKE '%$text%' OR model LIKE '%$text%' OR color LIKE '%$text%' OR vehicle_number_plate LIKE '%$text%') AND service_provider_id=$service_provider_id");
 		}
 		
