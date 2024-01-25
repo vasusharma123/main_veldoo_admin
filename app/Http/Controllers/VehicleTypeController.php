@@ -88,9 +88,19 @@ class VehicleTypeController extends Controller
      * This function use to  create contacts subject
      */
     public function change_status(Request $request){
-        DB::table('prices')->where('service_provider_id',Auth::user()->id)->update(['status'=>0]);
+        if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+
+        DB::table('prices')->where('service_provider_id',$sp_id)->update(['status'=>0]);
         $status = ($request->status)?0:1;
-        $updateUser = Price::where('id',$request->vtype_id)->where('service_provider_id',Auth::user()->id)->update(['status'=>$status]);
+        $updateUser = Price::where('id',$request->vtype_id)->where('service_provider_id',$sp_id)->update(['status'=>$status]);
        
         if ($updateUser) {
             echo json_encode(true);
@@ -107,6 +117,7 @@ class VehicleTypeController extends Controller
      */
     public function create(Request $request)
     {
+       
         $breadcrumb = array('title'=>'Vehicle Type','action'=>'Add Vehicle Type');
         $data = [];
         $data['car_types'] =\App\Category::where('status',1)->get();
@@ -134,7 +145,16 @@ class VehicleTypeController extends Controller
 
         $request->validate($rules);
         $input = $request->all();
-        $input['service_provider_id'] = Auth::user()->id;
+        if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+        $input['service_provider_id'] = $sp_id;
         unset($input['_method'],$input['_token'],$input['submit']);
 		//  unset($input['basic_fee']);
         $result=\App\Price::create($input);

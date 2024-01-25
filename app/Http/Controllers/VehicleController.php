@@ -22,6 +22,7 @@ class VehicleController extends Controller
     protected $limit;
 
    public function __construct() {
+    
         $this->table = 'vehicles';
         $this->folder = 'vehicle';
         view()->share('route', 'vehicle');
@@ -29,6 +30,9 @@ class VehicleController extends Controller
         $this->successCode = 200;
         $this->errorCode = 401;
         $this->warningCode = 500;
+        
+       
+
     }
 
 
@@ -49,10 +53,13 @@ class VehicleController extends Controller
 			
 			Vehicle::where([['id', $request->input('id')]])->limit(1)->delete();
 		}
-		
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
+		$service_provider_id =  $sp_id;
 		if(!empty($request->input('text'))){
 			$text = $request->input('text');
-			$service_provider_id = Auth::user()->id;
+           
+            
 			$records->whereRaw("(year LIKE '%$text%' OR model LIKE '%$text%' OR color LIKE '%$text%' OR vehicle_number_plate LIKE '%$text%') AND service_provider_id=$service_provider_id");
 		}
 		
@@ -64,7 +71,7 @@ class VehicleController extends Controller
 		
 		#$this->limit = 2;
 		
-		$data['records'] = $records->where(['service_provider_id'=>Auth::user()->id])->paginate($this->limit);
+		$data['records'] = $records->where(['service_provider_id'=>$sp_id])->paginate($this->limit);
 		
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] =$request->input('orderby');
@@ -84,10 +91,13 @@ class VehicleController extends Controller
      */
     public function create()
     {
-        $breadcrumb = array('title'=>'Vehicle','action'=>'Add Vehicle');
         
+        
+        $breadcrumb = array('title'=>'Vehicle','action'=>'Add Vehicle');
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
         $data = [];
-        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->pluck('car_type', 'id');
+        $data['car_types']=\App\Price::where('service_provider_id',$sp_id)->pluck('car_type', 'id');
         $data = array_merge($breadcrumb,$data);
         return view('admin.vehicle.create')->with($data);
     }
@@ -122,7 +132,9 @@ class VehicleController extends Controller
         }
 
         $input['category_id'] = $input['car_type'];
-        $input['service_provider_id'] = Auth::user()->id;
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
+        $input['service_provider_id'] = $sp_id;
         $vehicleObj = \App\Vehicle::create($input);
 
         if (!empty($_FILES['image'])) {
@@ -163,7 +175,9 @@ class VehicleController extends Controller
         $breadcrumb = array('title'=>trans('admin.Vehicle'),'action'=>trans('admin.Vehicle Detail'));
         $data = [];
         $where = array('id' => $id);
-        $record = \App\Vehicle::where($where)->where('service_provider_id',Auth::user()->id)->first();
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
+        $record = \App\Vehicle::where($where)->where('service_provider_id',$sp_id)->first();
         
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', trans('admin.Record not found!'));
@@ -190,7 +204,9 @@ class VehicleController extends Controller
          $breadcrumb = array('title'=>'Vehicle','action'=>'Edit Vehicle');
         $data = [];
         $where = array('id' => $id);
-        $record = \App\Vehicle::with(['last_driver_choosen'])->where('service_provider_id',Auth::user()->id)->where($where)->first();
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
+        $record = \App\Vehicle::with(['last_driver_choosen'])->where('service_provider_id',$sp_id)->where($where)->first();
 		
         if(empty($record)){
             return redirect()->route("{$this->folder}.index")->with('warning', 'Record not found!');
@@ -204,7 +220,9 @@ class VehicleController extends Controller
 			return response()->json(['message'=>'success']);
 		}
         $data['record'] = $record;
-        $data['car_types']=\App\Price::where('service_provider_id',Auth::user()->id)->pluck('car_type', 'id');
+        $UserController =  new UserController();
+        $sp_id = $UserController->getSpId();
+        $data['car_types']=\App\Price::where('service_provider_id',$sp_id)->pluck('car_type', 'id');
         $data = array_merge($breadcrumb,$data);
         return view("admin.{$this->folder}.edit")->with($data);
     }

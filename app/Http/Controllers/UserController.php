@@ -1359,5 +1359,16 @@ class UserController extends Controller
         
         }
     }
-
+	public function getSpId(){
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+			return $sp_id;
+		}
+	}
 }
