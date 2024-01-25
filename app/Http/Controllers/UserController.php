@@ -36,6 +36,7 @@ use App\SMSTemplate;
 use App\Page;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\GuestRegisterRequest;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -92,9 +93,14 @@ class UserController extends Controller
 		];
 		$request->validate($rules);
 		$input = $request->all();
+		$allowedUserTypes = [3, 8];
+		$user = User::where('email', $request->email)
+		->where('is_active', 1)
+		->whereIn('user_type', $allowedUserTypes)
+		->first();
 		$remember_me = $request->has('remember') ? true : false;
 		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 3);
-		if (auth()->attempt($whereData, $remember_me)) {
+		if ($user && Auth::attempt(['email' => $request->email, 'password' => $request->password],  $request->has('remember'))) {
 			Auth::user()->syncRoles('Administrator');
 			return redirect()->route('users.dashboard');
 		} else {
@@ -681,7 +687,13 @@ class UserController extends Controller
 		$data = [];
 		$data = array_merge($breadcrumb,$data);
 		$record = (object)[];
-		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>Auth::user()->id])->first()->value;
+		// if(Auth::user()->user_type == 3){
+		 	$sp_id = Auth::user()->id;
+		// }else if (Auth::user()->user_type == 8){
+		// 	$sp_id = Auth::user()->service_provider_id;
+			
+		// }
+		$configuration =  Setting::where(['key' => '_configuration','service_provider_id'=>$sp_id])->first()->value;
 		$data['record'] = json_decode($configuration);
 		
 		/* echo '<pre>';
@@ -863,8 +875,17 @@ class UserController extends Controller
         }
         */
         // dd(Auth::user()->id);
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
 		if ($request->ajax()) {
-			$data = User::select('id','first_name','is_master','last_name','email','phone','status','name','country_code')->where(['user_type' => 2, 'service_provider_id' => Auth::user()->id])->get();
+			$data = User::select('id','first_name','is_master','last_name','email','phone','status','name','country_code')->where(['user_type' => 2, 'service_provider_id' => $sp_id])->get();
 			// $data = User::select(['id', 'first_name', 'is_master', 'last_name', 'email', 'phone', 'status', 'name', 'country_code'])->where('user_type', 2)->where('service_provider_id',Auth::user()->id)->orderBy('id', 'DESC')->get();
 			// <a class="dropdown-item" href="' . url('admin/driver/edit', $row->id) . '">' . trans("admin.Edit") . '</a>
 			return Datatables::of($data)
@@ -1302,4 +1323,52 @@ class UserController extends Controller
 		}
 	}
 
+	public function fetchManager(Request $request){
+        
+        try{
+            $id = $request->id;
+            if($request->type){
+                if($request->type == 'master'){
+                    $user_type = 7;
+                }else{
+					$user_type = 8;
+				}
+               $data =  User::where('id',Crypt::decrypt($id))->where('user_type', $user_type)->first();
+			   if($data){
+					$arr = [];
+					$arr['id'] = $data->id;
+					$arr['email' ]= $data->email;
+					$arr['phone'] = $data->phone;
+					$arr['name'] = $data->name;
+					$arr['status'] = $data->is_active;
+					$arr['country_code'] = $data->country_code;
+					if($data->image){
+						$arr['image'] = url('/storage/'.$data->image);
+					}else{
+						$arr['image'] = url('/new-design-company/assets/images/avatar-2.png');
+					}
+					
+				}
+               return response()->json($arr);
+            }
+
+        } catch (Exception $e) {
+           
+            return response()->json(['error' => $e->getMessage()], 500);
+
+        
+        }
+    }
+	public function getSpId(){
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+			return $sp_id;
+		}
+	}
 }

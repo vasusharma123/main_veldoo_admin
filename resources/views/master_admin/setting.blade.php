@@ -15,7 +15,21 @@
 @endsection
 
 @section('content')
-    <section class="addEditForm sectionsform">
+
+<section class="name_section_box">
+    <article class="container_box pt-0">
+        @include('company.company_flash_message')
+    </article>
+</section>
+
+<section class="addEditForm sectionsform">
         <h1 class="text-center">Under Construction</h1>
     </section>
+
+
+
+
+
+
+
 @endsection

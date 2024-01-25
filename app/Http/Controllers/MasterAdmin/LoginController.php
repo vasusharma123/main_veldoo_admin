@@ -42,14 +42,19 @@ class LoginController extends Controller
 		];
 		$request->validate($rules);
 		$input = $request->all();
-       
-		$whereData = array('email' => $input['email'], 'password' => $input['password'], 'user_type' => 6);
-        if(auth()->attempt($whereData)){
-			// if (in_array(Auth::user()->user_type,[4,5])) {
-			// 	Auth::user()->syncRoles('Company');
-			// 	return redirect()->route('company.rides','month');
+        $allowedUserTypes = [6, 7];
 
-			// }
+		//$whereData = array('email' => $input['email'], 'password' => $input['password'],'status' => 1);
+        
+        
+        $user = User::where('email', $request->email)
+            ->where('is_active', 1)
+            ->whereIn('user_type', $allowedUserTypes)
+            ->first();
+          //  dd($user);
+
+        if ($user && Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+
             return redirect()->route('masterAdmin.dashboard');
         } else{
 			Auth::logout();

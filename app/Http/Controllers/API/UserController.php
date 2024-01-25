@@ -297,7 +297,9 @@ class UserController extends Controller
 			if (empty($haveOtp)) {
 				return response()->json(['message' => 'Verification code is incorrect, please try again'], $this->warningCode);
 			}
-
+			Log::info($haveOtp->updated_at);
+			Log::info($expiryMin);
+			Log::info($now->diffInMinutes($haveOtp->updated_at));
 			if ($now->diffInMinutes($haveOtp->updated_at) >= $expiryMin) {
 				return response()->json(['message' => 'Verification code has expired, please use a new code by clicking resend the code'], $this->warningCode);
 			}

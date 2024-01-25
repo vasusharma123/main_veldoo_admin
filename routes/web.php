@@ -173,10 +173,14 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('/drivers/master',  ['as'=>'drivers.master','uses'=>'DriverController@masterDriver']);
 	
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController',
-	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController','rides'=>'RideController']);
+	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);
-	
-	Route::post('rides/export','RideController@exportRides')->name('rides.export');
+	// ,'rides'=>'RideController'
+	// Route::get('/rides/{type?}','RideController@index')->name('rides.index');
+	Route::get('/rides/list','RideController@listView')->name('rides.list');
+	Route::get('/rides/month','RideController@monthView')->name('rides.month');
+	Route::get('/rides/week','RideController@weekView')->name('rides.week');
+	Route::get('service_provider/rides/export','RideController@exportRides')->name('rides.export');
 
 	Route::get('daily-report','DailyReportController@index')->name('daily-report.index');
 	Route::get('report/vehicles','DailyReportController@vehicles')->name('daily-report.vehicles');
@@ -215,11 +219,12 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('driver/{id}/bookings/','UserController@driverBooking');
 	Route::get('/exportExcel/{type}','UserController@exportExcel');
 	Route::get('/export-booking/{id?}','BookingController@exportExcel');
-	Route::get('ride/export','RideController@rideExport')->name('ride/export');
 	Route::delete('ride/delete_multiple','RideController@delete_multiple')->name('ride/delete_multiple');
 	Route::get('vehicle_export','VehicleController@vehicleExport')->name('vehicle_export');
 	Route::resources(['sms-template'=>'SMSTemplateController']);
 	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
+	Route::resource('service-provider-manager','ManagersController');
+
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
@@ -247,7 +252,7 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation');
 
 	Route::get('settings','CompanyController@settings')->name('company.settings');
-	Route::resource('managers','Company\ManagersController')->middleware('can:isCompany');
+	Route::resource('managers','Company\ManagersController');
 	Route::post('/ride_booking','Company\RidesController@ride_booking')->name('company.ride_booking');
 	Route::get('/rides-history','Company\RidesController@history')->name('company.rides.history');
 	Route::get('rides-edit','Company\RidesController@edit')->name('company.rides.edit');
@@ -324,5 +329,11 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('master-logout',  ['as' => 'master_admin.logout','uses' => 'MasterAdmin\UsersController@logout']);
 	Route::get('/fetchServiceProvider',  'MasterAdmin\ServiceProviderController@getAllServiceProvider');
 
+});
+
+Route::group(['prefix' => 'master','middleware' => 'auth'], function () {
+	Route::resource('master-manager','ManagersController');
+	Route::get('fetchManager',  'UserController@fetchManager')->name('fetch-manager');
+	Route::post('updateStatus',  'ManagersController@updateStatus')->name('updateStatus');
 });
 

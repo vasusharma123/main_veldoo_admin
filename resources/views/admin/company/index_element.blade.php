@@ -4,7 +4,7 @@
 			<tr>
 				<th>Company</th>
 				<th>Name</th>
-				<th>Surname</th>
+				{{-- <th>Surname</th> --}}
 				<th>Phone Number</th>
 				<th>Email Address</th>
 				<th>Status</th>
@@ -17,7 +17,7 @@
 				<tr>
 					<td>{{ $record->name }}</td>
 					<td>{{ (!empty($record->user))?$record->user->first_name:"" }}</td>
-					<td>{{ (!empty($record->user))?$record->user->last_name:"" }}</td>
+					{{-- <td>{{ (!empty($record->user))?$record->user->last_name:"" }}</td> --}}
 					<td>{{ (!empty($record->user))? '+'.$record->user->country_code." ".$record->user->phone:"" }}</td>
 					<td>{{ (!empty($record->user))?$record->user->email:"" }}</td>
 					<td class="switch_btn">

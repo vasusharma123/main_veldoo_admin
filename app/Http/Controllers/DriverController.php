@@ -59,8 +59,16 @@ class DriverController extends Controller
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => Auth::user()->id])->paginate($this->limit);
+		if(Auth::user()->user_type){
+			if(Auth::user()->user_type == 8){
+				$sp_id = Auth::user()->service_provider_id;
+			}elseif(Auth::user()->user_type == 3){
+				$sp_id = Auth::user()->id;
+			}else{
+				$sp_id = Auth::user()->id;
+			}
+		}
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -190,7 +198,7 @@ class DriverController extends Controller
 
 		$request->validate($rules);
 
-		$input = $request->except(['_method', '_token', 'country_code', 'phone']);
+		$input = $request->except(['_method', '_token']);
 
 		try {
 			$userExists = User::where(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
@@ -199,9 +207,19 @@ class DriverController extends Controller
 				return back()->withErrors(['message' => 'Phone number already exists']);
 			}
 
+			$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 			$input['user_type'] = 2;
 			$input['status'] = 1;
-			$input['service_provider_id'] = Auth::user()->id;
+			if(Auth::user()->user_type){
+				if(Auth::user()->user_type == 8){
+					$sp_id = Auth::user()->service_provider_id;
+				}elseif(Auth::user()->user_type == 3){
+					$sp_id = Auth::user()->id;
+				}else{
+					$sp_id = Auth::user()->id;
+				}
+			}
+			$input['service_provider_id'] = $sp_id;
 
 			$isuser = User::create($input);
 
@@ -278,7 +296,17 @@ class DriverController extends Controller
 
 			$input = $request->all();
 
-			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
+			if(Auth::user()->user_type){
+				if(Auth::user()->user_type == 8){
+					$sp_id = Auth::user()->service_provider_id;
+				}elseif(Auth::user()->user_type == 3){
+					$sp_id = Auth::user()->id;
+				}else{
+					$sp_id = Auth::user()->id;
+				}
+			}
+
+			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => $sp_id])->first();
 			if (!empty($isUser) && $isUser->id != $id) {
 				return back()->withErrors(['message' => 'Phone number already exists']);
 			}
@@ -306,7 +334,7 @@ class DriverController extends Controller
 				$input['is_active'] = $request->is_active;
 				DriverStayActiveNotification::where(['driver_id' => $id])->delete();
 				$driverhoosecar = DriverChooseCar::where([
-					'user_id' => $id, 'service_provider_id' => Auth::user()->id, 'logout' => 0
+					'user_id' => $id, 'service_provider_id' => $sp_id, 'logout' => 0
 				])->orderBy('id', 'desc')->first();
 				if ($driverhoosecar) {
 					$driverhoosecar->logout_mileage = $driverhoosecar->mileage;
@@ -317,6 +345,16 @@ class DriverController extends Controller
 				$input['availability'] = 0;
 			} else {
 				$input['is_active'] = 0;
+			}
+
+			if($request->status){
+
+				if($request->status == 1){
+					$input['is_active'] = 0;
+				}else{
+					$input['is_active'] = 1;
+				}
+
 			}
 
 			$udata->update($input);

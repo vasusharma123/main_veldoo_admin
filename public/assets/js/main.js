@@ -60,11 +60,9 @@ $(function(){
       
         $('#Editcompany').addClass('hiddenblock');
         $('#EditAdmin').removeClass('hiddenblock');
-      
-      
     });
-    
-	$('.edit_btn').on('click',function(){
+
+    $('.edit_btn').on('click',function(){
         $('.editoptions').slideDown();
     });
 
@@ -75,5 +73,48 @@ $(function(){
         else{
             $('.child_checkbox').prop('checked',false);
         }
-    })
+    });
+
+
+    /* View Modal Show */
+   
+    $('.modePayment').on('click',function(){
+        $('.viewPoint').toggleClass('openwindow');
+        $('.EditPoint').removeClass('openwindow');
+    });
+    $('.closedModalBtn').on('click',function(){
+        $('.viewPoint').removeClass('openwindow');
+        $('.EditPoint').removeClass('openwindow');
+    });
+
+    /* Edit Modal Show */
+    $('.openbook').on('click',function(){
+        $('.EditPoint').toggleClass('openwindow');
+        $('.viewPoint').removeClass('openwindow');
+    });
+    $('.closedModalBtn').on('click',function(){
+        $('.EditPoint').removeClass('openwindow');
+        $('.viewPoint').removeClass('openwindow');
+    });
+
+    /* Reverse Button */
+    $('.reverseLine').on('click',function(){
+        $(this).addClass('termsReverse');
+        var dropVl= $('.dropfield').val();
+        var pickVl= $('.pickupfield').val();
+        $('.dropfield').val(pickVl);
+        $('.pickupfield').val(dropVl);
+    });
+
+    $('.hiddenFields').on('change', function(){
+        $('.imgBox_img').removeClass('CarSelectionDone');
+        $(this).parents('.imgBox_img').addClass('CarSelectionDone');
+       
+    });
+    $('.calendarIo').on('click',function(){
+        $(this).parents('.editBtnDate').find('.inputbxs').toggleClass('onSlide');
+    });
+    
+
+
 });

@@ -1,67 +1,55 @@
 @extends('admin.layouts.master')
 
 @section('content')
-<main class="body_content">
-	<div class="inside_body">
-		<div class="container-fluid p-0">
-			<div class="row m-0 w-100">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-12 p-0">
-					<div class="body_flow">
-						@include('admin.layouts.sidebar')
-						<div class="formTableContent">
-							<section class="addEditForm sectionsform">
-								@include('admin.layouts.flash-message')
-								<article class="container-fluid">
-									{{ Form::open(array('url' => route('users.vouchersUpdate'),'class'=>'custom_form editForm','id'=>'EditCarType','enctype' => 'multipart/form-data')) }}
-									@csrf
-									@method('PATCH')
-										<div class="row w-100 m-0 form_inside_row">
-											<div class="col-lg-12 col-md-12 col-sm-12 col-12">
-												<div class="row w-100 m-0">
 
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<?php
-															echo Form::text('mile_per_ride',(!empty($record->mile_per_ride) ? $record->mile_per_ride : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile Per Ride']);
-															echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'']);
-															?>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<?php
-															echo Form::text('mile_to_currency',(!empty($record->mile_to_currency) ? $record->mile_to_currency : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile to Currency']);
-															echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'']);
-															?>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<?php
-															echo Form::text('mile_on_invitation',(!empty($record->mile_on_invitation) ? $record->mile_on_invitation : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile on Invitation']);
-															echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'']);
-															?>
-														</div>
-													</div>
-													<div class="col-lg-3 col-md-6 col-sm-12 col-12">
-														<div class="form-group">
-															<input type="submit" value="Save" name="submit" class="form-control submit_btn mt-2 w-100"/>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									{{ Form::close() }}
-								</article>
-							</section>
+	<div class="formTableContent">
+		<section class="addEditForm sectionsform">
+			@include('admin.layouts.flash-message')
+			<article class="container-fluid">
+				{{ Form::open(array('url' => route('users.vouchersUpdate'),'class'=>'custom_form editForm','id'=>'EditCarType','enctype' => 'multipart/form-data')) }}
+				@csrf
+				@method('PATCH')
+					<div class="row w-100 m-0 form_inside_row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-12">
+							<div class="row w-100 m-0">
+
+								<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+									<div class="form-group">
+										<?php
+										echo Form::text('mile_per_ride',(!empty($record->mile_per_ride) ? $record->mile_per_ride : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile Per Ride']);
+										echo Form::label('mile_per_ride', 'Mile Per Ride(In percentage)',['class'=>'']);
+										?>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+									<div class="form-group">
+										<?php
+										echo Form::text('mile_to_currency',(!empty($record->mile_to_currency) ? $record->mile_to_currency : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile to Currency']);
+										echo Form::label('mile_to_currency', 'Mile to Currency',['class'=>'']);
+										?>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+									<div class="form-group">
+										<?php
+										echo Form::text('mile_on_invitation',(!empty($record->mile_on_invitation) ? $record->mile_on_invitation : 0),['class'=>'form-control inputText custFloatVal','required'=>true, 'placeholder' => 'Mile on Invitation']);
+										echo Form::label('mile_on_invitation', 'Mile on Invitation',['class'=>'']);
+										?>
+									</div>
+								</div>
+								<div class="col-lg-3 col-md-6 col-sm-12 col-12">
+									<div class="form-group">
+										<input type="submit" value="Save" name="submit" class="form-control submit_btn mt-2 w-100"/>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
-					
-				</div>
-			</div>
-		</div>
+				{{ Form::close() }}
+			</article>
+		</section>
 	</div>
-</main>
+					
 @endsection	
 	
 @section('footer_scripts')

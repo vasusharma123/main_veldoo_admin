@@ -33,6 +33,11 @@ class AuthServiceProvider extends ServiceProvider
 			return $user->user_type == 4;
 		});
         
+        Gate::define('isMaster', function ($user) {
+			return $user->user_type == 6;
+		});
+        
+
 		Passport::routes();
 		
 		Passport::tokensExpireIn(now()->addDays(5));

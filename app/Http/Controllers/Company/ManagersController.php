@@ -113,6 +113,7 @@ class ManagersController extends Controller
     public function update(Request $request,$id)
     {
         // dd($id);
+        //dd($request->all());
         $request->validate([
            // 'email' => 'email|required|unique:users,email,'.$id,
             'email' => ['required', 'string', 'email', 'max:191',Rule::unique('users')->where(function ($query) use ($id) {
