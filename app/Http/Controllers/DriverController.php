@@ -287,7 +287,17 @@ class DriverController extends Controller
 
 			$input = $request->all();
 
-			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
+			if(Auth::user()->user_type){
+				if(Auth::user()->user_type == 8){
+					$sp_id = Auth::user()->service_provider_id;
+				}elseif(Auth::user()->user_type == 3){
+					$sp_id = Auth::user()->id;
+				}else{
+					$sp_id = Auth::user()->id;
+				}
+			}
+
+			$isUser = User::where(['country_code' => $request->country_code, 'phone' => $request->phone, 'user_type' => 2, 'service_provider_id' => $sp_id])->first();
 			if (!empty($isUser) && $isUser->id != $id) {
 				return back()->withErrors(['message' => 'Phone number already exists']);
 			}
@@ -315,7 +325,7 @@ class DriverController extends Controller
 				$input['is_active'] = $request->is_active;
 				DriverStayActiveNotification::where(['driver_id' => $id])->delete();
 				$driverhoosecar = DriverChooseCar::where([
-					'user_id' => $id, 'service_provider_id' => Auth::user()->id, 'logout' => 0
+					'user_id' => $id, 'service_provider_id' => $sp_id, 'logout' => 0
 				])->orderBy('id', 'desc')->first();
 				if ($driverhoosecar) {
 					$driverhoosecar->logout_mileage = $driverhoosecar->mileage;
