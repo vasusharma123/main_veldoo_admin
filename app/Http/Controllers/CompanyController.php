@@ -118,6 +118,15 @@ class CompanyController extends Controller
 		$input = $request->except(['_method', '_token']);
 		
 		try{
+			if(Auth::user()->user_type){
+				if(Auth::user()->user_type == 8){
+					$sp_id = Auth::user()->service_provider_id;
+				}elseif(Auth::user()->user_type == 3){
+					$sp_id = Auth::user()->id;
+				}else{
+					$sp_id = Auth::user()->id;
+				}
+			}
 			$companyinput['name'] = $input['name'];
 			$companyinput['country_code'] = $input['country_code'];
 			$companyinput['country_code_iso'] = $input['country_code_iso'];
@@ -128,7 +137,7 @@ class CompanyController extends Controller
 			$companyinput['city'] = $input['city'];
 			$companyinput['state'] = $input['state'];
 			$companyinput['country'] = $input['country'];
-			$companyinput['service_provider_id'] = Auth::user()->id;
+			$companyinput['service_provider_id'] = $sp_id;
 			
 			$iscompany = Company::create($companyinput);
 			
