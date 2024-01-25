@@ -210,7 +210,16 @@ class DriverController extends Controller
 			$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 			$input['user_type'] = 2;
 			$input['status'] = 1;
-			$input['service_provider_id'] = Auth::user()->id;
+			if(Auth::user()->user_type){
+				if(Auth::user()->user_type == 8){
+					$sp_id = Auth::user()->service_provider_id;
+				}elseif(Auth::user()->user_type == 3){
+					$sp_id = Auth::user()->id;
+				}else{
+					$sp_id = Auth::user()->id;
+				}
+			}
+			$input['service_provider_id'] = $sp_id;
 
 			$isuser = User::create($input);
 
