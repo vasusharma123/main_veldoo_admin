@@ -10,6 +10,7 @@
 		<script src="{{ asset('assets/js/main.js') }}"></script>
 		
 		<script src="{{ asset('assets/plugins/sweetalert/sweetalert.min.js') }}"></script>
+		<script src="{{ asset('assets/js/settings.js') }}"></script>
 		
 		<script type="text/javascript">
 		$('body').on('keypress', '.custFloatVal', function(event) {
