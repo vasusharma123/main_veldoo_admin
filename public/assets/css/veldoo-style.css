@@ -206,8 +206,8 @@ body{
 }
 .sidebarLists li a {
     font-size: 16px;
-    color: white;
-    font-family: var(--roboto-font);
+    color: var(--primary-font-color);
+    font-family: var(--primary-font-family);
     padding: 15px;
     display: flex;
     align-items: center;
@@ -1929,8 +1929,8 @@ body{
 }
 .sidebarLists li a {
     font-size: 16px;
-    color: white;
-    font-family: var(--roboto-font);
+    color: var(--primary-font-color);;
+    font-family: var(--primary-font-family);
     padding: 15px;
     display: flex;
     align-items: center;
