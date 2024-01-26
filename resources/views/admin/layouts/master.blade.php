@@ -444,7 +444,7 @@
     
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    
+    <script src="{{ asset('assets/js/settings.js') }}"></script>
     @if($uri =='service-provider-manager.index')
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      
