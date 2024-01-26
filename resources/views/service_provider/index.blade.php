@@ -216,45 +216,45 @@
 
 
 
-                                    <section class="addonTable sectionsform">
-                                        <article class="container-fluid">
-                                            <div class="table-responsive marginTbl">
+        <section class="addonTable sectionsform manager-list">
+            <article class="container-fluid">
+                <div class="table-responsive marginTbl">
 
-                                                <table class="table table-borderless table-fixed customTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Name</th>
-                                                            <th>Phone number</th>
-                                                            <th>Email Address</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @foreach ($managers as $key=>$manager)    
-                                                        <tr>
-                                                        <td>{{ $manager->first_name }}</td>
-                                                        <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
-                                                        <td class="">{{ $manager->email }}</td>
-                                                            <td class="switch_btn">
-                                                                <label class="switch">
-                                                                    <?php $id = Crypt::encrypt($manager->id); ?>
-                                                                    <input type="checkbox" data-id="{{ $id }}" class="active_status active_status_{{ $id }}"  {{ $manager->status == 1 ? 'checked' : '' }}>
-                                                                    <span class="slider round whitegrey_btn"></span>
-                                                                </label>
-                                                            </td>
-                                                            <td class="actionbtns">
-                                                                <a  class="actionbtnsLinks editButton" data-user="{{ Crypt::encrypt($manager->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-                                                                <a  class="actionbtnsLinks"><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn deleteButton" data-id="{{$manager->id }}" alt="delete_btn"></a>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </article>
-                                    </section>
+                    <table class="table table-borderless table-fixed customTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone number</th>
+                                <th>Email Address</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($managers as $key=>$manager)    
+                            <tr>
+                            <td>{{ $manager->first_name }}</td>
+                            <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
+                            <td class="">{{ $manager->email }}</td>
+                                <td class="switch_btn">
+                                    <label class="switch">
+                                        <?php $id = Crypt::encrypt($manager->id); ?>
+                                        <input type="checkbox" data-id="{{ $id }}" class="active_status active_status_{{ $id }}"  {{ $manager->status == 1 ? 'checked' : '' }}>
+                                        <span class="slider round whitegrey_btn"></span>
+                                    </label>
+                                </td>
+                                <td class="actionbtns">
+                                    <a  class="actionbtnsLinks editButton" data-user="{{ Crypt::encrypt($manager->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+                                    <a  class="actionbtnsLinks"><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn deleteButton" data-id="{{$manager->id }}" alt="delete_btn"></a>
+                                </td>
+                            </tr>
+                            @endforeach
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
 
         <form  action="{{ route('service-provider-manager.destroy','~') }}" id="deleteForm" method="POST">
             @method('delete')
@@ -522,6 +522,7 @@
         $('.addEditForm').show();
         $('.edit_box').hide();
         $('.form_add_managers').show();
+        $('.manager-list').hide();
     });
     
              </script>
