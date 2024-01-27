@@ -8012,6 +8012,8 @@ public function logHours(Request $request)  {
 				$type =  'mobilplus';
 			}elseif( $name == 'twint'){
 				$type =  'twint';
+			}else{
+				$type = null;
 			}
 			return $type;
 
