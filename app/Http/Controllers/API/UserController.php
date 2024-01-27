@@ -7999,6 +7999,7 @@ public function logHours(Request $request)  {
 	public function checkPaymentTypeName(Request $request)  {
 		try{
 			$name  = strtolower($request->payment_type);
+			Log::info('payment type ->'.$name);
 			if( $name == 'cash' || $name == 'bar'){
 				$type =  'cash';
 			}elseif( $name == 'card' || $name == 'karte'){
