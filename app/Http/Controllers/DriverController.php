@@ -30,7 +30,6 @@ class DriverController extends Controller
 	
 	public function index(Request $request)
 	{
-		$serviceProvider = Auth::user();
 		$this->limit = 20;
 		
 		$data = array();
@@ -81,6 +80,11 @@ class DriverController extends Controller
 	
 	public function regularDriver(Request $request)
 	{
+		if (Auth::user()->user_type == 3) {
+			$sp_id = Auth::user()->id;
+		} else {
+			$sp_id = Auth::user()->service_provider_id;
+		}
 		$this->limit = 20;
 		
 		$data = array();
@@ -110,7 +114,7 @@ class DriverController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 0, 'service_provider_id' => Auth::user()->id])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -123,6 +127,11 @@ class DriverController extends Controller
 	
 	public function masterDriver(Request $request)
 	{
+		if (Auth::user()->user_type == 3) {
+			$sp_id = Auth::user()->id;
+		} else {
+			$sp_id = Auth::user()->service_provider_id;
+		}
 		$this->limit = 20;
 		
 		$data = array();
@@ -152,7 +161,7 @@ class DriverController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 1,  'service_provider_id' => Auth::user()->id])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 1,  'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
@@ -168,14 +177,19 @@ class DriverController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-	    $breadcrumb = array('title'=>'Drivers','action'=>'Add Driver');
+	public function create()
+	{
+		if (Auth::user()->user_type == 3) {
+			$sp_id = Auth::user()->id;
+		} else {
+			$sp_id = Auth::user()->service_provider_id;
+		}
 
-		$data = [];
-		$data = array_merge($breadcrumb,$data);
-	    return view('admin.drivers.create')->with($data);
-    }
+		$data = array('title' => 'Drivers', 'action' => 'Add Driver');
+
+		$data['driverCount'] = User::where(['user_type' => 1, 'service_provider_id' => $sp_id])->count();
+		return view('admin.drivers.create')->with($data);
+	}
 	
 	/**
      * Store a newly created resource in storage.
@@ -185,7 +199,6 @@ class DriverController extends Controller
      */
 	public function store(Request $request)
 	{
-
 		$rules = [
 			'first_name' => 'required',
 			'last_name' => 'required',
@@ -201,7 +214,12 @@ class DriverController extends Controller
 		$input = $request->except(['_method', '_token']);
 
 		try {
-			$userExists = User::where(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2, 'service_provider_id' => Auth::user()->id])->first();
+			if (Auth::user()->user_type == 3) {
+				$sp_id = Auth::user()->id;
+			} else {
+				$sp_id = Auth::user()->service_provider_id;
+			}
+			$userExists = User::where(['country_code' => $request->country_code, 'phone' => $this->phone_number_trim($request->phone, $request->country_code), 'user_type' => 2, 'service_provider_id' => $sp_id])->first();
 
 			if(!empty($userExists)){
 				return back()->withErrors(['message' => 'Phone number already exists']);
@@ -210,15 +228,7 @@ class DriverController extends Controller
 			$input['phone'] = $this->phone_number_trim($request->phone, $request->country_code);
 			$input['user_type'] = 2;
 			$input['status'] = 1;
-			if(Auth::user()->user_type){
-				if(Auth::user()->user_type == 8){
-					$sp_id = Auth::user()->service_provider_id;
-				}elseif(Auth::user()->user_type == 3){
-					$sp_id = Auth::user()->id;
-				}else{
-					$sp_id = Auth::user()->id;
-				}
-			}
+
 			$input['service_provider_id'] = $sp_id;
 
 			$isuser = User::create($input);
@@ -259,7 +269,12 @@ class DriverController extends Controller
 		}
 		
 		$data['record'] = $record;
-		$salary = Salary::where('driver_id', $id)->where('service_provider_id', Auth::user()->id)->first();
+		if (Auth::user()->user_type == 3) {
+			$sp_id = Auth::user()->id;
+		} else {
+			$sp_id = Auth::user()->service_provider_id;
+		}
+		$salary = Salary::where('driver_id', $id)->where('service_provider_id', $sp_id)->first();
 		$data['salary'] = $salary;
 		$data = array_merge($breadcrumb,$data);
 	    return view("admin.drivers.edit")->with($data);

@@ -44,7 +44,7 @@
 									<div class="form-group">
 										<?php
 										echo Form::email('email',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'user@email-address.com']);
-										echo Form::label('email', 'Example: Example: user@email-address.com',['class'=>'']);
+										echo Form::label('email', 'Example: user@email-address.com',['class'=>'']);
 										?>
 									</div>
 								</div>

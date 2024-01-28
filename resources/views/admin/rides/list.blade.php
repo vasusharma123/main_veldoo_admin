@@ -48,9 +48,11 @@
     <div class="bookBtnBox">
         <button type="button" class="openbook bookBtn p-0"><i class="bi bi-plus-circle-fill topplusicon"></i> <span>Book Ride</span></button>
     </div>
+    @if($lastPurchasedPlan && $lastPurchasedPlan->export_ride_deails)
     <div class="export_box">
         <button type="submit" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
     </div>
+    @endif
 </form>
 @endsection
 

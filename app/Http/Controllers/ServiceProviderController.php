@@ -24,6 +24,7 @@ use App\Mail\SpLoginCredentials;
 use App\Mail\TestPeriodExtended;
 use App\Mail\UpdateSettingsOrGoLive;
 use App\Salary;
+use Illuminate\Support\Facades\DB;
 
 class ServiceProviderController extends Controller
 {
@@ -668,8 +669,13 @@ class ServiceProviderController extends Controller
             $PlanPurchaseHistory->purchase_date = Carbon::now();
             $PlanPurchaseHistory->license_type = $planDetail->plan_type;
             $PlanPurchaseHistory->plan_status = 'active';
-            $saved =  $PlanPurchaseHistory->save();
+            $saved = $PlanPurchaseHistory->save();
             if ($saved) {
+                $driverCount = User::where(['user_type' => 2, 'service_provider_id' => $userDetail->id])->count();
+                if($driverCount > $planDetail->number_of_driver){
+                    $keep = User::where(['user_type' => 2, 'service_provider_id' => $userDetail->id])->take($planDetail->number_of_driver)->pluck('id');
+                    User::where(['service_provider_id' => $userDetail->id])->whereNotIn('id', $keep)->delete();
+                }
                 $settingDetail = Setting::where(['service_provider_id' => $userDetail->id])->first();
                 $settingDetail->is_subscribed = 1;
                 $settingDetail->save();
