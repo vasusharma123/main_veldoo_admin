@@ -2840,7 +2840,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride->ride_cost = $request->ride_cost;
 					}
 					if (!empty($request->payment_type)) {
-						$ride->payment_type = $request->payment_type;
+						$payType= $this->checkPaymentTypeName($request);
+						$ride->payment_type = $payType;
 					}
 					if (!empty($request->dest_address)) {
 						$ride->dest_address = $request->dest_address;
