@@ -30,9 +30,9 @@
 }
 .top_tab_menu li a.nav-link {
     font-size: 16px;
-    color: white;
+    color: var(--primary-font-color);
     font-weight: 400;
-    font-family: var(--oswald-font);
+    font-family: var(--primary-font-family);
     background: transparent;
     margin: 0px 3px;
     padding: 6px 20px;

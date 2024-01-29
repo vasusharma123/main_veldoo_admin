@@ -110,27 +110,28 @@
 					<strong>Success!</strong> Record saved!
 					<button type="button" class="btn-close-salary" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
-					<form method="post" >			
+					<form method="post" class="editForm>			
 					@csrf					
 					<div class="row w-100 m-0 form_inside_row">
 						<div class="col-lg-8 col-md-8 col-sm-12 col-12">
 							<div class="row w-100 m-0">
 								<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
-									<p>Please select salary type:</p>
-										<label>
-											<input type="radio" name="salary_type" value="revenue" class="salary-type-radio" onchange="checkInput()" {{ $salary ? $salary->type == 'revenue' ? 'checked' : '' : '' }} > Revenue
+									<p class="editForm-salary">Please select salary type:</p>
+										<label class="editForm-salary">
+											<input type="radio" name="salary_type" value="revenue" class="salary-type-radio editForm-salary" onchange="checkInput()" {{ $salary ? $salary->type == 'revenue' ? 'checked' : '' : '' }} > Revenue
 										</label>
-										<label>
+										
+									</div>
+									<label class="editForm-salary">
 											<input type="radio" name="salary_type" value="hourly" class="salary-type-radio" onchange="checkInput()" {{ $salary ? $salary->type == 'hourly' ? 'checked' : '' :'' }}> Hourly
 										</label>
-									</div>
 								</div>	
 								<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 								<div class="form-group hourly_rate_input" >
 										<?php
-										echo Form::number('hourly_rate',$salary ? $salary->rate : null,['id' => 'hourly_rate_input', 'class'=>'form-control inputText','required'=>true, 'placeholder' => '', 'oninput' => 'checkInput()']);
-										echo Form::label('hourly_rate', 'Enter Percentage',['class'=>'value_label']);
+										echo Form::number('hourly_rate',$salary ? $salary->rate : null,['id' => 'hourly_rate_input', 'class'=>'form-control inputText','required'=>true, 'placeholder' => '', 'oninput' => 'checkInput()','style' => 'margin-top: 30px;']);
+										echo Form::label('hourly_rate', 'Enter Percentage',['class'=>'value_label editForm-salary ']);
 										?>
 									</div>
 

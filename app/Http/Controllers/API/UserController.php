@@ -2840,7 +2840,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 						$ride->ride_cost = $request->ride_cost;
 					}
 					if (!empty($request->payment_type)) {
-						$ride->payment_type = $request->payment_type;
+						$payType= $this->checkPaymentTypeName($request);
+						$ride->payment_type = $payType;
 					}
 					if (!empty($request->dest_address)) {
 						$ride->dest_address = $request->dest_address;
@@ -2914,58 +2915,61 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$expense_ride_cost = null;
 
 			$payType= $this->checkPaymentTypeName($request);
-
-			if($request->payment_type){
-					if($payType == 'cash'){
-						//Log::info('In request rideStatusChange cash->'.$cost);
+			if ($request->status == 3) {
+				if($request->payment_type){
+						if($payType == 'cash'){
+							//Log::info('In request rideStatusChange cash->'.$cost);
+							if (!empty($request->ride_cost)) {
+								$expense_ride_cost = $request->ride_cost;
+							}else{
+								$expense_ride_cost = $cost;
+							}
+						
+						$type = 'revenue';
+						$type_detail = 'cash';
+					}else if( $payType != 'voucher' && $payType != 'cash'){
+						//Log::info('In rideStatusChange else->'.$cost);
 						if (!empty($request->ride_cost)) {
-							$expense_ride_cost = $request->ride_cost;
+							$deduction = $request->ride_cost;
 						}else{
-							$expense_ride_cost = $cost;
+						$deduction =  $cost;
 						}
-					
-					$type = 'revenue';
-					$type_detail = 'cash';
-				}else if( $payType != 'voucher' && $payType != 'cash'){
-					//Log::info('In rideStatusChange else->'.$cost);
-					if (!empty($request->ride_cost)) {
-						$deduction = $request->ride_cost;
-					}else{
-					$deduction =  $cost;
+						$expense_ride_cost = $deduction;
+						$type = 'deduction';
+						$type_detail = $payType;
 					}
-					$expense_ride_cost = $deduction;
-					$type = 'deduction';
-					$type_detail = $payType;
+					
+				}else{
+					//Log::info('In request payment  not ->');
+					if(strtolower($rideDetail->payment_type) == 'cash'){
+						$type = 'revenue';
+						$expense_ride_cost = $cost;
+						$type_detail = 'cash';
+					}elseif(strtolower($rideDetail->payment_type) != 'voucher' && strtolower($rideDetail->payment_type) != 'cash'){
+						$deduction =  $cost;
+						$expense_ride_cost = $deduction;
+						$type = 'deduction';
+						$type_detail = $rideDetail->payment_type;
+					}
+					
 				}
-				
-			}else{
-				//Log::info('In request payment  not ->');
-				if(strtolower($rideDetail->payment_type) == 'cash'){
-					$type = 'revenue';
-					$expense_ride_cost = $cost;
-					$type_detail = 'cash';
-				}elseif(strtolower($rideDetail->payment_type) != 'voucher' && strtolower($rideDetail->payment_type) != 'cash'){
-					$deduction =  $cost;
-					$expense_ride_cost = $deduction;
-					$type = 'deduction';
-					$type_detail = $rideDetail->payment_type;
+				if(strtolower($payType) != 'voucher'){
+
+					$expense = new Expense();	
+					$expense->driver_id = $rideDetail->driver_id;
+					$expense->type = $type;
+					$expense->type_detail = $type_detail;
+					$expense->ride_id = $rideDetail->id;
+					$expense->revenue =  $expense_ride_cost;
+					$expense->deductions =  $deduction;
+					$expense->date = Carbon::now()->format('Y-m-d');
+					$expense->service_provider_id = $rideDetail->service_provider_id;
+					$expense->save();
 				}
-				
-			}
-			if(strtolower($payType) != 'voucher'){
-				$expense = new Expense();	
-				$expense->driver_id = $rideDetail->driver_id;
-				$expense->type = $type;
-				$expense->type_detail = $type_detail;
-				$expense->ride_id = $rideDetail->id;
-				$expense->revenue =  $expense_ride_cost;
-				$expense->deductions =  $deduction;
-				$expense->date = Carbon::now()->format('Y-m-d');
-				$expense->service_provider_id = $rideDetail->service_provider_id;
-				$expense->save();
+				$this->saveSalaryOmCompleteRide($rideDetail, $request);
 			}
 			
-			$this->saveSalaryOmCompleteRide($rideDetail, $request);
+			
 
 			$ride_detail = new RideResource(Ride::find($request->ride_id));
 			$settings = Setting::where(['service_provider_id' => $logged_in_user->service_provider_id])->first();
@@ -5305,7 +5309,8 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$ride->company_id = $request->company_id;
 				}
 				if (!empty($request->payment_type)) {
-					$ride->payment_type = $request->payment_type;
+					$payTypeForRide= $this->checkPaymentTypeName($request);
+					$ride->payment_type = $payTypeForRide;
 				}
 				if (!empty($request->car_type)) {
 					$ride->car_type = $request->car_type;
@@ -7998,16 +8003,21 @@ public function logHours(Request $request)  {
 	public function checkPaymentTypeName(Request $request)  {
 		try{
 			$name  = strtolower($request->payment_type);
-			if( $name == 'cash' || $name == 'bar'){
+			Log::info('payment type ->'.$name);
+			if( $name == 'cash' || $name == 'bar' || $name == 'Cash' || $name == 'Bar'){
 				$type =  'cash';
-			}elseif( $name == 'card' || $name == 'karte'){
+			}elseif( $name == 'card' || $name == 'Card' || $name == 'karte' || $name == 'Karte'){
 				$type =  'card';
-			}elseif( $name == 'vouchers' || $name == 'voucher' || $name == 'gutschein'){
+			}elseif( $name == 'vouchers' || $name == 'Vouchers'  || $name == 'voucher' || $name == 'Voucher' || $name == 'gutschein' || $name == 'Gutschein'){
 				$type =  'voucher';
-			}elseif( $name == 'invoice' || $name == 'rechnung'){
+			}elseif( $name == 'invoice' || $name == 'Invoice' || $name == 'rechnung' || $name == 'Rechnung'){
 				$type =  'invoice';
-			}elseif( $name == 'mobilplus'){
+			}elseif( $name == 'mobilplus' || $name == 'Mobilplus'){
 				$type =  'mobilplus';
+			}elseif( $name == 'twint' || $name == 'Twint'){
+				$type =  'twint';
+			}else{
+				$type = null;
 			}
 			return $type;
 
