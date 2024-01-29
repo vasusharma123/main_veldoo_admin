@@ -8000,17 +8000,17 @@ public function logHours(Request $request)  {
 		try{
 			$name  = strtolower($request->payment_type);
 			Log::info('payment type ->'.$name);
-			if( $name == 'cash' || $name == 'bar'){
+			if( $name == 'cash' || $name == 'bar' || $name == 'Cash' || $name == 'Bar'){
 				$type =  'cash';
-			}elseif( $name == 'card' || $name == 'karte'){
+			}elseif( $name == 'card' || $name == 'Card' || $name == 'karte' || $name == 'Karte'){
 				$type =  'card';
-			}elseif( $name == 'vouchers' || $name == 'voucher' || $name == 'gutschein'){
+			}elseif( $name == 'vouchers' || $name == 'Vouchers'  || $name == 'voucher' || $name == 'Voucher' || $name == 'gutschein' || $name == 'Gutschein'){
 				$type =  'voucher';
-			}elseif( $name == 'invoice' || $name == 'rechnung'){
+			}elseif( $name == 'invoice' || $name == 'Invoice' || $name == 'rechnung' || $name == 'Rechnung'){
 				$type =  'invoice';
-			}elseif( $name == 'mobilplus'){
+			}elseif( $name == 'mobilplus' || $name == 'Mobilplus'){
 				$type =  'mobilplus';
-			}elseif( $name == 'twint'){
+			}elseif( $name == 'twint' || $name == 'Twint'){
 				$type =  'twint';
 			}else{
 				$type = null;
