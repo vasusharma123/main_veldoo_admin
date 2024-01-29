@@ -2915,7 +2915,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 			$expense_ride_cost = null;
 
 			$payType= $this->checkPaymentTypeName($request);
-			// if ($request->status == 3) {
+			if ($request->status == 3) {
 				if($request->payment_type){
 						if($payType == 'cash'){
 							//Log::info('In request rideStatusChange cash->'.$cost);
@@ -2967,7 +2967,7 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 					$expense->save();
 				}
 				$this->saveSalaryOmCompleteRide($rideDetail, $request);
-			// }
+			}
 			
 			
 
