@@ -2505,10 +2505,6 @@ print_r($data['results'][0]['geometry']['location']['lng']); */
 				$rideWithPayment = $rideWithPayment->where(['driver_id' => $user_id]);
 			}
 			$resnewarray = $resnewarray->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher');
-			$clonedQuery = clone $resnewarray;
-			$cloneData = $clonedQuery->pluck('id');
-			Log::info('earning ->');
-			Log::info($cloneData);
 			$paginated_rides = $resnewarray->orderBy('ride_time', 'desc')->paginate(20);
 			$rideWithPayment = $rideWithPayment->where(['status' => 3])->where('payment_type', '!=','voucher')->where('payment_type', '!=','Voucher')->groupBy('payment_type')->get();
 
