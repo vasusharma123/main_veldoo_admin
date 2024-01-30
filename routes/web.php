@@ -94,6 +94,10 @@ Route::get('/service-provider/select-plan/{token}',  ['as'=>'service-provider.se
 Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'service-provider.subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
 Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser')->name('service_provider.subscribed_plan');
 Route::get('/thankyou',  ['as'=>'thankyou','uses'=>'ServiceProviderController@thankyou']);
+Route::get('service-provider/forgot_password',  ['as' => 'service-provider.forgot_password', 'uses' => 'SpAdmin\LoginController@forgot_password']);
+Route::post('service-provider/forgot_password_submit',  ['as' => 'service-provider.forgot_password_submit', 'uses' => 'SpAdmin\LoginController@forgot_password_submit']);
+Route::get('service-provider/reset_password/{token}',  ['as' => 'service-provider.reset_password', 'uses' => 'SpAdmin\LoginController@reset_password']);
+Route::post('service-provider/reset_password_submit/{token}',  ['as' => 'service-provider.reset_password_submit', 'uses' => 'SpAdmin\LoginController@reset_password_submit']);
 
 /* Service provider registration end*/
 

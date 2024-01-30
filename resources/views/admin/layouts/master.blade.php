@@ -130,7 +130,7 @@
 						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
 						<div class="col-lg-3 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
 							@else
-							<div class="col-lg-6 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+							<div class="{{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-8' : 'col-lg-6' )}} col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
 								@endif
                         @if($uri=='users.voucher' || $uri=='voucher.create')
                             <!--<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
@@ -273,7 +273,7 @@
 						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
 						<div class="col-lg-7 col-md-7 col-sm-5 col-5 align-self-center">
 						    @else
-						    <div class="col-lg-4 col-md-7 col-sm-5 col-5 align-self-center">
+							<div class=" {{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-2'  : 'col-lg-4') }} col-md-7 col-sm-5 col-5 align-self-center">
 						        @endif
 
                             <div class="right_content_menu">
@@ -444,7 +444,7 @@
     
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
-    
+    <script src="{{ asset('assets/js/settings.js') }}"></script>
     @if($uri =='service-provider-manager.index')
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
      

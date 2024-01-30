@@ -206,8 +206,8 @@ body{
 }
 .sidebarLists li a {
     font-size: 16px;
-    color: white;
-    font-family: var(--roboto-font);
+    color: var(--primary-font-color);
+    font-family: var(--primary-font-family);
     padding: 15px;
     display: flex;
     align-items: center;
@@ -1929,8 +1929,8 @@ body{
 }
 .sidebarLists li a {
     font-size: 16px;
-    color: white;
-    font-family: var(--roboto-font);
+    color: var(--primary-font-color);;
+    font-family: var(--primary-font-family);
     padding: 15px;
     display: flex;
     align-items: center;
@@ -3392,4 +3392,15 @@ a.openbook.bookBtn{
 
 @media (min-width:993px){
     .top_tab_menu {display:flex !important}
+}
+
+.editForm-salary {
+    color: rgba(6, 15, 33, 0.50);
+    font-family: var(--roboto-font);
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+    padding: 0px 10px;
 }
