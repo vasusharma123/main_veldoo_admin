@@ -105,12 +105,7 @@ class CompanyController extends Controller
 			'name' => 'required',
 			'country_code' => 'required',
 			'phone' => 'required',
-			'email' => 'required|email',
-			'street' => 'required',
-			'zip' => 'required',
-			'city' => 'required',
-			'state' => 'required',
-			'country' => 'required'
+			'email' => 'required|email'
 		];
 		
 		$request->validate($rules);
@@ -205,12 +200,7 @@ class CompanyController extends Controller
 			'name' => 'required',
 			'country_code' => 'required',
 			'phone' => 'required',
-			'email' => 'required|email',
-			'street' => 'required',
-			'zip' => 'required',
-			'city' => 'required',
-			'state' => 'required',
-			'country' => 'required'
+			'email' => 'required|email'
 		];
 
 		$request->validate($rules);
@@ -278,11 +268,16 @@ class CompanyController extends Controller
 		$input = $request->except(['_method', '_token']);
 		
 		$input = $request->all();
-		
-		$isUserEmail = User::where(['email' => $input['admin_email'], 'user_type' => 4])->where('company_id', '!=', $id)->first();
+
+		$isUserEmail = User::where(['email' => $input['admin_email']])->where(function ($query) use ($id) {
+			$query->where(function ($query1) use ($id) {
+				$query1->where('user_type', 4)->where('company_id', '!=', $id);
+			});
+			$query->orWhere('user_type', 5);
+		})->first();
 		
 		if($isUserEmail){
-			return redirect(route('company.edit', $id). '#admin_profile')->withErrors(['message' => 'Email already exists']);
+			return redirect(route('company.edit', $id). '#admin_profile')->withInput()->withErrors(['message' => 'Email already exists']);
 		}
 
 		$udata = User::firstOrNew(['company_id' => $id, 'user_type' => 4]);

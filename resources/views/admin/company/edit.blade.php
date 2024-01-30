@@ -53,7 +53,7 @@
 								<div class="col-lg-6 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('street', $record->street,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Street']);
+										echo Form::text('street', $record->street,['class'=>'form-control inputText', 'placeholder' => 'Enter Street']);
 										echo Form::label('street', 'Street',['class'=>'']);
 										?>
 									</div>
@@ -61,7 +61,7 @@
 								<div class="col-lg-6 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('zip', $record->zip,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Post Code']);
+										echo Form::text('zip', $record->zip,['class'=>'form-control inputText', 'placeholder' => 'Enter Post Code']);
 										echo Form::label('zip', 'Enter Post Code',['class'=>'']);
 										?>
 									</div>
@@ -69,7 +69,7 @@
 								<div class="col-lg-4 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('city', $record->city,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter City']);
+										echo Form::text('city', $record->city,['class'=>'form-control inputText', 'placeholder' => 'Enter City']);
 										echo Form::label('city', 'Enter City',['class'=>'']);
 										?>
 									</div>
@@ -77,7 +77,7 @@
 								<div class="col-lg-4 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('state',$record->state,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter State']);
+										echo Form::text('state',$record->state,['class'=>'form-control inputText', 'placeholder' => 'Enter State']);
 										echo Form::label('state', 'Enter State',['class'=>'']);
 										?>
 									</div>
@@ -85,7 +85,7 @@
 								<div class="col-lg-4 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('country', $record->country,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Country']);
+										echo Form::text('country', $record->country,['class'=>'form-control inputText', 'placeholder' => 'Enter Country']);
 										echo Form::label('country', 'Enter Country',['class'=>'']);
 										?>
 									</div>
@@ -136,11 +136,11 @@
 								</div>
 								<div class="col-lg-6 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
-										<input class="form-control" name="admin_country_code_iso" type="hidden" id="iso2" value="{{ (!empty($record->user)) ? $record->user->country_code_iso : 'ch' }}">
+										<input class="form-control" name="admin_country_code_iso" type="hidden" id="iso2" value="{{ (!empty($record->user)) ? $record->user->country_code_iso : (old('admin_country_code_iso')??'ch') }}">
 										
-										<input class="form-control" name="admin_country_code" type="hidden" id="admin_country_code" value="{{ (!empty($record->user)) ? $record->user->country_code : 41 }}">
+										<input class="form-control" name="admin_country_code" type="hidden" id="admin_country_code" value="{{ (!empty($record->user)) ? $record->user->country_code : (old('admin_country_code')??41) }}">
 										
-										<input type="tel" class="form-control inputText" id="admin_phone" name="admin_phone" placeholder="1234" value="{{ (!empty($record->user)) ? $record->user->phone : '' }}" required/>
+										<input type="tel" class="form-control inputText" id="admin_phone" name="admin_phone" placeholder="1234" value="{{ (!empty($record->user)) ? $record->user->phone : (old('admin_phone')??'') }}" required/>
 										<label for="phone">Example: +41 123 456 7899</label>
 									</div>
 								</div>

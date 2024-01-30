@@ -62,7 +62,7 @@
 								<div class="col-lg-6 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('street',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Street']);
+										echo Form::text('street',null,['class'=>'form-control inputText', 'placeholder' => 'Enter Street']);
 										echo Form::label('street', 'Street',['class'=>'']);
 										?>
 									</div>
@@ -70,7 +70,7 @@
 								<div class="col-lg-6 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('zip',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Post Code']);
+										echo Form::text('zip',null,['class'=>'form-control inputText', 'placeholder' => 'Enter Post Code']);
 										echo Form::label('zip', 'Enter Post Code',['class'=>'']);
 										?>
 									</div>
@@ -78,7 +78,7 @@
 								<div class="col-lg-4 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('city',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter City']);
+										echo Form::text('city',null,['class'=>'form-control inputText', 'placeholder' => 'Enter City']);
 										echo Form::label('city', 'Enter City',['class'=>'']);
 										?>
 									</div>
@@ -86,7 +86,7 @@
 								<div class="col-lg-4 col-md-6 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('state',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter State']);
+										echo Form::text('state',null,['class'=>'form-control inputText', 'placeholder' => 'Enter State']);
 										echo Form::label('state', 'Enter State',['class'=>'']);
 										?>
 									</div>
@@ -94,7 +94,7 @@
 								<div class="col-lg-4 col-md-12 col-sm-12 col-12">
 									<div class="form-group">
 										<?php
-										echo Form::text('country',null,['class'=>'form-control inputText','required'=>true, 'placeholder' => 'Enter Country']);
+										echo Form::text('country',null,['class'=>'form-control inputText', 'placeholder' => 'Enter Country']);
 										echo Form::label('country', 'Enter Country',['class'=>'']);
 										?>
 									</div>
