@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Company;
+use App\Exports\CompaniesExport;
 use App\PaymentMethod;
 use App\Price;
 use App\Ride;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CompanyController extends Controller
 {
@@ -24,58 +26,59 @@ class CompanyController extends Controller
     public function __construct()
     {
     }
-	
+
 	public function index(Request $request)
 	{
 		$this->limit = 10;
-		
-		$data = array();
+
 		$data = array('title' => 'Companies', 'action' => 'List Companies');
 
-		if(Auth::user()->user_type){
-			if(Auth::user()->user_type == 8){
+		if (Auth::user()->user_type) {
+			if (Auth::user()->user_type == 3) {
+				$sp_id = Auth::user()->id;
+			} else {
 				$sp_id = Auth::user()->service_provider_id;
-			}elseif(Auth::user()->user_type == 3){
-				$sp_id = Auth::user()->id;
-			}else{
-				$sp_id = Auth::user()->id;
 			}
 		}
 
-		
 		$records = Company::with(['user'])->where(['service_provider_id' => $sp_id]);
-		
-		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
+
+		if ($request->has('status') && $request->input('type') == 'status' && !empty($request->input('id'))) {
+			$status = ($request->input('status') ? 0 : 1);
 			DB::table('companies')->where([['id', $request->input('id')]])->limit(1)->update(array('status' => $status));
 		}
-	
-		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
 
+		if ($request->has('type') && $request->input('type') == 'delete' && !empty($request->input('id'))) {
 			Company::where(['id' => $request->id])->delete();
 			User::where(['company_id' => $request->id])->forceDelete();
-			#DB::table('users')->where([['id', $request->input('id')],['user_type', 4]])->limit(1)->update(array('deleted' => $status));
 		}
-		
-		if(!empty($request->input('text'))){
+
+		if (!empty($request->input('text'))) {
 			$text = $request->input('text');
-			$records->whereRaw("(name LIKE '%$text%' OR email LIKE '%$text%' OR IFNULL((SELECT name FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT email FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT phone FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT state FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT city FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%' OR IFNULL((SELECT country FROM companies WHERE id = users.company_id LIMIT 1), '') LIKE '%$text%') AND user_type IN(4,5) AND deleted=0");
+			$records = $records->where(function ($query) use ($text) {
+				$query->where('name', 'like', '%' . $text . '%');
+				$query->orWhereHas('user', function ($query1) use ($text) {
+					$query1->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $text . '%');
+					$query1->orWhere(DB::raw('CONCAT_WS(" ", country_code, phone)'), 'like', '%' . $text . '%');
+					$query1->orWhere('email', 'like', '%' . $text . '%');
+				});
+			});
 		}
-		
-		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
+
+		if (!empty($request->input('orderby')) && !empty($request->input('order'))) {
 			$records->orderBy($request->input('orderby'), $request->input('order'));
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-		
+
 		$data['records'] = $records->paginate($this->limit);
-		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
-		$data['orderby'] =$request->input('orderby');
+		$data['i'] = (($request->input('page', 1) - 1) * $this->limit);
+		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
-        if ($request->ajax()) {
-            return view("admin.company.index_element")->with($data);
-        }
-		
+		if ($request->ajax()) {
+			return view("admin.company.index_element")->with($data);
+		}
+
 		return view('admin.company.index')->with($data);
 	}
 	
@@ -509,6 +512,14 @@ class CompanyController extends Controller
 			DB::rollBack();
 			return back()->with('error', $exception->getMessage());
 		}
+	}
+
+	public function exportCompanies(Request $request)
+	{
+		$req_params = $request->all();
+
+		$file_name = 'companies_' . date('Y_m_d_H_i_s') . '.csv';
+		return Excel::download(new CompaniesExport($req_params), $file_name);
 	}
 
 }

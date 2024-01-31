@@ -201,6 +201,7 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
     Route::post('company/delete','CompanyController@destroy');
 	Route::post('company/change_status','CompanyController@change_status');
 	Route::patch('company/admin_profile_update/{id}','CompanyController@admin_profile_update')->name('company.admin_profile_update');
+	Route::get('service_provider/company/export','CompanyController@exportCompanies')->name('company.export');
 	Route::post('driver/driver_master_status','UserController@driver_change_status');
 	Route::post('users/invoice_status','UserController@invoice_change_status');
 	Route::post('vehicle/delete','VehicleController@destroy');
@@ -254,7 +255,6 @@ Route::group(['prefix' => 'company',  'middleware' => ['auth','role_or_permissio
 	// Route::delete('rides/{id}','Company\RidesController@destroy')->name('company.rides.destroy');
 	Route::post('settings/update-company-information','CompanyController@updateCompanyInformation')->name('company.updateCompanyInformation')->middleware('can:isCompany');
 	Route::post('settings/update-company-theme-information','CompanyController@updateCompanyThemeInformation')->name('company.updateCompanyThemeInformation')->middleware('can:isCompany');
-
 	Route::post('settings/update-personal-information','CompanyController@updatePersonalInformation')->name('company.updatePersonalInformation');
 
 	Route::get('settings','CompanyController@settings')->name('company.settings');
