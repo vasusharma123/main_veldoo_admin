@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Salary;
 use App\Expense;
+use App\Exports\DriversExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DriverController extends Controller
 {
@@ -32,7 +34,6 @@ class DriverController extends Controller
 	{
 		$this->limit = 20;
 		
-		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'List Drivers');
 		
 		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
@@ -42,15 +43,17 @@ class DriverController extends Controller
 			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('is_master' => $status));
 		}
 
-		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
-			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
+		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){			
+			User::where([['id', $request->input('id')],['user_type', 2]])->delete();
 		}
 		
 		if(!empty($request->input('text'))){
-			$text = $request->input('text');
-			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0");
+			$records->where(function ($query) use ($request) {
+				$query->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere(DB::raw('CONCAT_WS(" ", country_code, phone)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere('email', 'like', '%' . $request['text'] . '%');
+
+            });
 		}
 
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
@@ -58,23 +61,20 @@ class DriverController extends Controller
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-		if(Auth::user()->user_type){
-			if(Auth::user()->user_type == 8){
-				$sp_id = Auth::user()->service_provider_id;
-			}elseif(Auth::user()->user_type == 3){
-				$sp_id = Auth::user()->id;
-			}else{
-				$sp_id = Auth::user()->id;
-			}
+		if(Auth::user()->user_type == 3){
+			$sp_id = Auth::user()->id;
+		}else{
+			$sp_id = Auth::user()->service_provider_id;
 		}
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
         if ($request->ajax()) {
-            return view("admin.drivers.index_element")->with($data);
+			return view("admin.drivers.index_element")->with($data);
         }
 		
+		$data['regular_master_filter'] = 'all';
 		return view('admin.drivers.index')->with($data);
 	}
 	
@@ -87,7 +87,6 @@ class DriverController extends Controller
 		}
 		$this->limit = 20;
 		
-		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'Regular Drivers');
 		
 		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
@@ -98,14 +97,16 @@ class DriverController extends Controller
 		}
 		
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
-			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
+			User::where([['id', $request->input('id')],['user_type', 2]])->delete();
 		}
 		
 		if(!empty($request->input('text'))){
-			$text = $request->input('text');
-			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=0");
+			$records->where(function ($query) use ($request) {
+				$query->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere(DB::raw('CONCAT_WS(" ", country_code, phone)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere('email', 'like', '%' . $request['text'] . '%');
+
+            });
 		}
 
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
@@ -113,15 +114,15 @@ class DriverController extends Controller
 		} else {
 			$records->orderBy('id', 'desc');
 		}
-
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'is_master' => 0, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
         if ($request->ajax()) {
-            return view("admin.drivers.index_element")->with($data);
+			return view("admin.drivers.index_element")->with($data);
         }
 		
+		$data['regular_master_filter'] = 'regular';
 		return view('admin.drivers.index')->with($data);
 	}
 	
@@ -134,7 +135,6 @@ class DriverController extends Controller
 		}
 		$this->limit = 20;
 		
-		$data = array();
 		$data = array('title' => 'Drivers', 'action' => 'Master Drivers');
 		
 		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
@@ -145,14 +145,16 @@ class DriverController extends Controller
 		}
 		
 		if($request->has('type') && $request->input('type')=='delete' && !empty($request->input('id')) ){
-			$status = ($request->input('status')?0:1);
-			
-			DB::table('users')->where([['id', $request->input('id')],['user_type', 2]])->limit(1)->update(array('deleted' => $status));
+			User::where([['id', $request->input('id')],['user_type', 2]])->delete();
 		}
 		
 		if(!empty($request->input('text'))){
-			$text = $request->input('text');
-			$records->whereRaw("(first_name LIKE '%$text%' OR last_name LIKE '%$text%' OR phone LIKE '%$text%' OR email LIKE '%$text%') AND user_type=2 AND deleted=0 AND is_master=1");
+			$records->where(function ($query) use ($request) {
+				$query->where(DB::raw('CONCAT_WS(" ", first_name, last_name)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere(DB::raw('CONCAT_WS(" ", country_code, phone)'), 'like', '%' . $request['text'] . '%');
+				$query->orWhere('email', 'like', '%' . $request['text'] . '%');
+
+            });
 		}
 		
 		if(!empty($request->input('orderby')) && !empty($request->input('order'))){
@@ -161,14 +163,14 @@ class DriverController extends Controller
 			$records->orderBy('id', 'desc');
 		}
 
-		$data['records'] = $records->where(['user_type' => 2, 'deleted' => 0, 'is_master' => 1,  'service_provider_id' => $sp_id])->paginate($this->limit);
+		$data['records'] = $records->where(['user_type' => 2, 'is_master' => 1, 'service_provider_id' => $sp_id])->paginate($this->limit);
 		$data['i'] =(($request->input('page', 1) - 1) * $this->limit);
 		$data['orderby'] = $request->input('orderby');
 		$data['order'] = $request->input('order');
         if ($request->ajax()) {
             return view("admin.drivers.index_element")->with($data);
         }
-		
+		$data['regular_master_filter'] = 'master';
 		return view('admin.drivers.index')->with($data);
 	}
 	
@@ -494,6 +496,13 @@ class DriverController extends Controller
 			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
 		}
 	}
+
+	public function exportDrivers(Request $request){
+		$req_params = $request->all();
+		
+		$file_name = 'drivers_'.date('Y_m_d_H_i_s').'.csv';
+		return Excel::download(new DriversExport($req_params), $file_name);
+    }
 
 
 }

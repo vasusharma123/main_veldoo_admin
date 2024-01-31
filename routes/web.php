@@ -176,7 +176,8 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	
 	Route::get('/drivers/regular',  ['as'=>'drivers.regular','uses'=>'DriverController@regularDriver']);
 	Route::get('/drivers/master',  ['as'=>'drivers.master','uses'=>'DriverController@masterDriver']);
-	
+	Route::get('service_provider/drivers/export','DriverController@exportDrivers')->name('drivers.export');
+
 	Route::resources(['users'=>'UserController','category'=>'CategoryController','payment-method'=>'PaymentManagementController','admin-control'=>'AdminControlController','contact-support'=>'ContactSupportController',
 	'notifications'=>'NotificationController','social-media-setting'=>'SettingController','company'=>'CompanyController','drivers'=>'DriverController','vehicle'=>'VehicleController','vehicle-type'=>'VehicleTypeController','vouchers-offers'=>'VoucherController','promotion'=>'PromotionController']);
 	Route::resources(['push-notifications'=>'PushNotificationController']);

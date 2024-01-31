@@ -1,22 +1,19 @@
 @extends('admin.layouts.master')
 
 @section('header_search_export')
-<div class="search">
-  <form class="search_form">
-    <div class="form-group searchinput position-relative trigger_parent">
-      <input
-        type="text"
-        name="data[q]"
-        class="form-control input_search target myInput"
-        placeholder="Search"
-      />
-      <i class="bi bi-search search_icons"></i>
+<form class="right_content_menu search_form" action="{{ route('drivers.export') }}">
+    <div class="search">
+        <div class="form-group searchinput position-relative trigger_parent">
+            <input type="text" name="search" class="form-control input_search target myInput" id="search_filter" placeholder="Search" />
+            <i class="bi bi-search search_icons"></i>
+        </div>
     </div>
-  </form>
-</div>
-<div class="export_box">
-  <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
-</div>
+    <div class="export_box">
+        <input type="hidden" name="regular_master_filter" value="{{$regular_master_filter}}">
+        <button type="submit" class="iconExportLink"><i class="bi bi-upload exportbox"></i></button>
+    </div>
+</form>
+
 @endsection
 
 @section('content')
@@ -117,7 +114,7 @@
                 var order = '';
                 //$("#loading").fadeIn("slow");
                 $('input[name="page"]').val(1);
-                ajaxCall('', text, orderby, order, '');
+                ajaxCall('', orderby, order, '');
             };
 
             $('body').on('click', '.delete_user', function() {
@@ -146,7 +143,7 @@
                 }, function(isConfirm) {
                     if (isConfirm) {
                         //$("#loading").fadeIn("slow");
-                        ajaxCall(id, text, orderby, order, page, status, 'delete');
+                        ajaxCall(id, orderby, order, page, status, 'delete');
                     } else {
                         swal();
                     }
@@ -166,12 +163,13 @@
                 var text = '';
 
                 $("#loading").fadeIn("slow");
-                ajaxCall(id, text, orderby, order, page, status, 'status');
+                ajaxCall(id, orderby, order, page, status, 'status');
             });
         });
 
-        function ajaxCall(id = 0, text = '', orderby, order, page = 1, status = '', type = '') {
+        function ajaxCall(id = 0, orderby, order, page = 1, status = '', type = '') {
             var page = (!page ? 1 : page);
+            var text = $('.myInput').val();
             $.ajax({
                 type: "GET",
                 url: "{{ url()->current() }}",
@@ -193,5 +191,11 @@
                 }
             });
         }
+
+        $("#search_filter").keypress(function(e) {
+            if(e.which == 13) {
+                e.preventDefault();
+            }
+        });
     </script>
 @stop
