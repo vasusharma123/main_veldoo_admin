@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Company;
 use App\Helpers\Helper;
+use App\Plan;
+use App\PlanPurchaseHistory;
 use App\Setting;
 use App\User;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
             $record = Auth::user();
             $configuration = array();
             $setting = array();
+            $lastPurchasedPlan = [];
             $service_provider_id = "";
             if (Auth::user() && Auth::user()->user_type == 3) {
                 $service_provider_id = Auth::user()->id;
@@ -55,7 +58,8 @@ class AppServiceProvider extends ServiceProvider
                 if($configuration){
                     $setting = json_decode($configuration->value, true);
                 }
-               
+                $purchasedPlan = PlanPurchaseHistory::where(['user_id' => $service_provider_id])->orderBy('id','desc')->first();
+                $lastPurchasedPlan = Plan::find($purchasedPlan->plan_id);
             }
             if (app('request')->route()) {
                 $action = app('request')->route()->getAction();
@@ -69,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
             $data['configuration'] = $configuration;
             $data['setting'] = $setting;
             $data['companyInfo'] = $companyInfo;
+            $data['lastPurchasedPlan'] = $lastPurchasedPlan;
             $view->with($data);
         });
 

@@ -16,13 +16,13 @@
                                 <div class="otpoptions">
                                     <label>Color</label>
                                     <div class="colorpikerbox position-relative">
-                                        <input type="color" name="header_color" value="{{ !empty($record->header_color) ? $record->header_color  : '#FC4C02' }}" class="form-control clrpickers" />
+                                        <input type="color" name="header_color" value="{{ !empty($record->header_color) ? $record->header_color  : '#FC4C02' }}" class="form-control clrpickers headerBg" />
                                         <span class="clrselected"></span>
                                     </div>
                                 </div>
                                 <div class="otpoptions">
                                     <label>Font</label>
-                                    <select class="form-select fontselection" name="header_font_family">
+                                    <select class="form-select fontselection headerFontFamily" name="header_font_family">
                                         <option value="" disabled>Select Font</option>
                                         <option style="font-family:Oswald" value="Oswald" {{ $record->header_font_family == 'Oswald' ? "selected" : ''}}> Oswald</option>
                                         <option style="font-family:Times-new-roman" value="Times-new-roman" {{ $record->header_font_family == 'Times-new-roman' ? "selected" : ''}}> Times New Roman</option>
@@ -49,7 +49,7 @@
                                 <div class="otpoptions">
                                     <label>Font Color</label>
                                     <div class="colorpikerbox position-relative">
-                                        <input name="header_font_color" type="color" class="form-control clrpickers"  value="{{ !empty($record->header_font_color) ? $record->header_font_color  : '#FFFFFF' }}"/>
+                                        <input name="header_font_color" type="color" class="form-control clrpickers headerFont"  value="{{ !empty($record->header_font_color) ? $record->header_font_color  : '#FFFFFF' }}"/>
                                         <span class="clrselected"></span>
                                     </div>
                                 </div>

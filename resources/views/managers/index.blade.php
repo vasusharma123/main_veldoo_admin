@@ -15,8 +15,8 @@
             </div>
         </form>
     </div>
-    <div class="bookBtnBox">
-        <a class="openbook bookBtn p-0" href=""><i class="bi bi-plus-circle-fill topplusicon me-2"></i> <span>Add</span></a>
+    <div class="bookBtnBox addManager">
+        <a class="openbook bookBtn p-0"><i class="bi bi-plus-circle-fill topplusicon me-2"></i> <span>Add</span></a>
     </div>
     <div class="export_box">
         <a href="#" class="iconExportLink"><i class="bi bi-upload exportbox"></i></a>
@@ -33,224 +33,224 @@
     </article>
 </section>
 
-<section class="addEditForm sectionsform">
-                                        <article class="container-fluid com_tabs">
-                                            <div class="form_add_managers">
-                                            <form class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
-                                                @csrf
-                                                <div class="row w-100 m-0 form_inside_row">
-                                                    <div class="col-lg-8 col-md-8 col-sm-12 col-12">
-                                                        <div class="row w-100 m-0">
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="name" name="name" placeholder="Enter Name" value="{{ old('name') ? old('name') : '' }}" required>
+<section class="addEditForm sectionsform " style="display:none;">
+        <article class="container-fluid com_tabs">
+            <div class="form_add_managers" >
+                <form class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.store') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                    @csrf
+                    <div class="row w-100 m-0 form_inside_row">
+                        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+                            <div class="row w-100 m-0">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="name" name="name" placeholder="Enter Name" value="{{ old('name') ? old('name') : '' }}" required>
 
-                                                                    <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
+                                        <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
 
-                                                                    <label for="name">Enter Name</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="email" class="form-control inputText" id="email" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required />
-                                                                   
-                                                                    <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
-                                                                    <label for="email">Example: admin@email-address.com</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+41' }}" class="country_code" id="country_code" name="country_code" />
-                                                                <input type="tel" class="form-control inputText" id="phone" name="phone" placeholder="Enter Number" value="{{ old('phone') ? old('phone') : '' }}"  />
-                                                                
-                                                                <!-- <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number"> -->
+                                        <label for="name">Enter Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control inputText" id="email" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required />
+                                        
+                                        <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
+                                        <label for="email">Example: admin@email-address.com</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                    <input type="hidden" value="{{ old('country_code') ? old('country_code') : '+41' }}" class="country_code" id="country_code" name="country_code" />
+                                    <input type="tel" class="form-control inputText" id="phone" name="phone" placeholder="Enter Number" value="{{ old('phone') ? old('phone') : '' }}"  />
+                                    
+                                    <!-- <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number"> -->
 
-                                                                <label for="phone1">Example: +41 123 456 7899</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="password" class="form-control inputText" id="password" name="password" placeholder="Enter Password" required>
-                                                                    
-                                                                    <!-- <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required> -->
-                                                                    <label for="password">Password</label>
-                                                                </div>
-                                                            </div>
-                                                            <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="address" name="address" placeholder="Enter Street" />
-                                                                    <label for="address">Enter Street</label>
-                                                                </div>
-                                                            </div> -->
-                                                            <!-- <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="postcode" name="postcode" placeholder="Enter Post Code" />
-                                                                    <label for="postcode">Enter post code</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="usercity" name="usercity" placeholder="Enter City" />
-                                                                    <label for="usercity">Enter user city</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-4 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="usercountry" name="usercountry" placeholder="Enter Country" />
-                                                                    <label for="usercountry">Enter user country</label>
-                                                                </div>
-                                                            </div>
-                                                             -->
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                        <div class="img_user_settled h-100">
-                                                            <div class="view_image_user">
+                                    <label for="phone1">Example: +41 123 456 7899</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="password" class="form-control inputText" id="password" name="password" placeholder="Enter Password" required>
+                                        
+                                        <!-- <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required> -->
+                                        <label for="password">Password</label>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="address" name="address" placeholder="Enter Street" />
+                                        <label for="address">Enter Street</label>
+                                    </div>
+                                </div> -->
+                                <!-- <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="postcode" name="postcode" placeholder="Enter Post Code" />
+                                        <label for="postcode">Enter post code</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="usercity" name="usercity" placeholder="Enter City" />
+                                        <label for="usercity">Enter user city</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="usercountry" name="usercountry" placeholder="Enter Country" />
+                                        <label for="usercountry">Enter user country</label>
+                                    </div>
+                                </div>
+                                    -->
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                            <div class="img_user_settled h-100">
+                                <div class="view_image_user">
 
-                                                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" id="photo2imgPreview" />
-                                                                <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
-                                                                <input type="file" id="photo2" name="image" class="form-control hiddenForm" />
-                                                            </div>
-                                                            <input type="hidden" value="7"  id="type" name="type" />
-                                                            <div class="form-group">
-                                                                <input type="submit" value="Save" name="submit" class="form-control submit_btn driver_side"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                            </div>
+                                    <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" id="photo2imgPreview" />
+                                    <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
+                                    <input type="file" id="photo2" name="image" class="form-control hiddenForm" />
+                                </div>
+                                <input type="hidden" value="7"  id="type" name="type" />
+                                <div class="form-group">
+                                    <input type="submit" value="Save" name="submit" class="form-control submit_btn driver_side"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="update-form" >
+                <form id="updateForm" class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.update','~') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                    @method('put')   
+                    @csrf
+                    <div class="row w-100 m-0 form_inside_row edit_box" style="display: none">
+                        <div class="col-lg-8 col-md-8 col-sm-12 col-12">
+                            <div class="row w-100 m-0">
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="name" form="updateForm" name="name" placeholder="Enter Name" value="{{ old('name') ? old('name') : '' }}" required>
 
-                                            <form id="updateForm" class="custom_form editForm admin_edit add_managers inside_custom_form " action="{{ route('master-manager.update','~') }}" method="POST" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
-                                                @method('put')   
-                                                @csrf
-                                                <div class="row w-100 m-0 form_inside_row edit_box" style="display: none">
-                                                    <div class="col-lg-8 col-md-8 col-sm-12 col-12">
-                                                        <div class="row w-100 m-0">
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="name" form="updateForm" name="name" placeholder="Enter Name" value="{{ old('name') ? old('name') : '' }}" required>
+                                        <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
 
-                                                                    <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
+                                        <label for="name">Enter Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="email" class="form-control inputText" id="email" form="updateForm" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required/>
+                                        
+                                        <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
+                                        <label for="email">Example: admin@email-address.com</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                    <input type="hidden" value="" class="country_code" form="updateForm" id="country_code_edit"  name="country_code" />
+                                    <input type="tel" class="form-control inputText" id="phone_edit_number" form="updateForm" name="phone" placeholder="Enter Number" value=""  />
+                                    
+                                    <!-- <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number"> -->
 
-                                                                    <label for="name">Enter Name</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="email" class="form-control inputText" id="email" form="updateForm" name="email" value="{{ old('email') ? old('email') : '' }}" placeholder="Enter Email" required/>
-                                                                   
-                                                                    <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
-                                                                    <label for="email">Example: admin@email-address.com</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                <input type="hidden" value="" class="country_code" form="updateForm" id="country_code_edit"  name="country_code" />
-                                                                <input type="tel" class="form-control inputText" id="phone_edit_number" form="updateForm" name="phone" placeholder="Enter Number" value=""  />
-                                                                
-                                                                <!-- <input type="tel" id="phone" class="form-control main_field" placeholder="Enter Number" name="phone" value="{{ old('phone') ? old('phone') : '' }}" aria-label="Phone Number"> -->
+                                    <label for="phone1">Example: +41 123 456 7899</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="password" class="form-control inputText" id="password"   form="updateForm" name="password" placeholder="Enter Password" required>
+                                        
+                                        <!-- <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required> -->
+                                        <label for="password">Password</label>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="address" name="address" placeholder="Enter Street" />
+                                        <label for="address">Enter Street</label>
+                                    </div>
+                                </div> -->
+                                <!-- <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="postcode" name="postcode" placeholder="Enter Post Code" />
+                                        <label for="postcode">Enter post code</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="usercity" name="usercity" placeholder="Enter City" />
+                                        <label for="usercity">Enter user city</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control inputText" id="usercountry" name="usercountry" placeholder="Enter Country" />
+                                        <label for="usercountry">Enter user country</label>
+                                    </div>
+                                </div>
+                                    -->
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+                            <div class="img_user_settled h-100">
+                                <div class="view_image_user">
 
-                                                                <label for="phone1">Example: +41 123 456 7899</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-6 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="password" class="form-control inputText" id="password"   form="updateForm" name="password" placeholder="Enter Password" required>
-                                                                    
-                                                                    <!-- <input type="password" class="form-control main_field" placeholder="Password" name="password" aria-label="Password" required> -->
-                                                                    <label for="password">Password</label>
-                                                                </div>
-                                                            </div>
-                                                            <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="address" name="address" placeholder="Enter Street" />
-                                                                    <label for="address">Enter Street</label>
-                                                                </div>
-                                                            </div> -->
-                                                            <!-- <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="postcode" name="postcode" placeholder="Enter Post Code" />
-                                                                    <label for="postcode">Enter post code</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-4 col-md-6 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="usercity" name="usercity" placeholder="Enter City" />
-                                                                    <label for="usercity">Enter user city</label>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-lg-4 col-md-12 col-sm-12 col-12">
-                                                                <div class="form-group">
-                                                                    <input type="text" class="form-control inputText" id="usercountry" name="usercountry" placeholder="Enter Country" />
-                                                                    <label for="usercountry">Enter user country</label>
-                                                                </div>
-                                                            </div>
-                                                             -->
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-sm-12 col-12">
-                                                        <div class="img_user_settled h-100">
-                                                            <div class="view_image_user">
-
-                                                                <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" id="photo3imgPreview" />
-                                                                <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
-                                                                <input type="file"  id="photo3" name="image" class="form-control hiddenForm" />
-                                                            </div>
-                                                            <input type="hidden" value="7"  id="type" name="type" />
-                                                            <div class="form-group">
-                                                                <input type="submit" form="updateForm" type="submit" value="Update" class="form-control submit_btn driver_side"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-
-                                        </article>
-                                    </section>
-
-
+                                    <img src="{{ asset('new-design-company/assets/images/avatar-2.png') }}" class="img-fluid w-100 img_user_face diverSide" id="photo3imgPreview" />
+                                    <img src="{{ asset('assets/imgs/uploaded_icon.png') }}"  class="img-fluid w-100 img_user_icon" />
+                                    <input type="file"  id="photo3" name="image" class="form-control hiddenForm" />
+                                </div>
+                                <input type="hidden" value="7"  id="type" name="type" />
+                                <div class="form-group">
+                                    <input type="submit" form="updateForm" type="submit" value="Update" class="form-control submit_btn driver_side"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+         </article>
+</section>
 
 
-                                    <section class="addonTable sectionsform">
-                                        <article class="container-fluid">
-                                            <div class="table-responsive marginTbl">
 
-                                                <table class="table table-borderless table-fixed customTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Name</th>
-                                                            <th>Phone number</th>
-                                                            <th>Email Address</th>
-                                                            <th>Status</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @foreach ($managers as $key=>$manager)    
-                                                        <tr>
-                                                        <td>{{ $manager->first_name }}</td>
-                                                        <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
-                                                        <td class="">{{ $manager->email }}</td>
-                                                            <td class="switch_btn">
-                                                                <label class="switch">
-                                                                    <?php $id = Crypt::encrypt($manager->id); ?>
-                                                                    <input type="checkbox" data-id="{{ $id }}" class="active_status active_status_{{ $id }}"  {{ $manager->status == 1 ? 'checked' : '' }}>
-                                                                    <span class="slider round whitegrey_btn"></span>
-                                                                </label>
-                                                            </td>
-                                                            <td class="actionbtns">
-                                                                <a  class="actionbtnsLinks editButton" data-user="{{ Crypt::encrypt($manager->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-                                                                <a  class="actionbtnsLinks"><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn deleteButton" data-id="{{$manager->id }}" alt="delete_btn"></a>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
-                                                        
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </article>
-                                    </section>
+
+        <section class="addonTable sectionsform manager-list">
+            <article class="container-fluid">
+                <div class="table-responsive marginTbl">
+
+                    <table class="table table-borderless table-fixed customTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone number</th>
+                                <th>Email Address</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach ($managers as $key=>$manager)    
+                            <tr>
+                            <td>{{ $manager->first_name }}</td>
+                            <td> {{ $manager->phone ? '+' : '' }} {{ $manager->country_code }} {{ $manager->phone }}</td>
+                            <td class="">{{ $manager->email }}</td>
+                                <td class="switch_btn">
+                                    <label class="switch">
+                                        <?php $id = Crypt::encrypt($manager->id); ?>
+                                        <input type="checkbox" data-id="{{ $id }}" class="active_status active_status_{{ $id }}"  {{ $manager->status == 1 ? 'checked' : '' }}>
+                                        <span class="slider round whitegrey_btn"></span>
+                                    </label>
+                                </td>
+                                <td class="actionbtns">
+                                    <a  class="actionbtnsLinks editButton" data-user="{{ Crypt::encrypt($manager->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
+                                    <a  class="actionbtnsLinks"><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn deleteButton" data-id="{{$manager->id }}" alt="delete_btn"></a>
+                                </td>
+                            </tr>
+                            @endforeach
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
 
         <form  action="{{ route('master-manager.destroy','~') }}" id="deleteForm" method="POST">
             @method('delete')
@@ -333,9 +333,11 @@
                                     var image = $("#photo3imgPreview");
                                     image.attr("src", data.image);
                                 }
+                                $('.addEditForm').show();
                                 $('.edit_box').show();
                                 $('.form_add_managers').hide();
-
+                                
+                                 
                         }
                     
                     },
@@ -482,5 +484,11 @@
             });
             });
 
+    $('.addManager').click(function(){
+        $('.addEditForm').show();
+        $('.edit_box').hide();
+        $('.form_add_managers').show();
+        $('.manager-list').hide();
+    });
              </script>
 @endsection

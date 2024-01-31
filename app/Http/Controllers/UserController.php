@@ -146,7 +146,9 @@ class UserController extends Controller
 	}
 	
 	public function dashboard(){
-		
+		if(Auth::user()->user_type == 6){
+			abort(404, 'Page not found');
+		}
 		$breadcrumb = array('title'=>'Dashboard','action'=>'Dashboard');
 		$data = [];
 		$data = array_merge($breadcrumb, $data);

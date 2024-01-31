@@ -11,6 +11,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Twilio\Rest\Client;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class Controller extends BaseController
 {
@@ -86,7 +87,7 @@ class Controller extends BaseController
             $client = new Client($twilioDetailArr['sid'], $twilioDetailArr['auth_token']);
             $client->messages->create($recipientPhoneNumber, ['from' => $twilioDetailArr['number'], 'body' => $textMessage]);
         } catch (Exception $ex) {
-            \Log::info($ex->getMessage());
+            Log::info($ex->getMessage());
         }
     }
 
@@ -102,7 +103,7 @@ class Controller extends BaseController
             $client = new Client($twilioDetailArr['sid'], $twilioDetailArr['auth_token']);
             $client->messages->create($recipientCountryCode . $recipientPhoneNumber, ['from' => $sender, 'body' => $textMessage]);
         } catch (Exception $ex) {
-            \Log::info($ex->getMessage());
+            Log::info($ex->getMessage());
         }
     }
 
@@ -140,4 +141,20 @@ class Controller extends BaseController
         }
         return $slug;
     }
+
+    function generateForgotPasswordToken($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        $checkToken = User::where(['forgot_password_token'=>$randomString])->first();
+        if ($checkToken) 
+        {
+            return $this->generateForgotPasswordToken($length);
+        }
+        return $randomString;
+    }
+    
 }

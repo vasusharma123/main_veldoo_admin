@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\MasterAdmn;
 
  Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
@@ -93,6 +94,10 @@ Route::get('/service-provider/select-plan/{token}',  ['as'=>'service-provider.se
 Route::get('/service-provider/subscribe-plan/{token}/{id}',  ['as'=>'service-provider.subscribePlan','uses'=>'ServiceProviderController@subscribePlan']);
 Route::post('subscribedPlan',  'ServiceProviderController@subscribedPlanByUser')->name('service_provider.subscribed_plan');
 Route::get('/thankyou',  ['as'=>'thankyou','uses'=>'ServiceProviderController@thankyou']);
+Route::get('service-provider/forgot_password',  ['as' => 'service-provider.forgot_password', 'uses' => 'SpAdmin\LoginController@forgot_password']);
+Route::post('service-provider/forgot_password_submit',  ['as' => 'service-provider.forgot_password_submit', 'uses' => 'SpAdmin\LoginController@forgot_password_submit']);
+Route::get('service-provider/reset_password/{token}',  ['as' => 'service-provider.reset_password', 'uses' => 'SpAdmin\LoginController@reset_password']);
+Route::post('service-provider/reset_password_submit/{token}',  ['as' => 'service-provider.reset_password_submit', 'uses' => 'SpAdmin\LoginController@reset_password_submit']);
 
 /* Service provider registration end*/
 
@@ -320,7 +325,7 @@ Route::get('/privacy_policy','PageController@privacy_policy');
 /* Master admin */
 Route::get('master-login',  'MasterAdmin\LoginController@login');
 Route::post('adminLogin',  [ 'uses' => 'MasterAdmin\LoginController@masterLogin'])->name('masterLogin');
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth',MasterAdmn::class]], function () {
 	Route::get('master-dashboard',  ['as' => 'masterAdmin.dashboard', 'uses' => 'MasterAdmin\UsersController@dashboard']);
 	Route::get('service-provider',  'MasterAdmin\ServiceProviderController@showServiceProvider');
 	Route::get('service-provider/profile-detail',  'MasterAdmin\ServiceProviderController@profile_detail')->name('service-provider.profile-detail');
