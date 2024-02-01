@@ -15,6 +15,7 @@ use App\User;
 use App\Exports\VehicleExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Auth;
+use App\ExpenseType;
 
 class VehicleController extends Controller
 {
@@ -330,4 +331,6 @@ class VehicleController extends Controller
     {
         return Excel::download(new VehicleExport([]), 'Vehicle List Veldoo.xlsx');
     }
+
+    
 }

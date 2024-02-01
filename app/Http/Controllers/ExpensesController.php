@@ -10,6 +10,7 @@ use App\ExpenseAttachment;
 use App\ExpenseType;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class ExpensesController extends Controller
 {
@@ -86,4 +87,46 @@ class ExpensesController extends Controller
         return view('admin.expenses.show')->with(['title' => 'Expense Detail', 'action' => '', 'expense_detail' => $expense_detail]);
     }
 
+    public function fetchAllExpensesOnSearch(Request $request)
+    {
+        try {
+
+            $searchTerm = $request->input('search');
+            $obj = new UserController();
+            $sp_id = $obj->getSpId();
+            if($searchTerm){
+                
+                $results =   Expense::select('expenses.id','users.first_name','expenses.ride_id','expenses.type_detail','expenses.date','amount','note',)->leftJoin('users','users.id','=','expenses.driver_id')
+                ->where('expenses.service_provider_id',$sp_id)->where('type','expense')
+                    ->where(function ($query) use ($searchTerm) {
+                    $query->where('expenses.amount', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('expenses.type_detail', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('expenses.date', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.first_name', 'like', '%' . $searchTerm . '%');
+                })->orderBy('expenses.created_at','DESC')->get();
+            }else{
+                $results =   Expense::select('expenses.id','users.first_name','expenses.ride_id','expenses.type_detail','expenses.date','amount','note',)->leftJoin('users','users.id','=','expenses.driver_id')
+                ->where('expenses.service_provider_id',$sp_id)->where('type','expense')
+                ->orderBy('expenses.created_at','DESC')->get();
+            }
+            
+
+            $results = $results->map(function ($result) {
+                $result->encrypted_id_attribute = $this->computeAttribute($result);
+                return $result;
+            });
+            return response()->json($results);
+
+
+        } catch (Exception $e) {
+            Log::info('Error in method getAllServiceProvider' . $e);
+        }
+    }
+
+    private function computeAttribute($result)
+    {
+        // Your logic to compute the attribute value based on $result
+        // For example, concatenate values from different columns
+        return Crypt::encrypt($result->id);
+    }
 }

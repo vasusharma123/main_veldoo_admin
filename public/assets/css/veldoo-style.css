@@ -3404,3 +3404,13 @@ a.openbook.bookBtn{
     margin-bottom: 10px;
     padding: 0px 10px;
 }
+
+.editExpenseDataForm  label {
+    color: rgba(6, 15, 33, 0.50);
+    font-family: var(--roboto-font);
+    font-size: 13px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+    p

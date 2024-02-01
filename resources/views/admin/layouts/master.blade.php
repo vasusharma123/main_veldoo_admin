@@ -211,6 +211,18 @@
                             </ul>
                         @endif
 
+                        @if($uri=='expense-type.index' )
+                            <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
+                            <ul class="nav top_tab_menu target">
+                                <li class="nav-item">
+                                    <a class="nav-link expense-list-active {{ ($uri=='expense-type.index' ? 'active' : '') }}" href="{{ route('expense-type.index') }}">List</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ ($uri=='expensis' ? 'active' : '') }} add-expense" >Add</a>
+                                </li>
+                            </ul>
+                        @endif
+
                         @if($uri=='company.index' || $uri=='company.create' || $uri=='company.edit')
                             <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
                             <ul class="nav top_tab_menu target">
@@ -376,6 +388,13 @@
 													</a>
 												</li>
                                                 <?php } ?>
+                                                <li class="nav-item w-100">
+													<a class="nav-link {{ (($uri=='expense-type.index') ? 'active' : '') }}" href="{{ route('expense-type.index') }}">
+														<img src="{{ asset('assets/images/veldoo/expensive.png') }}" class="img-fluid w-100 sidebarImgs" alt="expensis"/> 
+														<span class="sidebarText">Expensis</span>
+														<i class="bi bi-chevron-right sidebarIcon ms-auto"></i>
+													</a>
+												</li>
 												<!--<li class="nav-item w-100">
 													<a class="nav-link {{ (($uri=='payment-method.index' || $uri=='payment-method.create' || $uri=='payment-method.edit') ? 'active' : '') }}" href="{{ route('payment-method.index') }}">
 														<img src="{{ asset('assets/images/veldoo/payment.png') }}" class="img-fluid w-100 sidebarImgs" alt="Payment"/>

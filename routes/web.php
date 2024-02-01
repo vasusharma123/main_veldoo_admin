@@ -231,7 +231,12 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::resources(['sms-template'=>'SMSTemplateController']);
 	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
 	Route::resource('service-provider-manager','ManagersController');
-
+	Route::resource('expense-type','ExpenseTypeController');
+	Route::get('fetchExpense',  'ExpenseTypeController@fetchExpense')->name('fetch-expense');
+	Route::get('fetchExpenseData',  'ExpenseTypeController@fetchExpenseData')->name('fetch-expense-data');
+	Route::resource('driver-expense','DriverExpensesController');
+	Route::get('fetchAllExpensesOnSearch',  'ExpensesController@fetchAllExpensesOnSearch')->name('fetch-expense-on-search');
+	
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
