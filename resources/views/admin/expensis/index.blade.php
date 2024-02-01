@@ -102,7 +102,7 @@
                                         <!-- <input type="text" class="form-control inputText" id="expenseType" form="updateExpenseData" name="expenseType" placeholder="Enter Expense Type" value="" required> -->
                                         <!-- <select class="col-lg-6 col-md-12 col-sm-12 col-12" name="select"><option value="1">1</option><option value="2" selected>2</option></select> -->
                                         <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
-                                        <select class="form-select inputText expenseTypeSelect" required="" id="expenseTypeSelect" name="seating_capacity">
+                                        <select class="form-select inputText expenseTypeSelect" required="" id="expenseTypeSelect" name="expenseType">
                                             @foreach($expensisArray as $singleExp) 
                                             <option value="{{$singleExp }}">{{$singleExp }}</option>
                                             @endforeach
