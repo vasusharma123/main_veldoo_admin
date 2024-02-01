@@ -117,7 +117,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
-                                        <input type="number" class="form-control inputText" id="amount" form="updateExpenseData" name="amount" value="" placeholder="Enter Amount" required/>
+                                        <input type="text" class="form-control inputText" id="amount" form="updateExpenseData" name="amount" value="" placeholder="Enter Amount" required/>
                                         
                                         <!-- <input type="email" class="form-control main_field" name="email" placeholder="Email" aria-label="Email" value="{{ old('email') ? old('email') : '' }}" required> -->
                                         <label for="amount">Enter Amount</label>
