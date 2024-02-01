@@ -33,9 +33,10 @@ class ExpenseTypeController extends Controller
         $sp_id = $obj->getSpId();
         //dd(\Request::route()->getName());
         $data = array('page_title' => 'Managers', 'action' => 'Managers','page' => 'manager','uri' => 'manager');
-        $data['expensis'] = ExpenseType::where('service_provider_id',$sp_id)->get();
+        $expenseData =  ExpenseType::where('service_provider_id',$sp_id)->orderBy('title','asc');
+        $data['expensis'] = $expenseData->get();
         $data['expenseData'] = Expense::with('driver')->where('service_provider_id',$sp_id)->where('type','expense')->orderBy('id','desc')->get();
-      // dd($data['expense'][0]->date);
+        $data['expensisArray'] = $expenseData->pluck('title');
         return view("admin.expensis.index")->with($data);
       
     }

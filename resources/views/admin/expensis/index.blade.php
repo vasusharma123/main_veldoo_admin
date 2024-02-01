@@ -99,10 +99,19 @@
                             <div class="row w-100 m-0">
                                 <div class="col-lg-6 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
-                                        <input type="text" class="form-control inputText" id="expenseType" form="updateExpenseData" name="expenseType" placeholder="Enter Expense Type" value="" required>
-
+                                        <!-- <input type="text" class="form-control inputText" id="expenseType" form="updateExpenseData" name="expenseType" placeholder="Enter Expense Type" value="" required> -->
+                                        <!-- <select class="col-lg-6 col-md-12 col-sm-12 col-12" name="select"><option value="1">1</option><option value="2" selected>2</option></select> -->
                                         <!-- <input type="text" class="form-control main_field" name="name" placeholder="Name" aria-label="Name" value="{{ old('name') ? old('name') : '' }}" required> -->
+                                        <select class="form-select inputText expenseTypeSelect" required="" id="expenseTypeSelect" name="seating_capacity">
+                                            @foreach($expensisArray as $singleExp) 
+                                            <option value="{{$singleExp }}">{{$singleExp }}</option>
+                                            @endforeach
+                                        </select>
 
+                                        <?php
+										// echo Form::select('seating_capacity',$expensisArray, null, ['class'=>'form-select inputText expenseTypeSelect','required'=>true, 'id' => 'expenseTypeSelect']);
+										// echo Form::label('seating_capacity', 'Configure seating capacity',['class'=>'control-label']);
+										?>
                                         <label for="type">Enter Expense Type</label>
                                     </div>
                                 </div>
@@ -174,7 +183,7 @@
                         
                         <div class="table-responsive marginTbl">
 
-                            <table class="table table-borderless table-fixed customTable">
+                            <table class="table table-borderless table-fixed customTable" id="expenses-table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -222,6 +231,98 @@
 @section('footer_scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+ $(document).ready(function () {
+
+    $('.input_search').on('keyup', debounce(function() {
+      performSearch();
+        }, 500)); // Adjust the delay as needed
+    
+
+    function debounce(func, delay) {
+    var timeoutId;
+    return function() {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(func, delay);
+    };
+  }
+
+  function performSearch() {
+    
+                var search = $('.input_search').val();
+                //console.log('Text typed: ' + $(this).val());
+                //alert(search);
+                $.ajax({
+                url: '/admin/fetchAllExpensesOnSearch',
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    search: search,
+                    // Add other data as needed
+                },
+                success: function (data) {
+                    // Handle the received data
+                    var rowHtml ="";
+                    $('#expenses-table tbody').empty();
+                    if(data.length !=0){
+                        //alert('sdfs');
+                        //console.log(data);
+                        data.forEach(function(user) {
+                            rowHtml += '<tr>';
+
+                        // $('#service-provider tbody').append('<tr><td>' + user.expire_at + '</td><td>' + user.name + '</td><td>' + '+' + user.country_code + ' ' + user.phone + '</td><td>' + user.email + '</td><td>' + user.license_type + '</td><td>' + user.plan_name + '</td></tr>');
+                        if(user.date){
+                            rowHtml += '<td>' + user.date+ '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+
+                        if(user.first_name){
+                            rowHtml += '<td>' + user.first_name+ '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        if(user.type_detail){
+                            rowHtml += '<td>' +  user.type_detail + '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        if(user.ride_id){
+                            rowHtml += '<td>' + user.ride_id+ '</td>';
+                        }else{
+                            rowHtml += '<td> 0</td>';
+                        }
+                        if(user.amount){
+                            rowHtml += '<td>' + user.amount+ '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        rowHtml += '<td class="actionbtns">';
+                        rowHtml += ' <a class="actionbtnsLinks editExpenseData" data-user="'+user.encrypted_id_attribute+'"><img src="{{ asset("assets/imgs/editpen.png" ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>';
+                        rowHtml += ' <a  class="actionbtnsLinks deleteExpenseData" data-id="'+user.encrypted_id_attribute+'" ><img src="{{ asset("assets/imgs/deleteBox.png") }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>';
+                        rowHtml += '   </td>';
+                        
+                        rowHtml += '</tr>';
+                        });
+
+                    
+                        
+                    }else{
+                        rowHtml += '<tr style="text-align: center;"><td colspan="6"> No data found</td></tr>';
+                    }
+                    $('#expenses-table tbody').append(rowHtml);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            })
+
+  }
+            
+
+  });
 
 $('.editButton').click(function(){ 
         user = $(this).data('user');
@@ -334,10 +435,21 @@ $('.editButton').click(function(){
                      action = action.replace('~',data.id);
                      $('.edit_expense_data_box').find("input[name='amount']").val(data.amount);
                      $('.edit_expense_data_box').find("input[name='expenseType']").val(data.type_detail);
+                     
+                     // Get the select element
+                    var selectElement = document.getElementById("expenseTypeSelect");
+                    var capitalizedValue = data.type_detail.charAt(0).toUpperCase() + data.type_detail.slice(1);
+
+                    // Set the value property to the desired option value
+                    selectElement.value = capitalizedValue;
+
                      $('#note').val(data.note);
                      $('#updateExpenseData').attr('action',action);
                     $('.addEditForm').show();
                      $('#updateExpenseData').show();
+
+
+                     //$("#expenseTypeSelect").text("Selected Value: " + data.type_detail);
                     // $('.addEditForm').show();
                     // $('.form_add_expense').hide();
 
@@ -349,7 +461,14 @@ $('.editButton').click(function(){
             }
         });
 
-});
+        
+         
+
+
+    });
+
+
+// });
 
 </script>
 @endsection
