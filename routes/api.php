@@ -198,6 +198,7 @@ Route::group(['prefix' => 'driver', 'namespace' => 'API', 'middleware' => ['auth
 		Route::post('getStatementDetail', 'UserController@getStatementDetail');
 		Route::post('logHours', 'UserController@logHours');
 		Route::post('refer', 'UserController@referCode');
+		Route::post('approveStatement', 'UserController@approveStatement');
 	});
 	Route::post('driverUpdateLocation', 'RideController@driverUpdateLocation');
 });
