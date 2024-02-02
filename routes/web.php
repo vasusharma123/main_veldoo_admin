@@ -238,6 +238,7 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('fetchAllExpensesOnSearch',  'ExpensesController@fetchAllExpensesOnSearch')->name('fetch-expense-on-search');
 
 	Route::post('update-Admin-status','DriverController@updateAdminStatus');
+	Route::get('fetchAllExpensesTypeOnSearch',  'ExpenseTypeController@fetchAllExpensesTypeOnSearch')->name('fetch-expense-on-search');
 
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
