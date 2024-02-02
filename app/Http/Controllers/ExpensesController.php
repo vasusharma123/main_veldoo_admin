@@ -92,22 +92,36 @@ class ExpensesController extends Controller
         try {
 
             $searchTerm = $request->input('search');
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
             $obj = new UserController();
             $sp_id = $obj->getSpId();
             if($searchTerm){
                 
                 $results =   Expense::select('expenses.id','users.first_name','expenses.ride_id','expenses.type_detail','expenses.date','amount','note',)->leftJoin('users','users.id','=','expenses.driver_id')
                 ->where('expenses.service_provider_id',$sp_id)->where('type','expense')
-                    ->where(function ($query) use ($searchTerm) {
+                    ->where(function ($query) use ($searchTerm,$start_date,$end_date) {
                     $query->where('expenses.amount', 'like', '%' . $searchTerm . '%')
                         ->orWhere('expenses.type_detail', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('expenses.date', 'like', '%' . $searchTerm . '%')
-                        ->orWhere('users.first_name', 'like', '%' . $searchTerm . '%');
+                        ->orWhere('expenses.date', 'like', '%' . $searchTerm . '%');
+                    if($start_date){
+                        $query->Where('expenses.date','>=',$start_date);
+                    }
+                    if($end_date){
+                        $query->Where('expenses.date','<=',$end_date);
+                    }
+                    $query->orWhere('users.first_name', 'like', '%' . $searchTerm . '%');
                 })->orderBy('expenses.created_at','DESC')->get();
             }else{
-                $results =   Expense::select('expenses.id','users.first_name','expenses.ride_id','expenses.type_detail','expenses.date','amount','note',)->leftJoin('users','users.id','=','expenses.driver_id')
-                ->where('expenses.service_provider_id',$sp_id)->where('type','expense')
-                ->orderBy('expenses.created_at','DESC')->get();
+                $query =   Expense::select('expenses.id','users.first_name','expenses.ride_id','expenses.type_detail','expenses.date','amount','note',)->leftJoin('users','users.id','=','expenses.driver_id')
+                ->where('expenses.service_provider_id',$sp_id)->where('type','expense');
+                if($start_date){
+                    $query->Where('expenses.date','>=',$start_date);
+                }
+                if($end_date){
+                    $query->Where('expenses.date','<=',$end_date);
+                }
+                $results =  $query->orderBy('expenses.created_at','DESC')->get();
             }
             
 

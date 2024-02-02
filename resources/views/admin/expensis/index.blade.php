@@ -151,7 +151,7 @@
                         
                         <div class="table-responsive marginTbl">
 
-                            <table class="table table-borderless table-fixed customTable">
+                            <table class="table table-borderless table-fixed customTable" id="expense-type-table">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -164,7 +164,7 @@
                                         <td>{{$expense->title }}</td>
                                         <td class="actionbtns">
                                             <a class="actionbtnsLinks editButton" data-user="{{ Crypt::encrypt($expense->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-                                            <a  class="actionbtnsLinks deleteButton" data-id="{{ $expense->id}}" ><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+                                            <a  class="actionbtnsLinks deleteButton" data-id="{{ Crypt::encrypt($expense->id)}}" ><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -205,7 +205,7 @@
                                         <td>{{$singleExpense->amount }} CHF</td>
                                         <td class="actionbtns">
                                             <a class="actionbtnsLinks editExpenseData" data-user="{{ Crypt::encrypt($singleExpense->id) }}"><img src="{{ asset('assets/imgs/editpen.png' ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>
-                                            <a  class="actionbtnsLinks deleteExpenseData" data-id="{{ $singleExpense->id}}" ><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
+                                            <a  class="actionbtnsLinks deleteExpenseData" data-id="{{ Crypt::encrypt($singleExpense->id)}}" ><img src="{{ asset('assets/imgs/deleteBox.png') }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -233,8 +233,34 @@
 <script>
  $(document).ready(function () {
 
+    $(".endDate").on("change", function(){
+            var endDate = $(this).val();
+            var startDate = $('.startdate').val();
+
+            performSearch(startDate,endDate);
+            
+        });
+
+        $(".startdate").on("change", function(){
+            var startDate = $(this).val();
+            var endDate = $('.endDate').val();
+            performSearch(startDate,endDate);
+            
+        });
+
     $('.input_search').on('keyup', debounce(function() {
-      performSearch();
+        var startDate = $('.startdate').val();
+        var enddate = $('.endDate').val();
+
+        var activeLink = $(".nav-link.active");
+                if (activeLink.length > 0) {
+                    if(activeLink.attr("id") == 'list'){
+                        performSearch(startDate,enddate);
+                    }else{
+                        searchDataType();
+                    }
+                } 
+
         }, 500)); // Adjust the delay as needed
     
 
@@ -246,13 +272,12 @@
     };
   }
 
-  function performSearch() {
-    
-                var search = $('.input_search').val();
+  function searchDataType(){
+    var search = $('.input_search').val();
                 //console.log('Text typed: ' + $(this).val());
                 //alert(search);
                 $.ajax({
-                url: '/admin/fetchAllExpensesOnSearch',
+                url: '/admin/fetchAllExpensesTypeOnSearch',
                 type: 'GET',
                 dataType: 'json',
                 headers: {
@@ -263,68 +288,36 @@
                     // Add other data as needed
                 },
                 success: function (data) {
-                    // Handle the received data
                     var rowHtml ="";
-                    $('#expenses-table tbody').empty();
+                    $('#expense-type-table tbody').empty();
                     if(data.length !=0){
-                        //alert('sdfs');
-                        //console.log(data);
                         data.forEach(function(user) {
                             rowHtml += '<tr>';
 
-                        // $('#service-provider tbody').append('<tr><td>' + user.expire_at + '</td><td>' + user.name + '</td><td>' + '+' + user.country_code + ' ' + user.phone + '</td><td>' + user.email + '</td><td>' + user.license_type + '</td><td>' + user.plan_name + '</td></tr>');
-                        if(user.date){
-                            rowHtml += '<td>' + user.date+ '</td>';
+                        if(user.title){
+                            rowHtml += '<td>' + user.title+ '</td>';
                         }else{
                             rowHtml += '<td> </td>';
                         }
 
-                        if(user.first_name){
-                            rowHtml += '<td>' + user.first_name+ '</td>';
-                        }else{
-                            rowHtml += '<td> </td>';
-                        }
-                        if(user.type_detail){
-                            rowHtml += '<td>' +  user.type_detail + '</td>';
-                        }else{
-                            rowHtml += '<td> </td>';
-                        }
-                        if(user.ride_id){
-                            rowHtml += '<td>' + user.ride_id+ '</td>';
-                        }else{
-                            rowHtml += '<td> 0</td>';
-                        }
-                        if(user.amount){
-                            rowHtml += '<td>' + user.amount+ '</td>';
-                        }else{
-                            rowHtml += '<td> </td>';
-                        }
-                        rowHtml += '<td class="actionbtns">';
-                        rowHtml += ' <a class="actionbtnsLinks editExpenseData" data-user="'+user.encrypted_id_attribute+'"><img src="{{ asset("assets/imgs/editpen.png" ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>';
-                        rowHtml += ' <a  class="actionbtnsLinks deleteExpenseData" data-id="'+user.encrypted_id_attribute+'" ><img src="{{ asset("assets/imgs/deleteBox.png") }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>';
-                        rowHtml += '   </td>';
+                        rowHtml +='<td class="actionbtns">';
+                        rowHtml += '<a class="actionbtnsLinks editButton" data-user="'+user.encrypted_id_attribute+'"><img src="{{ asset("assets/imgs/editpen.png" ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>';
+                        rowHtml +='<a  class="actionbtnsLinks deleteButton" data-id="'+user.encrypted_id_attribute+'" ><img src="{{ asset("assets/imgs/deleteBox.png") }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>';
+                        rowHtml +='</td>';
                         
                         rowHtml += '</tr>';
-                        });
-
-                    
-                        
+                    });
                     }else{
                         rowHtml += '<tr style="text-align: center;"><td colspan="6"> No data found</td></tr>';
                     }
-                    $('#expenses-table tbody').append(rowHtml);
+                    $('#expense-type-table tbody').append(rowHtml);
                 },
                 error: function (error) {
                     console.log('Error:', error);
                 }
             })
-
   }
-            
-
-  });
-
-$('.editButton').click(function(){ 
+  $("#expense-type-table").on("click", ".editButton", function(){
         user = $(this).data('user');
         event.preventDefault();
         console.log(user);
@@ -361,7 +354,89 @@ $('.editButton').click(function(){
 
 });
 
-            $(document).on('click','.deleteButton',function(){
+
+  function performSearch(startDate,endDate) {
+    
+                var search = $('.input_search').val();
+                //console.log('Text typed: ' + $(this).val());
+                //alert(search);
+                $.ajax({
+                url: '/admin/fetchAllExpensesOnSearch',
+                type: 'GET',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    search: search,
+                    start_date :startDate,
+                    end_date : endDate
+                    // Add other data as needed
+                },
+                success: function (data) {
+                    // Handle the received data
+                    var rowHtml ="";
+                    $('#expenses-table tbody').empty();
+                    if(data.length !=0){
+                        //alert('sdfs');
+                        //console.log(data);
+                        data.forEach(function(user) {
+                            rowHtml += '<tr>';
+
+                        // $('#service-provider tbody').append('<tr><td>' + user.expire_at + '</td><td>' + user.name + '</td><td>' + '+' + user.country_code + ' ' + user.phone + '</td><td>' + user.email + '</td><td>' + user.license_type + '</td><td>' + user.plan_name + '</td></tr>');
+                        if(user.date){
+                            rowHtml += '<td>' + user.date+ '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+
+                        if(user.first_name){
+                            rowHtml += '<td>' + user.first_name+ '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        if(user.type_detail){
+                            rowHtml += '<td>' +  user.type_detail + '</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        if(user.ride_id){
+                            rowHtml += '<td>' + user.ride_id+ '</td>';
+                        }else{
+                            rowHtml += '<td> 0</td>';
+                        }
+                        if(user.amount){
+                            rowHtml += '<td>' + user.amount+ ' CHF</td>';
+                        }else{
+                            rowHtml += '<td> </td>';
+                        }
+                        rowHtml += '<td class="actionbtns">';
+                        rowHtml += ' <a class="actionbtnsLinks editExpenseData" data-user="'+user.encrypted_id_attribute+'"><img src="{{ asset("assets/imgs/editpen.png" ) }}" class="img-fluid tableIconsbtns edit_btn" alt="edit"></a>';
+                        rowHtml += ' <a  class="actionbtnsLinks deleteExpenseData" data-id="'+user.encrypted_id_attribute+'" ><img src="{{ asset("assets/imgs/deleteBox.png") }}" class="img-fluid tableIconsbtns delete_btn" alt="delete_btn"></a>';
+                        rowHtml += '   </td>';
+                        
+                        rowHtml += '</tr>';
+                        });
+
+                    
+                        
+                    }else{
+                        rowHtml += '<tr style="text-align: center;"><td colspan="6"> No data found</td></tr>';
+                    }
+                    $('#expenses-table tbody').append(rowHtml);
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            })
+
+  }
+            
+
+  });
+
+
+  $("#expense-type-table").on("click", ".deleteButton", function(){
                 action = $('#deleteForm').attr('action');
                 action = action.replace('~',$(this).data('id'));
                 Swal.fire({
@@ -381,7 +456,7 @@ $('.editButton').click(function(){
                 });
             });
 
-            $(document).on('click','.deleteExpenseData',function(){
+                $("#expenses-table").on("click", ".deleteExpenseData", function(){
                 action = $('#deleteExpenseDataForm').attr('action');
                 action = action.replace('~',$(this).data('id'));
                 Swal.fire({
@@ -409,9 +484,12 @@ $('.editButton').click(function(){
                 $('.update-form').hide();
                 $('.list-expense-data').hide();
                 $('.editExpenseDataForm').hide();
+                $('.startdate').hide();
+                $('.endDate').hide();
             });
             
-    $('.editExpenseData').click(function(){ 
+    $("#expenses-table").on("click", ".editExpenseData", function(){
+
         user = $(this).data('user');
         event.preventDefault();
         console.log(user);
@@ -462,7 +540,7 @@ $('.editButton').click(function(){
         });
 
         
-         
+        
 
 
     });

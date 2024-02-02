@@ -104,7 +104,7 @@ class ExpenseTypeController extends Controller
         try {
             $obj = new UserController();
             $sp_id = $obj->getSpId();
-            ExpenseType::where(['id'=>$id,'service_provider_id' => $sp_id])->delete();
+            ExpenseType::where(['id'=>Crypt::decrypt($id) ,'service_provider_id' => $sp_id])->delete();
             DB::commit();
             
             return redirect()->route('expense-type.index')->with('success','Expense type has been deleted');
@@ -136,5 +136,47 @@ class ExpenseTypeController extends Controller
         }
 
     }
+
+    public function fetchAllExpensesTypeOnSearch(Request $request)
+    {
+        try {
+
+            $searchTerm = $request->input('search');
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+            $obj = new UserController();
+            $sp_id = $obj->getSpId();
+            if($searchTerm){
+                
+                $results =   ExpenseType::select('id','title')
+                ->where('service_provider_id',$sp_id)
+                ->Where('title', 'like', '%' . $searchTerm . '%')
+                ->orderBy('created_at','DESC')->get();
+            }else{
+                $results =   ExpenseType::select('id','title')
+                ->where('service_provider_id',$sp_id)
+                ->orderBy('created_at','DESC')->get();
+            }
+            
+
+            $results = $results->map(function ($result) {
+                $result->encrypted_id_attribute = $this->computeAttribute($result);
+                return $result;
+            });
+            return response()->json($results);
+
+
+        } catch (Exception $e) {
+            Log::info('Error in method getAllServiceProvider' . $e);
+        }
+    }
+
+    private function computeAttribute($result)
+    {
+        // Your logic to compute the attribute value based on $result
+        // For example, concatenate values from different columns
+        return Crypt::encrypt($result->id);
+    }
+    
     
 }

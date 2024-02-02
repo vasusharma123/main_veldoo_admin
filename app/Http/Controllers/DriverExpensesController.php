@@ -61,7 +61,7 @@ class DriverExpensesController extends Controller
         try {
             $obj = new UserController();
             $sp_id = $obj->getSpId();
-            Expense::where(['id'=>$id,'service_provider_id' => $sp_id])->delete();
+            Expense::where(['id'=>Crypt::decrypt($id),'service_provider_id' => $sp_id])->delete();
             DB::commit();
             
             return redirect()->route('expense-type.index')->with('success','Expense has been deleted');

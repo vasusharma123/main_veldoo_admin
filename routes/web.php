@@ -234,7 +234,8 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('fetchExpenseData',  'ExpenseTypeController@fetchExpenseData')->name('fetch-expense-data');
 	Route::resource('driver-expense','DriverExpensesController');
 	Route::get('fetchAllExpensesOnSearch',  'ExpensesController@fetchAllExpensesOnSearch')->name('fetch-expense-on-search');
-	
+	Route::get('fetchAllExpensesTypeOnSearch',  'ExpenseTypeController@fetchAllExpensesTypeOnSearch')->name('fetch-expense-on-search');
+
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');

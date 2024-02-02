@@ -128,10 +128,14 @@
                         $uri = Route::currentRouteName();
                         ?>
 						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
-						<div class="col-lg-3 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
-							@else
-							<div class="{{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-8' : 'col-lg-6' )}} col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
-								@endif
+						    <div class="col-lg-3 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+						@else
+                            @if($uri == 'expense-type.index')
+                                <div class="col-lg-3 col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+                            @else
+                                <div class="{{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-8' : 'col-lg-6' )}} col-md-2 col-sm-2 col-2 align-self-center trigger_parent">
+                                @endif
+                            @endif
                         @if($uri=='users.voucher' || $uri=='voucher.create')
                             <!--<button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
                             <ul class="nav top_tab_menu target">
@@ -215,10 +219,10 @@
                             <button class="btn collpasenav_btn trigger_btn"><i class="bi bi-three-dots-vertical"></i></button>
                             <ul class="nav top_tab_menu target">
                                 <li class="nav-item">
-                                    <a class="nav-link expense-list-active {{ ($uri=='expense-type.index' ? 'active' : '') }}" href="{{ route('expense-type.index') }}">List</a>
+                                    <a id="list"  class="nav-link expense-list-active {{ ($uri=='expense-type.index' ? 'active' : '') }}" href="{{ route('expense-type.index') }}">List</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ ($uri=='expensis' ? 'active' : '') }} add-expense" >Add</a>
+                                    <a id="add"  class="nav-link  {{ ($uri=='expensis' ? 'active' : '') }} add-expense" >Add</a>
                                 </li>
                             </ul>
                         @endif
@@ -284,12 +288,26 @@
 						</div>
 						@if($uri == 'rides.list' || $uri == 'rides.month' || $uri == 'rides.week')
 						<div class="col-lg-7 col-md-7 col-sm-5 col-5 align-self-center">
-						    @else
-							<div class=" {{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-2'  : 'col-lg-4') }} col-md-7 col-sm-5 col-5 align-self-center">
-						        @endif
+						@else
+                             @if($uri == 'expense-type.index')
+                                    <div class="col-lg-7 col-md-7 col-sm-5 col-5 align-self-center">
+                             @else
+                                    <div class=" {{ ($uri == 'settings.my_design' || $uri == 'users.settings' ? 'col-lg-2'  : 'col-lg-4') }} col-md-7 col-sm-5 col-5 align-self-center">
+                             @endif
+                         @endif
 
                             <div class="right_content_menu">
-								
+                                    @if($uri == 'expense-type.index') 
+                                    <div class="editBtnDate d-flex">
+                                        <i class="bi bi-calendar calendarIo iconExportLink"></i>
+                                        <div class="inputbxs d-flex">
+                                            <input class="form-control dateinput startdate" placeholder="Start Date" name="start_date" class="textbox-n"
+                                                type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="Stdate" value=""/>
+                                            <input type="date" class="form-control dateinput endDate" placeholder="End Date" name="end_date"
+                                                class="textbox-n" type="text" onfocus="(this.type='date')" onblur="(this.type='text')" id="Endate" value=""/>
+                                        </div>
+                                    </div>
+                                     @endif 
 								@yield('header_search_export')
 
                                 <div class="avatar_info_box">
