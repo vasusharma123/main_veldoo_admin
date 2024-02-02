@@ -59,7 +59,10 @@ class AppServiceProvider extends ServiceProvider
                     $setting = json_decode($configuration->value, true);
                 }
                 $purchasedPlan = PlanPurchaseHistory::where(['user_id' => $service_provider_id])->orderBy('id','desc')->first();
-                $lastPurchasedPlan = Plan::find($purchasedPlan->plan_id);
+                if($purchasedPlan){
+                    $lastPurchasedPlan = Plan::find($purchasedPlan->plan_id);
+                }
+                
             }
             if (app('request')->route()) {
                 $action = app('request')->route()->getAction();

@@ -1274,7 +1274,6 @@ class UserController extends Controller
      * This function use to  create contacts subject
      */
     public function driver_change_status(Request $request){
-
         $status = ($request->status)?0:1;
            $updateUser = User::where('id',$request->user_id)->update(['is_master'=>$status]);
 

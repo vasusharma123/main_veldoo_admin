@@ -230,6 +230,8 @@ Route::group(['prefix' => 'admin',  'middleware' => ['auth','role_or_permission:
 	Route::get('logout','SpAdmin\LoginController@logout')->name('sp_logout');
 	Route::resource('service-provider-manager','ManagersController');
 
+	Route::post('update-Admin-status','DriverController@updateAdminStatus');
+
 });
 Route::group(['prefix' => 'admin',  'middleware' => 'role_or_permission:Company'], function(){
 	Route::get('{id}/{type}/user/','BookingController@bookingUserDetail');
