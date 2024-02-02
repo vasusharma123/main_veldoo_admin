@@ -17,6 +17,7 @@ use App\Salary;
 use App\Expense;
 use App\Exports\DriversExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Crypt;
 
 class DriverController extends Controller
 {
@@ -36,7 +37,7 @@ class DriverController extends Controller
 		
 		$data = array('title' => 'Drivers', 'action' => 'List Drivers');
 		
-		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master');
+		$records = User::select('id', 'first_name', 'last_name', 'email', 'phone', 'status', 'name', 'country_code', 'invoice_status', 'is_master','is_admin');
 		
 		if($request->has('status') && $request->input('type')=='status' && !empty($request->input('id')) ){
 			$status = ($request->input('status')?0:1);
@@ -504,5 +505,20 @@ class DriverController extends Controller
 		return Excel::download(new DriversExport($req_params), $file_name);
     }
 
+	public function updateAdminStatus(Request $request){
+		try{
+			$id = Crypt::decrypt($request->id);
+			if($request->status == 0){
+				$status = 1;
+			}else{
+				$status = 0;
+			}
+			User::where('id',$id)->update(['is_admin' => $status]);
+
+		} catch (\Exception $exception) {
+			DB::rollBack();
+			return response()->json(['status' => 0, 'message' => $exception->getMessage()]);
+		}
+	}
 
 }

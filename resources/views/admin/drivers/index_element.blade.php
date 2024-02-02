@@ -7,6 +7,7 @@
 				<th>Phone Number</th>
 				<th>Email Address</th>
 				<th>Master</th>
+				<th>Admin</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -21,6 +22,12 @@
 					<td class="switch_btn">
 						<label class="switch">
 							<input type="checkbox" class="change_status" value="{{ $record->is_master }}" data-id="{{ $record->id }}" {{ $record->is_master == 1 ? "checked" : "" }}>
+							<span class="slider round"></span>
+						</label>
+					</td>
+					<td class="switch_btn">
+						<label class="switch">
+							<input type="checkbox" class="change_admin_status" value="{{ $record->is_admin }}" data-id="{{ Crypt::encrypt($record->id) }}" {{ $record->is_admin == 1 ? "checked" : "" }}>
 							<span class="slider round"></span>
 						</label>
 					</td>

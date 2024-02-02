@@ -165,7 +165,59 @@
                 $("#loading").fadeIn("slow");
                 ajaxCall(id, orderby, order, page, status, 'status');
             });
-        });
+
+
+var checkboxes = document.querySelectorAll('.change_admin_status');
+
+// Add onchange event listener to each checkbox
+checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        var id = $(this).data('id');
+        var status = $(this).val();
+            swal({
+                    title: "Are you sure?",
+                    text: "You want to change role !",
+                    type: "warning",
+                    timer: 3000,
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Yes, Change it!",
+                    cancelButtonText: "No, cancel !",
+                    closeOnConfirm: true,
+                    closeOnCancel: true,
+                    closeOnConfirm: true,
+                    showLoaderOnConfirm: true,
+                }, function(isConfirm) {
+                    if (isConfirm) {
+                      
+                        $.ajax({
+                        type: "POST",
+                        url: "/admin/update-Admin-status",
+                        headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                        data: {
+                            id: id,
+                            status: status,
+                        },
+                        success: function(data) {
+                        }
+                    });
+                    } else {
+                        if (checkbox.checked) {
+                            checkbox.checked = false;
+                        } else {
+                            checkbox.checked = true;
+                        }
+                    }
+                });
+   
+    });
+});
+
+
+
+});
 
         function ajaxCall(id = 0, orderby, order, page = 1, status = '', type = '') {
             var page = (!page ? 1 : page);
